@@ -33,7 +33,7 @@ function Header() {
   }, []);
 
   return (
-    <div className="bg-gray-800 app-region-drag flex justify-end h-8 items-center">
+    <div className="bg-gray-800 app-region-drag flex-2 flex justify-end h-8 items-center">
       <div>
         <p>HOLA LOCO</p>
       </div>
