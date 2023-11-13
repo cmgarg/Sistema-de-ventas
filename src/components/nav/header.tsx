@@ -12,6 +12,9 @@ function Header() {
     window.ipcRenderer.send("maximize-window");
   };
 
+  const unmaximizedWindow = () => {
+    window.ipcRenderer.send("unmaximized-window");
+  };
   const minimizeWindow = () => {
     window.ipcRenderer.send("minimize-window");
   };
@@ -48,7 +51,7 @@ function Header() {
           if (!isMaximized) {
             maximizeWindow();
           } else {
-            minimizeWindow();
+            unmaximizedWindow();
           }
         }}
       >

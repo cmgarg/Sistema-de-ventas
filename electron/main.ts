@@ -55,7 +55,7 @@ function createWindow() {
   }
 }
 
-ipcMain.on("minimize-window", () => {
+ipcMain.on("unmaximized-window", () => {
   win?.unmaximize();
 });
 ipcMain.on("maximize-window", () => {
@@ -63,6 +63,9 @@ ipcMain.on("maximize-window", () => {
 });
 ipcMain.on("close-window", () => {
   win?.close();
+});
+ipcMain.on("minimize-window", () => {
+  win?.minimize();
 });
 ipcMain.handle("get-system-memory", async (event, ...args) => {
   // Aquí iría la lógica para obtener la información de la memoria
