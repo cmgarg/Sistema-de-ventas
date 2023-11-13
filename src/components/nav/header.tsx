@@ -4,10 +4,17 @@ import Minimize from "../../assets/headersvg/Minimize.jsx";
 import Maximize from "../../assets/headersvg/Maximize.jsx";
 import Guion from "../../assets/headersvg/Guion.jsx";
 function Header() {
+  const closeWindow = () => {
+    window.ipcRenderer.send("close-window");
+  };
+
   const maximizeWindow = () => {
     window.ipcRenderer.send("maximize-window");
   };
 
+  const unmaximizedWindow = () => {
+    window.ipcRenderer.send("unmaximized-window");
+  };
   const minimizeWindow = () => {
     window.ipcRenderer.send("minimize-window");
   };
@@ -44,7 +51,7 @@ function Header() {
           if (!isMaximized) {
             maximizeWindow();
           } else {
-            minimizeWindow();
+            unmaximizedWindow();
           }
         }}
       >
@@ -57,7 +64,7 @@ function Header() {
       <button
         className="app-region-no-drag items-center flex hover:bg-gray-700 h-full w-10 justify-center"
         onClick={() => {
-          minimizeWindow();
+          closeWindow();
         }}
       >
         <CerrarIcon color={"#fff"} size={16} />
