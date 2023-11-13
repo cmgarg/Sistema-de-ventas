@@ -28,7 +28,7 @@ function App() {
       <div>Total Memory: {memoryInfo.totalMemory}</div>
       <div>Free Memory: {memoryInfo.freeMemory}</div>
       <div className="flex absolute bottom-0 bg-white w-10 h-5">
-        <p>Gonzalo123</p>
+        <p>Gonzalo12dddd3</p>
       </div>
     </div>
   );
