@@ -62,7 +62,7 @@ function Header() {
         )}
       </button>
       <button
-        className="app-region-no-drag items-center flex hover:bg-gray-700 h-full w-10 justify-center"
+        className="app-region-no-drag items-center flex hover:bg-red-700 h-full w-10 justify-center"
         onClick={() => {
           closeWindow();
         }}
