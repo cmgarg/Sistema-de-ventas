@@ -1,14 +1,4 @@
 import { contextBridge, ipcRenderer } from "electron";
-
-contextBridge.exposeInMainWorld("electronAPI", {
-  getSystemMemory: () => ipcRenderer.invoke("get-system-memory"),
-  onSystemMemory: (callback: any) => {
-    ipcRenderer.on("system-memory", callback);
-  },
-  removeSystemMemoryListener: () => {
-    ipcRenderer.removeAllListeners("system-memory");
-  },
-});
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld("ipcRenderer", withPrototype(ipcRenderer));
 

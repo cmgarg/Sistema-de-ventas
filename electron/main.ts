@@ -67,12 +67,6 @@ ipcMain.on("close-window", () => {
 ipcMain.on("minimize-window", () => {
   win?.minimize();
 });
-ipcMain.handle("get-system-memory", async (event, ...args) => {
-  // Aquí iría la lógica para obtener la información de la memoria
-  const totalMemory = os.totalmem();
-  const freeMemory = os.freemem();
-  return { totalMemory, freeMemory };
-});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
