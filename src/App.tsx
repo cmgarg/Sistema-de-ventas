@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import Header from "./components/nav/header";
+import Header from "./components/nav/header/header";
 
 function App() {
   const [memoryInfo, setMemoryInfo] = useState({

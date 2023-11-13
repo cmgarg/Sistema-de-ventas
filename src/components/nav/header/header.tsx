@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import CerrarIcon from "../../assets/headersvg/cerraricon.jsx";
-import Minimize from "../../assets/headersvg/Minimize.jsx";
-import Maximize from "../../assets/headersvg/Maximize.jsx";
-import Guion from "../../assets/headersvg/Guion.jsx";
+import CerrarIcon from "../../../assets/headersvg/cerraricon.jsx";
+import Minimize from "../../../assets/headersvg/Minimize.jsx";
+import Maximize from "../../../assets/headersvg/Maximize.jsx";
+import Guion from "../../../assets/headersvg/Guion.jsx";
 function Header() {
   const maximizeWindow = () => {
     window.ipcRenderer.send("maximize-window");
