@@ -35,8 +35,7 @@ function createWindow() {
     win?.webContents.send("window-state", "maximized");
   });
 
-  win.webContents.openDevTools();
-
+  
   // Cuando la ventana se restaure al tamaño normal
   win.on("unmaximize", () => {
     win?.webContents.send("window-state", "windowed");
