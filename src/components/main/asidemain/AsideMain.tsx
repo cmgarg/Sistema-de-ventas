@@ -1,4 +1,5 @@
 import React from "react";
+import MenuAside from "./menu/menu";
 
 interface AsideContentProps {
   isActive: boolean;
@@ -15,11 +16,40 @@ const AsideMain: React.FC<AsideContentProps> = ({ isActive }) => {
     >
       {isActive && (
         <div className="flex-1 w-full">
-          <p>VENTAS</p>
-          <p>VENTAS</p>
-          <p>VENTAS</p>
-          <p>VENTAS</p>
-          <p>VENTAS</p>
+          <MenuAside title="Clientes">
+            <a href="#" className="hover:text-slate-400">
+              Ventas
+            </a>
+            <a href="#" className="hover:text-slate-400">
+              Compras
+            </a>
+            <a href="#" className="hover:text-slate-400">
+              Gastos
+            </a>
+            <a href="#" className="hover:text-slate-400">
+              Pedidos
+            </a>
+            <a href="#" className="hover:text-slate-400">
+              Aguante
+            </a>
+          </MenuAside>
+          <MenuAside title="Fideos">
+            <a href="#" className="hover:text-slate-400">
+              Ventas
+            </a>
+            <a href="#" className="hover:text-slate-400">
+              Compras
+            </a>
+            <a href="#" className="hover:text-slate-400">
+              Gastos
+            </a>
+            <a href="#" className="hover:text-slate-400">
+              Pedidos
+            </a>
+            <a href="#" className="hover:text-slate-400">
+              Aguante
+            </a>
+          </MenuAside>
         </div>
       )}
     </div>
