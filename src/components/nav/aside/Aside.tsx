@@ -13,6 +13,8 @@ import Configuracion from "../../../assets/asidesvg/Configuracion.jsx";
 export default function Aside() {
   return (
     <div className=" flex flex-col w-14 h-full items-center justify-stretch bg-gray-800 border-r-2 border-zinc-950">
+      <div className=" flex flex-col h-full justify-between ">
+        <div>
       <div className=" flex items-center justify-center w-10 h-10 mt-5 mb-5">
         <Menu></Menu>
       </div>
@@ -40,8 +42,12 @@ export default function Aside() {
       <div className=" flex items-center justify-center w-10 h-10 mt-3 mb-3">
         <Estadisticas></Estadisticas>
       </div>
-      <div className=" flex items-center justify-center w-10 h-10 mt-80 mb-3">
+      </div>
+      <div>
+      <div className=" flex items-center justify-center w-10 h-10 mt-3 mb-3">
         <Configuracion></Configuracion>
+      </div>
+      </div>
       </div>
     </div>
   );
