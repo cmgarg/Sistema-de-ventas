@@ -33,7 +33,7 @@ function Header() {
   }, []);
 
   return (
-    <div className="bg-gray-800 app-region-drag flex-2 flex justify-end h-8 items-center">
+    <div className="bg-gray-800 app-region-drag flex-2 flex justify-end h-8 items-center border-b-2 border-zinc-950">
       <div className=" w-full flex-1 justify-between items-baseline">
         <div className=" h-8 w-full flex justify-start items-center ">
           <div className=" flex justify-center items-center w-4 h-4 ml-3 mr-3">
