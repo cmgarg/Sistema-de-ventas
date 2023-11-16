@@ -14,26 +14,9 @@ import { setMenuState } from "../../../redux/estados/menuState.js";
 
 export default function Aside() {
   const [isActive, setIsActive] = useState(false);
-  const [tooltip, setTooltip] = useState({ show: false, text: "" });
+ 
 
   ////funciones ventana emergente con nombre.
-  function showTooltip(text) {
-    setTooltip({ show: true, text: text });
-  }
-
-  function hideTooltip() {
-    setTooltip({ show: false, text: "" });
-  }
-
-  const [show, setShow] = useState(false);
-
-  // Estilos para la posición del tooltip basado en el flujo
-  const flowStyles = {
-    up: 'bottom-full mb-2',
-    down: 'top-full mt-2',
-    left: 'right-full mr-2',
-    right: 'left-full ml-2',
-  };
 
   ///Redux
 
@@ -64,17 +47,8 @@ export default function Aside() {
             <div
               onClick={handleClick}
               className={`flex flex-row  justify-center items-center mt-5 mb-5 rounded-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none `}
-            >
-              <div
-                className=" w-10 h-10"
-                onMouseEnter={() => showTooltip("Nombre de la ventana")}
-                onMouseLeave={hideTooltip}
-              >
-
-</div>
-      
-  )
-}
+            ><div>
+              <div className=" w-10 h-10">
                 <Menu></Menu>
               </div>
               <div
