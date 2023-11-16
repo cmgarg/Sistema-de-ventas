@@ -1,6 +1,38 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
 
+//GUARDAR PETICION CUANDO SE ESTA OFFLINE
+
+import Datastore from "nedb";
+const db = new Datastore({ filename: "database/datafile.js", autoload: true });
+
+function guardarPeticionOffline(data: any) {
+  db.insert(data, (err, newDoc) => {
+    if (err) {
+      // Manejar el error
+      console.error("Error al guardar el objeto:", err);
+    } else {
+      // Objeto guardado con éxito
+      console.log("Objeto guardado:", newDoc);
+    }
+  });
+}
+function buscarClientes() {
+  return new Promise((resolve, reject) => {
+    db.find({}, (err: any, docs: any) => {
+      if (err) {
+        console.error("Error al obtener datos:", err);
+        reject(err);
+      } else {
+        console.log("Datos obtenidos:", docs);
+        resolve(docs);
+      }
+    });
+  });
+}
+
+//////////////////////////////////////////////////////
+
 // The built directory structure
 //
 // ├─┬─┬ dist

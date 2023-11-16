@@ -69,18 +69,8 @@ export default function Aside() {
                 className=" w-10 h-10"
                 onMouseEnter={() => showTooltip("Nombre de la ventana")}
                 onMouseLeave={hideTooltip}
-              >{
-  tooltip.show && (
-    
-      
-  
-  <div className="relative inline-block" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-  {children}
-  {show && (
-    <div className={`absolute z-10 p-2 text-white bg-black rounded shadow-lg text-xs ${flowStyles[flow] || ''}`}>
-      {tooltip.text}
-    </div>
-  )}
+              >
+
 </div>
       
   )
