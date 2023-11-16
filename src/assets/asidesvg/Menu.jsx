@@ -2,7 +2,7 @@ import React from "react";
 
 function Menu() {
   return (
-    <div className=" w-10 h-10">
+    <div>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="40"

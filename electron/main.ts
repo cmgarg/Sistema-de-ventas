@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
+<<<<<<< HEAD
 
 //GUARDAR PETICION CUANDO SE ESTA OFFLINE
 
@@ -32,6 +33,8 @@ function buscarClientes() {
 }
 
 //////////////////////////////////////////////////////
+=======
+>>>>>>> 53436d78ad77f5314fef4fcfa7116c48668dfd21
 
 // The built directory structure
 //
@@ -83,6 +86,10 @@ function createWindow() {
     win.loadFile(path.join(process.env.DIST, "index.html"));
   }
   win.webContents.openDevTools();
+<<<<<<< HEAD
+=======
+
+>>>>>>> 53436d78ad77f5314fef4fcfa7116c48668dfd21
 }
 
 ipcMain.on("unmaximize-window", () => {
@@ -106,6 +113,8 @@ ipcMain.on("obtener-clientes", async (event) => {
   console.log("SE ENVIO LO PEDIDO", clientes);
   event.reply("respuesta-obtener-clientes", clientes);
 });
+
+
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
