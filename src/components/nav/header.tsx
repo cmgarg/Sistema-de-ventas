@@ -5,18 +5,18 @@ import Maximize from "../../assets/headersvg/Maximize.jsx";
 import Guion from "../../assets/headersvg/Guion.jsx";
 function Header() {
   const closeWindow = () => {
-    window.ipcRenderer.send("close-window");
+    window.api.enviarEvento("close-window");
   };
 
   const maximizeWindow = () => {
-    window.ipcRenderer.send("maximize-window");
+    window.api.enviarEvento("maximize-window");
   };
 
   const unmaximizedWindow = () => {
-    window.ipcRenderer.send("unmaximized-window");
+    window.api.enviarEvento("unmaximize-window");
   };
   const minimizeWindow = () => {
-    window.ipcRenderer.send("minimize-window");
+    window.api.enviarEvento("minimize-window");
   };
 
   const [isMaximized, setIsMaximized] = useState(false);
