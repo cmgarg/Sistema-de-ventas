@@ -1,6 +1,37 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
-import os from "os";
+
+//GUARDAR PETICION CUANDO SE ESTA OFFLINE
+
+import Datastore from "nedb";
+const db = new Datastore({ filename: "database/datafile.js", autoload: true });
+
+function guardarPeticionOffline(data: any) {
+  db.insert(data, (err, newDoc) => {
+    if (err) {
+      // Manejar el error
+      console.error("Error al guardar el objeto:", err);
+    } else {
+      // Objeto guardado con éxito
+      console.log("Objeto guardado:", newDoc);
+    }
+  });
+}
+function buscarClientes() {
+  return new Promise((resolve, reject) => {
+    db.find({}, (err: any, docs: any) => {
+      if (err) {
+        console.error("Error al obtener datos:", err);
+        reject(err);
+      } else {
+        console.log("Datos obtenidos:", docs);
+        resolve(docs);
+      }
+    });
+  });
+}
+
+//////////////////////////////////////////////////////
 
 // The built directory structure
 //
@@ -35,7 +66,6 @@ function createWindow() {
     win?.webContents.send("window-state", "maximized");
   });
 
-  
   // Cuando la ventana se restaure al tamaño normal
   win.on("unmaximize", () => {
     win?.webContents.send("window-state", "windowed");
@@ -52,9 +82,10 @@ function createWindow() {
     // win.loadFile('dist/index.html')
     win.loadFile(path.join(process.env.DIST, "index.html"));
   }
+  win.webContents.openDevTools();
 }
 
-ipcMain.on("unmaximized-window", () => {
+ipcMain.on("unmaximize-window", () => {
   win?.unmaximize();
 });
 ipcMain.on("maximize-window", () => {
@@ -65,6 +96,15 @@ ipcMain.on("close-window", () => {
 });
 ipcMain.on("minimize-window", () => {
   win?.minimize();
+});
+ipcMain.on("guardar-peticion", (e, clienteAGuardar) => {
+  guardarPeticionOffline(clienteAGuardar);
+});
+ipcMain.on("obtener-clientes", async (event) => {
+  const clientes = await buscarClientes();
+
+  console.log("SE ENVIO LO PEDIDO", clientes);
+  event.reply("respuesta-obtener-clientes", clientes);
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -81,7 +121,7 @@ app.on("activate", () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+    const clientesObtenidos = createWindow();
   }
 });
 
