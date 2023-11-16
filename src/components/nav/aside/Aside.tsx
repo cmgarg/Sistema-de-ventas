@@ -47,7 +47,7 @@ export default function Aside() {
             <div
               onClick={handleClick}
               className={`flex flex-row  justify-center items-center mt-5 mb-5 rounded-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none `}
-            ><div>
+            >
               <div className=" w-10 h-10">
                 <Menu></Menu>
               </div>
