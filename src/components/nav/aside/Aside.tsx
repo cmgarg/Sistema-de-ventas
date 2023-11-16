@@ -25,6 +25,16 @@ export default function Aside() {
     setTooltip({ show: false, text: "" });
   }
 
+  const [show, setShow] = useState(false);
+
+  // Estilos para la posición del tooltip basado en el flujo
+  const flowStyles = {
+    up: 'bottom-full mb-2',
+    down: 'top-full mt-2',
+    left: 'right-full mr-2',
+    right: 'left-full ml-2',
+  };
+
   ///Redux
 
   const menuState = useSelector((state: any) => state.menuState);
@@ -63,10 +73,15 @@ export default function Aside() {
   tooltip.show && (
     
       
-    <div className={`absolute left-10 max-w-sm px-4 py-2 bg-green-200 rounded-lg my-2 mr-10`}>
-     {tooltip.text}
-    <div className={`absolute bottom-0 left-0-0 mr-[-10px] mb-[-10px] w-3 h-3 bg-green-200 transform rotate-45`}></div>
-  </div>
+  
+  <div className="relative inline-block" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+  {children}
+  {show && (
+    <div className={`absolute z-10 p-2 text-white bg-black rounded shadow-lg text-xs ${flowStyles[flow] || ''}`}>
+      {tooltip.text}
+    </div>
+  )}
+</div>
       
   )
 }
