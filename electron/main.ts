@@ -1,40 +1,5 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
-<<<<<<< HEAD
-
-//GUARDAR PETICION CUANDO SE ESTA OFFLINE
-
-import Datastore from "nedb";
-const db = new Datastore({ filename: "database/datafile.js", autoload: true });
-
-function guardarPeticionOffline(data: any) {
-  db.insert(data, (err, newDoc) => {
-    if (err) {
-      // Manejar el error
-      console.error("Error al guardar el objeto:", err);
-    } else {
-      // Objeto guardado con éxito
-      console.log("Objeto guardado:", newDoc);
-    }
-  });
-}
-function buscarClientes() {
-  return new Promise((resolve, reject) => {
-    db.find({}, (err: any, docs: any) => {
-      if (err) {
-        console.error("Error al obtener datos:", err);
-        reject(err);
-      } else {
-        console.log("Datos obtenidos:", docs);
-        resolve(docs);
-      }
-    });
-  });
-}
-
-//////////////////////////////////////////////////////
-=======
->>>>>>> 53436d78ad77f5314fef4fcfa7116c48668dfd21
 
 // The built directory structure
 //
@@ -86,10 +51,6 @@ function createWindow() {
     win.loadFile(path.join(process.env.DIST, "index.html"));
   }
   win.webContents.openDevTools();
-<<<<<<< HEAD
-=======
-
->>>>>>> 53436d78ad77f5314fef4fcfa7116c48668dfd21
 }
 
 ipcMain.on("unmaximize-window", () => {
