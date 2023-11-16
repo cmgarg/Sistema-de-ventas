@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
-import os from "os";
 
 // The built directory structure
 //
@@ -52,6 +51,8 @@ function createWindow() {
     // win.loadFile('dist/index.html')
     win.loadFile(path.join(process.env.DIST, "index.html"));
   }
+  win.webContents.openDevTools();
+
 }
 
 ipcMain.on("unmaximized-window", () => {
@@ -66,6 +67,8 @@ ipcMain.on("close-window", () => {
 ipcMain.on("minimize-window", () => {
   win?.minimize();
 });
+
+
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
