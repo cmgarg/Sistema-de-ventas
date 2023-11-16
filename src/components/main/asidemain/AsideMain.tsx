@@ -21,9 +21,6 @@ const AsideMain: React.FC<AsideContentProps> = ({ isActive }) => {
               Ventas
             </a>
             <a href="#" className="hover:text-slate-400">
-              Compras
-            </a>
-            <a href="#" className="hover:text-slate-400">
               Gastos
             </a>
             <a href="#" className="hover:text-slate-400">

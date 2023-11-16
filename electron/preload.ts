@@ -117,3 +117,25 @@ window.onmessage = (ev) => {
 };
 
 setTimeout(removeLoading, 4999);
+
+contextBridge.exposeInMainWorld("api", {
+  enviarEvento: (canal: string, data?: any) => {
+    const canalesPermitidos = [
+      "maximize-window",
+      "unmaximize-window",
+      "close-window",
+      "minimize-window",
+      "obtener-clientes",
+    ];
+    if (canalesPermitidos.includes(canal)) {
+      ipcRenderer.send(canal, data);
+    }
+  },
+  recibirEvento: (canal: string, callback: any) => {
+    const canalesPermitidos = ["respuesta-obtener-clientes"];
+
+    if (canalesPermitidos.includes(canal)) {
+      ipcRenderer.on(canal, (event, ...args) => callback(...args));
+    }
+  },
+});
