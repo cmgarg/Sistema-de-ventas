@@ -52,7 +52,7 @@ export default function Aside() {
                 {isActive ? (
                   <Menu></Menu>
                 ) : (
-                  <Tooltip content="Menu">
+                  <Tooltip content="Menu adfgasd">
                     <Menu></Menu>
                   </Tooltip>
                 )}
