@@ -11,10 +11,10 @@ import Estadisticas from "../../../assets/asidesvg/Estadisticas.jsx";
 import Configuracion from "../../../assets/asidesvg/Configuracion.jsx";
 import { useSelector, useDispatch } from "react-redux";
 import { setMenuState } from "../../../redux/estados/menuState.js";
+import Tooltip from "../aside/Tooltip.jsx";
 
 export default function Aside() {
   const [isActive, setIsActive] = useState(false);
- 
 
   ////funciones ventana emergente con nombre.
 
@@ -49,7 +49,13 @@ export default function Aside() {
               className={`flex flex-row  justify-center items-center mt-5 mb-5 rounded-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none `}
             >
               <div className=" w-10 h-10">
-                <Menu></Menu>
+                {isActive ? (
+                  <Menu></Menu>
+                ) : (
+                  <Tooltip content="Menu">
+                    <Menu></Menu>
+                  </Tooltip>
+                )}
               </div>
               <div
                 className={`${
@@ -78,9 +84,17 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900  "
               >
-                <div className=" flex items-center justify-evenly w-10 h-10 cursor-pointer select-none">
-                  <Usuario menuState={menuState}></Usuario>
-                </div>
+                {isActive ? (
+                  <div className=" flex items-center justify-evenly w-10 h-10 cursor-pointer select-none">
+                    <Usuario menuState={menuState}></Usuario>
+                  </div>
+                ) : (
+                  <Tooltip content="Clientes">
+                    <div className=" flex items-center justify-evenly w-10 h-10 cursor-pointer select-none">
+                      <Usuario menuState={menuState}></Usuario>
+                    </div>
+                  </Tooltip>
+                )}
                 <div
                   className={`${
                     isActive
@@ -110,9 +124,18 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
-                <div className=" flex items-center justify-center w-10 h-10">
-                  <Articulos menuState={menuState}></Articulos>
-                </div>
+                {isActive ? (
+                  <div className=" flex items-center justify-center w-10 h-10">
+                    <Articulos menuState={menuState}></Articulos>
+                  </div>
+                ) : (
+                  <Tooltip content="Articulos">
+                    <div className=" flex items-center justify-center w-10 h-10">
+                      <Articulos menuState={menuState}></Articulos>
+                    </div>
+                  </Tooltip>
+                )}
+
                 <div
                   className={`${
                     isActive
@@ -139,9 +162,18 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
-                <div className=" flex items-center justify-center w-10 h-10">
-                  <Ventas menuState={menuState}></Ventas>
-                </div>
+                {isActive ? (
+                  <div className=" flex items-center justify-center w-10 h-10">
+                    <Ventas menuState={menuState}></Ventas>
+                  </div>
+                ) : (
+                  <Tooltip content="Ventas">
+                    <div className=" flex items-center justify-center w-10 h-10">
+                      <Ventas menuState={menuState}></Ventas>
+                    </div>
+                  </Tooltip>
+                )}
+
                 <div
                   className={`${
                     isActive
@@ -168,9 +200,18 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
-                <div className=" flex items-center justify-center w-10 h-10">
-                  <Navegador menuState={menuState}></Navegador>
-                </div>
+                {isActive ? (
+                  <div className=" flex items-center justify-center w-10 h-10">
+                    <Navegador menuState={menuState}></Navegador>
+                  </div>
+                ) : (
+                  <Tooltip content="Navegador">
+                    <div className=" flex items-center justify-center w-10 h-10">
+                      <Navegador menuState={menuState}></Navegador>
+                    </div>
+                  </Tooltip>
+                )}
+
                 <div
                   className={`${
                     isActive
@@ -199,9 +240,18 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
-                <div className=" flex items-center justify-center w-10 h-10">
-                  <Stock menuState={menuState}></Stock>
-                </div>
+                {isActive ? (
+                  <div className=" flex items-center justify-center w-10 h-10">
+                    <Stock menuState={menuState}></Stock>
+                  </div>
+                ) : (
+                  <Tooltip content="Stock">
+                    <div className=" flex items-center justify-center w-10 h-10">
+                      <Stock menuState={menuState}></Stock>
+                    </div>
+                  </Tooltip>
+                )}
+
                 <div
                   className={`${
                     isActive
@@ -228,9 +278,18 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
-                <div className=" flex items-center justify-center w-10 h-10">
-                  <Caja menuState={menuState}></Caja>
-                </div>
+                {isActive ? (
+                  <div className=" flex items-center justify-center w-10 h-10">
+                    <Caja menuState={menuState}></Caja>
+                  </div>
+                ) : (
+                  <Tooltip content="Caja">
+                    <div className=" flex items-center justify-center w-10 h-10">
+                      <Caja menuState={menuState}></Caja>
+                    </div>
+                  </Tooltip>
+                )}
+
                 <div
                   className={`${
                     isActive
@@ -257,9 +316,18 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
-                <div className=" flex items-center justify-center w-10 h-10">
-                  <Cuentas menuState={menuState}></Cuentas>
-                </div>
+                {isActive ? (
+                  <div className=" flex items-center justify-center w-10 h-10">
+                    <Cuentas menuState={menuState}></Cuentas>
+                  </div>
+                ) : (
+                  <Tooltip content="Cuentas">
+                    <div className=" flex items-center justify-center w-10 h-10">
+                      <Cuentas menuState={menuState}></Cuentas>
+                    </div>
+                  </Tooltip>
+                )}
+
                 <div
                   className={`${
                     isActive
@@ -288,9 +356,18 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3  hover:bg-gray-700 active:bg-gray-900 rounded-e-lg cursor-pointer select-none"
               >
-                <div className=" flex items-center justify-center w-10 h-10">
-                  <Estadisticas menuState={menuState}></Estadisticas>
-                </div>
+                {isActive ? (
+                  <div className=" flex items-center justify-center w-10 h-10">
+                    <Estadisticas menuState={menuState}></Estadisticas>
+                  </div>
+                ) : (
+                  <Tooltip content="Estadisticas">
+                    <div className=" flex items-center justify-center w-10 h-10">
+                      <Estadisticas menuState={menuState}></Estadisticas>
+                    </div>
+                  </Tooltip>
+                )}
+
                 <div
                   className={`${
                     isActive
@@ -321,9 +398,18 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
-                <div className=" flex items-center justify-center w-10 h-10 cursor-pointer select-none">
-                  <Configuracion menuState={menuState}></Configuracion>
-                </div>
+                {isActive ? (
+                  <div className=" flex items-center justify-center w-10 h-10 cursor-pointer select-none">
+                    <Configuracion menuState={menuState}></Configuracion>
+                  </div>
+                ) : (
+                  <Tooltip content="Configuracion">
+                    <div className=" flex items-center justify-center w-10 h-10 cursor-pointer select-none">
+                      <Configuracion menuState={menuState}></Configuracion>
+                    </div>
+                  </Tooltip>
+                )}
+
                 <div
                   className={`${
                     isActive
