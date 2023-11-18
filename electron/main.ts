@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, ipcRenderer } from "electron";
 import path from "node:path";
 
 //GUARDAR PETICION CUANDO SE ESTA OFFLINE
@@ -6,7 +6,7 @@ import path from "node:path";
 import Datastore from "nedb";
 const db = new Datastore({ filename: "database/datafile.js", autoload: true });
 
-function guardarPeticionOffline(data: any) {
+function guardarUsuario(data: any) {
   db.insert(data, (err, newDoc) => {
     if (err) {
       // Manejar el error
@@ -97,17 +97,15 @@ ipcMain.on("close-window", () => {
 ipcMain.on("minimize-window", () => {
   win?.minimize();
 });
-ipcMain.on("guardar-peticion", (e, clienteAGuardar) => {
-  guardarPeticionOffline(clienteAGuardar);
+ipcMain.on("guardar-usuario", (e, clienteAGuardar) => {
+  guardarUsuario(clienteAGuardar);
 });
 ipcMain.on("obtener-clientes", async (event) => {
   const clientes = await buscarClientes();
 
   console.log("SE ENVIO LO PEDIDO", clientes);
-  event.reply("respuesta-obtener-clientes", clientes);
+  event.reply("respuesta-obtener-clientes", clientes); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
 });
-
-
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

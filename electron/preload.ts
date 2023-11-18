@@ -126,6 +126,7 @@ contextBridge.exposeInMainWorld("api", {
       "close-window",
       "minimize-window",
       "obtener-clientes",
+      "guardar-usuario",
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
