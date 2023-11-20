@@ -4,6 +4,9 @@ import AsideMain from "../../asidemain/AsideMain";
 import Buscador from "../../../buscador/Buscador";
 import AgregarCliente from "./buttons/AgregarCliente";
 import AddClientresForm from "./ADDCLIENTES/AddClientresForm";
+import TableMain from "../../tablaMain/TableMain";
+import TableHead from "../../tablaMain/TableHead";
+import TableRow from "../../tablaMain/TableRow";
 interface ClientesContentProps {
   searchIn?: string;
 }
@@ -24,38 +27,26 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
   function listaDeItems() {
     console.log("ME EJECUTO JJIJI");
     return (
-      <table className="w-full table-auto bg-slate-50">
-        <thead className="border-b-2 border-slate-800">
-          <tr className="border-x-2 border-slate-800">
-            <th className="border-x-2 border-slate-800">Nombre</th>
-            <th>Apellido</th>
-            <th className="border-x-2 border-slate-800">direccion</th>
-            <th className="border-x-2 border-slate-800">telefono</th>
-            <th>email</th>
-            <th className="border-x-2 border-slate-800">dni</th>
-          </tr>
-        </thead>
-        <tbody>
-          {clientes.map((item, id) => (
-            <tr key={id}>
-              <td className="border-x-2 border-slate-800 text-center">
-                {item.nombre}
-              </td>
-              <td className="text-center">{item.apellido}</td>
-              <td className="border-x-2 border-slate-800 text-center">
-                {item.direccion}
-              </td>
-              <td className="text-center">{item.telefono}</td>
-              <td className="border-x-2 border-slate-800 text-center">
-                {item.email}
-              </td>
-              <td className="border-x-2 border-slate-800 text-center">
-                {item.dni}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <TableMain>
+        <TableHead>
+          <p className="bg-slate-400 flex-1 pl-2 text-center">Hola</p>
+          <p className="bg-slate-400 flex-1 pl-2 text-center">Hola</p>
+          <p className="bg-slate-400 flex-1 pl-2 text-center">Hola</p>
+        </TableHead>
+        {clientes.map((fila) => (
+          <TableRow key={fila.id}>
+            <div className="bg-slate-300 flex justify-start items-center flex-1 pl-2">
+              <p>{fila.nombre}</p>
+            </div>
+            <div className="bg-slate-300 flex justify-start items-center flex-1 pl-2">
+              <p>{fila.direccion}</p>
+            </div>
+            <div className="bg-slate-300 flex justify-start items-center flex-1 pl-2">
+              <p>{fila.telefono}</p>
+            </div>
+          </TableRow>
+        ))}
+      </TableMain>
     );
   }
 
