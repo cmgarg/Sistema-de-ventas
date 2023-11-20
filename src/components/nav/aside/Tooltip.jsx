@@ -13,7 +13,7 @@ const Tooltip = ({ children, content }) => {
     >
       {children}
       {show && (
-        <div className=" flex flex-row absolute left-11 top-0">
+        <div className=" flex flex-row absolute left-11 top-0 z-50">
           <div className="flex items-center justify-items-end">
             <div className=" w-2 m-0 p-0">
               <svg
@@ -28,7 +28,7 @@ const Tooltip = ({ children, content }) => {
               </svg>
             </div>
           </div>
-          <div className=" p-1 bg-black text-white text-sm rounded ">
+          <div className=" p-1 bg-black text-white text-sm" style={{ whiteSpace: 'nowrap' }}>
             {content}
           </div>
         </div>
