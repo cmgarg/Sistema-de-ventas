@@ -2,9 +2,19 @@ import { app, BrowserWindow, ipcMain, ipcRenderer } from "electron";
 import path from "node:path";
 
 //GUARDAR PETICION CUANDO SE ESTA OFFLINE
-
+//DATA BASES LOCALES
 import Datastore from "nedb";
 const db = new Datastore({ filename: "database/datafile.js", autoload: true });
+const articulos = new Datastore({
+  filename: "database/articulos.js",
+  autoload: true,
+});
+const ventas = new Datastore({
+  filename: "database/ventasFile.js",
+  autoload: true,
+});
+
+//FUNCIONES DE CLIENTES ARCHIVO DATAFILE
 
 function guardarUsuario(data: any) {
   db.insert(data, (err, newDoc) => {
@@ -14,6 +24,18 @@ function guardarUsuario(data: any) {
     } else {
       // Objeto guardado con éxito
       console.log("Objeto guardado:", newDoc);
+    }
+  });
+}
+function borrarCliente(data: any) {
+  console.log("ACA ERSTAMOS");
+  db.remove({ _id: data }, (err, newDoc) => {
+    if (err) {
+      // Manejar el error
+      console.error("Error al guardar el objeto:", err);
+    } else {
+      // Objeto guardado con éxito
+      console.log("Cliente eliminado:", newDoc);
     }
   });
 }
@@ -30,7 +52,46 @@ function buscarClientes() {
     });
   });
 }
+////////////////////////////////
+//FUNCIONES DE ARTICULOS ARKCHIVO ARTICULOS.JS
+///////////////////////////////
 
+function guardarArticulo(a: any) {
+  articulos.insert(a, (err, newDoc) => {
+    if (err) {
+      // Manejar el error
+      console.error("Error al guardar el objeto:", err);
+    } else {
+      // Objeto guardado con éxito
+      console.log("Objeto guardado:", newDoc);
+    }
+  });
+}
+function buscarArticulos() {
+  return new Promise((resolve, reject) => {
+    articulos.find({}, (err: any, docs: any) => {
+      if (err) {
+        console.error("Error al obtener datos:", err);
+        reject(err);
+      } else {
+        console.log("Datos obtenidos:", docs);
+        resolve(docs);
+      }
+    });
+  });
+}
+function borrarArticulo(data: any) {
+  console.log("ACA ERSTAMOS");
+  articulos.remove({ _id: data }, (err, newDoc) => {
+    if (err) {
+      // Manejar el error
+      console.error("Error al guardar el objeto:", err);
+    } else {
+      // Objeto guardado con éxito
+      console.log("Cliente eliminado:", newDoc);
+    }
+  });
+}
 //////////////////////////////////////////////////////
 
 // The built directory structure
@@ -97,6 +158,9 @@ ipcMain.on("close-window", () => {
 ipcMain.on("minimize-window", () => {
   win?.minimize();
 });
+//
+//ESCUCHAS DE EvENTOS DE GUARDADO DE CLIENTE
+//
 ipcMain.on("guardar-usuario", (e, clienteAGuardar) => {
   guardarUsuario(clienteAGuardar);
 });
@@ -107,6 +171,29 @@ ipcMain.on("obtener-clientes", async (event) => {
   event.reply("respuesta-obtener-clientes", clientes); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
 });
 
+ipcMain.on("eliminar-cliente", (e, clienteAEliminar) => {
+  borrarCliente(clienteAEliminar);
+});
+///
+//ESCUCHAS DE EVENTOS DE GUARDADO DE ARTICULOS
+//
+
+ipcMain.on("guardar-articulo", async (event, articuloAGuardar) => {
+  guardarArticulo(articuloAGuardar);
+});
+
+ipcMain.on("obtener-articulos", async (event) => {
+  const articulos = await buscarArticulos();
+
+  console.log("SE ENVIO LO PEDIDO", articulos);
+  event.reply("respuesta-obtener-articulos", articulos); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
+});
+
+ipcMain.on("eliminar-articulo", (e, articuloAEliminar) => {
+  borrarArticulo(articuloAEliminar);
+});
+//////////////
+//////////////
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.

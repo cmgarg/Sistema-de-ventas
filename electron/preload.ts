@@ -125,15 +125,22 @@ contextBridge.exposeInMainWorld("api", {
       "unmaximize-window",
       "close-window",
       "minimize-window",
-      "obtener-clientes",
+      "obtener-articulos",
+      "guardar-articulo",
+      "eliminar-articulo",
       "guardar-usuario",
+      "obtener-clientes",
+      "eliminar-cliente",
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
     }
   },
   recibirEvento: (canal: string, callback: any) => {
-    const canalesPermitidos = ["respuesta-obtener-clientes"];
+    const canalesPermitidos = [
+      "respuesta-obtener-clientes",
+      "respuesta-obtener-articulos",
+    ];
 
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.on(canal, (event, ...args) => callback(...args));

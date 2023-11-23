@@ -6,7 +6,7 @@ interface TableRowProps {
 
 const TableRow: React.FC<TableRowProps> = ({ children }) => {
   return (
-    <div className="flex flex-row bg-white space-x-2 text-slate-500 justify-center text-xl h-10">
+    <div className="flex flex-row font-normal bg-slate-400 odd:bg-slate-700 even:bg-slate-500 text-slate-50 justify-center text-xl h-7 last:rounded-b-lg">
       {children}
     </div>
   );

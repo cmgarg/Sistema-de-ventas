@@ -12,6 +12,7 @@ import Configuracion from "../../../assets/asidesvg/Configuracion.jsx";
 import { useSelector, useDispatch } from "react-redux";
 import { setMenuState } from "../../../redux/estados/menuState.js";
 import Tooltip from "../aside/Tooltip.jsx";
+import { Link } from "react-router-dom";
 
 export default function Aside() {
   const [isActive, setIsActive] = useState(false);
@@ -84,30 +85,32 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900  "
               >
-                {isActive ? (
-                  <div className=" flex items-center justify-evenly w-10 h-10 cursor-pointer select-none">
-                    <Usuario menuState={menuState}></Usuario>
-                  </div>
-                ) : (
-                  <Tooltip content="Clientes">
+                <Link to="/">
+                  {isActive ? (
                     <div className=" flex items-center justify-evenly w-10 h-10 cursor-pointer select-none">
                       <Usuario menuState={menuState}></Usuario>
                     </div>
-                  </Tooltip>
-                )}
-                <div
-                  className={`${
-                    isActive
-                      ? " flex w-24 h-full  items-center  justify-start "
-                      : ""
-                  }`}
-                >
-                  {isActive ? (
-                    <div className="text-sm ml-2 text-white cursor-pointer select-none">
-                      Clientes
-                    </div>
-                  ) : null}
-                </div>
+                  ) : (
+                    <Tooltip content="Clientes">
+                      <div className=" flex items-center justify-evenly w-10 h-10 cursor-pointer select-none">
+                        <Usuario menuState={menuState}></Usuario>
+                      </div>
+                    </Tooltip>
+                  )}
+                  <div
+                    className={`${
+                      isActive
+                        ? " flex w-24 h-full  items-center  justify-start "
+                        : ""
+                    }`}
+                  >
+                    {isActive ? (
+                      <div className="text-sm ml-2 text-white cursor-pointer select-none">
+                        Clientes
+                      </div>
+                    ) : null}
+                  </div>
+                </Link>
               </div>
             </div>
 
@@ -124,29 +127,31 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
-                {isActive ? (
-                  <div className=" flex items-center justify-center w-10 h-10">
-                    <Articulos menuState={menuState}></Articulos>
-                  </div>
-                ) : (
-                  <Tooltip content="Articulos">
+                <Link to="/articulos">
+                  {isActive ? (
                     <div className=" flex items-center justify-center w-10 h-10">
                       <Articulos menuState={menuState}></Articulos>
                     </div>
-                  </Tooltip>
-                )}
+                  ) : (
+                    <Tooltip content="Articulos">
+                      <div className=" flex items-center justify-center w-10 h-10">
+                        <Articulos menuState={menuState}></Articulos>
+                      </div>
+                    </Tooltip>
+                  )}
 
-                <div
-                  className={`${
-                    isActive
-                      ? " flex w-24 h-full  items-center  justify-start "
-                      : ""
-                  }`}
-                >
-                  {isActive ? (
-                    <div className="text-sm ml-2 text-white">Productos</div>
-                  ) : null}
-                </div>
+                  <div
+                    className={`${
+                      isActive
+                        ? " flex w-24 h-full  items-center  justify-start "
+                        : ""
+                    }`}
+                  >
+                    {isActive ? (
+                      <div className="text-sm ml-2 text-white">Productos</div>
+                    ) : null}
+                  </div>
+                </Link>
               </div>
             </div>
             <div

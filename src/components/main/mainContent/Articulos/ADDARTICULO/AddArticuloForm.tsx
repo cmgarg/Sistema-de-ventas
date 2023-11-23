@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
-import AgregarCliente from "../buttons/AgregarCliente";
 
-interface AddClientresFormProps {
+interface AddArticulosFormProps {
   onChangeModal: (p: boolean) => void;
 }
 
-const AddClientresForm: React.FC<AddClientresFormProps> = ({
+const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
   onChangeModal,
 }) => {
-  function obtenerClientes() {
-    window.api.enviarEvento("obtener-clientes");
+  function obtenerArticulos() {
+    window.api.enviarEvento("obtener-articulos");
   }
   //DATOS USUARIOS
 
-  type ClienteDataObject = {
+  type articuloDataObject = {
     nombre: string;
     apellido: string;
     direccion: string;
@@ -22,7 +21,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
     dni: string;
   };
 
-  const [clienteData, setClienteData] = useState<ClienteDataObject>({
+  const [articuloData, setarticuloData] = useState<articuloDataObject>({
     nombre: "",
     apellido: "",
     direccion: "",
@@ -46,22 +45,22 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
       switch (data) {
         case "nombre":
           console.log("se cumple esrte");
-          setClienteData({ ...clienteData, nombre: value });
+          setarticuloData({ ...articuloData, nombre: value });
           break;
         case "apellido":
-          setClienteData({ ...clienteData, apellido: value });
+          setarticuloData({ ...articuloData, apellido: value });
           break;
         case "direccion":
-          setClienteData({ ...clienteData, direccion: value });
+          setarticuloData({ ...articuloData, direccion: value });
           break;
         case "telefono":
-          setClienteData({ ...clienteData, telefono: value });
+          setarticuloData({ ...articuloData, telefono: value });
           break;
         case "email":
-          setClienteData({ ...clienteData, email: value });
+          setarticuloData({ ...articuloData, email: value });
           break;
         case "dni":
-          setClienteData({ ...clienteData, dni: value });
+          setarticuloData({ ...articuloData, dni: value });
           break;
 
         default:
@@ -72,17 +71,17 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
     }
   }
   useEffect(() => {
-    console.log(clienteData);
-  }, [clienteData]);
+    console.log(articuloData);
+  }, [articuloData]);
 
   //SUBIR USUARIO A BASE DE DATOS LOCAL
 
-  function subirUsuario() {
-    window.api.enviarEvento("guardar-usuario", clienteData);
+  function subirArticulo() {
+    window.api.enviarEvento("guardar-articulo", articuloData);
 
-    obtenerClientes();
+    obtenerArticulos();
 
-    setClienteData({
+    setarticuloData({
       nombre: "",
       apellido: "",
       direccion: "",
@@ -114,7 +113,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
               type="text"
               name="nombre"
               className={estilosInput}
-              value={clienteData.nombre}
+              value={articuloData.nombre}
               onChange={(e) => {
                 setChangeData("nombre", e.target.value);
               }}
@@ -128,7 +127,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
               type="text"
               name="apellido"
               className={estilosInput}
-              value={clienteData.apellido}
+              value={articuloData.apellido}
               onChange={(e) => {
                 setChangeData("apellido", e.target.value);
               }}
@@ -143,7 +142,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             type="text"
             name="direccion"
             className={estilosInput}
-            value={clienteData.direccion}
+            value={articuloData.direccion}
             onChange={(e) => {
               setChangeData("direccion", e.target.value);
             }}
@@ -157,7 +156,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             type="text"
             name="telefono"
             className={estilosInput}
-            value={clienteData.telefono}
+            value={articuloData.telefono}
             onChange={(e) => {
               setChangeData("telefono", e.target.value);
             }}
@@ -171,7 +170,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             type="text"
             name="email"
             className={estilosInput}
-            value={clienteData.email}
+            value={articuloData.email}
             onChange={(e) => {
               setChangeData("email", e.target.value);
             }}
@@ -185,7 +184,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             type="text"
             name="dni"
             className={estilosInput}
-            value={clienteData.dni}
+            value={articuloData.dni}
             onChange={(e) => {
               setChangeData("dni", e.target.value);
             }}
@@ -202,7 +201,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
           </button>
           <button
             className="w-52 h-10 bg-green-400 rounded-md"
-            onClick={subirUsuario}
+            onClick={subirArticulo}
           >
             Añadir
           </button>
@@ -212,4 +211,4 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
   );
 };
 
-export default AddClientresForm;
+export default AddArticuloForm;
