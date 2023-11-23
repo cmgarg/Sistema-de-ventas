@@ -28,7 +28,7 @@ const Tooltip = ({ children, content }) => {
               </svg>
             </div>
           </div>
-          <div className=" p-1 bg-black text-white text-sm" style={{ whiteSpace: 'nowrap' }}>
+          <div className=" p-1 bg-black text-white text-sm rounded-lg" style={{ whiteSpace: 'nowrap' }}>
             {content}
           </div>
         </div>

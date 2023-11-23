@@ -6,6 +6,7 @@ import Guion from "../../assets/headersvg/Guion.jsx";
 function Header() {
   const closeWindow = () => {
     window.api.enviarEvento("close-window");
+    
   };
 
   const maximizeWindow = () => {
