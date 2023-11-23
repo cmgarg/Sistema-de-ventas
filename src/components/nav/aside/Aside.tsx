@@ -85,7 +85,7 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900  "
               >
-                <Link to="/">
+                <Link to="/" className="flex items-center justify-center">
                   {isActive ? (
                     <div className=" flex items-center justify-evenly w-10 h-10 cursor-pointer select-none">
                       <Usuario menuState={menuState}></Usuario>
@@ -127,7 +127,10 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
-                <Link to="/articulos">
+                <Link
+                  to="/articulos"
+                  className="flex items-center justify-center"
+                >
                   {isActive ? (
                     <div className=" flex items-center justify-center w-10 h-10">
                       <Articulos menuState={menuState}></Articulos>
