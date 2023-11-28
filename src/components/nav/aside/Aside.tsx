@@ -286,6 +286,10 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
+                <Link
+                  to="/caja"
+                  className="flex items-center justify-center"
+                >
                 {isActive ? (
                   <div className=" flex items-center justify-center w-10 h-10">
                     <Caja menuState={menuState}></Caja>
@@ -297,7 +301,7 @@ export default function Aside() {
                     </div>
                   </Tooltip>
                 )}
-
+                
                 <div
                   className={`${
                     isActive
@@ -308,7 +312,7 @@ export default function Aside() {
                   {isActive ? (
                     <div className="text-sm ml-2 text-white">Caja</div>
                   ) : null}
-                </div>
+                </div></Link>
               </div>
             </div>
             <div
