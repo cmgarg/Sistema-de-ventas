@@ -16,12 +16,26 @@ interface ClientesContentProps {
 
 const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
   const [activeModalForm, setActiveModal] = useState(false);
-
+  const [clienteAeditar, setClienteAeditar] = useState({
+    active: false,
+    id: "",
+  });
+  function clienteAeditarOff() {
+    console.log(clienteAeditar);
+    setClienteAeditar({ active: false, id: "" });
+  }
   const [clientes, setClientes] = useState([]);
 
   function onChangeModal(p: boolean) {
     setActiveModal(p);
   }
+  ////ACTIVAR A EDITAR CLIENTES
+  function editClient(clienteid: string) {
+    window.api.enviarEvento("obtener-clienteById", clienteid);
+
+    setClienteAeditar({ active: true, id: clienteid });
+  }
+  /////////////////////////////
   //ELIMINAR CLIENTES
   function eliminarCliente(id: string) {
     console.log("hasda");
@@ -59,7 +73,9 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
                   onDelete={() => {
                     eliminarCliente(fila._id);
                   }}
-                  onEdit={() => {}}
+                  onEdit={() => {
+                    editClient(fila._id);
+                  }}
                 ></MenuContextual>
                 <p className="flex-1 text-center">{fila.nombre}</p>
               </div>
@@ -99,12 +115,15 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
         </NavMain>
       </div>
       <div className="flex flex-row flex-1">
-        <AsideMain isActive={true}></AsideMain>
+        <AsideMain isActive={false}></AsideMain>
         <div className="flex-1 bg-slate-700 p-5 relative">
           {activeModalForm && (
             <AddClientresForm onChangeModal={onChangeModal}></AddClientresForm>
           )}
           {listaDeItems()}
+          {clienteAeditar.active && (
+            <EditarClientes clienteAeditarOff={clienteAeditarOff} />
+          )}
         </div>
       </div>
     </div>

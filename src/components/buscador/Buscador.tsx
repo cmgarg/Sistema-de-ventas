@@ -16,24 +16,25 @@ const Buscador: React.FC<MainContentProps> = ({ searchIn }) => {
 
   return (
     <div
-      className={`justify-center rounded-full flex items-center bg-slate-400 flex-row relative h-10 ${
-        (ActivarBuscador && "w-auto") || "w-10"
-      }`}
+      className={`justify-center rounded-full flex items-center ${
+        (ActivarBuscador && "bg-slate-300") || "bg-slate-400"
+      } flex-row relative h-10 ${(ActivarBuscador && "w-auto") || "w-10 p-1"}`}
       onClick={() => {
         setActivarBuscador(true);
       }}
-      onMouseLeave={() => {
-        if (!inputValue && ActivarBuscador) {
-          setActivarBuscador(false);
-        }
-      }}
     >
       <div className="w-10 flex justify-center items-center">
-        <BuscadorIcon color="#fff" size={20}></BuscadorIcon>
+        <BuscadorIcon
+          color={`${(ActivarBuscador && "#000") || "#fff"}`}
+          size={20}
+        ></BuscadorIcon>
       </div>
       {ActivarBuscador && (
         <input
-          className="bg-slate-400 outline-none text-slate-50 placeholder-slate-50"
+          className={`outline-none bg-transparent p-1  ${
+            (ActivarBuscador && " text-black placeholder-black") ||
+            "text-slate-50 placeholder-slate-50"
+          } rounded-full`}
           placeholder="Buscador..."
           onChange={(e) => {
             setInputValue(e.target.value);

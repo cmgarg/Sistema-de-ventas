@@ -27,6 +27,19 @@ function guardarUsuario(data: any) {
     }
   });
 }
+function getClientById(clientId: string) {
+  return new Promise((resolve, reject) => {
+    db.find({ _id: clientId }, (err: any, doc: any) => {
+      if (err) {
+        console.log("error al buscar el cliente", err);
+        reject(err);
+      } else {
+        console.log("Cliente encontrado", doc);
+        resolve(doc);
+      }
+    });
+  });
+}
 function borrarCliente(data: any) {
   console.log("ACA ERSTAMOS");
   db.remove({ _id: data }, (err, newDoc) => {
@@ -50,6 +63,24 @@ function buscarClientes() {
         resolve(docs);
       }
     });
+  });
+}
+function actualizarCliente(clientId: string, updateData: any) {
+  return new Promise((resolve, reject) => {
+    db.update(
+      { _id: clientId },
+      updateData,
+      { multi: false },
+      (err: any, docs: any) => {
+        if (err) {
+          console.log("hubo un error ", err);
+          reject(err);
+        } else {
+          console.log("todo salio bien se actualizo el cliente", updateData);
+          resolve(docs);
+        }
+      }
+    );
   });
 }
 ////////////////////////////////
@@ -173,6 +204,20 @@ ipcMain.on("obtener-clientes", async (event) => {
 
 ipcMain.on("eliminar-cliente", (e, clienteAEliminar) => {
   borrarCliente(clienteAEliminar);
+});
+ipcMain.on("obtener-clienteById", async (event, clientId) => {
+  console.log("AGUANTEEEEE BOCAA LOCOOO");
+  const cliente = await getClientById(clientId);
+
+  event.reply("cliente-encontradoById", cliente);
+});
+ipcMain.on("actualizar-cliente", async (event, clienteData) => {
+  const mensajeAResponder = await actualizarCliente(
+    clienteData._id,
+    clienteData
+  );
+
+  event.reply("respuesta-actualizar-cliente", mensajeAResponder);
 });
 ///
 //ESCUCHAS DE EVENTOS DE GUARDADO DE ARTICULOS

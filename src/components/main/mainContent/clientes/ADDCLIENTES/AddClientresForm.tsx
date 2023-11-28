@@ -96,7 +96,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
 
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center">
-      <div className="w-96 bg-white space-y-5 p-2 text-white rounded-md relative">
+      <div className="w-96 bg-slate-50 space-y-5 p-2 text-slate-50 rounded-md relative">
         <button
           className="bg-red-500 h-10 w-10 rounded-full absolute -right-2 -top-2"
           onClick={() => {

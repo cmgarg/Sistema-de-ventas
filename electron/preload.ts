@@ -131,6 +131,8 @@ contextBridge.exposeInMainWorld("api", {
       "guardar-usuario",
       "obtener-clientes",
       "eliminar-cliente",
+      "obtener-clienteById",
+      "actualizar-cliente",
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -140,6 +142,8 @@ contextBridge.exposeInMainWorld("api", {
     const canalesPermitidos = [
       "respuesta-obtener-clientes",
       "respuesta-obtener-articulos",
+      "cliente-encontradoById",
+      "respuesta-actualizar-cliente",
     ];
 
     if (canalesPermitidos.includes(canal)) {
