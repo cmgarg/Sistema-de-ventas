@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 import NavMain from "../../navmain/NavMain";
 import AsideMain from "../../asidemain/AsideMain";
 import Buscador from "../../../buscador/Buscador";
-import AgregarCliente from "./buttons/AgregarCliente";
+import Agregar from "../buttons/Agregar";
 import AddClientresForm from "./ADDCLIENTES/AddClientresForm";
 import TableMain from "../../tablaMain/TableMain";
 import TableHead from "../../tablaMain/TableHead";
 import TableRow from "../../tablaMain/TableRow";
-import Diamong from "../../../../assets/MAINSVGS/mainAsideSvg/ClientesContentSVG/Diamong";
-import MenuContextual from "../../MenuContextual/MenuContextual";
+import Diamong from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/Diamong";
 import EditarClientes from "./editarClientes/editarClientes";
+import MenuContextual2 from "../../../GMC/MenuContextual2";
+import Export from "../buttons/Export";
+import Biñeta from "../Biñeta/Biñieta";
 interface ClientesContentProps {
   searchIn?: string;
 }
@@ -68,15 +70,33 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
         <div className="first:bg-white">
           {clientes.map((fila) => (
             <TableRow key={fila._id}>
+              <div className="flex justify-center items-center absolute top-0 left-0 bottom-0">
+                <MenuContextual2
+                  title={
+                    <Biñeta title="opciones">
+                      <Diamong color="#fff" size="20" />
+                    </Biñeta>
+                  }
+                >
+                  <div
+                    onClick={() => {
+                      eliminarCliente(fila._id);
+                    }}
+                    className="w-full hover:bg-gray-600 pl-2"
+                  >
+                    <p>Eliminar</p>
+                  </div>
+                  <div
+                    onClick={() => {
+                      editClient(fila._id);
+                    }}
+                    className="w-full hover:bg-gray-600 pl-2"
+                  >
+                    <p>Editar</p>
+                  </div>
+                </MenuContextual2>
+              </div>
               <div className="flex items-center flex-1 pl-2 space-x-2">
-                <MenuContextual
-                  onDelete={() => {
-                    eliminarCliente(fila._id);
-                  }}
-                  onEdit={() => {
-                    editClient(fila._id);
-                  }}
-                ></MenuContextual>
                 <p className="flex-1 text-center">{fila.nombre}</p>
               </div>
               <div className="flex justify-center items-center flex-1 pl-2">
@@ -109,9 +129,10 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
   return (
     <div className="flex flex-col flex-1">
       <div className="flex-2 border-b-2 border-slate-100">
-        <NavMain>
-          <AgregarCliente onChangeModal={onChangeModal}></AgregarCliente>
+        <NavMain title="Clientes">
           <Buscador></Buscador>
+          <Export></Export>
+          <Agregar onChangeModal={onChangeModal}></Agregar>
         </NavMain>
       </div>
       <div className="flex flex-row flex-1">

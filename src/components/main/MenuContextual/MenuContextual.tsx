@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Diamong from "../../../assets/MAINSVGS/mainAsideSvg/ClientesContentSVG/Diamong";
+import Diamong from "../../../assets/MAINSVGS/mainAsideSvg/maincontent/Diamong";
 
 interface MenuContextualProps {
   onEdit: () => void;

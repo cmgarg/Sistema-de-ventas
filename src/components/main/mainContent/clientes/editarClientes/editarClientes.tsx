@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import AgregarCliente from "../buttons/AgregarCliente";
+import AgregarCliente from "../../buttons/Agregar";
 import CheckSvg from "../../../../../assets/MAINSVGS/mainAsideSvg/editSVG/CheckSvg";
 import ErrorSvg from "../../../../../assets/MAINSVGS/mainAsideSvg/editSVG/ErrorSvg";
 

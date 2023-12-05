@@ -1,31 +1,85 @@
 import React from "react";
 
-export default function Caja({menuState}) {
+export default function Caja({ menuState, size }) {
   return (
-    <div>
-      {(menuState.value == "caja" )? (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="25"
-          height="25"
-          fill="white"
-          class="bi bi-pc-display"
-          viewBox="0 0 16 16"
-        >
-          <path d="M8 1a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V1Zm1 13.5a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0Zm2 0a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0ZM9.5 1a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5ZM9 3.5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 0-1h-5a.5.5 0 0 0-.5.5ZM1.5 2A1.5 1.5 0 0 0 0 3.5v7A1.5 1.5 0 0 0 1.5 12H6v2h-.5a.5.5 0 0 0 0 1H7v-4H1.5a.5.5 0 0 1-.5-.5v-7a.5.5 0 0 1 .5-.5H7V2H1.5Z" />
-        </svg>
-      ) : (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="25"
-          height="25"
-          fill="white"
-          class="bi bi-pc-display-horizontal"
-          viewBox="0 0 16 16"
-        >
-          <path d="M1.5 0A1.5 1.5 0 0 0 0 1.5v7A1.5 1.5 0 0 0 1.5 10H6v1H1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-5v-1h4.5A1.5 1.5 0 0 0 16 8.5v-7A1.5 1.5 0 0 0 14.5 0h-13Zm0 1h13a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-7a.5.5 0 0 1 .5-.5ZM12 12.5a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0Zm2 0a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0ZM1.5 12h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1ZM1 14.25a.25.25 0 0 1 .25-.25h5.5a.25.25 0 1 1 0 .5h-5.5a.25.25 0 0 1-.25-.25Z" />
-        </svg>
-      )}
-    </div>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 197.5 195.9"
+      width={size}
+      height={size}
+      fill={(menuState.value === "caja" && "#fff") || "none"}
+      stroke={(menuState.value === "caja" && "#fff") || "#fff"}
+      strokeWidth={"5"}
+    >
+      <g id="Capa_2" data-name="Capa 2">
+        <g id="Capa_1-2" data-name="Capa 1">
+          <rect
+            class="cls-1"
+            x="69.6"
+            y="118.32"
+            width="55.91"
+            height="17.57"
+            rx="5.5"
+            fill={"#fff"}
+          />
+          <rect
+            class="cls-2"
+            x="3.3"
+            y="2.5"
+            width="191.7"
+            height="121.41"
+            rx="12"
+            fill="none"
+            stroke={(menuState.value === "caja" && "#fff") || "#fff"}
+            strokeWidth={"5"}
+          />
+          <rect
+            class="cls-2"
+            x="2.5"
+            y="135.89"
+            width="191.7"
+            height="57.51"
+            rx="12"
+            fill={(menuState.value === "caja" && "#fff") || "none"}
+          />
+          <rect
+            x="24.57"
+            y="148.37"
+            width="107.63"
+            height="6.99"
+            fill={(menuState.value === "caja" && "#000") || "none"}
+            stroke={(menuState.value === "caja" && "#000") || "#fff"}
+            strokeWidth={"5"}
+          />
+          <path
+            class="cls-3"
+            d="M131.7,148.87v6H25.07v-6H131.7m1-1H24.07v8H132.7v-8Z"
+            fill={(menuState.value === "caja" && "#000") || "none"}
+            stroke={(menuState.value === "caja" && "#000") || "#fff"}
+          />
+          <rect
+            x="24.57"
+            y="165.95"
+            width="58.11"
+            height="8.58"
+            fill={(menuState.value === "caja" && "#000") || "none"}
+            stroke={(menuState.value === "caja" && "#000") || "#fff"}
+          />
+          <path
+            class="cls-3"
+            d="M82.17,166.45V174H25.07v-7.58h57.1m1-1H24.07V175h59.1v-9.58Z"
+            fill={(menuState.value === "caja" && "#000") || "none"}
+            stroke={(menuState.value === "caja" && "#000") || "#fff"}
+          />
+          <circle
+            cx="169.44"
+            cy="175.03"
+            r="9.59"
+            fill={(menuState.value === "caja" && "#000") || "#fff"}
+            stroke={(menuState.value === "caja" && "#000") || "#fff"}
+          />
+        </g>
+      </g>
+    </svg>
   );
 }

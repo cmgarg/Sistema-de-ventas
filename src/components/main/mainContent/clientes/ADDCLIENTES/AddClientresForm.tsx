@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import AgregarCliente from "../buttons/AgregarCliente";
+import AgregarCliente from "../../buttons/Agregar";
 
 interface AddClientresFormProps {
   onChangeModal: (p: boolean) => void;

@@ -89,12 +89,13 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
       email: "",
       dni: "",
     });
+    onChangeModal(false);
   }
   //ESTILOS INPUT
   const estilosInput = "outline-none h-9 w-full bg-slate-600 px-2 rounded-md";
 
   return (
-    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center">
+    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50">
       <div className="w-96 bg-white space-y-5 p-2 text-white rounded-md relative">
         <button
           className="bg-red-500 h-10 w-10 rounded-full absolute -right-2 -top-2"

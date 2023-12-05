@@ -133,12 +133,20 @@ export default function Aside() {
                 >
                   {isActive ? (
                     <div className=" flex items-center justify-center w-10 h-10">
-                      <Articulos menuState={menuState}></Articulos>
+                      <Articulos
+                        menuState={menuState}
+                        size={30}
+                        color={"#fff"}
+                      ></Articulos>
                     </div>
                   ) : (
                     <Tooltip content="Articulos">
                       <div className=" flex items-center justify-center w-10 h-10">
-                        <Articulos menuState={menuState}></Articulos>
+                        <Articulos
+                          menuState={menuState}
+                          size={30}
+                          color={"#fff"}
+                        ></Articulos>
                       </div>
                     </Tooltip>
                   )}
@@ -172,12 +180,20 @@ export default function Aside() {
               >
                 {isActive ? (
                   <div className=" flex items-center justify-center w-10 h-10">
-                    <Ventas menuState={menuState}></Ventas>
+                    <Ventas
+                      menuState={menuState}
+                      size={30}
+                      color={"#fff"}
+                    ></Ventas>
                   </div>
                 ) : (
                   <Tooltip content="Ventas">
                     <div className=" flex items-center justify-center w-10 h-10">
-                      <Ventas menuState={menuState}></Ventas>
+                      <Ventas
+                        menuState={menuState}
+                        size={30}
+                        color={"#fff"}
+                      ></Ventas>
                     </div>
                   </Tooltip>
                 )}
@@ -210,12 +226,12 @@ export default function Aside() {
               >
                 {isActive ? (
                   <div className=" flex items-center justify-center w-10 h-10">
-                    <Navegador menuState={menuState}></Navegador>
+                    <Navegador menuState={menuState} size={30}></Navegador>
                   </div>
                 ) : (
                   <Tooltip content="Navegador">
                     <div className=" flex items-center justify-center w-10 h-10">
-                      <Navegador menuState={menuState}></Navegador>
+                      <Navegador menuState={menuState} size={30}></Navegador>
                     </div>
                   </Tooltip>
                 )}
@@ -250,12 +266,12 @@ export default function Aside() {
               >
                 {isActive ? (
                   <div className=" flex items-center justify-center w-10 h-10">
-                    <Stock menuState={menuState}></Stock>
+                    <Stock menuState={menuState} size={30}></Stock>
                   </div>
                 ) : (
                   <Tooltip content="Stock">
                     <div className=" flex items-center justify-center w-10 h-10">
-                      <Stock menuState={menuState}></Stock>
+                      <Stock menuState={menuState} size={30}></Stock>
                     </div>
                   </Tooltip>
                 )}
@@ -288,12 +304,12 @@ export default function Aside() {
               >
                 {isActive ? (
                   <div className=" flex items-center justify-center w-10 h-10">
-                    <Caja menuState={menuState}></Caja>
+                    <Caja menuState={menuState} size={30}></Caja>
                   </div>
                 ) : (
                   <Tooltip content="Caja">
                     <div className=" flex items-center justify-center w-10 h-10">
-                      <Caja menuState={menuState}></Caja>
+                      <Caja menuState={menuState} size={30}></Caja>
                     </div>
                   </Tooltip>
                 )}
@@ -326,7 +342,7 @@ export default function Aside() {
               >
                 {isActive ? (
                   <div className=" flex items-center justify-center w-10 h-10">
-                    <Cuentas menuState={menuState}></Cuentas>
+                    <Cuentas menuState={menuState} size={30}></Cuentas>
                   </div>
                 ) : (
                   <Tooltip content="Cuentas">

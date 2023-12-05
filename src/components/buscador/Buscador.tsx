@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import BuscadorIcon from "../../assets/MAINSVGS/mainAsideSvg/buscadorIcon/BuscadorIcon";
+import Biñeta from "../main/mainContent/Biñeta/Biñieta";
 
 interface MainContentProps {
   searchIn?: string;
@@ -8,34 +9,35 @@ interface MainContentProps {
 const Buscador: React.FC<MainContentProps> = ({ searchIn }) => {
   const [ActivarBuscador, setActivarBuscador] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const searchRef = useRef();
+
   useEffect(() => {
-    if (!inputValue) {
-      setActivarBuscador(false);
+    function clickOutsideSearch(event: any) {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setActivarBuscador(false);
+        setInputValue("");
+      }
     }
-  }, [inputValue]);
+    document.addEventListener("mousedown", clickOutsideSearch);
+    return () => {
+      document.removeEventListener("mousedown", clickOutsideSearch);
+    };
+  }, [ActivarBuscador]);
 
   return (
     <div
       className={`justify-center rounded-full flex items-center ${
-        (ActivarBuscador && "bg-slate-300") || "bg-slate-400"
-      } flex-row relative h-10 ${(ActivarBuscador && "w-auto") || "w-10 p-1"}`}
+        (ActivarBuscador && "bg-gray-600") || "bg-gray-700"
+      } flex-row relative h-10 ${(ActivarBuscador && "w-auto pl-5") || "w-10"}`}
       onClick={() => {
         setActivarBuscador(true);
       }}
+      ref={searchRef}
     >
-      <div className="w-10 flex justify-center items-center">
-        <BuscadorIcon
-          color={`${(ActivarBuscador && "#000") || "#fff"}`}
-          size={20}
-        ></BuscadorIcon>
-      </div>
       {ActivarBuscador && (
         <input
-          className={`outline-none bg-transparent p-1  ${
-            (ActivarBuscador && " text-black placeholder-black") ||
-            "text-slate-50 placeholder-slate-50"
-          } rounded-full`}
-          placeholder="Buscador..."
+          className={`outline-none bg-transparent text-slate-50 placeholder-slate-50`}
+          placeholder=" Buscador..."
           onChange={(e) => {
             setInputValue(e.target.value);
           }}
@@ -43,6 +45,11 @@ const Buscador: React.FC<MainContentProps> = ({ searchIn }) => {
           type="text"
         ></input>
       )}
+      <div className="w-10 flex justify-center items-center">
+        <Biñeta title="Buscador">
+          <BuscadorIcon color={"#fff"} size={20}></BuscadorIcon>
+        </Biñeta>
+      </div>
     </div>
   );
 };
