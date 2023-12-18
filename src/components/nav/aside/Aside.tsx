@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Menu from "../../../assets/asidesvg/Menu.jsx";
 import Usuario from "../../../assets/asidesvg/Usuario.jsx";
 import Articulos from "../../../assets/asidesvg/Articulos.jsx";
@@ -12,11 +12,11 @@ import Configuracion from "../../../assets/asidesvg/Configuracion.jsx";
 import { useSelector, useDispatch } from "react-redux";
 import { setMenuState } from "../../../redux/estados/menuState.js";
 import Tooltip from "../aside/Tooltip.jsx";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function Aside() {
   const [isActive, setIsActive] = useState(false);
-
+  const location = useLocation();
   ////funciones ventana emergente con nombre.
 
   ///Redux
@@ -33,6 +33,11 @@ export default function Aside() {
     setIsActive(!isActive);
     console.log(menuState.value);
   };
+  useEffect(() => {
+    console.log(location);
+    if (location.pathname !== "articulos") {
+    }
+  }, [menuState]);
 
   return (
     <div
@@ -74,17 +79,12 @@ export default function Aside() {
             </div>
             <div
               className={`${
-                menuState.value == "usuario"
+                location.pathname == "/"
                   ? "border-l-4 border-cyan-600"
                   : "border-l-4 border-gray-800"
               }`}
             >
-              <div
-                onClick={() => {
-                  chageStateMenu("usuario");
-                }}
-                className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900  "
-              >
+              <div className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900  ">
                 <Link to="/" className="flex items-center justify-center">
                   {isActive ? (
                     <div className=" flex items-center justify-evenly w-10 h-10 cursor-pointer select-none">
@@ -116,7 +116,7 @@ export default function Aside() {
 
             <div
               className={`${
-                menuState.value == "articulos"
+                location.pathname == "/articulos"
                   ? "border-l-4 border-cyan-600"
                   : "border-l-4 border-gray-800"
               }`}
@@ -167,7 +167,7 @@ export default function Aside() {
             </div>
             <div
               className={`${
-                menuState.value == "ventas"
+                location.pathname == "/ventas"
                   ? "border-l-4 border-cyan-600"
                   : "border-l-4 border-gray-800"
               }`}
@@ -178,16 +178,11 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
-                {isActive ? (
-                  <div className=" flex items-center justify-center w-10 h-10">
-                    <Ventas
-                      menuState={menuState}
-                      size={30}
-                      color={"#fff"}
-                    ></Ventas>
-                  </div>
-                ) : (
-                  <Tooltip content="Ventas">
+                <Link
+                  to={"/ventas"}
+                  className="flex items-center justify-center"
+                >
+                  {isActive ? (
                     <div className=" flex items-center justify-center w-10 h-10">
                       <Ventas
                         menuState={menuState}
@@ -195,25 +190,34 @@ export default function Aside() {
                         color={"#fff"}
                       ></Ventas>
                     </div>
-                  </Tooltip>
-                )}
-
-                <div
-                  className={`${
-                    isActive
-                      ? " flex w-24 h-full  items-center  justify-start "
-                      : ""
-                  }`}
-                >
-                  {isActive ? (
-                    <div className="text-sm ml-2 text-white">Ventas</div>
-                  ) : null}
-                </div>
+                  ) : (
+                    <Tooltip content="Ventas">
+                      <div className=" flex items-center justify-center w-10 h-10">
+                        <Ventas
+                          menuState={menuState}
+                          size={30}
+                          color={"#fff"}
+                        ></Ventas>
+                      </div>
+                    </Tooltip>
+                  )}
+                  <div
+                    className={`${
+                      isActive
+                        ? " flex w-24 h-full  items-center  justify-start "
+                        : ""
+                    }`}
+                  >
+                    {isActive ? (
+                      <div className="text-sm ml-2 text-white">Ventas</div>
+                    ) : null}
+                  </div>
+                </Link>
               </div>
             </div>
             <div
               className={`${
-                menuState.value == "navegador"
+                location.pathname == "/navegador"
                   ? "border-l-4 border-cyan-600"
                   : "border-l-4 border-gray-800"
               }`}
@@ -253,7 +257,7 @@ export default function Aside() {
             </div>
             <div
               className={`${
-                menuState.value == "stock"
+                location.pathname == "/stock"
                   ? "border-l-4 border-cyan-600"
                   : "border-l-4 border-gray-800"
               }`}
@@ -291,7 +295,7 @@ export default function Aside() {
             </div>
             <div
               className={`${
-                menuState.value == "caja"
+                location.pathname == "/caja"
                   ? "border-l-4 border-cyan-600"
                   : "border-l-4 border-gray-800"
               }`}
@@ -302,38 +306,36 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
-                <Link
-                  to="/caja"
-                  className="flex items-center justify-center"
-                >
-                {isActive ? (
-                  <div className=" flex items-center justify-center w-10 h-10">
-                    <Caja menuState={menuState} size={30}></Caja>
-                  </div>
-                ) : (
-                  <Tooltip content="Caja">
+                <Link to="/caja" className="flex items-center justify-center">
+                  {isActive ? (
                     <div className=" flex items-center justify-center w-10 h-10">
                       <Caja menuState={menuState} size={30}></Caja>
                     </div>
-                  </Tooltip>
-                )}
-                
-                <div
-                  className={`${
-                    isActive
-                      ? " flex w-24 h-full  items-center  justify-start "
-                      : ""
-                  }`}
-                >
-                  {isActive ? (
-                    <div className="text-sm ml-2 text-white">Caja</div>
-                  ) : null}
-                </div></Link>
+                  ) : (
+                    <Tooltip content="Caja">
+                      <div className=" flex items-center justify-center w-10 h-10">
+                        <Caja menuState={menuState} size={30}></Caja>
+                      </div>
+                    </Tooltip>
+                  )}
+
+                  <div
+                    className={`${
+                      isActive
+                        ? " flex w-24 h-full  items-center  justify-start "
+                        : ""
+                    }`}
+                  >
+                    {isActive ? (
+                      <div className="text-sm ml-2 text-white">Caja</div>
+                    ) : null}
+                  </div>
+                </Link>
               </div>
             </div>
             <div
               className={`${
-                menuState.value == "cuentas"
+                location.pathname == "/cuentas"
                   ? "border-l-4 border-cyan-600"
                   : "border-l-4 border-gray-800"
               }`}
@@ -373,7 +375,7 @@ export default function Aside() {
             </div>
             <div
               className={`${
-                menuState.value == "estadisticas"
+                location.pathname == "/estadisticas"
                   ? "border-l-4 border-cyan-600"
                   : "border-l-4 border-gray-800"
               }`}

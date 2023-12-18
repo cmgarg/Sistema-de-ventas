@@ -12,6 +12,9 @@ import EditarClientes from "./editarClientes/editarClientes";
 import MenuContextual2 from "../../../GMC/MenuContextual2";
 import Export from "../buttons/Export";
 import Biñeta from "../Biñeta/Biñieta";
+import Imprimir from "../buttons/Imprimir";
+import OrdenarPor from "../buttons/OrdenarPor";
+import { Link } from "react-router-dom";
 interface ClientesContentProps {
   searchIn?: string;
 }
@@ -57,13 +60,13 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
           <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
             <p className="text-center">Nombre</p>
           </div>
-          <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center">
+          <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center w-52">
             <p className="text-center">Email</p>
           </div>
-          <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center">
+          <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center w-52">
             <p className="text-center">Direccion</p>
           </div>
-          <div className="bg-slate-600 flex-1 pl-2 rounded-tr-lg flex items-center justify-center">
+          <div className="bg-slate-600 flex-1 pl-2 rounded-tr-lg flex items-center justify-center w-52">
             <p className="text-center">DNI</p>
           </div>
         </TableHead>
@@ -82,7 +85,7 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
                     onClick={() => {
                       eliminarCliente(fila._id);
                     }}
-                    className="w-full hover:bg-gray-600 pl-2"
+                    className="w-full hover:bg-gray-600"
                   >
                     <p>Eliminar</p>
                   </div>
@@ -90,17 +93,21 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
                     onClick={() => {
                       editClient(fila._id);
                     }}
-                    className="w-full hover:bg-gray-600 pl-2"
+                    className="w-full hover:bg-gray-600"
                   >
                     <p>Editar</p>
                   </div>
                 </MenuContextual2>
               </div>
               <div className="flex items-center flex-1 pl-2 space-x-2">
-                <p className="flex-1 text-center">{fila.nombre}</p>
+                <div className="flex-1 text-center hover:text-slate-400">
+                  <Link to={`/cliente/${fila._id}`} className="text-center">
+                    {fila.nombre}
+                  </Link>
+                </div>
               </div>
               <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila._id}</p>
+                <p>{fila.email}</p>
               </div>
               <div className="flex justify-center items-center flex-1 pl-2">
                 <p>{fila.direccion}</p>
@@ -132,7 +139,8 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
         <NavMain title="Clientes">
           <Buscador></Buscador>
           <Export></Export>
-          <Agregar onChangeModal={onChangeModal}></Agregar>
+          <Imprimir></Imprimir>
+          <Agregar title="cliente" onChangeModal={onChangeModal}></Agregar>
         </NavMain>
       </div>
       <div className="flex flex-row flex-1">

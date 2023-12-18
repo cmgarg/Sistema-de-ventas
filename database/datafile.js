@@ -1,2 +1,1 @@
-{"nombre":"Milei","apellido":"eqwe","direccion":"qweqw","telefono":"eqweqw","email":"eqweqwe","dni":"qweqwe","_id":"YObNdrmxACbH1w7M"}
-{"nombre":"River","apellido":"asdaswew","direccion":"dasdaswew","telefono":"dasdasdwewsssss","email":"asdasdassdw","dni":"dasdaswewe","_id":"idPNJPlSW44L8Rfi"}
+{"nombre":"Gonzalo","apellido":"Carles","direccion":"12332","telefono":"1233212","email":"gonzalo@gasd.asd","fechaNacimiento":"2002-11-01","dni":"2313432","compras":[{"articulo":"Milanes","cantidad":"20"},{"articulo":"Pan","cantidad":"21"},{"articulo":"Fideos","cantidad":"21"},{"articulo":"Pitos","cantidad":"21"}],"_id":"tdCp4sjeGfHtmsWX"}

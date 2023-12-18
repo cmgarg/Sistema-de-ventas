@@ -10,6 +10,7 @@ import AddArticuloForm from "./ADDARTICULO/AddArticuloForm";
 import MenuContextual2 from "../../../GMC/MenuContextual2";
 import Diamong from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/Diamong";
 import Export from "../buttons/Export";
+import { Link } from "react-router-dom";
 
 interface ArticulosProps {
   tamaño: string;
@@ -29,7 +30,7 @@ const Articulos: React.FC<ArticulosProps> = ({ tamaño }) => {
 
   /////LISTA DE ARTICULSO
   function listaDeItems() {
-    console.log("ME EJECUTO JJIJI", articulos);
+    console.log(articulos);
     return (
       <TableMain>
         <TableHead>
@@ -38,9 +39,6 @@ const Articulos: React.FC<ArticulosProps> = ({ tamaño }) => {
           </div>
           <div className="bg-slate-600 flex-1 pl-2 rounded-tr-lg flex items-center justify-center">
             <p className="text-center">DNI</p>
-          </div>
-          <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center">
-            <p className="text-center">Email</p>
           </div>
           <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center">
             <p className="text-center">Direccion</p>
@@ -71,9 +69,6 @@ const Articulos: React.FC<ArticulosProps> = ({ tamaño }) => {
                 <p className="flex-1 text-center">
                   {`${fila.nombre} ${fila.apellido}`}
                 </p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.email}</p>
               </div>
               <div className="flex justify-center items-center flex-1 pl-2">
                 <p>{fila.dni}</p>
@@ -115,7 +110,7 @@ const Articulos: React.FC<ArticulosProps> = ({ tamaño }) => {
         <NavMain title="Articulos">
           <Buscador></Buscador>
           <Export></Export>
-          <Agregar onChangeModal={onChangeModal}></Agregar>
+          <Agregar title="Articulo" onChangeModal={onChangeModal}></Agregar>
         </NavMain>
       </div>
       <div className="flex flex-row flex-1">

@@ -17,7 +17,12 @@ const ventas = new Datastore({
 //FUNCIONES DE CLIENTES ARCHIVO DATAFILE
 
 function guardarUsuario(data: any) {
-  db.insert(data, (err, newDoc) => {
+  const client = {
+    ...data,
+    compras: [],
+  };
+
+  db.insert(client, (err, newDoc) => {
     if (err) {
       // Manejar el error
       console.error("Error al guardar el objeto:", err);
@@ -26,6 +31,18 @@ function guardarUsuario(data: any) {
       console.log("Objeto guardado:", newDoc);
     }
   });
+}
+async function registerBuyClient(clientBuy: any) {
+  const client = await getClientById(clientBuy.cliente.id);
+  console.log("CLIENTE OBTENIDO APAPA", client[0].compras);
+  const clientUpdated = {
+    ...client[0],
+    compras: [...client[0].compras, clientBuy.compra],
+  };
+  console.log("WACHAAAA", clientUpdated);
+  delete clientUpdated._id;
+
+  await actualizarCliente(client[0]._id, clientUpdated);
 }
 function getClientById(clientId: string) {
   return new Promise((resolve, reject) => {
@@ -66,10 +83,11 @@ function buscarClientes() {
   });
 }
 function actualizarCliente(clientId: string, updateData: any) {
+  delete updateData._id;
   return new Promise((resolve, reject) => {
     db.update(
       { _id: clientId },
-      updateData,
+      { $set: updateData },
       { multi: false },
       (err: any, docs: any) => {
         if (err) {
@@ -124,6 +142,45 @@ function borrarArticulo(data: any) {
   });
 }
 //////////////////////////////////////////////////////
+//FUNCIONES DE CLIENTES ARCHIVO ventasFile.js////////
+/////////////////////////////////////////////////////
+function guardarVenta(a: any) {
+  ventas.insert(a, (err, newDoc) => {
+    if (err) {
+      // Manejar el error
+      console.error("Error al guardar el objeto:", err);
+    } else {
+      // Objeto guardado con éxito
+      console.log("Objeto guardado:", newDoc);
+    }
+  });
+}
+function buscarVentas() {
+  return new Promise((resolve, reject) => {
+    ventas.find({}, (err: any, docs: any) => {
+      if (err) {
+        console.error("Error al obtener datos:", err);
+        reject(err);
+      } else {
+        console.log("Datos obtenidos:", docs);
+        resolve(docs);
+      }
+    });
+  });
+}
+function borrarVentas(data: any) {
+  console.log("ACA ERSTAMOS");
+  ventas.remove({ _id: data }, (err, newDoc) => {
+    if (err) {
+      // Manejar el error
+      console.error("Error al guardar el objeto:", err);
+    } else {
+      // Objeto guardado con éxito
+      console.log("Cliente eliminado:", newDoc);
+    }
+  });
+}
+//////////////////////////////////////////////////////
 
 // The built directory structure
 //
@@ -148,6 +205,8 @@ function createWindow() {
     icon: path.join(process.env.VITE_PUBLIC, "logo-cmg.png"),
     width: 1000,
     height: 1800,
+    minWidth: 900,
+    minHeight: 600,
     titleBarStyle: "hidden",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -219,6 +278,14 @@ ipcMain.on("actualizar-cliente", async (event, clienteData) => {
 
   event.reply("respuesta-actualizar-cliente", mensajeAResponder);
 });
+
+ipcMain.on("register-buy-client", async (event, clienteData) => {
+  console.log("ESTO LLEGO", clienteData);
+  const mensajeAResponder = await registerBuyClient(clienteData);
+
+  event.reply("response-register-buy", mensajeAResponder);
+});
+
 ///
 //ESCUCHAS DE EVENTOS DE GUARDADO DE ARTICULOS
 //
@@ -236,6 +303,24 @@ ipcMain.on("obtener-articulos", async (event) => {
 
 ipcMain.on("eliminar-articulo", (e, articuloAEliminar) => {
   borrarArticulo(articuloAEliminar);
+});
+
+///
+//ESCUCHAS DE EVENTOS DE GUARDADO DE VENTAS
+//
+ipcMain.on("guardar-venta", async (event, ventaAGuardar) => {
+  guardarVenta(ventaAGuardar);
+});
+
+ipcMain.on("obtener-ventas", async (event) => {
+  const ventas = await buscarVentas();
+
+  console.log("SE ENVIO LO PEDIDO", ventas);
+  event.reply("respuesta-obtener-ventas", ventas); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
+});
+
+ipcMain.on("eliminar-venta", (e, ventaAEliminar) => {
+  borrarVentas(ventaAEliminar);
 });
 //////////////
 //////////////
