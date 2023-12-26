@@ -121,18 +121,26 @@ setTimeout(removeLoading, 4999);
 contextBridge.exposeInMainWorld("api", {
   enviarEvento: (canal: string, data?: any) => {
     const canalesPermitidos = [
+      //EVENTOS DE VENTANA
       "maximize-window",
       "unmaximize-window",
       "close-window",
       "minimize-window",
+      //EVENTOS DE ARTICULOS
       "obtener-articulos",
       "guardar-articulo",
       "eliminar-articulo",
+      //EVENTOS DE CLIENTES
       "guardar-usuario",
       "obtener-clientes",
       "eliminar-cliente",
       "obtener-clienteById",
       "actualizar-cliente",
+      "register-buy-client",
+      //EVENTOS DE VENTAS
+      "guardar-venta",
+      "obtener-ventas",
+      "eliminar-venta",
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -141,9 +149,11 @@ contextBridge.exposeInMainWorld("api", {
   recibirEvento: (canal: string, callback: any) => {
     const canalesPermitidos = [
       "respuesta-obtener-clientes",
+      "respuesta-actualizar-cliente",
       "respuesta-obtener-articulos",
       "cliente-encontradoById",
-      "respuesta-actualizar-cliente",
+      "respuesta-obtener-ventas",
+      "response-register-buy",
     ];
 
     if (canalesPermitidos.includes(canal)) {

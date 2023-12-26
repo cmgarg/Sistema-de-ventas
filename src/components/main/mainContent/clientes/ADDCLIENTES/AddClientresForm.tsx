@@ -19,6 +19,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
     direccion: string;
     telefono: string;
     email: string;
+    fechaNacimiento: string;
     dni: string;
   };
 
@@ -28,6 +29,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
     direccion: "",
     telefono: "",
     email: "",
+    fechaNacimiento: "",
     dni: "",
   });
 
@@ -39,6 +41,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
       "direccion",
       "telefono",
       "email",
+      "fechaNacimiento",
       "dni",
     ];
     console.log(existingData.includes(data), "esto");
@@ -59,6 +62,9 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
           break;
         case "email":
           setClienteData({ ...clienteData, email: value });
+          break;
+        case "fechaNacimiento":
+          setClienteData({ ...clienteData, fechaNacimiento: value });
           break;
         case "dni":
           setClienteData({ ...clienteData, dni: value });
@@ -88,6 +94,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
       direccion: "",
       telefono: "",
       email: "",
+      fechaNacimiento: "",
       dni: "",
     });
   }
@@ -95,7 +102,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
   const estilosInput = "outline-none h-9 w-full bg-slate-600 px-2 rounded-md";
 
   return (
-    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center">
+    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50">
       <div className="w-96 bg-slate-50 space-y-5 p-2 text-slate-50 rounded-md relative">
         <button
           className="bg-red-500 h-10 w-10 rounded-full absolute -right-2 -top-2"
@@ -178,6 +185,20 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
           />
         </div>
         <div>
+          <label htmlFor="fechaNacimiento" className="text-slate-600">
+            Fecha de Nacimiento
+          </label>
+          <input
+            type="date"
+            name="fechaNacimiento"
+            className={estilosInput}
+            value={clienteData.fechaNacimiento}
+            onChange={(e) => {
+              setChangeData("fechaNacimiento", e.target.value);
+            }}
+          />
+        </div>
+        <div>
           <label htmlFor="dni" className="text-slate-600">
             DNI
           </label>
@@ -202,7 +223,10 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
           </button>
           <button
             className="w-52 h-10 bg-green-400 rounded-md"
-            onClick={subirUsuario}
+            onClick={() => {
+              subirUsuario();
+              onChangeModal(false);
+            }}
           >
             Añadir
           </button>
