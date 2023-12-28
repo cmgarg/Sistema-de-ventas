@@ -33,7 +33,7 @@ function guardarUsuario(data: any) {
   });
 }
 async function registerBuyClient(clientBuy: any) {
-  const client = await getClientById(clientBuy.cliente.id);
+  const client = await getClientById(clientBuy.cliente.idClient);
   console.log("CLIENTE OBTENIDO APAPA", client[0].compras);
   const clientUpdated = {
     ...client[0],
@@ -114,6 +114,19 @@ function guardarArticulo(a: any) {
       // Objeto guardado con éxito
       console.log("Objeto guardado:", newDoc);
     }
+  });
+}
+function getArticleById(articleId: string) {
+  return new Promise((resolve, reject) => {
+    articulos.find({ _id: articleId }, (err: any, doc: any) => {
+      if (err) {
+        console.log("error al buscar el Articulo", err);
+        reject(err);
+      } else {
+        console.log("Artciulo encontrado", doc);
+        resolve(doc);
+      }
+    });
   });
 }
 function buscarArticulos() {
@@ -293,7 +306,12 @@ ipcMain.on("register-buy-client", async (event, clienteData) => {
 ipcMain.on("guardar-articulo", async (event, articuloAGuardar) => {
   guardarArticulo(articuloAGuardar);
 });
+ipcMain.on("get-articleById", async (event, articleId) => {
+  console.log("AGUANTEEEEE BOCAA LOCOOO");
+  const cliente = await getArticleById(articleId);
 
+  event.reply("article-foundById", cliente);
+});
 ipcMain.on("obtener-articulos", async (event) => {
   const articulos = await buscarArticulos();
 

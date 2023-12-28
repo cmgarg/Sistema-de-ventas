@@ -1,4 +1,2 @@
-{"articulo":"Pan","cantidad":"21","comprador":{"nombre":"Gonzalo","id":"tdCp4sjeGfHtmsWX"},"_id":"8BUr2rl6fX0hE8Jk"}
-{"articulo":"Pitos","cantidad":"21","comprador":{"nombre":"Gonzalo","id":"tdCp4sjeGfHtmsWX"},"_id":"WTOmwthxjEJWJHaP"}
-{"articulo":"Milanes","cantidad":"20","comprador":{"nombre":"Gonzalo","id":"tdCp4sjeGfHtmsWX"},"_id":"aCsWKTlpzYSlgSAP"}
-{"articulo":"Fideos","cantidad":"21","comprador":{"nombre":"Gonzalo","id":"tdCp4sjeGfHtmsWX"},"_id":"lv4wRkRQBWukCSZA"}
+{"articulo":{"nombreArticulo":"Mayonesa","idArticle":"aVcFkkmJU4TgfYSH"},"cantidad":"100","comprador":{"nombre":"Martin","idClient":"oQ7GLNqWVdmclDVU"},"_id":"LIxXW9yyrWOHSlsw"}
+{"articulo":{"nombreArticulo":"Yerba","idArticle":"0c8iKV4Umd1IyJAt"},"cantidad":"44","comprador":{"nombre":"Gonzalo","idClient":"tdCp4sjeGfHtmsWX"},"_id":"sD5xvvt5pwKrkyVv"}

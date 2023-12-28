@@ -1,2 +1,2 @@
-{"nombre":"Martin","apellido":"Carles","direccion":"inchausti","telefono":"2312545123","email":"martin@carles.comm","dni":"23443213","_id":"89oRlRZ5hH8hbL6K"}
-{"nombre":"Gonzalo","apellido":"Carles","direccion":"inchausti1149","telefono":"3446543344","email":"gonzalocaes@hotmail.com","dni":"454465736","_id":"NFtEoD7ceeZD9tQG"}
+{"articulo":"Yerba","marca":"Faso","costo":"5400","venta":"6400","stock":"500","_id":"0c8iKV4Umd1IyJAt"}
+{"articulo":"Mayonesa","marca":"Hellmans","costo":"560","venta":"1000","stock":"200","_id":"aVcFkkmJU4TgfYSH"}

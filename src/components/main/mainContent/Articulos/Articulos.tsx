@@ -35,16 +35,19 @@ const Articulos: React.FC<ArticulosProps> = ({ tamaño }) => {
       <TableMain>
         <TableHead>
           <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
-            <p className="text-center">Nombre</p>
+            <p className="text-center">Articulo</p>
           </div>
           <div className="bg-slate-600 flex-1 pl-2 rounded-tr-lg flex items-center justify-center">
-            <p className="text-center">DNI</p>
+            <p className="text-center">Marca</p>
           </div>
           <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center">
-            <p className="text-center">Direccion</p>
+            <p className="text-center">Costo</p>
           </div>
           <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center">
-            <p className="text-center">Telefono</p>
+            <p className="text-center">Venta</p>
+          </div>
+          <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center">
+            <p className="text-center">Stock</p>
           </div>
         </TableHead>
         <div className="first:bg-white">
@@ -66,18 +69,22 @@ const Articulos: React.FC<ArticulosProps> = ({ tamaño }) => {
                 </MenuContextual2>
               </div>
               <div className="flex items-center flex-1 pl-2 space-x-1">
-                <p className="flex-1 text-center">
-                  {`${fila.nombre} ${fila.apellido}`}
-                </p>
+                <Link
+                  to={`/articulo/${fila._id}`}
+                  className="flex-1 text-center"
+                >{`${fila.articulo}`}</Link>
               </div>
               <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.dni}</p>
+                <p>{fila.marca}</p>
               </div>
               <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.direccion}</p>
+                <p>${fila.costo}</p>
               </div>
               <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.telefono}</p>
+                <p>${fila.venta}</p>
+              </div>
+              <div className="flex justify-center items-center flex-1 pl-2">
+                <p>{fila.stock}</p>
               </div>
             </TableRow>
           ))}

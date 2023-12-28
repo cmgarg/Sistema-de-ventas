@@ -11,6 +11,7 @@ import Diamong from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/Diamon
 import TableRow from "../../tablaMain/TableRow";
 import TableHead from "../../tablaMain/TableHead";
 import TableMain from "../../tablaMain/TableMain";
+import { Link } from "react-router-dom";
 
 interface VentastProps {
   //PROPS
@@ -34,7 +35,7 @@ const Ventas: React.FC<VentastProps> = (
 
   /////LISTA DE ARTICULSO
   function listaDeItems() {
-    console.log(ventas);
+    console.log(ventas, "CHOTA");
     return (
       <TableMain>
         <TableHead>
@@ -67,13 +68,18 @@ const Ventas: React.FC<VentastProps> = (
                 </MenuContextual2>
               </div>
               <div className="flex items-center flex-1 pl-2 space-x-1">
-                <p className="flex-1 text-center">{`${fila.articulo}`}</p>
+                <Link
+                  to={`/articulo/${fila.articulo.idArticle}`}
+                  className="flex-1 text-center"
+                >{`${fila.articulo.nombreArticulo}`}</Link>
               </div>
               <div className="flex justify-center items-center flex-1 pl-2">
                 <p>{fila.cantidad}</p>
               </div>
               <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.comprador.nombre}</p>
+                <a href={`/cliente/${fila.comprador.idClient}`}>
+                  {fila.comprador.nombre}
+                </a>
               </div>
             </TableRow>
           ))}
