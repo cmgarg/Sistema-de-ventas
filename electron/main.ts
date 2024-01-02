@@ -222,7 +222,17 @@ async function updateCountSaleArticle(articleId: string, sale: object) {
 //FUNCIONES DE CLIENTES ARCHIVO ventasFile.js////////
 /////////////////////////////////////////////////////
 function guardarVenta(a: any) {
-  ventas.insert(a, (err, newDoc) => {
+  const fechaActual = new Date();
+  const año = fechaActual.getFullYear();
+  const mes = fechaActual.getMonth() + 1;
+  const dia = fechaActual.getDate();
+  const saleToSave = {
+    ...a,
+    dateOfRegister: `${dia.toString().padStart(2, "0")}-${mes
+      .toString()
+      .padStart(2, "0")}-${año}`,
+  };
+  ventas.insert(saleToSave, (err, newDoc) => {
     if (err) {
       // Manejar el error
       console.error("Error al guardar el objeto:", err);
@@ -237,6 +247,9 @@ async function saleProcess(venta: any) {
   const articuloVendido = await getArticleById(venta.articulo.idArticle);
   const cantidadVendida = parseInt(venta.cantidad);
   const idArticle = articuloVendido[0]._id;
+  const totalMoneySold = venta.cantidad * articuloVendido[0].costo;
+
+  const saleComplete = { ...venta, sold: totalMoneySold };
 
   console.log("articulo VENDIDO", articuloVendido);
 
@@ -245,9 +258,9 @@ async function saleProcess(venta: any) {
   console.log("id articulo", idArticle);
 
   await updatedStockArticle(idArticle, cantidadVendida); //actualiza el stock del articulo vendido
-  await updateCountSaleArticle(idArticle, venta);
+  await updateCountSaleArticle(idArticle, saleComplete);
 
-  return guardarVenta(venta);
+  return guardarVenta(saleComplete);
 }
 function buscarVentas() {
   return new Promise((resolve, reject) => {

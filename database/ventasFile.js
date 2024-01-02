@@ -1,1 +1,2 @@
-{"articulo":{"nombreArticulo":"Gaseosa","idArticle":"693AEjsCgxzQpel9"},"cantidad":"20","comprador":{"nombre":"Gonzalo","idClient":"37VFnoknOdwHPPk7"},"_id":"wAaVUEAIr9HSUOc6"}
+{"articulo":{"nombreArticulo":"Gaseosa","idArticle":"693AEjsCgxzQpel9"},"cantidad":"24","comprador":{"nombre":"Gonzalo","idClient":"37VFnoknOdwHPPk7"},"dateOfRegister":"02-01-2024","_id":"NK0lNhOQZWUyhjmA"}
+{"articulo":{"nombreArticulo":"Gaseosa","idArticle":"693AEjsCgxzQpel9"},"cantidad":"21","comprador":{"nombre":"Gonzalo","idClient":"37VFnoknOdwHPPk7"},"sold":6300,"dateOfRegister":"02-01-2024","_id":"SMFiWrHOEFyqTsHD"}

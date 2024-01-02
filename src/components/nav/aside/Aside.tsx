@@ -262,10 +262,8 @@ export default function Aside() {
                   : "border-l-4 border-gray-800"
               }`}
             >
-              <div
-                onClick={() => {
-                  chageStateMenu("stock");
-                }}
+              <Link
+                to={"/stock"}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
                 {isActive ? (
@@ -291,7 +289,7 @@ export default function Aside() {
                     <div className="text-sm ml-2 text-white">Stock</div>
                   ) : null}
                 </div>
-              </div>
+              </Link>
             </div>
             <div
               className={`${
