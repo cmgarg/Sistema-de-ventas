@@ -5,6 +5,7 @@ import Articulos from "./mainContent/Articulos/Articulos";
 import Caja from "./mainContent/Caja/caja";
 import ClienteInfo from "./mainContent/ApartadoCliente/ClienteInfo";
 import Ventas from "./mainContent/ventas/Ventas";
+import Cuentas from "./mainContent/Cuentas/Cuentas";
 
 interface MainContentProps {}
 
@@ -17,6 +18,7 @@ const MainContent: React.FC<MainContentProps> = ({}) => {
         <Route path="/ventas" element={<Ventas />} />
         <Route path="/caja" element={<Caja />} />
         <Route path="/cliente/:id" element={<ClienteInfo />} />
+        <Route path="/Cuentas" element={<Cuentas />}/>
       </Routes>
     </div>
   );

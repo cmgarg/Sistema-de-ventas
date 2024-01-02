@@ -335,7 +335,7 @@ export default function Aside() {
             </div>
             <div
               className={`${
-                location.pathname == "/cuentas"
+                location.pathname == "/Cuentas"
                   ? "border-l-4 border-cyan-600"
                   : "border-l-4 border-gray-800"
               }`}
@@ -346,6 +346,7 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
+                <Link to="/Cuentas" className="flex items-center justify-center">
                 {isActive ? (
                   <div className=" flex items-center justify-center w-10 h-10">
                     <Cuentas menuState={menuState} size={30}></Cuentas>
@@ -370,7 +371,9 @@ export default function Aside() {
                       Cuentas a Pagar
                     </div>
                   ) : null}
-                </div>
+                 
+                </div> 
+                </Link>
               </div>
             </div>
             <div
