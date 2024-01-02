@@ -15,6 +15,7 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
     costo: "",
     venta: "",
     stock: "",
+    ventas: [],
   });
   const { id } = useParams();
 
@@ -71,7 +72,7 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
         {/* {"SPEARACION"} */}
         <div className="flex-1 bg-slate-900 p-1">
           <div className="w-full text-3xl bg-slate-900">
-            <h1>Compras</h1>
+            <h1>Ventas [{articulo.ventas.length}]</h1>
           </div>
           <div className="flex-1">
             <TableMain>
@@ -82,7 +83,23 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
                 <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
                   <p className="text-center">Cantidad</p>
                 </div>
+                <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
+                  <p className="text-center">Comprador</p>
+                </div>
               </TableHead>
+              {articulo.ventas.map((compra) => (
+                <TableRow>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>{compra.articulo.nombreArticulo}</p>
+                  </div>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>{compra.cantidad}</p>
+                  </div>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>{compra.comprador.nombre}</p>
+                  </div>
+                </TableRow>
+              ))}
             </TableMain>
           </div>
         </div>

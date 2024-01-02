@@ -88,7 +88,7 @@ const ClienteInfo: React.FC<ClienteInfoProps> = ({}) => {
               {cliente.compras.map((compra) => (
                 <TableRow>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{compra.articulo}</p>
+                    <p>{compra.articulo.nombreArticulo}</p>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
                     <p>{compra.cantidad}</p>

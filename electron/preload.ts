@@ -141,6 +141,7 @@ contextBridge.exposeInMainWorld("api", {
       "register-buy-client",
       //EVENTOS DE VENTAS
       "guardar-venta",
+      "sale-process",
       "obtener-ventas",
       "eliminar-venta",
     ];

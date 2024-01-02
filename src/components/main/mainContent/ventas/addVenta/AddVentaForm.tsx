@@ -4,12 +4,10 @@ import MenuArticlesForm from "../MenusInputs/MenuArticlesForm";
 
 interface AddVentaForm {
   onChangeModal: (p: boolean) => void;
+  addSales: (e: object) => void;
 }
 
-const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal }) => {
-  function obtenerVentas() {
-    window.api.enviarEvento("obtener-ventas");
-  }
+const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal, addSales }) => {
   //DATOS USUARIOS
   const [clientes, setClientes] = useState([]);
   function obtenerClientes() {
@@ -42,9 +40,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal }) => {
   });
 
   function setChangeData(data: string, value: any) {
-    console.log("LLAMA LA FUNCION");
     const existingData = ["articulo", "cantidad", "comprador"];
-    console.log(existingData.includes(data), "esto");
     if (existingData.includes(data)) {
       switch (data) {
         case "articulo":
@@ -65,22 +61,17 @@ const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal }) => {
       console.log("NO ESTA");
     }
   }
-  useEffect(() => {
-    console.log(VentaData);
-  }, [VentaData]);
 
   //SUBIR USUARIO A BASE DE DATOS LOCAL
 
   function subirVenta() {
-    window.api.enviarEvento("guardar-venta", VentaData);
+    window.api.enviarEvento("sale-process", VentaData);
 
     window.api.enviarEvento("register-buy-client", {
       cliente: VentaData.comprador,
       compra: { articulo: VentaData.articulo, cantidad: VentaData.cantidad },
     });
-
-    obtenerVentas();
-
+    addSales(VentaData);
     setVentaData({
       articulo: "",
       cantidad: "",

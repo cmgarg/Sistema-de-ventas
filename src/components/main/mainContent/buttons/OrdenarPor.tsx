@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import Biñeta from "../Biñeta/Biñieta.js";
 import MoreIcon from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/MoreIcon.js";
 import MenuContextual2 from "../../../GMC/MenuContextual2.js";
-interface OrdenarPorProps {}
+interface OrdenarPorProps {
+  children: ReactNode;
+}
 
 //para ordenar la lista en lo que se eliga, a-z, mejores clientes, etc.
-const OrdenarPor: React.FC<OrdenarPorProps> = ({}) => {
+const OrdenarPor: React.FC<OrdenarPorProps> = ({ children }) => {
   return (
     <div
       className="w-12 h-11 bg-gray-700 rounded-lg select-none cursor-pointer relative"
@@ -21,15 +23,7 @@ const OrdenarPor: React.FC<OrdenarPorProps> = ({}) => {
             </Biñeta>
           }
         >
-          <div className="w-full hover:bg-gray-600">
-            <p>A-Z</p>
-          </div>
-          <div className="w-full hover:bg-gray-600">
-            <p>Mas Activos</p>
-          </div>
-          <div className="w-full hover:bg-gray-600">
-            <p>Inactivos</p>
-          </div>
+          {children}
         </MenuContextual2>
       </div>
     </div>

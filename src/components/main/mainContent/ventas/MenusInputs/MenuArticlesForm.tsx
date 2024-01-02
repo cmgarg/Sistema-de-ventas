@@ -22,10 +22,17 @@ const MenuArticlesForm: React.FC<MenuArticlesForm> = ({
     window.api.enviarEvento("obtener-articulos");
   }
 
-  const inputRef = useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function onChangeInput(value: string) {
+    setInputValue({ nombreArticulo: value, idArticle: "" });
+  }
 
   function listaArticulos() {
     console.log("PUIITO", articlesFound);
+    if (articlesFound.length === 0) {
+      return null; // O renderiza un mensaje de "sin resultados" en lugar de null
+    }
     return (
       <div className="absolute w-full bg-gray-700 z-50 shadow-md shadow-black rounded-b-lg flex flex-col top-full">
         {articlesFound.map((article) => (
@@ -50,15 +57,10 @@ const MenuArticlesForm: React.FC<MenuArticlesForm> = ({
     console.log("me ejecuto locococococ", articlesFound);
     const arrayFounds = articulos.filter((article) => {
       console.log(article, "acac");
-      console.log(
-        "SI INCLUYE  ",
-        busca,
-        article.articulo.toLocaleLowerCase().includes(busca)
-      );
 
       return article.articulo
-        .toLocaleLowerCase()
-        .includes(busca !== "" ? busca.toLocaleLowerCase() : "|||");
+        .toLowerCase()
+        .includes(busca !== "" ? busca.toLowerCase() : "|||");
     });
     setclientesEncontrados(arrayFounds);
   }
@@ -100,7 +102,7 @@ const MenuArticlesForm: React.FC<MenuArticlesForm> = ({
           value={inputValue.nombreArticulo}
           onChange={(e) => {
             searchArticles(e.target.value);
-            setInputValue(e.target.value);
+            onChangeInput(e.target.value);
           }}
         />
         {articlesFound.length > 0 && menuActived && listaArticulos()}

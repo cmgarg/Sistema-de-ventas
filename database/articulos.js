@@ -1,2 +1,5 @@
-{"articulo":"Yerba","marca":"Faso","costo":"5400","venta":"6400","stock":"500","_id":"0c8iKV4Umd1IyJAt"}
-{"articulo":"Mayonesa","marca":"Hellmans","costo":"560","venta":"1000","stock":"200","_id":"aVcFkkmJU4TgfYSH"}
+{"articulo":"Gaseosa","marca":"CocaCola","costo":"400","venta":"700","stock":276,"ventas":0,"_id":"54Urmalz8gjHtfkq"}
+{"$$deleted":true,"_id":"54Urmalz8gjHtfkq"}
+{"articulo":"Gaseosa","marca":"CocaCola","costo":"300","venta":"700","stock":"200","ventas":[],"_id":"693AEjsCgxzQpel9"}
+{"articulo":"Gaseosa","marca":"CocaCola","costo":"300","venta":"700","stock":180,"ventas":[],"_id":"693AEjsCgxzQpel9"}
+{"articulo":"Gaseosa","marca":"CocaCola","costo":"300","venta":"700","stock":180,"ventas":[{"articulo":{"nombreArticulo":"Gaseosa","idArticle":"693AEjsCgxzQpel9"},"cantidad":"20","comprador":{"nombre":"Gonzalo","idClient":"37VFnoknOdwHPPk7"}}],"_id":"693AEjsCgxzQpel9"}

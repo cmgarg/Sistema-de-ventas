@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 
 interface AddArticulosFormProps {
   onChangeModal: (p: boolean) => void;
+  addArticles: (article: object) => void;
 }
 
 const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
   onChangeModal,
+  addArticles,
 }) => {
   function obtenerArticulos() {
     window.api.enviarEvento("obtener-articulos");
@@ -67,7 +69,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
   function subirArticulo() {
     window.api.enviarEvento("guardar-articulo", articuloData);
 
-    obtenerArticulos();
+    addArticles(articuloData);
 
     setarticuloData({
       articulo: "",
