@@ -20,7 +20,7 @@ interface ClientesContentProps {
 }
 
 const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
-  const [activeModalForm, setActiveModal] = useState(false);
+  const [activeModalForm, setActiveModalForm] = useState(false);
   const [clienteAeditar, setClienteAeditar] = useState({
     active: false,
     id: "",
@@ -32,7 +32,7 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
   const [clientes, setClientes] = useState([]);
 
   function onChangeModal(p: boolean) {
-    setActiveModal(p);
+    setActiveModalForm(p);
   }
   ////ACTIVAR A EDITAR CLIENTES
   function editClient(clienteid: string) {

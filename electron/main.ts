@@ -13,6 +13,10 @@ const ventas = new Datastore({
   filename: "database/ventasFile.js",
   autoload: true,
 });
+const cuentas = new Datastore({
+  filename: "database/cuentasFile.js",
+  autoload: true,
+});
 
 //FUNCIONES DE CLIENTES ARCHIVO DATAFILE
 
@@ -251,12 +255,6 @@ async function saleProcess(venta: any) {
 
   const saleComplete = { ...venta, sold: totalMoneySold };
 
-  console.log("articulo VENDIDO", articuloVendido);
-
-  console.log("cantidad VENDIDA", cantidadVendida);
-
-  console.log("id articulo", idArticle);
-
   await updatedStockArticle(idArticle, cantidadVendida); //actualiza el stock del articulo vendido
   await updateCountSaleArticle(idArticle, saleComplete);
 
@@ -285,6 +283,33 @@ function borrarVentas(data: any) {
       // Objeto guardado con éxito
       console.log("Cliente eliminado:", newDoc);
     }
+  });
+}
+//////////////////////////////////////////////////////
+//FUNCIONES DE CUENTAS ARCHIVO cuentasFile.js////////
+/////////////////////////////////////////////////////
+function accountToPay(account: object) {
+  cuentas.insert(account, (err, newDoc) => {
+    if (err) {
+      // Manejar el error
+      console.error("Error al guardar el objeto:", err);
+    } else {
+      // Objeto guardado con éxito
+      console.log("Objeto guardado:", newDoc);
+    }
+  });
+}
+async function getAccountsToPay() {
+  return new Promise((resolve, reject) => {
+    cuentas.find({}, (err: any, docs: any) => {
+      if (err) {
+        console.error("Error al obtener datos:", err);
+        reject(err);
+      } else {
+        console.log("Datos obtenidos:", docs);
+        resolve(docs);
+      }
+    });
   });
 }
 //////////////////////////////////////////////////////
@@ -440,6 +465,21 @@ ipcMain.on("obtener-ventas", async (event) => {
 ipcMain.on("eliminar-venta", (e, ventaAEliminar) => {
   borrarVentas(ventaAEliminar);
 });
+///
+//ESCUCHAS DE EVENTOS DE CUENTAS
+//
+
+ipcMain.on("save-accountToPay", async (event, account) => {
+  const accountToSave = account;
+
+  accountToPay(accountToSave);
+});
+ipcMain.on("get-accountToPay", async (event, account) => {
+  const accountsToPay = await getAccountsToPay();
+
+  event.reply("response-get-accountToPay", accountsToPay);
+});
+
 //////////////
 //////////////
 // Quit when all windows are closed, except on macOS. There, it's common
