@@ -1,7 +1,2 @@
-{"articulo":"pc","cantidad":"1","comprador":{"nombre":"Claudio ","id":"08TC9BNRynpzjA49"},"_id":"3S4uVpcdJLQZjxUm"}
-{"articulo":"Pan","cantidad":"21","comprador":{"nombre":"Gonzalo","id":"tdCp4sjeGfHtmsWX"},"_id":"8BUr2rl6fX0hE8Jk"}
-{"articulo":"Pitos","cantidad":"21","comprador":{"nombre":"Gonzalo","id":"tdCp4sjeGfHtmsWX"},"_id":"WTOmwthxjEJWJHaP"}
-{"articulo":"Milanes","cantidad":"20","comprador":{"nombre":"Gonzalo","id":"tdCp4sjeGfHtmsWX"},"_id":"aCsWKTlpzYSlgSAP"}
-{"articulo":"Fideos","cantidad":"21","comprador":{"nombre":"Gonzalo","id":"tdCp4sjeGfHtmsWX"},"_id":"lv4wRkRQBWukCSZA"}
-{"articulo":"pan","cantidad":"1454","comprador":{"nombre":"Claudio ","id":"08TC9BNRynpzjA49"},"_id":"n6ctyhsSETpZyLr0"}
-{"articulo":"pan","cantidad":"200","comprador":{"nombre":"Claudio ","id":"08TC9BNRynpzjA49"},"_id":"yNBwvKW29byTGOLj"}
+{"articulo":{"nombreArticulo":"Gaseosa","idArticle":"693AEjsCgxzQpel9"},"cantidad":"15","comprador":{"nombre":"Gonzalo","idClient":"37VFnoknOdwHPPk7"},"_id":"QaPqcecuD2Q8Mr7t"}
+{"articulo":{"nombreArticulo":"Gaseosa","idArticle":"693AEjsCgxzQpel9"},"cantidad":"20","comprador":{"nombre":"Gonzalo","idClient":"37VFnoknOdwHPPk7"},"_id":"wAaVUEAIr9HSUOc6"}

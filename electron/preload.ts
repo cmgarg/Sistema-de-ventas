@@ -130,6 +130,8 @@ contextBridge.exposeInMainWorld("api", {
       "obtener-articulos",
       "guardar-articulo",
       "eliminar-articulo",
+      "get-articleById",
+      "get-articleByName",
       //EVENTOS DE CLIENTES
       "guardar-usuario",
       "obtener-clientes",
@@ -139,6 +141,7 @@ contextBridge.exposeInMainWorld("api", {
       "register-buy-client",
       //EVENTOS DE VENTAS
       "guardar-venta",
+      "sale-process",
       "obtener-ventas",
       "eliminar-venta",
     ];
@@ -154,6 +157,8 @@ contextBridge.exposeInMainWorld("api", {
       "cliente-encontradoById",
       "respuesta-obtener-ventas",
       "response-register-buy",
+      "article-foundById",
+      "article-foundByName",
     ];
 
     if (canalesPermitidos.includes(canal)) {

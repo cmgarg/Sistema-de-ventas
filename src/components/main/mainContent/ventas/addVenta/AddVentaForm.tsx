@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
+import MenuClientsForm from "../MenusInputs/MenuClientsForm";
+import MenuArticlesForm from "../MenusInputs/MenuArticlesForm";
 
 interface AddVentaForm {
   onChangeModal: (p: boolean) => void;
+  addSales: (e: object) => void;
 }
 
-const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal }) => {
-  function obtenerVentas() {
-    window.api.enviarEvento("obtener-ventas");
-  }
+const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal, addSales }) => {
   //DATOS USUARIOS
   const [clientes, setClientes] = useState([]);
   function obtenerClientes() {
@@ -20,7 +20,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal }) => {
       console.log("ME EJECUTO A LA PERFECCIONE", e);
       const arrayClientes: any[] = [];
       e.map((e: any) => {
-        arrayClientes.push({ nombre: e.nombre, id: e._id });
+        arrayClientes.push({ nombre: e.nombre, idClient: e._id });
         console.log(e.nombre);
       });
       setClientes(arrayClientes);
@@ -30,19 +30,17 @@ const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal }) => {
   type VentaDataObject = {
     articulo: string;
     cantidad: string;
-    comprador: { nombre: string; id: string };
+    comprador: { nombre: string; idClient: string };
   };
 
   const [VentaData, setVentaData] = useState<VentaDataObject>({
     articulo: "",
     cantidad: "",
-    comprador: { nombre: "", id: "" },
+    comprador: { nombre: "", idClient: "" },
   });
 
   function setChangeData(data: string, value: any) {
-    console.log("LLAMA LA FUNCION");
     const existingData = ["articulo", "cantidad", "comprador"];
-    console.log(existingData.includes(data), "esto");
     if (existingData.includes(data)) {
       switch (data) {
         case "articulo":
@@ -63,26 +61,21 @@ const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal }) => {
       console.log("NO ESTA");
     }
   }
-  useEffect(() => {
-    console.log(VentaData);
-  }, [VentaData]);
 
   //SUBIR USUARIO A BASE DE DATOS LOCAL
 
   function subirVenta() {
-    window.api.enviarEvento("guardar-venta", VentaData);
+    window.api.enviarEvento("sale-process", VentaData);
 
     window.api.enviarEvento("register-buy-client", {
       cliente: VentaData.comprador,
       compra: { articulo: VentaData.articulo, cantidad: VentaData.cantidad },
     });
-
-    obtenerVentas();
-
+    addSales(VentaData);
     setVentaData({
       articulo: "",
       cantidad: "",
-      comprador: { nombre: "", id: "" },
+      comprador: { nombre: "", idClient: "" },
     });
   }
   //ESTILOS INPUT
@@ -100,20 +93,10 @@ const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal }) => {
           X
         </button>
         <div className="flex flex-row space-x-1">
-          <div className="flex-1">
-            <label htmlFor="articulo" className="text-slate-600">
-              Articulo
-            </label>
-            <input
-              type="text"
-              name="articulo"
-              className={estilosInput}
-              value={VentaData.articulo}
-              onChange={(e) => {
-                setChangeData("articulo", e.target.value);
-              }}
-            />
-          </div>
+          <MenuArticlesForm
+            style={estilosInput}
+            setChangeData={setChangeData}
+          />
           <div className="flex-1">
             <label htmlFor="cantidad" className="text-slate-600">
               Cantidad
@@ -129,7 +112,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal }) => {
             />
           </div>
         </div>
-        <MenuClientes
+        <MenuClientsForm
           style={estilosInput}
           clientes={clientes}
           setChangeData={setChangeData}
@@ -153,104 +136,6 @@ const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal }) => {
             Añadir
           </button>
         </div>
-      </div>
-    </div>
-  );
-};
-
-interface MenuClientesForm {
-  style: string;
-  clientes: any[];
-  setChangeData: (data: string, value: any) => void;
-}
-
-const MenuClientes: React.FC<MenuClientesForm> = ({
-  style,
-  clientes,
-  setChangeData,
-}) => {
-  const [client, setClient] = useState("");
-  const [menuActived, setMenuActived] = useState(true);
-  const [clientesEncontrados, setclientesEncontrados] = useState([]);
-  const [inputValue, setInputValue] = useState({ nombre: "", id: "" });
-
-  const inputRef = useRef();
-
-  function listaClientes() {
-    console.log("PUIITO", clientesEncontrados);
-    return (
-      <div className="absolute w-full bg-gray-700 z-50 shadow-md shadow-black rounded-b-lg flex flex-col top-full">
-        {clientesEncontrados.map((cliente) => (
-          <button
-            onClick={() => {
-              setInputValue({ nombre: cliente.nombre, id: cliente.id });
-              console.log("que onda");
-              setMenuActived(false);
-            }}
-            className="hover:bg-gray-800"
-          >
-            {cliente.nombre}
-          </button>
-        ))}
-      </div>
-    );
-  }
-  function buscarEnClientes(busca: string) {
-    console.log("me ejecuto locococococ", clientesEncontrados);
-    const arrayEncontrados = clientes.filter((cliente) => {
-      console.log(cliente, "acac");
-      console.log(
-        "SI INCLUYE  ",
-        busca,
-        cliente.nombre.toLocaleLowerCase().includes(busca)
-      );
-
-      return cliente.nombre
-        .toLocaleLowerCase()
-        .includes(busca !== "" ? busca.toLocaleLowerCase() : "|||");
-    });
-    console.log(clientes, "encontrados");
-    setclientesEncontrados(arrayEncontrados);
-  }
-
-  useEffect(() => {
-    setChangeData("comprador", inputValue);
-    console.log(inputValue);
-  }, [inputValue]);
-
-  return (
-    <div
-      onClick={() => {
-        setMenuActived(true);
-      }}
-      onBlur={(e) => {
-        setTimeout(() => setMenuActived(false), 200);
-      }}
-    >
-      <label htmlFor="comprador" className="text-slate-600">
-        Comprador
-      </label>
-      <div className="flex flex-row relative">
-        <input
-          ref={inputRef}
-          className={style}
-          type="text"
-          name="comprador"
-          value={inputValue.nombre}
-          onChange={(e) => {
-            buscarEnClientes(e.target.value);
-            setInputValue(e.target.value);
-          }}
-        />
-        <button
-          className="absolute right-0 h-full"
-          onClick={() => {
-            setMenuActived(!menuActived);
-          }}
-        >
-          V
-        </button>
-        {clientesEncontrados.length > 0 && menuActived && listaClientes()}
       </div>
     </div>
   );

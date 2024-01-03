@@ -21,7 +21,7 @@ interface SalesListProps {
               >
                 <div className=" flex flex-1 flex-row items-center h-12 text-white text-lg">
                   <div className=" flex items-center p-2"></div>
-                  {e.articulo}
+                  {e.articulo.nombreArticulo}
                 </div>
                 <div className=" flex flex-1 flex-row items-center text-green-400 text-lg">
                   <div className=" flex items-center p-2">

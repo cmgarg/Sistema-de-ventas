@@ -1,2 +1,1 @@
-{"nombre":"Martin","apellido":"Carles","direccion":"inchausti","telefono":"2312545123","email":"martin@carles.comm","dni":"23443213","_id":"89oRlRZ5hH8hbL6K"}
-{"nombre":"Gonzalo","apellido":"Carles","direccion":"inchausti1149","telefono":"3446543344","email":"gonzalocaes@hotmail.com","dni":"454465736","_id":"NFtEoD7ceeZD9tQG"}
+{"articulo":"Gaseosa","marca":"CocaCola","costo":"300","venta":"700","stock":165,"ventas":[{"articulo":{"nombreArticulo":"Gaseosa","idArticle":"693AEjsCgxzQpel9"},"cantidad":"20","comprador":{"nombre":"Gonzalo","idClient":"37VFnoknOdwHPPk7"}},{"articulo":{"nombreArticulo":"Gaseosa","idArticle":"693AEjsCgxzQpel9"},"cantidad":"15","comprador":{"nombre":"Gonzalo","idClient":"37VFnoknOdwHPPk7"}}],"_id":"693AEjsCgxzQpel9"}

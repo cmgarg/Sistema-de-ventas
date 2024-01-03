@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 
 interface AddArticulosFormProps {
   onChangeModal: (p: boolean) => void;
+  addArticles: (article: object) => void;
 }
 
 const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
   onChangeModal,
+  addArticles,
 }) => {
   function obtenerArticulos() {
     window.api.enviarEvento("obtener-articulos");
@@ -13,54 +15,42 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
   //DATOS USUARIOS
 
   type articuloDataObject = {
-    nombre: string;
-    apellido: string;
-    direccion: string;
-    telefono: string;
-    email: string;
-    dni: string;
+    articulo: string;
+    marca: string;
+    costo: string;
+    venta: string;
+    stock: string;
   };
 
   const [articuloData, setarticuloData] = useState<articuloDataObject>({
-    nombre: "",
-    apellido: "",
-    direccion: "",
-    telefono: "",
-    email: "",
-    dni: "",
+    articulo: "",
+    marca: "",
+    costo: "",
+    venta: "",
+    stock: "",
   });
 
   function setChangeData(data: string, value: string) {
     console.log("LLAMA LA FUNCION");
-    const existingData = [
-      "nombre",
-      "apellido",
-      "direccion",
-      "telefono",
-      "email",
-      "dni",
-    ];
+    const existingData = ["articulo", "marca", "costo", "venta", "stock"];
     console.log(existingData.includes(data), "esto");
     if (existingData.includes(data)) {
       switch (data) {
-        case "nombre":
+        case "articulo":
           console.log("se cumple esrte");
-          setarticuloData({ ...articuloData, nombre: value });
+          setarticuloData({ ...articuloData, articulo: value });
           break;
-        case "apellido":
-          setarticuloData({ ...articuloData, apellido: value });
+        case "marca":
+          setarticuloData({ ...articuloData, marca: value });
           break;
-        case "direccion":
-          setarticuloData({ ...articuloData, direccion: value });
+        case "costo":
+          setarticuloData({ ...articuloData, costo: value });
           break;
-        case "telefono":
-          setarticuloData({ ...articuloData, telefono: value });
+        case "venta":
+          setarticuloData({ ...articuloData, venta: value });
           break;
-        case "email":
-          setarticuloData({ ...articuloData, email: value });
-          break;
-        case "dni":
-          setarticuloData({ ...articuloData, dni: value });
+        case "stock":
+          setarticuloData({ ...articuloData, stock: value });
           break;
 
         default:
@@ -79,15 +69,14 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
   function subirArticulo() {
     window.api.enviarEvento("guardar-articulo", articuloData);
 
-    obtenerArticulos();
+    addArticles(articuloData);
 
     setarticuloData({
-      nombre: "",
-      apellido: "",
-      direccion: "",
-      telefono: "",
-      email: "",
-      dni: "",
+      articulo: "",
+      marca: "",
+      costo: "",
+      venta: "",
+      stock: "",
     });
     onChangeModal(false);
   }
@@ -107,87 +96,73 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
         </button>
         <div className="flex flex-row space-x-1">
           <div className="flex-1">
-            <label htmlFor="nombre" className="text-slate-600">
-              Nombre
+            <label htmlFor="articulo" className="text-slate-600">
+              Articulo
             </label>
             <input
               type="text"
-              name="nombre"
+              name="articulo"
               className={estilosInput}
-              value={articuloData.nombre}
+              value={articuloData.articulo}
               onChange={(e) => {
-                setChangeData("nombre", e.target.value);
+                setChangeData("articulo", e.target.value);
               }}
             />
           </div>
           <div className="flex-1">
-            <label htmlFor="apellido" className="text-slate-600">
-              Apellido
+            <label htmlFor="marca" className="text-slate-600">
+              Marca
             </label>
             <input
               type="text"
-              name="apellido"
+              name="marca"
               className={estilosInput}
-              value={articuloData.apellido}
+              value={articuloData.marca}
               onChange={(e) => {
-                setChangeData("apellido", e.target.value);
+                setChangeData("marca", e.target.value);
               }}
             />
           </div>
         </div>
         <div>
-          <label htmlFor="direccion" className="text-slate-600">
-            Direccion
+          <label htmlFor="costo" className="text-slate-600">
+            costo
           </label>
           <input
             type="text"
-            name="direccion"
+            name="costo"
             className={estilosInput}
-            value={articuloData.direccion}
+            value={articuloData.costo}
             onChange={(e) => {
-              setChangeData("direccion", e.target.value);
+              setChangeData("costo", e.target.value);
             }}
           />
         </div>
         <div>
-          <label htmlFor="telefono" className="text-slate-600">
-            Telefono
+          <label htmlFor="venta" className="text-slate-600">
+            Venta
           </label>
           <input
             type="text"
-            name="telefono"
+            name="venta"
             className={estilosInput}
-            value={articuloData.telefono}
+            value={articuloData.venta}
             onChange={(e) => {
-              setChangeData("telefono", e.target.value);
+              setChangeData("venta", e.target.value);
             }}
           />
         </div>
         <div>
-          <label htmlFor="email" className="text-slate-600">
-            Email
+          <label htmlFor="stock" className="text-slate-600">
+            Stock
           </label>
           <input
             type="text"
-            name="email"
+            name="stock"
             className={estilosInput}
-            value={articuloData.email}
+            value={articuloData.stock}
             onChange={(e) => {
-              setChangeData("email", e.target.value);
-            }}
-          />
-        </div>
-        <div>
-          <label htmlFor="dni" className="text-slate-600">
-            DNI
-          </label>
-          <input
-            type="text"
-            name="dni"
-            className={estilosInput}
-            value={articuloData.dni}
-            onChange={(e) => {
-              setChangeData("dni", e.target.value);
+              setChangeData("stock", e.target.value);
             }}
           />
         </div>

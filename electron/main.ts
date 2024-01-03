@@ -33,7 +33,7 @@ function guardarUsuario(data: any) {
   });
 }
 async function registerBuyClient(clientBuy: any) {
-  const client = await getClientById(clientBuy.cliente.id);
+  const client = await getClientById(clientBuy.cliente.idClient);
   console.log("CLIENTE OBTENIDO APAPA", client[0].compras);
   const clientUpdated = {
     ...client[0],
@@ -106,7 +106,12 @@ function actualizarCliente(clientId: string, updateData: any) {
 ///////////////////////////////
 
 function guardarArticulo(a: any) {
-  articulos.insert(a, (err, newDoc) => {
+  const articleToSave = {
+    ...a,
+    ventas: [],
+  };
+
+  articulos.insert(articleToSave, (err, newDoc) => {
     if (err) {
       // Manejar el error
       console.error("Error al guardar el objeto:", err);
@@ -114,6 +119,32 @@ function guardarArticulo(a: any) {
       // Objeto guardado con éxito
       console.log("Objeto guardado:", newDoc);
     }
+  });
+}
+function getArticleById(articleId: string) {
+  return new Promise((resolve, reject) => {
+    articulos.find({ _id: articleId }, (err: any, doc: any) => {
+      if (err) {
+        console.log("error al buscar el Articulo", err);
+        reject(err);
+      } else {
+        console.log("Artciulo encontrado", doc);
+        resolve(doc);
+      }
+    });
+  });
+}
+function getArticleByName(articleName: string) {
+  return new Promise((resolve, reject) => {
+    articulos.find({ articulo: articleName }, (err: any, doc: any) => {
+      if (err) {
+        console.log("error al buscar el Articulo", err);
+        reject(err);
+      } else {
+        console.log("Artciulo encontrado", doc);
+        resolve(doc);
+      }
+    });
   });
 }
 function buscarArticulos() {
@@ -141,6 +172,52 @@ function borrarArticulo(data: any) {
     }
   });
 }
+async function updatedStockArticle(idArticle: any, sold: any) {
+  const articleUpdate = await getArticleById(idArticle);
+  console.log(articleUpdate, "ARTICULO A ACTUALIZAR STOCK");
+  const stock = parseInt(articleUpdate[0].stock);
+  console.log(articleUpdate[0].stock, "STOCK");
+  const restSold = stock - sold;
+
+  return new Promise((resolve, reject) => {
+    articulos.update(
+      { _id: idArticle },
+      { ...articleUpdate[0], stock: restSold },
+      { multi: false },
+      (err: any, docs: any) => {
+        if (err) {
+          reject(err);
+          console.log("HUBO UN ERROR DE LA CAJETA", err);
+        } else {
+          resolve(docs);
+          console.log("TODO BIEN SALIO GIL DE MIERDA", docs);
+        }
+      }
+    );
+  });
+}
+async function updateCountSaleArticle(articleId: string, sale: object) {
+  const article = await getArticleById(articleId);
+
+  const salesCount = article[0].ventas;
+
+  return new Promise((resolve, reject) => {
+    articulos.update(
+      { _id: articleId },
+      { ...article[0], ventas: [...salesCount, sale] },
+      { multi: false },
+      (err: any, docs: any) => {
+        if (err) {
+          reject(err);
+          console.log("HUBO UN ERROR DE LA CAJETA", err);
+        } else {
+          resolve(docs);
+          console.log("TODO BIEN SALIO GIL DE MIERDA", docs);
+        }
+      }
+    );
+  });
+}
 //////////////////////////////////////////////////////
 //FUNCIONES DE CLIENTES ARCHIVO ventasFile.js////////
 /////////////////////////////////////////////////////
@@ -154,6 +231,23 @@ function guardarVenta(a: any) {
       console.log("Objeto guardado:", newDoc);
     }
   });
+}
+async function saleProcess(venta: any) {
+  console.log("VENTA RECIBIDA", venta);
+  const articuloVendido = await getArticleById(venta.articulo.idArticle);
+  const cantidadVendida = parseInt(venta.cantidad);
+  const idArticle = articuloVendido[0]._id;
+
+  console.log("articulo VENDIDO", articuloVendido);
+
+  console.log("cantidad VENDIDA", cantidadVendida);
+
+  console.log("id articulo", idArticle);
+
+  await updatedStockArticle(idArticle, cantidadVendida); //actualiza el stock del articulo vendido
+  await updateCountSaleArticle(idArticle, venta);
+
+  return guardarVenta(venta);
 }
 function buscarVentas() {
   return new Promise((resolve, reject) => {
@@ -293,7 +387,18 @@ ipcMain.on("register-buy-client", async (event, clienteData) => {
 ipcMain.on("guardar-articulo", async (event, articuloAGuardar) => {
   guardarArticulo(articuloAGuardar);
 });
+ipcMain.on("get-articleById", async (event, articleId) => {
+  console.log("AGUANTEEEEE BOCAA LOCOOO");
+  const article = await getArticleById(articleId);
 
+  event.reply("article-foundById", article);
+});
+ipcMain.on("get-articleByName", async (event, articleName) => {
+  console.log("AGUANTEEEEE BOCAA LOCOOO");
+  const article = await getArticleByName(articleName);
+
+  event.reply("article-foundByName", article);
+});
 ipcMain.on("obtener-articulos", async (event) => {
   const articulos = await buscarArticulos();
 
@@ -308,8 +413,8 @@ ipcMain.on("eliminar-articulo", (e, articuloAEliminar) => {
 ///
 //ESCUCHAS DE EVENTOS DE GUARDADO DE VENTAS
 //
-ipcMain.on("guardar-venta", async (event, ventaAGuardar) => {
-  guardarVenta(ventaAGuardar);
+ipcMain.on("sale-process", async (event, venta) => {
+  saleProcess(venta);
 });
 
 ipcMain.on("obtener-ventas", async (event) => {
