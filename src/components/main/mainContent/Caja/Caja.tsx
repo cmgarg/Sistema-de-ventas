@@ -71,14 +71,14 @@ const Caja: React.FC<VentastProps> = (
 
       const arrayVentas = e.map((venta) => {
         // Asegúrate de que cantidad sea un número, aquí se asume que es un entero
-        return { ...venta, cantidad: parseInt(venta.cantidad) };
+        return { ...venta, cantidad: parseInt(venta.sold) };
       });
 
       setVentas(arrayVentas);
 
       // Calcula el total después de establecer las ventas
       const total = arrayVentas.reduce(
-        (acumulado, venta) => acumulado + venta.cantidad,
+        (acumulado, venta) => acumulado + venta.sold,
         0
       );
       setTotalCantidad(total);
