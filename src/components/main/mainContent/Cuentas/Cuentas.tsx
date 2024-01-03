@@ -27,11 +27,16 @@ const Cuentas: React.FC<CuentasProps> = (
             <div className="flex text-white w-1/4"></div>
             <div className=" flex-1"></div>
           </div>
-          <div className=" flex-1 bg-red-600"></div>
         </div>
 
-        <div className=" flex w-1/4 text-white justify-center">
-          <Calendar />
+        <div className=" flex w-1/4 text-white justify-start flex-col  ">
+          <div className=" h-2/5 px-5"><Calendar/></div>
+          <div className=" border-white border-b-2">
+            <p>Vencimiento Mensual</p>
+          </div>
+          <div className=" border-white border-b-2 pt-5">
+            <p>Gastos Diario</p>
+          </div>
         </div>
       </div>
     </div>
