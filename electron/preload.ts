@@ -144,6 +144,9 @@ contextBridge.exposeInMainWorld("api", {
       "sale-process",
       "obtener-ventas",
       "eliminar-venta",
+      //EVENTOS CUENTAS
+      "save-accountToPay",
+      "get-accountToPay",
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -159,6 +162,7 @@ contextBridge.exposeInMainWorld("api", {
       "response-register-buy",
       "article-foundById",
       "article-foundByName",
+      "response-get-accountToPay",
     ];
 
     if (canalesPermitidos.includes(canal)) {

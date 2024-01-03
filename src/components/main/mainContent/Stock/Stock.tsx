@@ -4,6 +4,7 @@ import NavMain from "../../navmain/NavMain";
 import Export from "../buttons/Export";
 import Agregar from "../buttons/Agregar";
 import StockList from "./StockList";
+import Category from "../Category/Category";
 
 interface StocktProps {
   //PROPS
@@ -52,6 +53,11 @@ const Stock: React.FC<StocktProps> = (
           <Agregar title="Venta" onChangeModal={onChangeModal}></Agregar>
         </NavMain>
       </div>
+      <Category>
+        <div>
+          <p>Categoria</p>
+        </div>
+      </Category>
       <div className="flex flex-row flex-1">
         <AsideMain isActive={false}></AsideMain>
         <div className="flex-1 bg-slate-700 p-5 relative">
