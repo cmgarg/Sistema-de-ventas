@@ -127,7 +127,7 @@ contextBridge.exposeInMainWorld("api", {
       "close-window",
       "minimize-window",
       //EVENTOS DE ARTICULOS
-      "obtener-articulos",
+      "get-articles",
       "guardar-articulo",
       "eliminar-articulo",
       "get-articleById",
@@ -144,9 +144,14 @@ contextBridge.exposeInMainWorld("api", {
       "sale-process",
       "obtener-ventas",
       "eliminar-venta",
+      "get-sales-stats",
       //EVENTOS CUENTAS
       "save-accountToPay",
       "get-accountToPay",
+      //EVENTOS FILTROS
+      "save-category",
+      "save-brand",
+      "get-categoryAndBrand",
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -156,13 +161,15 @@ contextBridge.exposeInMainWorld("api", {
     const canalesPermitidos = [
       "respuesta-obtener-clientes",
       "respuesta-actualizar-cliente",
-      "respuesta-obtener-articulos",
+      "response-get-articles",
       "cliente-encontradoById",
       "respuesta-obtener-ventas",
       "response-register-buy",
       "article-foundById",
       "article-foundByName",
       "response-get-accountToPay",
+      "response-get-categoryAndBrand",
+      "response-get-sales-stats",
     ];
 
     if (canalesPermitidos.includes(canal)) {

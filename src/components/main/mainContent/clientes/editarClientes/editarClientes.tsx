@@ -79,7 +79,7 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
     "outline-none h-9 w-full bg-slate-600 px-2 rounded-md text-slate-50";
 
   return (
-    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center">
+    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50">
       <div className="flex flex-col p-5 space-y-5 bg-slate-50 w-96 justify-center rounded-xl relative items-center">
         <div className="flex flex-row space-x-1">
           <div className="flex-1 w-full">

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import NavMain from "../../navmain/NavMain";
 import Export from "../buttons/Export";
 import TableMain from "../../tablaMain/TableMain";
@@ -11,7 +11,7 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
   console.log("BUENAS TARDES");
   const [articulo, setArticulo] = useState({
     articulo: "",
-    marca: "",
+    brand: { value: "", label: "" },
     costo: "",
     venta: "",
     stock: "",
@@ -46,7 +46,7 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
             <div className="flex-1 h-20 text-2xl text-center flex justify-start pl-5 items-center border-b-2  border-slate-700">
               <p>
                 <span>Marca: </span>
-                {articulo.marca}
+                {articulo.brand.value}
               </p>
             </div>
             <div className="flex-1 h-20 text-2xl text-center flex justify-start pl-5 items-center">
@@ -88,16 +88,19 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
                 </div>
               </TableHead>
               {articulo.ventas.map((compra) => (
-                <TableRow>
+                <TableRow key={compra._id}>
                   <div className="flex justify-center items-center flex-1 pl-2">
                     <p>{compra.articulo.nombreArticulo}</p>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
                     <p>{compra.cantidad}</p>
                   </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
+                  <Link
+                    to={`/cliente/${compra.comprador.idClient}`}
+                    className="flex justify-center items-center flex-1 pl-2"
+                  >
                     <p>{compra.comprador.nombre}</p>
-                  </div>
+                  </Link>
                 </TableRow>
               ))}
             </TableMain>

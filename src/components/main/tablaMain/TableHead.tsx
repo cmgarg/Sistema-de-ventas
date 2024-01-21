@@ -7,7 +7,7 @@ interface TableHeadProps {
 
 const TableHead: React.FC<TableHeadProps> = ({ children }) => {
   return (
-    <div className="flex flex-row space-x-px text-slate-500 justify-center text-3xl rounded-lg h-12 relative">
+    <div className="flex flex-row text-slate-300 justify-center text-3xl h-12 sticky top-0 z-40">
       {children}
     </div>
   );

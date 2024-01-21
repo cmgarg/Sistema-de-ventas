@@ -19,7 +19,13 @@ const Ventas: React.FC<VentastProps> = (
   const [activeModal, setActiveModal] = useState(false);
 
   const [ventas, setVentas] = useState<object[]>([]);
-
+  const [searchActived, setSearchActived] = useState<{
+    actived: boolean;
+    results: object[];
+  }>({
+    actived: false,
+    results: [],
+  });
   function addSale(e: object) {
     setVentas([...ventas, e]);
   }
@@ -29,7 +35,10 @@ const Ventas: React.FC<VentastProps> = (
   function obtenerVentas() {
     window.api.enviarEvento("obtener-ventas");
   }
-
+  function getResultsSales(p: object[], e: boolean) {
+    setSearchActived({ actived: e, results: p });
+    console.log(p);
+  }
   /////LISTA DE ARTICULSO
 
   ///carga de ventas
@@ -43,7 +52,7 @@ const Ventas: React.FC<VentastProps> = (
       });
       setVentas(arraySales);
     });
-  }, []);
+  }, []); // ADAPTAR EL BUSCADOR A ESTO TAMBIEN- YUYUKAKUSHO 15min
   //////////////////////////////
 
   return (
@@ -51,6 +60,10 @@ const Ventas: React.FC<VentastProps> = (
       <div className="flex-2 border-b-2 border-slate-100">
         <NavMain title="Ventas">
           <Export></Export>
+          <Buscador
+            searchIn={ventas}
+            functionReturn={getResultsSales}
+          ></Buscador>
           <Agregar title="Venta" onChangeModal={onChangeModal}></Agregar>
         </NavMain>
       </div>
@@ -63,7 +76,11 @@ const Ventas: React.FC<VentastProps> = (
               addSales={addSale}
             ></AddVentaForm>
           )}
-          <ItemList ventas={ventas} setVentas={setVentas} />
+          <ItemList
+            ventas={ventas}
+            setVentas={setVentas}
+            searchActived={searchActived}
+          />
         </div>
       </div>
     </div>

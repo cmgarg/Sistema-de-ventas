@@ -4,128 +4,60 @@ import AsideMain from "../../asidemain/AsideMain";
 import Buscador from "../../../buscador/Buscador";
 import Agregar from "../buttons/Agregar";
 import AddClientresForm from "./ADDCLIENTES/AddClientresForm";
-import TableMain from "../../tablaMain/TableMain";
-import TableHead from "../../tablaMain/TableHead";
-import TableRow from "../../tablaMain/TableRow";
-import Diamong from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/Diamong";
 import EditarClientes from "./editarClientes/editarClientes";
-import MenuContextual2 from "../../../GMC/MenuContextual2";
 import Export from "../buttons/Export";
-import Biñeta from "../Biñeta/Biñieta";
 import Imprimir from "../buttons/Imprimir";
-import OrdenarPor from "../buttons/OrdenarPor";
-import { Link } from "react-router-dom";
+import ListClient from "./ListClient";
+
 interface ClientesContentProps {
   searchIn?: string;
 }
 
 const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
   const [activeModalForm, setActiveModalForm] = useState(false);
-  const [clienteAeditar, setClienteAeditar] = useState({
+  const [clienteAeditar, setClienteAeditar] = useState<{
+    active: boolean;
+    id: string;
+  }>({
     active: false,
     id: "",
   });
-  function clienteAeditarOff() {
-    console.log(clienteAeditar);
-    setClienteAeditar({ active: false, id: "" });
-  }
+  const [searchActived, setSearchActived] = useState<{
+    actived: boolean;
+    results: object[];
+  }>({
+    actived: false,
+    results: [],
+  });
   const [clientes, setClientes] = useState([]);
 
   function onChangeModal(p: boolean) {
     setActiveModalForm(p);
   }
-  ////ACTIVAR A EDITAR CLIENTES
-  function editClient(clienteid: string) {
-    window.api.enviarEvento("obtener-clienteById", clienteid);
-
-    setClienteAeditar({ active: true, id: clienteid });
+  function clienteAeditarOff() {
+    setClienteAeditar({ active: false, id: "" });
   }
+  function onChangeClient(data: object) {
+    setClienteAeditar(data);
+  }
+  ////ACTIVAR A EDITAR CLIENTES
   /////////////////////////////
-  //ELIMINAR CLIENTES
-  function eliminarCliente(id: string) {
-    console.log("hasda");
-    window.api.enviarEvento("eliminar-cliente", id);
-    obtenerClientes();
+  //OBTENER RESULTADOS DE BUSQUEDAD
+  function getResults(e: object[], actived: boolean) {
+    console.log(clientes, "FORRRRRRRRRRRRRRROO");
+    let object = { actived: actived, results: e };
+    setSearchActived(object);
+    console.log(object, "aca");
   }
   //
   function obtenerClientes() {
     window.api.enviarEvento("obtener-clientes");
   }
   //OBTENER CLIENTES
-  function listaDeItems() {
-    console.log("ME EJECUTO JJIJI");
-    return (
-      <TableMain>
-        <TableHead>
-          <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
-            <p className="text-center">Nombre</p>
-          </div>
-          <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center w-52">
-            <p className="text-center">Email</p>
-          </div>
-          <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center w-52">
-            <p className="text-center">Direccion</p>
-          </div>
-          <div className="bg-slate-600 flex-1 pl-2 rounded-tr-lg flex items-center justify-center w-52">
-            <p className="text-center">DNI</p>
-          </div>
-        </TableHead>
-        <div className="first:bg-white">
-          {clientes.map((fila) => (
-            <TableRow key={fila._id}>
-              <div className="flex justify-center items-center absolute top-0 left-0 bottom-0">
-                <MenuContextual2
-                  title={
-                    <Biñeta title="opciones">
-                      <Diamong color="#fff" size="20" />
-                    </Biñeta>
-                  }
-                >
-                  <div
-                    onClick={() => {
-                      eliminarCliente(fila._id);
-                    }}
-                    className="w-full hover:bg-gray-600"
-                  >
-                    <p>Eliminar</p>
-                  </div>
-                  <div
-                    onClick={() => {
-                      editClient(fila._id);
-                    }}
-                    className="w-full hover:bg-gray-600"
-                  >
-                    <p>Editar</p>
-                  </div>
-                </MenuContextual2>
-              </div>
-              <div className="flex items-center flex-1 pl-2 space-x-2">
-                <div className="flex-1 text-center hover:text-slate-400">
-                  <Link to={`/cliente/${fila._id}`} className="text-center">
-                    {fila.nombre}
-                  </Link>
-                </div>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.email}</p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.direccion}</p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.dni}</p>
-              </div>
-            </TableRow>
-          ))}
-        </div>
-      </TableMain>
-    );
-  }
-
   useEffect(() => {
     obtenerClientes();
     window.api.recibirEvento("respuesta-obtener-clientes", (e) => {
-      console.log("ME EJECUTO A LA PERFECCIONE");
+      console.log("ME EJECUTO A LA PERFECCIONE", e);
       const arrayClientes = [];
       e.map((e) => {
         arrayClientes.push(e);
@@ -137,7 +69,7 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
     <div className="flex flex-col flex-1">
       <div className="flex-2 border-b-2 border-slate-100">
         <NavMain title="Clientes">
-          <Buscador></Buscador>
+          <Buscador searchIn={clientes} functionReturn={getResults}></Buscador>
           <Export></Export>
           <Imprimir></Imprimir>
           <Agregar title="cliente" onChangeModal={onChangeModal}></Agregar>
@@ -149,10 +81,15 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
           {activeModalForm && (
             <AddClientresForm onChangeModal={onChangeModal}></AddClientresForm>
           )}
-          {listaDeItems()}
           {clienteAeditar.active && (
             <EditarClientes clienteAeditarOff={clienteAeditarOff} />
           )}
+
+          <ListClient
+            clienteAeditar={clienteAeditar}
+            searchActived={searchActived}
+            setClienteAeditar={onChangeClient}
+          />
         </div>
       </div>
     </div>

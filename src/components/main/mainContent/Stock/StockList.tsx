@@ -1,112 +1,225 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import TableMain from "../../tablaMain/TableMain";
 import TableHead from "../../tablaMain/TableHead";
 import TableRow from "../../tablaMain/TableRow";
-import MenuContextual2 from "../../../GMC/MenuContextual2";
-import Diamong from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/Diamong";
 import { Link } from "react-router-dom";
-import OrdenarPor from "../buttons/OrdenarPor";
 
 interface StockListProps {
-  ventas: object[];
-  setVentas: (e: object[]) => void;
+  filtersActived: { category: string; brand: string };
+  searchActived: { actived: boolean; results: object[] };
 }
 
-const StockList: React.FC<StockListProps> = ({ ventas, setVentas }) => {
+const StockList: React.FC<StockListProps> = ({
+  filtersActived,
+  searchActived,
+}) => {
+  // HACEEEER QUE EL BUSCADOR FUNCIONE
   //ORDENAR LISTA
-  function sortList(e: string) {
-    let salesToOrder = [...ventas];
+  const [articulos, setArticulos] = useState<object[]>([]);
 
-    if (e === "ventas") {
-      salesToOrder.sort((a: object, b: object) => b.cantidad - a.cantidad);
+  const [articlesFilter, setArticlesFilter] = useState<object[]>([]);
 
-      setVentas([...salesToOrder]);
-    }
-  }
-  function eliminarVenta(id: string) {
-    console.log("hasda");
-    window.api.enviarEvento("eliminar-venta", id);
-    deleteSaleState(id);
-  }
+  const [orderFor, setOrderFor] = useState<string>("");
+
   //elimina venta del estado
-  function deleteSaleState(idSale: string) {
-    const sales = [...ventas];
 
-    const i = sales.findIndex((obj) => obj._id === idSale);
+  useEffect(() => {
+    window.api.recibirEvento("response-get-articles", (e) => {
+      console.log("ME EJECUTO A LA PERFECCIONE", e);
+      const arrayArticulos = [];
+      e.map((e) => {
+        arrayArticulos.push(e);
+      });
+      setArticulos(arrayArticulos);
+    });
+  }, []);
 
-    if (i !== -1) {
-      sales.splice(i, 1);
+  useEffect(() => {
+    //NO SE FILTRA BIEN
+    let articlesFilered = [];
+    if (filtersActived.brand && filtersActived.category === "") {
+      console.log(filtersActived.brand, "AGUANTEEEEEEEEE MILEI");
+      console.log(articulos, "LOS ARTICULOS ");
+      const filter = articulos.filter((e) => {
+        let lowerCase = e.brand.value.toLowerCase();
+        console.log(lowerCase === filtersActived.brand, "BOOOLEANOOO");
+        return e.brand.value.toLowerCase() === filtersActived.brand;
+      });
+      articlesFilered = filter;
+    } else if (filtersActived.category && filtersActived.brand === "") {
+      let filter = articulos.filter((e) => {
+        let lowerCase = e.category.value.toLowerCase();
+        return lowerCase === filtersActived.category;
+      });
+      articlesFilered = filter;
+    } else if (filtersActived.brand && filtersActived.category) {
+      const filter = articulos.filter((e) => {
+        console.log(
+          e.brand.value === filtersActived.brand &&
+            e.category.value === filtersActived.category
+        );
+        let lowerCaseBrand = e.brand.value.toLowerCase();
+        let lowerCaseCategory = e.category.value.toLowerCase();
+
+        return (
+          lowerCaseBrand === filtersActived.brand &&
+          lowerCaseCategory === filtersActived.category
+        );
+      });
+      articlesFilered = filter;
     }
-    setVentas([...sales]);
-    return;
+    setArticlesFilter([...articlesFilered]);
+    console.log(articlesFilter, "BOOOOOOOOOOO", articlesFilered);
+  }, [filtersActived]);
+  function agregarPrueba() {
+    let arr = [];
+
+    for (let i = 0; i < 30; i++) {
+      arr.push({
+        articulo: "Gaseosa",
+        costo: "400",
+        venta: "800",
+        stock: "200",
+        brand: { value: "Mocoreta", label: "Mocoreta" },
+        category: { value: "Bebidas", label: "Bebidas" },
+        ventas: [],
+        _id: "88zOUgvxxDqZJCE3",
+      });
+    }
+
+    let articulosAll = [...arr];
+
+    setArticulos(articulosAll);
   }
+  function onChangeOrderFor(e: string) {
+    setOrderFor(e);
+    sortArticleFor(e);
+  }
+  function sortArticleFor(e: string) {
+    let salesToOrder = [...articulos];
+
+    if (e === "stock") {
+      if (orderFor === "stock") {
+        salesToOrder.sort((a: object, b: object) => a.stock - b.stock);
+        setOrderFor("");
+        console.log("koku");
+      } else {
+        salesToOrder.sort((a: object, b: object) => b.stock - a.stock);
+        console.log("yuya");
+      }
+
+      setArticulos([...salesToOrder]);
+    } else if (e === "costo") {
+      if (orderFor === "costo") {
+        salesToOrder.sort((a: object, b: object) => a.costo - b.costo);
+        setOrderFor("");
+      } else {
+        salesToOrder.sort((a: object, b: object) => b.costo - a.costo);
+      }
+
+      setArticulos([...salesToOrder]);
+    }
+  }
+  useEffect(() => {
+    console.log(searchActived.results, "RESULTADOS DE LA BUSQUEDAD");
+  }, [searchActived]);
 
   return (
     //PODER ORDENAR LAS LISTAS
     <TableMain>
       <TableHead>
-        <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
+        <div className="bg-slate-500 flex-1 pl-2 flex items-center justify-center">
           <p className="text-center">Articulo</p>
         </div>
-        <div className="bg-slate-600 flex-1 pl-2 rounded-tr-lg flex items-center justify-center">
+        <div className="bg-slate-500 flex-1 pl-2 flex items-center justify-center">
+          <p className="text-center">Marca</p>
+        </div>
+        <div
+          className="bg-slate-500 flex-1 pl-2 flex items-center justify-center"
+          onClick={() => {
+            onChangeOrderFor("costo");
+          }}
+        >
+          <p className="text-center">Costo</p>
+        </div>
+        <div
+          className="bg-slate-500 flex-1 pl-2 flex items-center justify-center"
+          onClick={() => {
+            onChangeOrderFor("stock");
+          }}
+        >
           <p className="text-center">Cantidad</p>
-        </div>
-        <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center">
-          <p className="text-center">Comprador</p>
-        </div>
-        <div className="w-12 h-11 bg-gray-700 rounded-lg flex justify-center items-center select-none cursor-pointer absolute right-0">
-          <OrdenarPor>
-            <div
-              className="w-full hover:bg-gray-600"
-              onClick={() => {
-                sortList("ventas");
-              }}
-            >
-              <p>Ventas</p>
-            </div>
-            <div className="w-full hover:bg-gray-600">
-              <p>Mas Activos</p>
-            </div>
-            <div className="w-full hover:bg-gray-600">
-              <p>Inactivos</p>
-            </div>
-          </OrdenarPor>
         </div>
       </TableHead>
       <div className="first:bg-white">
-        {ventas.map((fila) => (
-          <TableRow key={fila._id}>
-            <div className="flex justify-center items-center absolute top-0 left-0 bottom-0">
-              <MenuContextual2 title={<Diamong color="#fff" size="20" />}>
-                <div
-                  onClick={() => {
-                    eliminarVenta(fila._id);
-                  }}
-                  className="w-full hover:bg-gray-600 pl-2"
-                >
-                  <p>Eliminar</p>
-                </div>
-                <div className="w-full hover:bg-gray-600 pl-2">
-                  <p>Editar</p>
-                </div>
-              </MenuContextual2>
-            </div>
-            <div className="flex items-center flex-1 pl-2 space-x-1">
-              <Link
-                to={`/articulo/${fila.articulo.idArticle}`}
-                className="flex-1 text-center"
-              >{`${fila.articulo.nombreArticulo}`}</Link>
-            </div>
+        {articlesFilter.length > 0 &&
+        (filtersActived.brand || filtersActived.category) ? ( //MOSTRAR RESULTADOS
+          articlesFilter.map((fila) => (
+            <TableRow key={fila._id}>
+              <div className="flex items-center flex-1 border-x-2 border-slate-400">
+                <Link
+                  to={`/articulo/${fila.idArticle}`}
+                  className="flex-1 text-center"
+                >{`${fila.articulo}`}</Link>
+              </div>
+              <div className="flex justify-center items-center flex-1 pl-2 border-x-2 border-slate-400">
+                <p>{fila.brand.label}</p>
+              </div>
+              <div className="flex justify-center items-center flex-1 pl-2 border-x-2 border-slate-400">
+                <p>${fila.costo}</p>
+              </div>
+              <div className="flex justify-center items-center flex-1 pl-2 border-x-2 border-slate-400">
+                <p>{fila.stock}</p>
+              </div>
+            </TableRow>
+          ))
+        ) : searchActived.actived && searchActived.results.length > 0 ? (
+          searchActived.results.map((fila) => (
+            <TableRow key={fila._id}>
+              <div className="flex items-center flex-1">
+                <Link
+                  to={`/articulo/${fila.idArticle}`}
+                  className="flex-1 text-center"
+                >{`${fila.articulo}`}</Link>
+              </div>
+              <div className="flex justify-center items-center flex-1 pl-2">
+                <p>{fila.brand.label}</p>
+              </div>
+              <div className="flex justify-center items-center flex-1 pl-2">
+                <p>${fila.costo}</p>
+              </div>
+              <div className="flex justify-center items-center flex-1 pl-2">
+                <p>{fila.stock}</p>
+              </div>
+            </TableRow>
+          ))
+        ) : !filtersActived.category && !filtersActived.brand ? (
+          articulos.map((fila) => (
+            <TableRow key={fila._id}>
+              <div className="flex items-center flex-1 pl-2 space-x-1">
+                <Link
+                  to={`/articulo/${fila._id}`}
+                  className="flex-1 text-center"
+                >{`${fila.articulo}`}</Link>
+              </div>
+              <div className="flex justify-center items-center flex-1 pl-2">
+                <p>{fila.brand.label}</p>
+              </div>
+              <div className="flex justify-center items-center flex-1 pl-2">
+                <p>${fila.costo}</p>
+              </div>
+              <div className="flex justify-center items-center flex-1 pl-2">
+                <p>{fila.stock}</p>
+              </div>
+            </TableRow>
+          ))
+        ) : (
+          <TableRow>
             <div className="flex justify-center items-center flex-1 pl-2">
-              <p>{fila.cantidad}</p>
-            </div>
-            <div className="flex justify-center items-center flex-1 pl-2">
-              <Link to={`/cliente/${fila.comprador.idClient}`}>
-                {fila.comprador.nombre}
-              </Link>
+              <p>No hay resultados</p>
             </div>
           </TableRow>
-        ))}
+        )}
       </div>
     </TableMain>
   );

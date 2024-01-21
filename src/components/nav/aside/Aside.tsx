@@ -344,33 +344,35 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3 rounded-e-lg hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none"
               >
-                <Link to="/Cuentas" className="flex items-center justify-center">
-                {isActive ? (
-                  <div className=" flex items-center justify-center w-10 h-10">
-                    <Cuentas menuState={menuState} size={30}></Cuentas>
-                  </div>
-                ) : (
-                  <Tooltip content="Cuentas">
-                    <div className=" flex items-center justify-center w-10 h-10">
-                      <Cuentas menuState={menuState}></Cuentas>
-                    </div>
-                  </Tooltip>
-                )}
-
-                <div
-                  className={`${
-                    isActive
-                      ? " flex w-24 h-full  items-center  justify-start "
-                      : ""
-                  }`}
+                <Link
+                  to="/Cuentas"
+                  className="flex items-center justify-center"
                 >
                   {isActive ? (
-                    <div className="text-sm ml-2 text-white">
-                      Cuentas a Pagar
+                    <div className=" flex items-center justify-center w-10 h-10">
+                      <Cuentas menuState={menuState} size={30}></Cuentas>
                     </div>
-                  ) : null}
-                 
-                </div> 
+                  ) : (
+                    <Tooltip content="Cuentas">
+                      <div className=" flex items-center justify-center w-10 h-10">
+                        <Cuentas menuState={menuState}></Cuentas>
+                      </div>
+                    </Tooltip>
+                  )}
+
+                  <div
+                    className={`${
+                      isActive
+                        ? " flex w-24 h-full  items-center  justify-start "
+                        : ""
+                    }`}
+                  >
+                    {isActive ? (
+                      <div className="text-sm ml-2 text-white">
+                        Cuentas a Pagar
+                      </div>
+                    ) : null}
+                  </div>
                 </Link>
               </div>
             </div>
@@ -387,29 +389,33 @@ export default function Aside() {
                 }}
                 className=" flex items-center justify-center mt-3 mb-3  hover:bg-gray-700 active:bg-gray-900 rounded-e-lg cursor-pointer select-none"
               >
-                {isActive ? (
-                  <div className=" flex items-center justify-center w-10 h-10">
-                    <Estadisticas menuState={menuState}></Estadisticas>
-                  </div>
-                ) : (
-                  <Tooltip content="Estadisticas">
+                <Link to={"/estadisticas"}>
+                  {isActive ? (
                     <div className=" flex items-center justify-center w-10 h-10">
                       <Estadisticas menuState={menuState}></Estadisticas>
                     </div>
-                  </Tooltip>
-                )}
+                  ) : (
+                    <Tooltip content="Estadisticas">
+                      <div className=" flex items-center justify-center w-10 h-10">
+                        <Estadisticas menuState={menuState}></Estadisticas>
+                      </div>
+                    </Tooltip>
+                  )}
 
-                <div
-                  className={`${
-                    isActive
-                      ? " flex w-24 h-full  items-center  justify-start "
-                      : ""
-                  }`}
-                >
-                  {isActive ? (
-                    <div className="text-sm ml-2 text-white">Estadisticas</div>
-                  ) : null}
-                </div>
+                  <div
+                    className={`${
+                      isActive
+                        ? " flex w-24 h-full  items-center  justify-start "
+                        : ""
+                    }`}
+                  >
+                    {isActive ? (
+                      <div className="text-sm ml-2 text-white">
+                        Estadisticas
+                      </div>
+                    ) : null}
+                  </div>
+                </Link>
               </div>
             </div>
           </div>

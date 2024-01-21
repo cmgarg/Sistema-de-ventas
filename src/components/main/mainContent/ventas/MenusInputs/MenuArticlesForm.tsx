@@ -19,7 +19,7 @@ const MenuArticlesForm: React.FC<MenuArticlesForm> = ({
   const [articulos, setArticulos] = useState([]);
 
   function getArticles() {
-    window.api.enviarEvento("obtener-articulos");
+    window.api.enviarEvento("get-articles");
   }
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -72,7 +72,7 @@ const MenuArticlesForm: React.FC<MenuArticlesForm> = ({
   }, [inputValue]);
   useEffect(() => {
     getArticles();
-    window.api.recibirEvento("respuesta-obtener-articulos", (e) => {
+    window.api.recibirEvento("response-get-articles", (e) => {
       console.log("ME EJECUTO A LA PERFECCIONE", e);
       const arrayArticulos = [];
       e.map((e) => {
