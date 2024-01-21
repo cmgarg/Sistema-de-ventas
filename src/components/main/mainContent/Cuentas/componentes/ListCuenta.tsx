@@ -22,7 +22,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({ Cuentas }) => {
 
   const colores = ["bg-slate-600", "bg-slate-900"];
 
-  const [divExpandido, setDivExpandido] = useState(null);
+  const [divExpandido, setDivExpandido] = useState<string>("");
 
   useEffect(() => {
     console.log(Cuentas);
@@ -133,16 +133,16 @@ const ListCuenta: React.FC<ListCuentaProps> = ({ Cuentas }) => {
 
   //////// Funcion para poder expandir los div y ocultar los otros 2
 
-  const expandirDiv = (divId) => {
+  const expandirDiv = (divId:string) => {
     if (divExpandido === divId) {
-      setDivExpandido(null);
+      setDivExpandido("");
     } else {
       setDivExpandido(divId);
     }
   };
 
-  const esDivVisible = (divId) => {
-    return divExpandido === null || divExpandido === divId;
+  const esDivVisible = (divId:string) => {
+    return divExpandido === "" || divExpandido === divId;
   };
 
   return (
