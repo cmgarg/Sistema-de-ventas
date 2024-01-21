@@ -4,6 +4,7 @@ import Export from "../buttons/Export";
 import Calendar from "./componentes/Calendar";
 import Agregar from "../buttons/Agregar";
 import AddAccountToPay from "./componentes/AddAccountToPay/AddAccountToPay";
+import ListCuenta from "./componentes/ListCuenta";
 
 interface CuentasProps {
   //PROPS
@@ -32,9 +33,12 @@ const Cuentas: React.FC<CuentasProps> = (
   useEffect(() => {
     getAccountsToPay();
 
-    window.api.recibirEvento("response-get-accountToPay", (accounts) => {
-      setAccountToPay(accounts);
-    });
+    window.api.recibirEvento(
+      "response-get-accountToPay",
+      (accounts: object[]) => {
+        setAccountToPay(accounts);
+      }
+    );
 
     console.log("CUENTAS A PAGAR", accountToPay);
   }, []);
@@ -54,20 +58,41 @@ const Cuentas: React.FC<CuentasProps> = (
             addAccountToPay={addAccountToPay}
           ></AddAccountToPay>
         )}
-        <div className="flex flex-1 flex-col bg-black">
-          <div className=" flex flex-row bg-slate-900 h-4/6">
-            <div className="flex text-white w-1/4"></div>
-            <div className=" flex-1"></div>
+        <div className="flex flex-1 flex-col bg-slate-700">
+          <div className=" flex flex-row border-b-2 border-gray-900 bg-slate-700">
+            <div className="flex h-12 w-44 bg-slate-700 text-white justify-center items-center border-r-2 border-gray-900">
+              <div>Mes Actual</div>
+              <div>a</div>
+            </div>
+            <div className="flex-1 flex h-12 bg-slate-700 text-white justify-center items-center border-r-2 border-gray-900">
+              Tipo De Gasto
+            </div>
+            <div className="flex-1 flex h-12 bg-slate-700 text-white justify-center items-center border-r-2 border-gray-900">
+              Descripcion
+            </div>
+            <div className="flex-1 flex h-12 bg-slate-700 text-white justify-center items-center border-r-2 border-gray-900">
+              Dia de vencimiento
+            </div>
+            <div className="flex-1 flex h-12 bg-slate-700 text-white justify-center items-center border-r-2 border-gray-900">
+              Monto
+            </div>
+            <div className="flex-1 flex h-12 bg-slate-700 text-white justify-center items-center border-r-2 border-gray-900">
+              Pagado
+            </div>
           </div>
+
+          <ListCuenta Cuentas={accountToPay} />
         </div>
 
         <div className=" flex w-1/4 text-white justify-start flex-col  ">
-          <div className=" h-2/5 px-5"><Calendar/></div>
+          <div className=" h-2/5 px-5">
+            <Calendar />
+          </div>
           <div className=" border-white border-b-2">
-            <p>Vencimiento Mensual</p>
+            <p className="pl-3">Vencimiento Mensual</p>
           </div>
           <div className=" border-white border-b-2 pt-5">
-            <p>Gastos Diario</p>
+            <p className="pl-3">Gastos Diario</p>
           </div>
         </div>
       </div>
