@@ -1,2 +1,6 @@
-{"articulo":{"nombreArticulo":"Gaseosa","idArticle":"693AEjsCgxzQpel9"},"cantidad":"12","comprador":{"nombre":"Gonzalo","idClient":"37VFnoknOdwHPPk7"},"sold":3600,"dateOfRegister":"02-01-2024","_id":"5Tm37BHCGJNvoPgl"}
-{"articulo":{"nombreArticulo":"Gaseosa","idArticle":"693AEjsCgxzQpel9"},"cantidad":"15","comprador":{"nombre":"Gonzalo","idClient":"37VFnoknOdwHPPk7"},"sold":4500,"dateOfRegister":"02-01-2024","_id":"tApHviksUcIQ39AM"}
+{"articulo":{"nombreArticulo":"Lavandina","idArticle":"jbyIrsXxuYLzUVi7"},"cantidad":"24","comprador":{"nombre":"Martin","idClient":"9wmvmWycueOk2iUy"},"sold":7200,"dateOfRegister":"20-01-2024","_id":"9uVpqTqJcyQUN9f3"}
+{"articulo":{"nombreArticulo":"Lavandina","idArticle":"jbyIrsXxuYLzUVi7"},"cantidad":"30","comprador":{"nombre":"Martin","idClient":"9wmvmWycueOk2iUy"},"sold":9000,"dateOfRegister":"17-01-2024","_id":"dW8Zh9aA27DdcYNE"}
+{"articulo":{"nombreArticulo":"Gaseosa","idArticle":"88zOUgvxxDqZJCE3"},"cantidad":"55","comprador":{"nombre":"Gonzalo","idClient":"3NaLgjJ9DnxPVVdy"},"sold":22000,"dateOfRegister":"19-01-2024","_id":"e6K2mdLdrZcEHrWN"}
+{"articulo":{"nombreArticulo":"Gaseosa","idArticle":"88zOUgvxxDqZJCE3"},"cantidad":"20","comprador":{"nombre":"Gonzalo","idClient":"3NaLgjJ9DnxPVVdy"},"sold":8000,"dateOfRegister":"10-01-2024","_id":"fkRyRkInc9B0kLha"}
+{"articulo":{"nombreArticulo":"Gaseosa","idArticle":"88zOUgvxxDqZJCE3"},"cantidad":"23","comprador":{"nombre":"Gonzalo","idClient":"3NaLgjJ9DnxPVVdy"},"sold":9200,"dateOfRegister":"19-01-2024","_id":"lcY60yx15AvkisQx"}
+{"articulo":{"nombreArticulo":"Mostachol","idArticle":"0EYZu5UHfyDXZGhu"},"cantidad":"20","comprador":{"nombre":"Lionel","idClient":"85otjlebX4K91kw0"},"sold":4000,"dateOfRegister":"17-01-2024","_id":"te73LqbwMl8Fa2Bj"}

@@ -33,7 +33,7 @@ const Cuentas: React.FC<CuentasProps> = (
     getAccountsToPay();
 
     window.api.recibirEvento("response-get-accountToPay", (accounts) => {
-      setAccountToPay(accounts);
+      setAccountToPay([accounts]);
     });
 
     console.log("CUENTAS A PAGAR", accountToPay);

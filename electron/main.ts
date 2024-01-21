@@ -17,6 +17,10 @@ const cuentas = new Datastore({
   filename: "database/cuentasFile.js",
   autoload: true,
 });
+const filters = new Datastore({
+  filename: "database/filtersFile.js",
+  autoload: true,
+});
 
 //FUNCIONES DE CLIENTES ARCHIVO DATAFILE
 
@@ -39,9 +43,19 @@ function guardarUsuario(data: any) {
 async function registerBuyClient(clientBuy: any) {
   const client = await getClientById(clientBuy.cliente.idClient);
   console.log("CLIENTE OBTENIDO APAPA", client[0].compras);
+  const fechaActual = new Date();
+  const año = fechaActual.getFullYear();
+  const mes = fechaActual.getMonth() + 1;
+  const dia = fechaActual.getDate();
+  const clientWithDate = {
+    compra: clientBuy.compra,
+    dateOfRegister: `${dia.toString().padStart(2, "0")}-${mes
+      .toString()
+      .padStart(2, "0")}-${año}`,
+  };
   const clientUpdated = {
     ...client[0],
-    compras: [...client[0].compras, clientBuy.compra],
+    compras: [...client[0].compras, clientWithDate],
   };
   console.log("WACHAAAA", clientUpdated);
   delete clientUpdated._id;
@@ -222,9 +236,24 @@ async function updateCountSaleArticle(articleId: string, sale: object) {
     );
   });
 }
+
 //////////////////////////////////////////////////////
 //FUNCIONES DE CLIENTES ARCHIVO ventasFile.js////////
-/////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+async function getAllSalesData() {
+  const ventasAll = await buscarVentas();
+
+  const ventasStats = ventasAll.map((e) => {
+    return {
+      article: e.articulo.nombreArticulo,
+      amount: e.cantidad,
+      sold: e.sold,
+      date: e.dateOfRegister,
+    };
+  });
+
+  return ventasStats;
+}
 function guardarVenta(a: any) {
   const fechaActual = new Date();
   const año = fechaActual.getFullYear();
@@ -313,6 +342,51 @@ async function getAccountsToPay() {
   });
 }
 //////////////////////////////////////////////////////
+//FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
+/////////////////////////////////////////////////////
+function addCategory(e: { value: string; label: string; typeFilter: string }) {
+  console.log(e);
+  return new Promise((resolve, reject) => {
+    filters.insert(e, (err, docs) => {
+      if (err) {
+        console.error("Error al obtener datos:", err);
+        reject(err);
+      } else {
+        console.log("Datos obtenidos:", docs);
+        resolve(docs);
+      }
+    });
+  });
+}
+function addBrand(e: { value: string; label: string; typeFilter: string }) {
+  console.log(e);
+  return new Promise((resolve, reject) => {
+    filters.insert(e, (err, docs) => {
+      if (err) {
+        console.error("Error al obtener datos:", err);
+        reject(err);
+      } else {
+        console.log("Datos obtenidos:", docs);
+        resolve(docs);
+      }
+    });
+  });
+}
+
+function getCategoryAndBrand() {
+  return new Promise((resolve, reject) => {
+    filters.find({}, (err: any, docs: unknown) => {
+      if (err) {
+        console.error("Error al obtener datos:", err);
+        reject(err);
+      } else {
+        console.log("Datos obtenidos:", docs);
+        resolve(docs);
+      }
+    });
+  });
+}
+//////////////////////////////////////////////////////
 
 // The built directory structure
 //
@@ -338,7 +412,7 @@ function createWindow() {
     width: 1000,
     height: 1800,
     minWidth: 900,
-    minHeight: 600,
+    minHeight: 500,
     titleBarStyle: "hidden",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -437,11 +511,11 @@ ipcMain.on("get-articleByName", async (event, articleName) => {
 
   event.reply("article-foundByName", article);
 });
-ipcMain.on("obtener-articulos", async (event) => {
+ipcMain.on("get-articles", async (event) => {
   const articulos = await buscarArticulos();
 
   console.log("SE ENVIO LO PEDIDO", articulos);
-  event.reply("respuesta-obtener-articulos", articulos); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
+  event.reply("response-get-articles", articulos); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
 });
 
 ipcMain.on("eliminar-articulo", (e, articuloAEliminar) => {
@@ -451,6 +525,13 @@ ipcMain.on("eliminar-articulo", (e, articuloAEliminar) => {
 ///
 //ESCUCHAS DE EVENTOS DE GUARDADO DE VENTAS
 //
+
+ipcMain.on("get-sales-stats", async (event) => {
+  const statsSales = await getAllSalesData();
+  console.log(statsSales, "FALOPERO");
+  event.reply("response-get-sales-stats", statsSales);
+});
+
 ipcMain.on("sale-process", async (event, venta) => {
   saleProcess(venta);
 });
@@ -478,6 +559,19 @@ ipcMain.on("get-accountToPay", async (event, account) => {
   const accountsToPay = await getAccountsToPay();
 
   event.reply("response-get-accountToPay", accountsToPay);
+});
+
+ipcMain.on("save-category", async (event, category) => {
+  // GUARDAR CATEGORIA EN FILTROS
+  await addCategory(category);
+});
+ipcMain.on("save-brand", async (event, brand) => {
+  await addBrand(brand);
+});
+ipcMain.on("get-categoryAndBrand", async (event, category) => {
+  const categorysAndBrands = await getCategoryAndBrand();
+
+  event.reply("response-get-categoryAndBrand", categorysAndBrands);
 });
 
 //////////////

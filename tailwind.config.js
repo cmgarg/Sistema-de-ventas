@@ -33,6 +33,28 @@ module.exports = {
         ".border-t-1": {
           "border-top-width": "1px",
         },
+        ".custom-scrollbar::-webkit-scrollbar": {
+          width: "3px" /* Ancho del scrollbar */,
+          "border-radius": "5px",
+        },
+
+        ".custom-scrollbar::-webkit-scrollbar-track": {
+          background: "#737373" /* Color de fondo del track */,
+          "border-radius": "5px",
+        },
+
+        ".custom-scrollbar::-webkit-scrollbar-thumb": {
+          background: "#fff" /* Color del thumb */,
+          "border-radius": "5px",
+        },
+
+        ".custom-scrollbar::-webkit-scrollbar-thumb:hover": {
+          background: "#555" /* Color del thumb al pasar el mouse */,
+          "border-radius": "5px",
+        },
+        ".recharts-rectangle::path": {
+          fill: "#ffffff !important",
+        },
       };
       addUtilities(newUtilities);
     },

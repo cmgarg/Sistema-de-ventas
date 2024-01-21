@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import NavMain from "../../navmain/NavMain";
 import Export from "../buttons/Export";
 import TableMain from "../../tablaMain/TableMain";
@@ -18,7 +18,6 @@ const ClienteInfo: React.FC<ClienteInfoProps> = ({}) => {
     compras: [],
   });
   const { id } = useParams();
-
   function getClienteInfo() {
     window.api.enviarEvento("obtener-clienteById", id);
   }
@@ -31,6 +30,9 @@ const ClienteInfo: React.FC<ClienteInfoProps> = ({}) => {
       console.log(e, "KIKO");
     });
   }, []);
+  useEffect(() => {
+    console.log(cliente.compras[0]);
+  }, [cliente]);
 
   return (
     <div className="flex flex-col flex-1 text-slate-50">
@@ -84,14 +86,23 @@ const ClienteInfo: React.FC<ClienteInfoProps> = ({}) => {
                 <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
                   <p className="text-center">Cantidad</p>
                 </div>
+                <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
+                  <p className="text-center">Fecha</p>
+                </div>
               </TableHead>
-              {cliente.compras.map((compra) => (
+              {cliente.compras.map((com) => (
                 <TableRow>
+                  <Link
+                    to={`/articulo/${com.compra.articulo.idArticle}`}
+                    className="flex justify-center items-center flex-1 pl-2"
+                  >
+                    <p>{com.compra.articulo.nombreArticulo}</p>
+                  </Link>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{compra.articulo.nombreArticulo}</p>
+                    <p>{com.compra.cantidad}</p>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{compra.cantidad}</p>
+                    <p>{com.dateOfRegister}</p>
                   </div>
                 </TableRow>
               ))}

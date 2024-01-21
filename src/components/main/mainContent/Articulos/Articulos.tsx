@@ -13,30 +13,50 @@ import Export from "../buttons/Export";
 import { Link } from "react-router-dom";
 import ArticleList from "./ArticleList";
 
-interface ArticulosProps {
-  tamaño: string;
-}
+interface ArticulosProps {}
 
-const Articulos: React.FC<ArticulosProps> = ({ tamaño }) => {
+const Articulos: React.FC<ArticulosProps> = ({}) => {
   const [activeModal, setActiveModal] = useState(false);
 
   const [articulos, setArticulos] = useState<object[]>([]);
-
+  const [searchActived, setSearchActived] = useState<{
+    actived: boolean;
+    results: object[];
+  }>({
+    actived: false,
+    results: [],
+  });
+  const [articleToEdit, setArticleToEdit] = useState<{
+    active: boolean;
+    id: string;
+  }>({
+    active: false,
+    id: "",
+  });
   function onChangeModal(p: boolean) {
     setActiveModal(p);
   }
   function obtenerArticulos() {
-    window.api.enviarEvento("obtener-articulos");
+    window.api.enviarEvento("get-articles");
+  }
+  function onChangeArticle(e: { active: boolean; id: string }) {
+    setArticleToEdit(e);
   }
 
   function addArticles(article: object) {
     setArticulos([...articulos, article]);
   }
+  function resultFindArticles(e: object[], actived: boolean) {
+    let object = { actived: actived, results: e };
+    setSearchActived(object);
+    console.log(object, "aca");
+  }
+  const estilosInput = "outline-none h-9 w-full bg-slate-600 px-2 rounded-md";
 
   ///carga de articulos
   useEffect(() => {
     obtenerArticulos();
-    window.api.recibirEvento("respuesta-obtener-articulos", (e) => {
+    window.api.recibirEvento("response-get-articles", (e) => {
       console.log("ME EJECUTO A LA PERFECCIONE", e);
       const arrayArticulos = [];
       e.map((e) => {
@@ -51,7 +71,10 @@ const Articulos: React.FC<ArticulosProps> = ({ tamaño }) => {
     <div className="flex flex-col flex-1">
       <div className="flex-2 border-b-2 border-slate-100">
         <NavMain title="Articulos">
-          <Buscador></Buscador>
+          <Buscador
+            searchIn={articulos}
+            functionReturn={resultFindArticles}
+          ></Buscador>
           <Export></Export>
           <Agregar title="Articulo" onChangeModal={onChangeModal}></Agregar>
         </NavMain>
@@ -65,7 +88,13 @@ const Articulos: React.FC<ArticulosProps> = ({ tamaño }) => {
               addArticles={addArticles}
             ></AddArticuloForm>
           )}
-          <ArticleList articulos={articulos} setArticulos={setArticulos} />
+          <ArticleList
+            articulos={articulos}
+            setArticulos={setArticulos}
+            articleToEdit={articleToEdit}
+            setArticleToEdit={onChangeArticle}
+            searchActived={searchActived}
+          />
         </div>
       </div>
     </div>

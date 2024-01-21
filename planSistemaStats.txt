@@ -1,0 +1,16 @@
+MOSTRAR DATOS
+
+Datos importantes de ventas
+
+Cantidad vendida | Dinero generado con la venta | nombre y fecha que se realizo la venta
+
+Un grafico de lo vendido en el mes, podria ser por semana o por dia. Tambien podria ser
+un grafico que muestre lo vendido en un año.
+
+Para mostrar detalladamente cada cosa, podria ser un sistema de menor a mayor,
+cuanto se vendio en el dia, semana, mes y año. Tambien podria dar la opcion de que se vendio,
+por ejemplo recopilar en un objeto todo lo vendido, de ese objeto sacar la informacion de cada
+dia, por ejemplo el 01/10 se mostraria que se vendio, eso se sabria extrayendo las ventas 
+que se hayan generado el dia 01/10, ya que cada venta se guarda con su fecha de generado.
+Se guardarian en un array de objetos y se le otorgaria a recharts eso. Lo mismo con
+semana, mes y año.
