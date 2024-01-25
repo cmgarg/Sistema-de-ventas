@@ -9,97 +9,119 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
   onChangeModal,
   addAccountToPay,
 }) => {
-  //DATOS USUARIOS
-
   type accountObject = {
-    text: string;
+    tipodegasto: string;
     date: string;
     pay: string;
+    descripcion: string;
   };
 
   const [accountData, setAccountData] = useState<accountObject>({
-    text: "",
+    tipodegasto: "",
     date: "",
     pay: "",
+    descripcion: "",
   });
 
   function setChangeData(data: string, value: string) {
-    console.log("LLAMA LA FUNCION");
-    const existingData = ["text", "date", "pay"];
-    console.log(existingData.includes(data), "esto");
+    const existingData = ["tipodegasto", "date", "pay", "descripcion"];
     if (existingData.includes(data)) {
-      switch (data) {
-        case "text":
-          console.log("se cumple esrte");
-          setAccountData({ ...accountData, text: value });
-          break;
-        case "date":
-          setAccountData({ ...accountData, date: value });
-          break;
-        case "pay":
-          setAccountData({ ...accountData, pay: value });
-          break;
-        default:
-          break;
+      let newValue = value;
+  
+      // Limitar la longitud del texto a 20 caracteres para los campos específicos
+      if (data === "pay" || data === "descripcion") {
+        newValue = value.slice(0, 20);
       }
-    } else {
-      console.log("NO ESTA");
+  
+      let newAccountData = { ...accountData };
+  
+      if (data === "tipodegasto") {
+        newAccountData.tipodegasto = newValue;
+        // Si el tipo de gasto es Vencimiento Mensual y ya se tiene una fecha, actualizar solo el día
+        if (newValue === "Vencimiento Mensual" && newAccountData.date) {
+          newAccountData.date = newAccountData.date.split("-").pop(); // Conservar solo el día
+        }
+      } else if (data === "date") {
+        // Si el tipo de gasto es Vencimiento Mensual, actualizar solo el día
+        if (newAccountData.tipodegasto === "Vencimiento Mensual") {
+          newAccountData.date = newValue.split("-").pop();
+        } else {
+          newAccountData.date = newValue;
+        }
+      } else {
+        newAccountData[data] = newValue;
+      }
+  
+      setAccountData(newAccountData);
     }
   }
+  
+
   useEffect(() => {
     console.log(accountData);
   }, [accountData]);
 
-  //SUBIR USUARIO A BASE DE DATOS LOCAL
-
   function subirArticulo() {
+    console.log("se subio el articulo", accountData);
     window.api.enviarEvento("save-accountToPay", accountData);
-
     addAccountToPay(accountData);
-
     setAccountData({
-      text: "",
+      tipodegasto: "",
       date: "",
       pay: "",
+      descripcion: "",
     });
     onChangeModal(false);
   }
-  //ESTILOS INPUT
+
   const estilosInput = "outline-none h-9 w-full bg-slate-600 px-2 rounded-md";
 
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50">
-      <div className="w-96 bg-white space-y-5 p-2 text-white rounded-md relative">
-        <button
-          className="bg-red-500 h-10 w-10 rounded-full absolute -right-2 -top-2"
-          onClick={() => {
-            onChangeModal(false);
-          }}
-        >
-          X
-        </button>
-        <div className="flex flex-row space-x-1">
-          <div className="flex-1">
-            <label htmlFor="text" className="text-slate-600">
-              Cuenta
-            </label>
-            <input
-              type="text"
-              name="text"
-              className={estilosInput}
-              value={accountData.text}
-              onChange={(e) => {
-                setChangeData("text", e.target.value);
-              }}
-            />
+      <div className="absolute top-0 right-0 bottom-0 left-0 bg-black opacity-60"></div>
+      <div className="w-96 bg-white space-y-5 rounded-md relative justify-start text-white  border-black border-2">
+        <div className="flex-1 flex flex-row h-8 justify-between bg-slate-700">
+          <div className="flex items-center p-1 pl-2">Agrega un Gasto</div>
+          <button
+            className="bg-red-700 h-8 w-8"
+            onClick={() => {
+              onChangeModal(false);
+            }}
+          >
+            X
+          </button>
+        </div>
+        <div className="flex-1 flex space-y-5 flex-col px-2 pb-2">
+          <div className="flex flex-row space-x-1">
+            <div className="flex-1">
+              <label htmlFor="tipodegasto" className="text-slate-600">
+                Tipo De Gasto
+              </label>
+              <select
+                name="tipodegasto"
+                className={estilosInput}
+                value={accountData.tipodegasto}
+                onChange={(e) => {
+                  setChangeData("tipodegasto", e.target.value);
+                }}
+              >
+                <option value="">Selecciona una opción</option>
+                <option value="Vencimiento Mensual">Vencimiento Mensual</option>
+                <option value="Gasto Diario">Gasto Diario</option>
+              </select>
+            </div>
           </div>
           <div className="flex-1">
             <label htmlFor="date" className="text-slate-600">
-              Fecha
+              Dia De Vencimiento
             </label>
             <input
-              type="date"
-              name="marca"
+              type={
+                accountData.tipodegasto === "Vencimiento Mensual"
+                  ? "text"
+                  : "date"
+              }
+              name="date"
               className={estilosInput}
               value={accountData.date}
               onChange={(e) => {
@@ -107,36 +129,50 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
               }}
             />
           </div>
-        </div>
-        <div>
-          <label htmlFor="pay" className="text-slate-600">
-            Monto
-          </label>
-          <input
-            type="text"
-            name="pay"
-            className={estilosInput}
-            value={accountData.pay}
-            onChange={(e) => {
-              setChangeData("pay", e.target.value);
-            }}
-          />
-        </div>
-        <div className="flex flex-row space-x-5">
-          <button
-            className="w-52 h-10 bg-red-400 rounded-md"
-            onClick={() => {
-              onChangeModal(false);
-            }}
-          >
-            Cancelar
-          </button>
-          <button
-            className="w-52 h-10 bg-green-400 rounded-md"
-            onClick={subirArticulo}
-          >
-            Añadir
-          </button>
+          <div>
+            <label htmlFor="pay" className="text-slate-600">
+              Monto
+            </label>
+            <input
+              type="number"
+              name="pay"
+              className={estilosInput}
+              value={accountData.pay}
+              onChange={(e) => {
+                setChangeData("pay", e.target.value);
+              }}
+            />
+          </div>
+          <div>
+            <label htmlFor="descripcion" className="text-slate-600">
+              Descripcion
+            </label>
+            <input
+              type="text"
+              name="descripcion"
+              className={estilosInput}
+              value={accountData.descripcion}
+              onChange={(e) => {
+                setChangeData("descripcion", e.target.value);
+              }}
+            />
+          </div>
+          <div className="flex flex-row space-x-5">
+            <button
+              className="w-52 h-10 bg-red-700 rounded-md"
+              onClick={() => {
+                onChangeModal(false);
+              }}
+            >
+              Cancelar
+            </button>
+            <button
+              className="w-52 h-10 bg-green-700 rounded-md"
+              onClick={subirArticulo}
+            >
+              Agregar
+            </button>
+          </div>
         </div>
       </div>
     </div>
