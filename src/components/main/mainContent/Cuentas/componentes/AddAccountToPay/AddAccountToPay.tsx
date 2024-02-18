@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 interface AddAccountToPayProps {
   onChangeModal: (p: boolean) => void;
@@ -14,6 +15,8 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
     date: string;
     pay: string;
     descripcion: string;
+    pagado: boolean;
+    meses: number;
   };
 
   const [accountData, setAccountData] = useState<accountObject>({
@@ -21,60 +24,65 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
     date: "",
     pay: "",
     descripcion: "",
+    pagado: false,
+    meses: 1,
   });
 
-  function setChangeData(data: string, value: string) {
-    const existingData = ["tipodegasto", "date", "pay", "descripcion"];
-    if (existingData.includes(data)) {
-      let newValue = value;
-  
-      // Limitar la longitud del texto a 20 caracteres para los campos específicos
-      if (data === "pay" || data === "descripcion") {
-        newValue = value.slice(0, 20);
-      }
-  
-      let newAccountData = { ...accountData };
-  
-      if (data === "tipodegasto") {
-        newAccountData.tipodegasto = newValue;
-        // Si el tipo de gasto es Vencimiento Mensual y ya se tiene una fecha, actualizar solo el día
-        if (newValue === "Vencimiento Mensual" && newAccountData.date) {
-          newAccountData.date = newAccountData.date.split("-").pop(); // Conservar solo el día
-        }
-      } else if (data === "date") {
-        // Si el tipo de gasto es Vencimiento Mensual, actualizar solo el día
-        if (newAccountData.tipodegasto === "Vencimiento Mensual") {
-          newAccountData.date = newValue.split("-").pop();
-        } else {
-          newAccountData.date = newValue;
-        }
-      } else {
-        newAccountData[data] = newValue;
-      }
-  
-      setAccountData(newAccountData);
-    }
+  function setChangeData(data: string, value: string | number) {
+    let newAccountData = { ...accountData };
+    newAccountData[data] = value;
+    setAccountData(newAccountData);
   }
-  
 
   useEffect(() => {
     console.log(accountData);
   }, [accountData]);
 
   function subirArticulo() {
-    console.log("se subio el articulo", accountData);
-    window.api.enviarEvento("save-accountToPay", accountData);
-    addAccountToPay(accountData);
+    if (accountData.tipodegasto === "Vencimiento Mensual") {
+      for (let i = 0; i < accountData.meses; i++) {
+        const newAccount = {
+          ...accountData,
+          date: new Date(new Date(accountData.date).setMonth(new Date(accountData.date).getMonth() + i))
+            .toISOString()
+            .split("T")[0],
+        };
+        window.api.enviarEvento("save-accountToPay", newAccount);
+        addAccountToPay(newAccount);
+      }
+    } else {
+      window.api.enviarEvento("save-accountToPay", accountData);
+      addAccountToPay(accountData);
+    }
     setAccountData({
       tipodegasto: "",
       date: "",
       pay: "",
       descripcion: "",
+      pagado: false,
+      meses: 1,
     });
     onChangeModal(false);
   }
 
+
   const estilosInput = "outline-none h-9 w-full bg-slate-600 px-2 rounded-md";
+
+  function validateAndSubmit() {
+    const { tipodegasto, date, pay, descripcion } = accountData;
+    if (!tipodegasto || !date || !pay || !descripcion) {
+      Swal.fire({
+        title: "Error!",
+        text: "Por favor, completa todos los campos antes de continuar.",
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+      return;
+    }
+
+    subirArticulo();
+    // Resto de la función...
+  }
 
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50">
@@ -109,6 +117,23 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
                 <option value="Vencimiento Mensual">Vencimiento Mensual</option>
                 <option value="Gasto Diario">Gasto Diario</option>
               </select>
+              {accountData.tipodegasto === "Vencimiento Mensual" ? (
+                <div className="pt-4">
+                  <label htmlFor="meses" className="text-slate-600">
+                    Cantidad de Meses a Pagar
+                  </label>
+                  <input
+                    type="number"
+                    name="meses"
+                    className={estilosInput}
+                    value={accountData.meses}
+                    min="1"
+                    onChange={(e) => {
+                      setChangeData("meses", e.target.value);
+                    }}
+                  />
+                </div>
+              ) : null}
             </div>
           </div>
           <div className="flex-1">
@@ -116,11 +141,7 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
               Dia De Vencimiento
             </label>
             <input
-              type={
-                accountData.tipodegasto === "Vencimiento Mensual"
-                  ? "text"
-                  : "date"
-              }
+              type="date"
               name="date"
               className={estilosInput}
               value={accountData.date}
@@ -168,7 +189,7 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
             </button>
             <button
               className="w-52 h-10 bg-green-700 rounded-md"
-              onClick={subirArticulo}
+              onClick={validateAndSubmit}
             >
               Agregar
             </button>

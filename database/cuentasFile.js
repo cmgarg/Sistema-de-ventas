@@ -1,1 +1,46 @@
-{"text":"Nafta","date":"2024-04-22","pay":"5000","_id":"dyJpJ9FdGwWGzXIY"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-08-10","pay":"50.000","descripcion":"Luz Local","pagado":true,"meses":"36","_id":"0XCSyN2rcsboI8kn"}
+{"tipodegasto":"Vencimiento Mensual","date":"2026-05-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"0u237ZKSA4V4DDaE"}
+{"tipodegasto":"Vencimiento Mensual","date":"2026-07-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"0z9AxujfMU1EwYzJ"}
+{"tipodegasto":"Vencimiento Mensual","date":"2026-06-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"26s1ELcEV664ERfm"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-02-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"2owoCpX8lMFtxstA"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-10-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"3w3FrvZW9loYSjZl"}
+{"tipodegasto":"Vencimiento Mensual","date":"2026-02-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"51HcbcAQkg32ygSj"}
+{"tipodegasto":"Vencimiento Mensual","date":"2026-09-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"54CYmj8KmWmNB6js"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-06-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"66uzPnP3MnQKHGOy"}
+{"tipodegasto":"Vencimiento Mensual","date":"2026-01-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"6vHDPZwVbAOUoxBV"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-10-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"6yctFWr1t8g0oUkL"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-07-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"7Muo14zsSZfSQbiK"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-02-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"845vL1XYvUxQ1qzE"}
+{"tipodegasto":"Vencimiento Mensual","date":"2026-08-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"88wduaXgp3uvi3hl"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-06-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"95pPQNXpVfYUbjZv"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-09-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"BLJFzaRm9NX09ml2"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-12-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"IfeNYYIgaTg5S3oK"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-08-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"J3Izx16UaMR1beq7"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-01-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"NLCqNvI0G4bEzmCk"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-11-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"OpBOoMgAj8mZgC0f"}
+{"tipodegasto":"Vencimiento Mensual","date":"2026-11-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"PEqXe1gSdJcQXfdg"}
+{"tipodegasto":"Gasto Diario","date":"2024-02-18","pay":"2000","descripcion":"Pan ","pagado":false,"meses":1,"_id":"Uvzi7BB35g7eimvt"}
+{"tipodegasto":"Gasto Diario","date":"2024-02-18","pay":"2000","descripcion":"Facturas","pagado":false,"meses":1,"_id":"YJa63Gyo3SKQA4Oj"}
+{"tipodegasto":"Vencimiento Mensual","date":"2026-10-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"YipR5q6XtaXpuexc"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-05-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"dApizIV1782OL343"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-04-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"dETQ9MwTzNbph3kK"}
+{"tipodegasto":"Vencimiento Mensual","date":"2027-01-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"dOZdYsWa3jFlBYPy"}
+{"tipodegasto":"Vencimiento Mensual","date":"2026-12-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"e2dGrar85SOut8zx"}
+{"tipodegasto":"Vencimiento Mensual","date":"2026-04-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"fFglq2Z2lOQDmLvn"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-11-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"jvN5rxMq7qjSR9lQ"}
+{"tipodegasto":"Vencimiento Mensual","date":"2026-03-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"sxrl1oz9Or0G4LOe"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-05-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"t6motLRq1yBdK8yd"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-03-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"u1kDI2MHKnKu9vgE"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-07-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"u3rLwThVJNhicnXI"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-04-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"vxCoYRdPDEjb0QrW"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-12-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"xzGeifMKFFI4PQVE"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-03-10","pay":"50.000","descripcion":"Luz Local","pagado":false,"meses":"36","_id":"yXGwI2YQPwc9fcYt"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-09-10","pay":"50.000","descripcion":"Luz Local","pagado":true,"meses":"36","_id":"yXUhMH1AvAWsBdV9"}
+{"tipodegasto":"Gasto Diario","date":"2024-02-18","pay":"2000","descripcion":"Facturas","pagado":true,"meses":1,"_id":"YJa63Gyo3SKQA4Oj"}
+{"tipodegasto":"Gasto Diario","date":"2024-02-18","pay":"2000","descripcion":"Facturas","pagado":true,"meses":1,"_id":"YJa63Gyo3SKQA4Oj"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-04-10","pay":"50.000","descripcion":"Luz Local","pagado":true,"meses":"36","_id":"vxCoYRdPDEjb0QrW"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-04-10","pay":"50.000","descripcion":"Luz Local","pagado":true,"meses":"36","_id":"vxCoYRdPDEjb0QrW"}
+{"tipodegasto":"Gasto Diario","date":"2024-02-18","pay":"2000","descripcion":"Pan ","pagado":true,"meses":1,"_id":"Uvzi7BB35g7eimvt"}
+{"tipodegasto":"Gasto Diario","date":"2024-02-18","pay":"2000","descripcion":"Pan ","pagado":true,"meses":1,"_id":"Uvzi7BB35g7eimvt"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-03-10","pay":"50.000","descripcion":"Luz Local","pagado":true,"meses":"36","_id":"u1kDI2MHKnKu9vgE"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-03-10","pay":"50.000","descripcion":"Luz Local","pagado":true,"meses":"36","_id":"u1kDI2MHKnKu9vgE"}

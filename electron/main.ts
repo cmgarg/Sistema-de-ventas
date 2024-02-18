@@ -317,6 +317,22 @@ function borrarVentas(data: any) {
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO cuentasFile.js////////
 /////////////////////////////////////////////////////
+
+function obtenerEstadoPagado(idCuenta) {
+  return new Promise((resolve, reject) => {
+    cuentas.findOne({ _id: idCuenta }, (err, doc) => {
+      if (err) {
+        console.error("Error al obtener el estado de pagado:", err);
+        reject(err);
+      } else {
+        console.log("Estado de pagado obtenido:", doc.pagado);
+        resolve(doc.pagado); // Suponiendo que 'doc.pagado' es el campo que contiene el estado de pagado
+      }
+    });
+  });
+}
+
+
 function accountToPay(account: object) {
   cuentas.insert(account, (err, newDoc) => {
     if (err) {
@@ -344,6 +360,39 @@ async function getAccountsToPay() {
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
 /////////////////////////////////////////////////////
+function actualizarEstadoPagado(idCuenta, estadoPagado) {
+  return new Promise((resolve, reject) => {
+    cuentas.update({ _id: idCuenta }, { $set: { pagado: estadoPagado } }, {}, (err, numReplaced) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(numReplaced); // numReplaced es el número de documentos actualizados
+      }
+    });
+  });
+}
+
+
+// Suponiendo que `cuentas` es tu Datastore de NeDB para las cuentas
+async function obtenerEstadosPagadosInicial() {
+  return new Promise((resolve, reject) => {
+    cuentas.find({}, (err, docs) => {
+      if (err) {
+        reject(err);
+      } else {
+        // Transforma los documentos para obtener solo los IDs y los estados de pagado
+        const estados = docs.reduce((acc, doc) => {
+          acc[doc._id] = doc.pagado; // Suponiendo que `pagado` es un campo en tus documentos
+          return acc;
+        }, {});
+        resolve(estados);
+      }
+    });
+  });
+}
+
+
+
 function addCategory(e: { value: string; label: string; typeFilter: string }) {
   console.log(e);
   return new Promise((resolve, reject) => {
@@ -386,6 +435,9 @@ function getCategoryAndBrand() {
     });
   });
 }
+
+
+
 //////////////////////////////////////////////////////
 
 // The built directory structure
@@ -549,6 +601,36 @@ ipcMain.on("eliminar-venta", (e, ventaAEliminar) => {
 ///
 //ESCUCHAS DE EVENTOS DE CUENTAS
 //
+
+
+ipcMain.on("actualizar-estado-pagado", async (event, { idCuenta, estadoPagado }) => {
+  try {
+    // Actualiza el estado de 'pagado' en la base de datos
+    await actualizarEstadoPagado(idCuenta, estadoPagado);
+    // Aquí deberías añadir lógica para recuperar el estado actualizado de 'pagado' de la base de datos para 'idCuenta'
+    // Por ejemplo, supongamos que tienes una función 'obtenerEstadoPagado' que hace exactamente eso:
+    const estadoPagadoActualizado = await obtenerEstadoPagado(idCuenta);
+    // Envía el estado actualizado de vuelta al frontend
+    event.reply("estado-pagado-actualizado", { exitoso: true, idCuenta, estadoPagado: estadoPagadoActualizado });
+  } catch (error) {
+    console.error(error);
+    event.reply("estado-pagado-actualizado", { exitoso: false, error: error.message, idCuenta });
+  }
+});
+
+ipcMain.on("solicitar-estado-pagado-inicial", async (event) => {
+  try {
+    // Obtener los estados de pagado para todas las cuentas desde la base de datos
+    const estados = await obtenerEstadosPagadosInicial();
+    event.reply("estado-pagado-inicial", { exitoso: true, estados });
+  } catch (error) {
+    console.error(error);
+    event.reply("estado-pagado-inicial", { exitoso: false, error: error.message });
+  }
+});
+
+
+
 
 ipcMain.on("save-accountToPay", async (event, account) => {
   const accountToSave = account;

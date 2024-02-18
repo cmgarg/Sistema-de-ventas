@@ -90,7 +90,6 @@ const Estadisticas: React.FC<EstadisticastProps> = (
 
   useEffect(() => {
     console.log(salesForDate, "SASUKE");
-    console.log(salesForDate[0].date.split("-"), "Separados por ----");
     sumarVentasPorFecha(salesData);
   }, [salesData]);
 
