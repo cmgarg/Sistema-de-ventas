@@ -14,7 +14,7 @@ interface MainContentProps {}
 
 const MainContent: React.FC<MainContentProps> = ({}) => {
   return (
-    <div className="flex flex-col flex-1 bg-gray-700">
+    <div className="flex flex-col flex-1 bg-gradient-to-b to-blue-950 from-slate-800">
       <Routes>
         <Route path="/" element={<ClientesContent />} />
         <Route path="/articulos" element={<Articulos />} />

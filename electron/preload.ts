@@ -142,7 +142,7 @@ contextBridge.exposeInMainWorld("api", {
       //EVENTOS DE VENTAS
       "guardar-venta",
       "sale-process",
-      "obtener-ventas",
+      "get-sales",
       "eliminar-venta",
       "get-sales-stats",
       //EVENTOS CUENTAS
@@ -163,7 +163,7 @@ contextBridge.exposeInMainWorld("api", {
       "respuesta-actualizar-cliente",
       "response-get-articles",
       "cliente-encontradoById",
-      "respuesta-obtener-ventas",
+      "response-get-sales",
       "response-register-buy",
       "article-foundById",
       "article-foundByName",

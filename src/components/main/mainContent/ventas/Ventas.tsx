@@ -33,7 +33,7 @@ const Ventas: React.FC<VentastProps> = (
     setActiveModal(p);
   }
   function obtenerVentas() {
-    window.api.enviarEvento("obtener-ventas");
+    window.api.enviarEvento("get-sales");
   }
   function getResultsSales(p: object[], e: boolean) {
     setSearchActived({ actived: e, results: p });
@@ -44,15 +44,14 @@ const Ventas: React.FC<VentastProps> = (
   ///carga de ventas
   useEffect(() => {
     obtenerVentas();
-    window.api.recibirEvento("respuesta-obtener-ventas", (e) => {
-      console.log("ME EJECUTO A LA PERFECCIONE", e);
+    window.api.recibirEvento("response-get-sales", (e) => {
       const arraySales: object[] = [];
       e.map((e: any) => {
         arraySales.push(e);
       });
       setVentas(arraySales);
     });
-  }, []); // ADAPTAR EL BUSCADOR A ESTO TAMBIEN- YUYUKAKUSHO 15min
+  }, []);
   //////////////////////////////
 
   return (

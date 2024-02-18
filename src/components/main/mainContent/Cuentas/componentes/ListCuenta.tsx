@@ -133,7 +133,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({ Cuentas }) => {
 
   //////// Funcion para poder expandir los div y ocultar los otros 2
 
-  const expandirDiv = (divId:string) => {
+  const expandirDiv = (divId: string) => {
     if (divExpandido === divId) {
       setDivExpandido("");
     } else {
@@ -141,13 +141,12 @@ const ListCuenta: React.FC<ListCuentaProps> = ({ Cuentas }) => {
     }
   };
 
-  const esDivVisible = (divId:string) => {
+  const esDivVisible = (divId: string) => {
     return divExpandido === "" || divExpandido === divId;
   };
 
   return (
     <div onWheel={handleWheel} className="flex flex-col space-y-1 ">
-
       <div
         className={`flex flex-row  border-t-2 border-gray-900 ${
           divExpandido === "div1" ? "h-full" : "h-72"
@@ -173,7 +172,9 @@ const ListCuenta: React.FC<ListCuentaProps> = ({ Cuentas }) => {
 
         <div
           className={`flex-1  flex flex-col  text-white ${
-            divExpandido === "div1" ? "mi-altura bg-slate-900 overflow-auto" : "overflow-auto "
+            divExpandido === "div1"
+              ? "mi-altura bg-slate-900 overflow-auto"
+              : "overflow-auto "
           } `}
         >
           {cuentasVencimientoMesActual.length > 0 ? (

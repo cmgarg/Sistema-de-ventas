@@ -240,20 +240,6 @@ async function updateCountSaleArticle(articleId: string, sale: object) {
 //////////////////////////////////////////////////////
 //FUNCIONES DE CLIENTES ARCHIVO ventasFile.js////////
 ////////////////////////////////////////////////////
-async function getAllSalesData() {
-  const ventasAll = await buscarVentas();
-
-  const ventasStats = ventasAll.map((e) => {
-    return {
-      article: e.articulo.nombreArticulo,
-      amount: e.cantidad,
-      sold: e.sold,
-      date: e.dateOfRegister,
-    };
-  });
-
-  return ventasStats;
-}
 function guardarVenta(a: any) {
   const fechaActual = new Date();
   const año = fechaActual.getFullYear();
@@ -386,6 +372,24 @@ function getCategoryAndBrand() {
     });
   });
 }
+
+//FUNCIONES DE PETICIONES DE ESTADISTICAS
+
+async function getStats() {
+  const ventasAll = await buscarVentas();
+
+  const ventasStats = ventasAll.map((e) => {
+    return {
+      article: e.articulo.nombreArticulo,
+      amount: e.cantidad,
+      sold: e.sold,
+      date: e.dateOfRegister,
+    };
+  });
+
+  return ventasStats;
+}
+
 //////////////////////////////////////////////////////
 
 // The built directory structure
@@ -527,7 +531,7 @@ ipcMain.on("eliminar-articulo", (e, articuloAEliminar) => {
 //
 
 ipcMain.on("get-sales-stats", async (event) => {
-  const statsSales = await getAllSalesData();
+  const statsSales = await getStats();
   console.log(statsSales, "FALOPERO");
   event.reply("response-get-sales-stats", statsSales);
 });
@@ -536,11 +540,11 @@ ipcMain.on("sale-process", async (event, venta) => {
   saleProcess(venta);
 });
 
-ipcMain.on("obtener-ventas", async (event) => {
+ipcMain.on("get-sales", async (event) => {
   const ventas = await buscarVentas();
 
   console.log("SE ENVIO LO PEDIDO", ventas);
-  event.reply("respuesta-obtener-ventas", ventas); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
+  event.reply("response-get-sales", ventas); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
 });
 
 ipcMain.on("eliminar-venta", (e, ventaAEliminar) => {

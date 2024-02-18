@@ -6,6 +6,12 @@ import MenuContextual2 from "../../../GMC/MenuContextual2";
 import Diamong from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/Diamong";
 import { Link } from "react-router-dom";
 import OrdenarPor from "../buttons/OrdenarPor";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "../../../../../app/ui/context-menu";
 
 interface ArticleListProps {
   articulos: object[];
@@ -58,60 +64,65 @@ const ArticleList: React.FC<ArticleListProps> = ({
   return (
     <TableMain>
       <TableHead>
-        <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
+        <div className="bg-slate-700 flex-1 pl-2 flex items-center justify-center">
           <p className="text-center">Articulo</p>
         </div>
-        <div className="bg-slate-600 flex-1 pl-2 rounded-tr-lg flex items-center justify-center">
+        <div className="bg-slate-700 flex-1 pl-2 flex items-center justify-center">
           <p className="text-center">Marca</p>
         </div>
-        <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center">
+        <div className="bg-slate-700 flex-1 pl-2 flex items-center justify-center">
           <p className="text-center">Costo</p>
         </div>
-        <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center">
+        <div className="bg-slate-700 flex-1 pl-2 flex items-center justify-center">
           <p className="text-center">Venta</p>
         </div>
-        <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center">
+        <div className="bg-slate-700 flex-1 pl-2 flex items-center justify-center">
           <p className="text-center">Ventas</p>
         </div>
       </TableHead>
       <div className="first:bg-white">
         {searchActived.actived && searchActived.results.length > 0 ? (
           searchActived.results.map((fila) => (
-            <TableRow key={fila._id}>
-              <div className="flex justify-center items-center absolute top-0 left-0 bottom-0">
-                <MenuContextual2 title={<Diamong color="#fff" size="20" />}>
-                  <div
-                    onClick={() => {
-                      eliminarArticle(fila._id);
-                    }}
-                    className="w-full hover:bg-gray-600 pl-2"
-                  >
-                    <p>Eliminar</p>
+            <ContextMenu>
+              <ContextMenuTrigger>
+                <TableRow key={fila._id}>
+                  <div className="flex items-center flex-1 pl-2 space-x-1">
+                    <Link
+                      to={`/articulo/${fila._id}`}
+                      className="flex-1 text-center"
+                    >{`${fila.articulo}`}</Link>
                   </div>
-                  <div className="w-full hover:bg-gray-600 pl-2">
-                    <p>Editar</p>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>{fila.brand.label}</p>
                   </div>
-                </MenuContextual2>
-              </div>
-              <div className="flex items-center flex-1 pl-2 space-x-1">
-                <Link
-                  to={`/articulo/${fila._id}`}
-                  className="flex-1 text-center"
-                >{`${fila.articulo}`}</Link>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.brand.label}</p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>${fila.costo}</p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>${fila.venta}</p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{ventas(fila.ventas)}</p>
-              </div>
-            </TableRow>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>${fila.costo}</p>
+                  </div>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>${fila.venta}</p>
+                  </div>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>{ventas(fila.ventas)}</p>
+                  </div>
+                </TableRow>
+              </ContextMenuTrigger>
+              <ContextMenuContent>
+                <ContextMenuItem
+                  onClick={() => {
+                    editClient(fila._id);
+                  }}
+                >
+                  Editar
+                </ContextMenuItem>
+                <ContextMenuItem
+                  onClick={() => {
+                    eliminarCliente(fila._id);
+                  }}
+                >
+                  Borrar
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
           ))
         ) : searchActived.actived && searchActived.results.length === 0 ? (
           <TableRow>
@@ -121,41 +132,46 @@ const ArticleList: React.FC<ArticleListProps> = ({
           </TableRow>
         ) : (
           articulos.map((fila) => (
-            <TableRow key={fila._id}>
-              <div className="flex justify-center items-center absolute top-0 left-0 bottom-0">
-                <MenuContextual2 title={<Diamong color="#fff" size="20" />}>
-                  <div
-                    onClick={() => {
-                      eliminarArticle(fila._id);
-                    }}
-                    className="w-full hover:bg-gray-600 pl-2"
-                  >
-                    <p>Eliminar</p>
+            <ContextMenu>
+              <ContextMenuTrigger>
+                <TableRow key={fila._id}>
+                  <div className="flex items-center flex-1 pl-2 space-x-1">
+                    <Link
+                      to={`/articulo/${fila._id}`}
+                      className="flex-1 text-center"
+                    >{`${fila.articulo}`}</Link>
                   </div>
-                  <div className="w-full hover:bg-gray-600 pl-2">
-                    <p>Editar</p>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>{fila.brand.label}</p>
                   </div>
-                </MenuContextual2>
-              </div>
-              <div className="flex items-center flex-1 pl-2 space-x-1">
-                <Link
-                  to={`/articulo/${fila._id}`}
-                  className="flex-1 text-center"
-                >{`${fila.articulo}`}</Link>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.brand.label}</p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>${fila.costo}</p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>${fila.venta}</p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{ventas(fila.ventas)}</p>
-              </div>
-            </TableRow>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>${fila.costo}</p>
+                  </div>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>${fila.venta}</p>
+                  </div>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>{ventas(fila.ventas)}</p>
+                  </div>
+                </TableRow>
+              </ContextMenuTrigger>
+              <ContextMenuContent>
+                <ContextMenuItem
+                  onClick={() => {
+                    editClient(fila._id);
+                  }}
+                >
+                  Editar
+                </ContextMenuItem>
+                <ContextMenuItem
+                  onClick={() => {
+                    eliminarCliente(fila._id);
+                  }}
+                >
+                  Borrar
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
           ))
         )}
       </div>

@@ -28,7 +28,7 @@ const SalesTop: React.FC<SalesTopProps> = ({}) => {
       {articulos.map((e) => {
         return (
           <div className="w-full h-10 bg-slate-600 flex flex-row justify-around">
-            <p>{e.articulo}</p> <p>{e.ventas.length}</p>
+            falopa
           </div>
         );
       })}

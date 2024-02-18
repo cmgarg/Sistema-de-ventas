@@ -1,19 +1,23 @@
 /* Personaliza la barra de desplazamiento para navegadores basados en WebKit */
 ::-webkit-scrollbar {
-    width: 6px; /* Ancho de la barra de desplazamiento */
-    height: 10px;
+  width: 6px; /* Ancho de la barra de desplazamiento */
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #334155; /* Color de fondo del riel */
+  background: #334155; /* Color de fondo del riel */
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #a0a0a0; /* Color del thumb */
-    border-radius: 6px; /* Bordes redondeados */
-    border: 3px solid #f0f0f0; /* Borde en el thumb con el mismo color que el track para dar efecto de 'margen' */
+  background-color: #a0a0a0; /* Color del thumb */
+  border-radius: 6px; /* Bordes redondeados */
+  border: 3px solid #f0f0f0; /* Borde en el thumb con el mismo color que el track para dar efecto de 'margen' */
 }
 
-.mi-altura{
-    height: 54.4rem;
+.mi-altura {
+  height: 54.4rem;
+}
+
+.recharts-tooltip-cursor {
+  fill: rgba(20, 20, 40, 0.4);
 }
