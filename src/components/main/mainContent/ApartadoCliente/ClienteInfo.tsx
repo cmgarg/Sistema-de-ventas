@@ -92,12 +92,9 @@ const ClienteInfo: React.FC<ClienteInfoProps> = ({}) => {
               </TableHead>
               {cliente.compras.map((com) => (
                 <TableRow>
-                  <Link
-                    to={`/articulo/${com.compra.articulo.idArticle}`}
-                    className="flex justify-center items-center flex-1 pl-2"
-                  >
+                  <div className="flex justify-center items-center flex-1 pl-2">
                     <p>{com.compra.articulo.nombreArticulo}</p>
-                  </Link>
+                  </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
                     <p>{com.compra.cantidad}</p>
                   </div>

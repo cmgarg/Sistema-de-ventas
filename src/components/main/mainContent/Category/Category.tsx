@@ -6,8 +6,10 @@ interface CategoryProps {
 
 const Category: React.FC<CategoryProps> = ({ children }) => {
   return (
-    <div className="flex px-1 bg-slate-700">
-      <div className="flex flex-1 flex-row">{children}</div>
+    <div className="flex px-1">
+      <div className="flex flex-1 flex-row space-x-2 items-center relative h-14">
+        {children}
+      </div>
     </div>
   );
 };

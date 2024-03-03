@@ -2,10 +2,13 @@ import React, { ReactNode } from "react";
 import TableMain from "../../tablaMain/TableMain";
 import TableHead from "../../tablaMain/TableHead";
 import TableRow from "../../tablaMain/TableRow";
-import MenuContextual2 from "../../../GMC/MenuContextual2";
-import Diamong from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/Diamong";
 import { Link } from "react-router-dom";
-import OrdenarPor from "../buttons/OrdenarPor";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "../../../../../app/ui/context-menu";
 
 interface ItemListProps {
   ventas: object[];
@@ -59,59 +62,47 @@ const ItemList: React.FC<ItemListProps> = ({
         <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center">
           <p className="text-center">Comprador</p>
         </div>
-        <div className="w-12 h-11 bg-gray-700 rounded-lg flex justify-center items-center select-none cursor-pointer absolute right-0">
-          <OrdenarPor>
-            <div
-              className="w-full hover:bg-gray-600"
-              onClick={() => {
-                sortList("ventas");
-              }}
-            >
-              <p>Ventas</p>
-            </div>
-            <div className="w-full hover:bg-gray-600">
-              <p>Mas Activos</p>
-            </div>
-            <div className="w-full hover:bg-gray-600">
-              <p>Inactivos</p>
-            </div>
-          </OrdenarPor>
-        </div>
       </TableHead>
       <div className="first:bg-white">
         {searchActived.actived && searchActived.results.length > 0 ? (
           searchActived.results.map((fila) => (
-            <TableRow key={fila._id}>
-              <div className="flex justify-center items-center absolute top-0 left-0 bottom-0">
-                <MenuContextual2 title={<Diamong color="#fff" size="20" />}>
-                  <div
-                    onClick={() => {
-                      eliminarVenta(fila._id);
-                    }}
-                    className="w-full hover:bg-gray-600 pl-2"
-                  >
-                    <p>Eliminar</p>
+            <ContextMenu>
+              <ContextMenuTrigger>
+                <TableRow key={fila._id}>
+                  <div className="flex justify-center items-center absolute top-0 left-0 bottom-0"></div>
+                  <div className="flex items-center flex-1 pl-2 space-x-1">
+                    <Link
+                      to={`/articulo/${fila.articulo.idArticle}`}
+                      className="flex-1 text-center"
+                    >{`${fila.articulo.nombreArticulo}`}</Link>
                   </div>
-                  <div className="w-full hover:bg-gray-600 pl-2">
-                    <p>Editar</p>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>{fila.cantidad}</p>
                   </div>
-                </MenuContextual2>
-              </div>
-              <div className="flex items-center flex-1 pl-2 space-x-1">
-                <Link
-                  to={`/articulo/${fila.articulo.idArticle}`}
-                  className="flex-1 text-center"
-                >{`${fila.articulo.nombreArticulo}`}</Link>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.cantidad}</p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <Link to={`/cliente/${fila.comprador.idClient}`}>
-                  {fila.comprador.nombre}
-                </Link>
-              </div>
-            </TableRow>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <Link to={`/cliente/${fila.comprador.idClient}`}>
+                      {fila.comprador.nombre}
+                    </Link>
+                  </div>
+                </TableRow>
+              </ContextMenuTrigger>
+              <ContextMenuContent>
+                <ContextMenuItem
+                  onClick={() => {
+                    editClient(fila._id);
+                  }}
+                >
+                  Editar
+                </ContextMenuItem>
+                <ContextMenuItem
+                  onClick={() => {
+                    eliminarCliente(fila._id);
+                  }}
+                >
+                  Borrar
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
           ))
         ) : searchActived.actived && searchActived.results.length === 0 ? (
           <TableRow>
@@ -121,37 +112,43 @@ const ItemList: React.FC<ItemListProps> = ({
           </TableRow>
         ) : (
           ventas.map((fila) => (
-            <TableRow key={fila._id}>
-              <div className="flex justify-center items-center absolute top-0 left-0 bottom-0">
-                <MenuContextual2 title={<Diamong color="#fff" size="20" />}>
-                  <div
-                    onClick={() => {
-                      eliminarVenta(fila._id);
-                    }}
-                    className="w-full hover:bg-gray-600 pl-2"
-                  >
-                    <p>Eliminar</p>
+            <ContextMenu>
+              <ContextMenuTrigger>
+                <TableRow key={fila._id}>
+                  <div className="flex justify-center items-center absolute top-0 left-0 bottom-0"></div>
+                  <div className="flex items-center flex-1 pl-2 space-x-1">
+                    <Link
+                      to={`/articulo/${fila.articulo.idArticle}`}
+                      className="flex-1 text-center"
+                    >{`${fila.articulo.nombreArticulo}`}</Link>
                   </div>
-                  <div className="w-full hover:bg-gray-600 pl-2">
-                    <p>Editar</p>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>{fila.cantidad}</p>
                   </div>
-                </MenuContextual2>
-              </div>
-              <div className="flex items-center flex-1 pl-2 space-x-1">
-                <Link
-                  to={`/articulo/${fila.articulo.idArticle}`}
-                  className="flex-1 text-center"
-                >{`${fila.articulo.nombreArticulo}`}</Link>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.cantidad}</p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <Link to={`/cliente/${fila.comprador.idClient}`}>
-                  {fila.comprador.nombre}
-                </Link>
-              </div>
-            </TableRow>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <Link to={`/cliente/${fila.comprador.idClient}`}>
+                      {fila.comprador.nombre}
+                    </Link>
+                  </div>
+                </TableRow>
+              </ContextMenuTrigger>
+              <ContextMenuContent>
+                <ContextMenuItem
+                  onClick={() => {
+                    editClient(fila._id);
+                  }}
+                >
+                  Editar
+                </ContextMenuItem>
+                <ContextMenuItem
+                  onClick={() => {
+                    eliminarCliente(fila._id);
+                  }}
+                >
+                  Borrar
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
           ))
         )}
       </div>

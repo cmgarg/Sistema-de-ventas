@@ -158,14 +158,14 @@ const ArticleList: React.FC<ArticleListProps> = ({
               <ContextMenuContent>
                 <ContextMenuItem
                   onClick={() => {
-                    editClient(fila._id);
+                    edit(fila._id);
                   }}
                 >
                   Editar
                 </ContextMenuItem>
                 <ContextMenuItem
                   onClick={() => {
-                    eliminarCliente(fila._id);
+                    eliminarArticle(fila._id);
                   }}
                 >
                   Borrar

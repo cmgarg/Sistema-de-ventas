@@ -108,7 +108,6 @@ export function Cards({ sales }: params) {
       <Card className={stylesCards}>
         <p>Vendedor</p>
       </Card>
-      <button onClick={getTotalSales}>MOSTRAR</button>
     </div>
   );
 }
