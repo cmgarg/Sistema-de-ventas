@@ -69,7 +69,7 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
 
   return (
     <div className="flex flex-col flex-1">
-      <div className="flex-2 border-b-2 border-slate-100">
+      <div className="flex-2 pt-2">
         <NavMain title="Articulos">
           <Buscador
             searchIn={articulos}
@@ -81,7 +81,7 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
       </div>
       <div className="flex flex-row flex-1">
         <AsideMain isActive={false}></AsideMain>
-        <div className="flex-1 bg-slate-700 p-5 relative">
+        <div className="flex-1 p-5 relative">
           {activeModal && (
             <AddArticuloForm
               onChangeModal={onChangeModal}

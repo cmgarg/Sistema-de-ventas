@@ -6,6 +6,12 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
+    //shadcm
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

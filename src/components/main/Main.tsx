@@ -9,14 +9,16 @@ import ArticuloInfo from "./mainContent/ApartadoArticulos/ArticuloInfo";
 import Cuentas from "./mainContent/Cuentas/Cuentas";
 import Stock from "./mainContent/Stock/Stock";
 import Estadisticas from "./mainContent/Estadisticas/Estadisticas";
+import Vendedores from "./mainContent/Vendedores/Vendedores";
 
 interface MainContentProps {}
 
 const MainContent: React.FC<MainContentProps> = ({}) => {
   return (
-    <div className="flex flex-col flex-1 bg-gray-700">
+    <div className="flex flex-col flex-1 bg-gradient-to-b to-blue-950 from-slate-800">
       <Routes>
         <Route path="/" element={<ClientesContent />} />
+        <Route path="/vendedor" element={<Vendedores/>} />
         <Route path="/articulos" element={<Articulos />} />
         <Route path="/ventas" element={<Ventas />} />
         <Route path="/caja" element={<Caja />} />

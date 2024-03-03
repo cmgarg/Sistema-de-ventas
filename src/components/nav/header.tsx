@@ -33,9 +33,9 @@ function Header() {
   }, []);
 
   return (
-    <div className="bg-gray-800 flex-2 app-region-drag flex justify-end  items-center border-b-2 border-zinc-950 box-border">
+    <div className="bg-slate-800 border-gray-700 flex-2 app-region-drag flex justify-end  items-center">
       <div className="flex-1 justify-between items-baseline">
-        <div className="h-8 flex justify-start items-center ">
+        <div className="h-10 flex justify-start items-center ">
           <div className=" flex justify-center items-center w-4 h-4 ml-3 mr-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"

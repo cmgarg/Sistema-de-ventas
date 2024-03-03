@@ -8,6 +8,8 @@ import EditarClientes from "./editarClientes/editarClientes";
 import Export from "../buttons/Export";
 import Imprimir from "../buttons/Imprimir";
 import ListClient from "./ListClient";
+import { ContextMenu } from "@radix-ui/react-context-menu";
+import ContextMenuG from "../ContextMenu/ContextMenu";
 
 interface ClientesContentProps {
   searchIn?: string;
@@ -67,7 +69,7 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
   }, []);
   return (
     <div className="flex flex-col flex-1">
-      <div className="flex-2 border-b-2 border-slate-100">
+      <div className="flex-2 pt-2">
         <NavMain title="Clientes">
           <Buscador searchIn={clientes} functionReturn={getResults}></Buscador>
           <Export></Export>
@@ -77,7 +79,7 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
       </div>
       <div className="flex flex-row flex-1">
         <AsideMain isActive={false}></AsideMain>
-        <div className="flex-1 bg-slate-700 p-5 relative">
+        <div className="flex-1 p-5 relative">
           {activeModalForm && (
             <AddClientresForm onChangeModal={onChangeModal}></AddClientresForm>
           )}

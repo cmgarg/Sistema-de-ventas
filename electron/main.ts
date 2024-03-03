@@ -240,20 +240,6 @@ async function updateCountSaleArticle(articleId: string, sale: object) {
 //////////////////////////////////////////////////////
 //FUNCIONES DE CLIENTES ARCHIVO ventasFile.js////////
 ////////////////////////////////////////////////////
-async function getAllSalesData() {
-  const ventasAll = await buscarVentas();
-
-  const ventasStats = ventasAll.map((e) => {
-    return {
-      article: e.articulo.nombreArticulo,
-      amount: e.cantidad,
-      sold: e.sold,
-      date: e.dateOfRegister,
-    };
-  });
-
-  return ventasStats;
-}
 function guardarVenta(a: any) {
   const fechaActual = new Date();
   const año = fechaActual.getFullYear();
@@ -357,6 +343,45 @@ async function getAccountsToPay() {
     });
   });
 }
+
+function actualizarCuenta(idCuenta: string, datosActualizados: any) {
+  if (idCuenta == null || datosActualizados == null) {
+    console.error("Error: El ID de la cuenta y los datos actualizados no pueden ser nulos o indefinidos.");
+    return Promise.reject("ID de la cuenta o datos actualizados no válidos");
+  }
+
+  // Eliminar el campo _id de los datos actualizados si existe
+  delete datosActualizados._id;
+
+  // Mostrar los datos que se van a actualizar
+  console.log(`Actualizando cuenta con ID: ${idCuenta}`);
+  console.log('Datos actualizados:', datosActualizados);
+
+  return new Promise((resolve, reject) => {
+    cuentas.update(
+      { _id: idCuenta },
+      { $set: datosActualizados },
+      { multi: false },
+      (err: any, numUpdated: number) => {
+        if (err) {
+          console.error("Error al actualizar la cuenta:", err);
+          reject(err);
+        } else {
+          console.log(`Cuenta actualizada con éxito. Número de documentos actualizados: ${numUpdated}`);
+          if (numUpdated === 0) {
+            console.warn('Advertencia: No se actualizó ningún documento. Verifique que el ID de la cuenta sea correcto.');
+          }
+          resolve(numUpdated);
+        }
+      }
+    );
+  });
+}
+
+
+
+
+
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
 /////////////////////////////////////////////////////
@@ -436,7 +461,22 @@ function getCategoryAndBrand() {
   });
 }
 
+//FUNCIONES DE PETICIONES DE ESTADISTICAS
 
+async function getStats() {
+  const ventasAll = await buscarVentas();
+
+  const ventasStats = ventasAll.map((e) => {
+    return {
+      article: e.articulo.nombreArticulo,
+      amount: e.cantidad,
+      sold: e.sold,
+      date: e.dateOfRegister,
+    };
+  });
+
+  return ventasStats;
+}
 
 //////////////////////////////////////////////////////
 
@@ -579,7 +619,7 @@ ipcMain.on("eliminar-articulo", (e, articuloAEliminar) => {
 //
 
 ipcMain.on("get-sales-stats", async (event) => {
-  const statsSales = await getAllSalesData();
+  const statsSales = await getStats();
   console.log(statsSales, "FALOPERO");
   event.reply("response-get-sales-stats", statsSales);
 });
@@ -588,11 +628,11 @@ ipcMain.on("sale-process", async (event, venta) => {
   saleProcess(venta);
 });
 
-ipcMain.on("obtener-ventas", async (event) => {
+ipcMain.on("get-sales", async (event) => {
   const ventas = await buscarVentas();
 
   console.log("SE ENVIO LO PEDIDO", ventas);
-  event.reply("respuesta-obtener-ventas", ventas); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
+  event.reply("response-get-sales", ventas); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
 });
 
 ipcMain.on("eliminar-venta", (e, ventaAEliminar) => {
@@ -629,6 +669,64 @@ ipcMain.on("solicitar-estado-pagado-inicial", async (event) => {
   }
 });
 
+// En tu archivo del proceso principal de Electron (backend)
+ipcMain.on('actualizar-cuenta', async (event, { idCuenta, datosActualizados }) => {
+  try {
+    await actualizarCuenta(idCuenta, datosActualizados);
+    const cuentasActualizadas = await obtenerCuentas(); // Supongamos que esta función obtiene todas las cuentas actualizadas
+    event.reply('cuentas-actualizadas', cuentasActualizadas);
+  } catch (error) {
+    console.error('Error al actualizar la cuenta:', error);
+    event.reply('error-actualizando-cuenta', error.message);
+  }
+});
+
+//////eliminar cuentas
+ipcMain.on('eliminar-cuenta', async (event, { id }) => {
+  try {
+    // Intentar eliminar la cuenta de la base de datos
+    await cuentas.remove({ _id: id }, {});
+    // Enviar respuesta exitosa al proceso de renderizado
+    event.reply('cuenta-eliminada', { exitoso: true});
+  } catch (error) {
+    // Enviar respuesta de error al proceso de renderizado
+    event.reply('cuenta-eliminada', { exitoso: false, error: error.message });
+  }
+});
+
+
+
+//////evento cuentas para caja
+
+// Función para obtener las cuentas a pagar
+async function getAccountsToPay() {
+  return new Promise((resolve, reject) => {
+    cuentas.find({}, (err, docs) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(docs);
+      }
+    });
+  });
+}
+
+// Evento para manejar la solicitud de cuentas a pagar
+ipcMain.on("get-accountToPay", async (event) => {
+  try {
+    const accountsToPay = await getAccountsToPay();
+    event.reply("response-get-accountToPay", accountsToPay);
+  } catch (error) {
+    console.error("Error al obtener las cuentas a pagar:", error);
+    event.reply("response-get-accountToPay", []);
+  }
+});
+
+
+
+
+
+
 
 
 
@@ -637,6 +735,7 @@ ipcMain.on("save-accountToPay", async (event, account) => {
 
   accountToPay(accountToSave);
 });
+
 ipcMain.on("get-accountToPay", async (event, account) => {
   const accountsToPay = await getAccountsToPay();
 
@@ -655,6 +754,20 @@ ipcMain.on("get-categoryAndBrand", async (event, category) => {
 
   event.reply("response-get-categoryAndBrand", categorysAndBrands);
 });
+
+ipcMain.on("actualizar-cuenta", async (event, { id, updatedAccount }) => {
+  try {
+    const resultado = await actualizarCuenta(id, updatedAccount);
+    event.reply("cuenta-actualizada", { exitoso: true, id, resultado });
+  } catch (error) {
+    console.error(error);
+    event.reply("cuenta-actualizada", { exitoso: false, error: error.message, id });
+  }
+});
+
+
+
+
 
 //////////////
 //////////////

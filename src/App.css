@@ -1,19 +1,67 @@
 /* Personaliza la barra de desplazamiento para navegadores basados en WebKit */
 ::-webkit-scrollbar {
-    width: 10px; /* Ancho de la barra de desplazamiento */
-    height: 10px;
+  width: 6px; /* Ancho de la barra de desplazamiento */
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #334155; /* Color de fondo del riel */
+  background: #334155; /* Color de fondo del riel */
+  
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #fff; /* Color del thumb */
-    border-radius: 6px; /* Bordes redondeados */
-    border: 3px solid #f0f0f0; /* Borde en el thumb con el mismo color que el track para dar efecto de 'margen' */
+  background-color: #a0a0a0; /* Color del thumb */
+  border-radius: 6px; /* Bordes redondeados */
+  border: 3px solid #f0f0f0; /* Borde en el thumb con el mismo color que el track para dar efecto de 'margen' */
 }
 
-.mi-altura{
-    height: 54.4rem;
+.mi-altura {
+  height: 54.4rem;
+}
+
+.recharts-tooltip-cursor {
+  fill: rgba(20, 20, 40, 0.4);
+}
+
+.scroll-container {
+  overflow: hidden; /* Oculta el desbordamiento del contenedor exterior */
+}
+
+.scroll-content {
+  overflow-y: auto; /* Habilita el desplazamiento vertical en el contenedor interno */
+  margin-right: -6px; /* Ajusta este valor al ancho de tu barra de desplazamiento */
+}
+
+
+.medidas{
+  max-height: 85vh; /* O el porcentaje que se ajuste a tu diseño */
+}
+
+.medidas-1{
+  height: 58vh;
+  max-height: 58vh;
+   /* O el porcentaje que se ajuste a tu diseño */
+}
+
+.medidas-2{
+  height: 29vh;
+  max-height: 29vh;
+  
+   /* O el porcentaje que se ajuste a tu diseño */
+}
+
+.medidas-3{
+  height: 22.9vh;
+  max-height: 22.9vh;
+  
+   /* O el porcentaje que se ajuste a tu diseño */
+}
+
+
+.fecha-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+.fecha-input:focus {
+  outline: none; /* Opcional: elimina el contorno azul predeterminado */
 }

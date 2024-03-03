@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import "./index.css";
 import Header from "./components/nav/header";
 import Aside from "./components/nav/aside/Aside";
 import Main from "./components/main/Main";

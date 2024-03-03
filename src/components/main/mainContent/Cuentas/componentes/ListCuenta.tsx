@@ -2,11 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import CalendarioSGV from "../../../../../assets/MAINSVGS/Cuentas SVG/CalendarioSGV";
 import { format, addMonths, subMonths, getMonth, getYear } from "date-fns";
 import { es } from "date-fns/locale";
-import MenuSGV from "../../../../../assets/MAINSVGS/Cuentas SVG/MenuSVG";
 import PagadoSVG from "../../../../../assets/MAINSVGS/Cuentas SVG/PagadoSVG";
 import ImpagaSVG from "../../../../../assets/MAINSVGS/Cuentas SVG/ImpagaSVG";
-
-
+import EditarCuenta from "./EditarCuenta";
+import Swal from 'sweetalert2';
 
 
 interface ListCuentaProps {
@@ -15,6 +14,7 @@ interface ListCuentaProps {
   filtroBoton2: boolean;
   filtroBoton3: boolean;
   filtroBoton4: boolean;
+  getAccountsToPay: () => any[]; 
 }
 
 interface Cuenta {
@@ -22,7 +22,7 @@ interface Cuenta {
   date: string;
   pay: number;
   descripcion: string;
-  _id: string; // Asumiendo que todas las cuentas tienen estas propiedades
+  _id: string; 
 }
 
 const sumaTotalDeCuentas = (cuentas) => {
@@ -38,13 +38,13 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
   filtroBoton2,
   filtroBoton3,
   filtroBoton4,
+  getAccountsToPay,
 }) => {
   const [fechaActual, setFechaActual] = useState(new Date());
 
-  const colores = ["bg-slate-600", "bg-slate-900"];
+  const colores = [""];
 
   const [divExpandido, setDivExpandido] = useState<string>("");
-  const [pagado, setPagado] = useState(true)
   const [filtroActivo, setFiltroActivo] = useState<
     "tipodegasto" | "descripcion" | "ninguno" | "fechafiltrada" | "monto"
   >("ninguno");
@@ -87,15 +87,12 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
   const filtrarCuentasPorFecha = (fecha: Date) => {
     const mesReferencia = getMonth(fecha) + 1; // Ajustando mes a base 1
     const anioReferencia = getYear(fecha);
-  
+
     return Cuentas.filter((cuenta) => {
       const [anioCuenta, mesCuenta] = cuenta.date.split("-").map(Number);
       return anioCuenta === anioReferencia && mesCuenta === mesReferencia;
     });
   };
-  
-  
-  
 
   ///////// Ordenar las cuentas vencimiento mensual y despues gastos diarios.
 
@@ -371,17 +368,21 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
   };
 
   ////funciones pagados
-  const [estadosPagados, setEstadosPagados] = useState<{ [id: string]: boolean }>({});
+  const [estadosPagados, setEstadosPagados] = useState<{
+    [id: string]: boolean;
+  }>({});
 
-    // Definición de cambiarEstadoPagado
-    const cambiarEstadoPagado = (idCuenta, estadoPagado) => {
-      // Llama a la API de Electron para enviar el evento al proceso principal
-     
-      ipcRenderer.send("actualizar-estado-pagado", { idCuenta: idCuenta, estadoPagado: estadoPagado });
+  // Definición de cambiarEstadoPagado
+  const cambiarEstadoPagado = (idCuenta, estadoPagado) => {
+    // Llama a la API de Electron para enviar el evento al proceso principal
 
-    };
+    ipcRenderer.send("actualizar-estado-pagado", {
+      idCuenta: idCuenta,
+      estadoPagado: estadoPagado,
+    });
+  };
 
-// Esta función envía un mensaje al proceso principal para actualizar el estado de "pagado"
+  // Esta función envía un mensaje al proceso principal para actualizar el estado de "pagado"
   // Definición de togglePagado
   const togglePagado = (id) => {
     setEstadosPagados((prevEstados) => {
@@ -392,29 +393,34 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
       return updatedEstados;
     });
   };
-  
 
   useEffect(() => {
-    const manejarActualizacionPagado = (event, { exitoso, idCuenta, estadoPagado }) => {
+    const manejarActualizacionPagado = (
+      event,
+      { exitoso, idCuenta, estadoPagado }
+    ) => {
       if (exitoso) {
-        setEstadosPagados(prevEstados => ({
+        setEstadosPagados((prevEstados) => ({
           ...prevEstados,
           [idCuenta]: estadoPagado,
         }));
       }
     };
-  
+
     ipcRenderer.on("estado-pagado-actualizado", manejarActualizacionPagado);
-  
+
     // Limpiar al desmontar
     return () => {
-      ipcRenderer.removeListener("estado-pagado-actualizado", manejarActualizacionPagado);
+      ipcRenderer.removeListener(
+        "estado-pagado-actualizado",
+        manejarActualizacionPagado
+      );
     };
   }, [togglePagado]);
 
   useEffect(() => {
     ipcRenderer.send("solicitar-estado-pagado-inicial");
-  
+
     const manejarEstadoPagadoInicial = (event, { exitoso, estados }) => {
       if (exitoso) {
         setEstadosPagados(estados);
@@ -422,200 +428,389 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
         console.error("Error al cargar el estado pagado inicial");
       }
     };
-  
+
     ipcRenderer.on("estado-pagado-inicial", manejarEstadoPagadoInicial);
-  
+
     return () => {
-      ipcRenderer.removeListener("estado-pagado-inicial", manejarEstadoPagadoInicial);
+      ipcRenderer.removeListener(
+        "estado-pagado-inicial",
+        manejarEstadoPagadoInicial
+      );
     };
   }, []);
+
+  ////////////////editar y borrar cuentas
+
+  const [cuentaSeleccionada, setCuentaSeleccionada] = useState<Cuenta | null>(
+    null
+  );
+  const [mostrarOpciones, setMostrarOpciones] = useState(false);
+
+  const [posicionMenu, setPosicionMenu] = useState({ x: 0, y: 0 });
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const manejarClicDerecho = (
+    cuenta: Cuenta,
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    event.preventDefault();
+    setCuentaSeleccionada(cuenta);
+    setMostrarOpciones(true);
+    setPosicionMenu({ x: event.clientX + 2, y: event.clientY - 82 });
+  };
+
+  const manejarClicFuera = (event: MouseEvent) => {
+    if (
+      mostrarOpciones &&
+      menuRef.current &&
+      !menuRef.current.contains(event.target as Node)
+    ) {
+      setMostrarOpciones(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        mostrarOpciones &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target)
+      ) {
+        setMostrarOpciones(false);
+      }
+    };
+
+    // Agregar el listener solo si el menú está visible
+    if (mostrarOpciones) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+
+    // Limpiar el listener cuando el menú se cierra o el componente se desmonta
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [mostrarOpciones, menuRef]);
+
+  const mostrando = () => {
+    const idCuentas = cuentaSeleccionada._id;
+
+    console.log(idCuentas);
+  };
+  const [editar, setEditar] = useState(false);
+
+  const updateAccount = (id, updatedAccount) => {
+    // Aquí enviarías la cuenta actualizada al backend usando IPC
+    ipcRenderer.send('actualizar-cuenta', { id, updatedAccount });
+    console.log(id, updatedAccount,"esto le estoy pasando al backend usando IPC");
+  };
+
+
+  ////////// Borrar cuenta
+
+  const deleteAccount = (id) => {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: '¡No podrás revertir esto!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, borrar cuenta',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        ipcRenderer.send('eliminar-cuenta', { id });
+        // Escuchar la respuesta del proceso principal
+        ipcRenderer.once('cuenta-eliminada', (event, { exitoso }) => {
+          if (exitoso) {
+            // Actualizar el estado local para reflejar la eliminación de la cuenta
+            getAccountsToPay(); // Llamar a getAccountsToPay solo después de confirmar la eliminación
+            Swal.fire(
+              'Eliminado',
+              'La cuenta ha sido eliminada.',
+              'success'
+            );
+          } else {
+            console.error('Error al eliminar la cuenta');
+          }
+        });
+      }
+    });
+  };
   
   
-
-
-
-
-
+  
   
 
   return (
-    <div onWheel={handleWheel} className="flex flex-col space-y-1 ">
-      <div
-        className={`flex flex-row  border-t-2 border-gray-900 ${
-          divExpandido === "div1" ? "h-full" : "h-72"
-        }
-        ${esDivVisible("div1") ? "flex" : "hidden"}`}
-      >
+    <div onWheel={handleWheel} className="flex flex-col h-full ">
+      {editar && cuentaSeleccionada && (
+        <EditarCuenta
+          onChangeModal={setEditar}
+          cuentaSeleccionada={cuentaSeleccionada}
+          updateAccount={updateAccount}
+          getAccountsToPay={getAccountsToPay}
+        />
+      )}
+
+      {mostrarOpciones && cuentaSeleccionada && (
         <div
-          className="flex w-8 h-8 absolute  rounded-e-lg bg-slate-900 hover:bg-slate-600"
-          onClick={() => {
-            expandirDiv("div1"), console.log(divExpandido === "div1");
+          ref={menuRef}
+          className=" bg-gray-900 text-white flex flex-col z-50"
+          style={{
+            position: "absolute",
+            left: `${posicionMenu.x}px`,
+            top: `${posicionMenu.y}px`,
           }}
         >
-          <div className="flex w-8 h-8 items-center justify-center">
-            <MenuSGV fill="white" height="20" width="20" />
-          </div>
+          <button
+            className=" p-2 border-b-1 border-gray-600 hover:bg-gray-700"
+            onClick={() => {
+              setEditar(true);
+              setMostrarOpciones(false); 
+            }}
+          >
+            Editar Cuenta
+          </button>
+          <button
+            className=" p-2 border-b-1 border-gray-600 hover:bg-gray-700 "
+            onClick={() => {
+              deleteAccount(cuentaSeleccionada._id);
+              setMostrarOpciones(false); // Opcional: Cerrar el menú de opciones después de borrar
+            }}
+          >
+            Borrar Cuenta
+          </button>
         </div>
+      )}
+      <div className="flex flex-col h-full medidas">
+        <div
+          className={`flex flex-row flex-1 border relative rounded-lg border-gray-600 overflow-auto mb-1${
+            divExpandido === "div1" ? "h-full overflow-auto" : ""
+          }
+        ${esDivVisible("div1") ? "flex" : "hidden"}`}
+        >
+          <div
+            className="flex w-44 text-white justify-center items-center flex-col  border-r-1 border-gray-600 rounded-lg hover:bg-gray-900"
+            onClick={() => {
+              expandirDiv("div1");
+            }}
+          >
+            <CalendarioSGV fill=" white" height="80" width="80" />
+            <div className=" pt-3">{getMes(fechaActual)}</div>
+            <div className="pt-16 flex flex-col items-center justify-center">
+              <div>Total:</div> <div>{total1}</div>
+            </div>
+          </div>
 
-        <div className="flex w-44 bg-slate-700 text-white justify-center items-center flex-col">
-          <CalendarioSGV fill=" white" height="80" width="80" />
-          <div className=" pt-3">{getMes(fechaActual)}</div>
-          <div className="pt-16 flex flex-col items-center justify-center">
-            <div>Total:</div> <div>{total1}</div>
+          <div
+            className={`flex-1 relative${
+              divExpandido === "div1" ? "mi-altura" : ""
+            } overflow-y-scroll `}
+          >
+            <div ref={divRef1} className={determinarClase()}>
+              {cuentasAMostrar
+                .filter((cuenta) => cuenta) // Esto asegura que cada cuenta exista
+                .map((cuenta, index) => (
+                  // Tu código para renderizar cada cuenta
+
+                  <div
+                    className={`flex h-12 flex-row ${
+                      colores[index % colores.length]
+                    }`}
+                    key={index}
+                    onContextMenu={(event) => manejarClicDerecho(cuenta, event)}
+                  >
+                    <div className="flex-1 flex h-12  text-white justify-center items-center border-b-1 border-gray-600">
+                      {cuenta.tipodegasto}
+                    </div>
+                    <div className="flex-1 flex h-12  text-white justify-center items-center border-b-1 border-gray-600">
+                      {cuenta.descripcion}
+                    </div>
+                    <div className="flex-1 flex h-12  text-white justify-center items-center border-b-1 border-gray-600">
+                      {cuenta.date}
+                    </div>
+                    <div className="flex-1 flex h-12 text-white  justify-center items-center border-b-1 border-gray-600">
+                      $ {cuenta.pay}
+                    </div>
+                    <div className="flex-1 relative flex h-12  text-white justify-center items-center border-b-1 border-gray-600">
+                      <div
+                        onClick={() => togglePagado(cuenta._id)}
+                        className=" flex justify-center items-center"
+                      >
+                        <div className=" absolute">
+                          <PagadoSVG
+                            width="25"
+                            height="25"
+                            fill={
+                              estadosPagados[cuenta._id] ? "green" : "#616161"
+                            }
+                          />
+                        </div>
+                        <div className=" absolute">
+                          <ImpagaSVG
+                            width="25"
+                            height="25"
+                            fill={
+                              estadosPagados[cuenta._id] ? "#34EB17" : "black"
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
           </div>
         </div>
 
         <div
-          className={`flex-1 ${
-            divExpandido === "div1" ? "mi-altura bg-slate-900" : ""
-          } overflow-auto `}
+          className={`flex relative flex-row w-full flex-1 border rounded-lg border-gray-600 overflow-auto mb-1 ${
+            esDivVisible("div2") ? "flex" : "hidden"
+          }`}
         >
-          <div ref={divRef1} className={determinarClase()}>
-            {cuentasAMostrar
-              .filter((cuenta) => cuenta) // Esto asegura que cada cuenta exista
-              .map((cuenta, index) => (
-                // Tu código para renderizar cada cuenta
+          <div
+            className="flex w-44 text-white justify-center items-center flex-col border-r-1 border-gray-600 rounded-lg hover:bg-gray-900"
+            onClick={() => {
+              expandirDiv("div1");
+            }}
+          >
+            <CalendarioSGV fill=" white" height="80" width="80" />
+            <div className=" pt-3">{getMes(addMonths(fechaActual, 1))}</div>
+            <div className="pt-16 flex flex-col items-center justify-center">
+              <div>Total:</div> <div>{total2}</div>
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col text-white overflow-y-scroll">
+            <div ref={divRef2} className={determinarClase2()}>
+              {cuentasAMostrar2.length > 0 ? (
+                cuentasAMostrar2.map((cuenta, index) => (
+                  <div
+                    className={`flex h-12 flex-row ${
+                      colores[index % colores.length]
+                    }`}
+                    key={index}
+                    onContextMenu={(event) => manejarClicDerecho(cuenta, event)}
+                  >
+                    <div className="flex-1 flex h-12 text-white justify-center items-center border-b-1 border-gray-600">
+                      {cuenta.tipodegasto}
+                    </div>
+                    <div className="flex-1 flex h-12 text-white justify-center items-center border-b-1 border-gray-600">
+                      {cuenta.descripcion}
+                    </div>
+                    <div className="flex-1 flex h-12 text-white justify-center items-center border-b-1 border-gray-600">
+                      {cuenta.date}
+                    </div>
+                    <div className="flex-1 flex h-12 text-white  justify-center items-center border-b-1 border-gray-600">
+                      $ {cuenta.pay}
+                    </div>
+                    <div className="flex-1 flex h-12 text-white justify-center items-center border-b-1 border-gray-600">
+                      <div className="flex-1 relative flex h-12  text-white justify-center items-center">
+                        <div
+                          onClick={() => togglePagado(cuenta._id)}
+                          className=" flex justify-center items-center"
+                        >
+                          <div className=" absolute">
+                            <PagadoSVG
+                              width="25"
+                              height="25"
+                              fill={
+                                estadosPagados[cuenta._id] ? "green" : "#616161"
+                              }
+                            />
+                          </div>
+                          <div className=" absolute">
+                            <ImpagaSVG
+                              width="25"
+                              height="25"
+                              fill={
+                                estadosPagados[cuenta._id] ? "#34EB17" : "black"
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <></>
+              )}
+            </div>
+          </div>
+        </div>
 
-                <div
-                  className={`flex h-12 flex-row ${
-                    colores[index % colores.length]
-                  }`}
-                  key={index}
-                >
-                  <div className="flex-1 flex h-12  text-white justify-center items-center">
-                    {cuenta.tipodegasto}
-                  </div>
-                  <div className="flex-1 flex h-12  text-white justify-center items-center">
-                    {cuenta.descripcion}
-                  </div>
-                  <div className="flex-1 flex h-12  text-white justify-center items-center">
-                    {cuenta.date}
-                  </div>
-                  <div className="flex-1 flex h-12  text-white justify-center items-center">
-                    {cuenta.pay}
-                  </div>
-                  <div className="flex-1 relative flex h-12  text-white justify-center items-center">
-                    <div onClick={() => togglePagado(cuenta._id)} className=" flex justify-center items-center">
-                    <div className=" absolute">
-                      <PagadoSVG width="25" height="25" fill={estadosPagados[cuenta._id] ? "green" : "#616161"}/>
-                    </div>
-                    <div className=" absolute">
-                      <ImpagaSVG width="25" height="25" fill={estadosPagados[cuenta._id] ? "#34EB17" : "black"} />
-                    </div>
-                    
-                    </div>
-                  </div>
-                </div>
-              ))}
+        <div
+          className={`flex relative flex-row w-full flex-1 border rounded-lg border-gray-600 overflow-auto ${
+            esDivVisible("div3") ? "flex" : "hidden"
+          }`}
+        >
+          <div
+            className="flex w-44 text-white justify-center items-center flex-col border-r-1 border-gray-600 rounded-lg hover:bg-gray-900"
+            onClick={() => {
+              expandirDiv("div1");
+            }}
+          >
+            <CalendarioSGV fill=" white" height="80" width="80" />
+            <div className=" pt-3">{getMes(addMonths(fechaActual, 2))}</div>
+            <div className="pt-16 flex flex-col items-center justify-center">
+              <div>Total:</div> <div>{total3}</div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div
-        className={`flex relative flex-row w-full h-72 border-t-2 border-gray-900 overflow-auto ${
-          esDivVisible("div2") ? "flex" : "hidden"
-        }`}
-      >
-        <div className="flex w-44 bg-slate-700 text-white justify-center items-center flex-col">
-          <CalendarioSGV fill=" white" height="80" width="80" />
-          <div className=" pt-3">{getMes(addMonths(fechaActual, 1))}</div>
-          <div className="pt-16 flex flex-col items-center justify-center">
-            <div>Total:</div> <div>{total2}</div>
-          </div>
-        </div>
-        <div className="flex-1 flex flex-col text-white overflow-auto">
-          <div ref={divRef2} className={determinarClase2()}>
-            {cuentasAMostrar2.length > 0 ? (
-              cuentasAMostrar2.map((cuenta, index) => (
-                <div
-                  className={`flex h-12 flex-row ${
-                    colores[index % colores.length]
-                  }`}
-                  key={index}
-                >
-                  <div className="flex-1 flex h-12 text-white justify-center items-center">
-                    {cuenta.tipodegasto}
-                  </div>
-                  <div className="flex-1 flex h-12 text-white justify-center items-center">
-                    {cuenta.descripcion}
-                  </div>
-                  <div className="flex-1 flex h-12 text-white justify-center items-center">
-                    {cuenta.date}
-                  </div>
-                  <div className="flex-1 flex h-12 text-white justify-center items-center">
-                    {cuenta.pay}
-                  </div>
-                  <div className="flex-1 flex h-12 text-white justify-center items-center">
-                  <div className="flex-1 relative flex h-12  text-white justify-center items-center">
-                    <div onClick={() => togglePagado(cuenta._id)} className=" flex justify-center items-center">
-                    <div className=" absolute">
-                      <PagadoSVG width="25" height="25" fill={estadosPagados[cuenta._id] ? "green" : "#616161"}/>
+          <div className="flex-1 flex flex-col text-white overflow-y-scroll">
+            <div ref={divRef3} className={determinarClase3()}>
+              {cuentasAMostrar3.length > 0 ? (
+                cuentasAMostrar3.map((cuenta, index) => (
+                  <div
+                    className={`flex h-12 flex-row ${
+                      colores[index % colores.length]
+                    }`}
+                    key={index}
+                    onContextMenu={(event) => manejarClicDerecho(cuenta, event)}
+                  >
+                    <div className="flex-1 flex h-12 text-white justify-center items-center border-b-1 border-gray-600">
+                      {cuenta.tipodegasto}
                     </div>
-                    <div className=" absolute">
-                      <ImpagaSVG width="25" height="25" fill={estadosPagados[cuenta._id] ? "#34EB17" : "black"} />
+                    <div className="flex-1 flex h-12 text-white justify-center items-center border-b-1 border-gray-600">
+                      {cuenta.descripcion}
                     </div>
-                    
+                    <div className="flex-1 flex h-12 text-white justify-center items-center border-b-1 border-gray-600">
+                      {cuenta.date}
                     </div>
-                  </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <></>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div
-        className={`flex relative flex-row w-full h-72 border-t-2 border-gray-900 overflow-auto ${
-          esDivVisible("div3") ? "flex" : "hidden"
-        }`}
-      >
-        <div className="flex w-44 bg-slate-700 text-white justify-center items-center flex-col">
-          <CalendarioSGV fill=" white" height="80" width="80" />
-          <div className=" pt-3">{getMes(addMonths(fechaActual, 2))}</div>
-          <div className="pt-16 flex flex-col items-center justify-center">
-            <div>Total:</div> <div>{total3}</div>
-          </div>
-        </div>
-        <div className="flex-1 flex flex-col text-white overflow-auto">
-          <div ref={divRef3} className={determinarClase3()}>
-            {cuentasAMostrar3.length > 0 ? (
-              cuentasAMostrar3.map((cuenta, index) => (
-                <div
-                  className={`flex h-12 flex-row ${
-                    colores[index % colores.length]
-                  }`}
-                  key={index}
-                >
-                  <div className="flex-1 flex h-12 text-white justify-center items-center">
-                    {cuenta.tipodegasto}
-                  </div>
-                  <div className="flex-1 flex h-12 text-white justify-center items-center">
-                    {cuenta.descripcion}
-                  </div>
-                  <div className="flex-1 flex h-12 text-white justify-center items-center">
-                    {cuenta.date}
-                  </div>
-                  <div className="flex-1 flex h-12 text-white justify-center items-center">
-                    {cuenta.pay}
-                  </div>
-                  <div className="flex-1 relative flex h-12  text-white justify-center items-center">
-                    <div onClick={() => togglePagado(cuenta._id)} className=" flex justify-center items-center">
-                    <div className=" absolute">
-                      <PagadoSVG width="25" height="25" fill={estadosPagados[cuenta._id] ? "green" : "#616161"}/>
+                    <div className="flex-1 flex h-12 text-white  justify-center items-center border-b-1 border-gray-600">
+                      $ {cuenta.pay}
                     </div>
-                    <div className=" absolute">
-                      <ImpagaSVG width="25" height="25" fill={estadosPagados[cuenta._id] ? "#34EB17" : "black"} />
-                    </div>
-                    
+                    <div className="flex-1 relative flex h-12  text-white justify-center items-center border-b-1 border-gray-600">
+                      <div
+                        onClick={() => togglePagado(cuenta._id)}
+                        className=" flex justify-center items-center"
+                      >
+                        <div className=" absolute">
+                          <PagadoSVG
+                            width="25"
+                            height="25"
+                            fill={
+                              estadosPagados[cuenta._id] ? "green" : "#616161"
+                            }
+                          />
+                        </div>
+                        <div className=" absolute">
+                          <ImpagaSVG
+                            width="25"
+                            height="25"
+                            fill={
+                              estadosPagados[cuenta._id] ? "#34EB17" : "black"
+                            }
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
-            ) : (
-              <></>
-            )}
+                ))
+              ) : (
+                <></>
+              )}
+            </div>
           </div>
         </div>
       </div>
