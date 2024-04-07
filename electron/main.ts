@@ -1,5 +1,7 @@
 import { app, BrowserWindow, ipcMain, ipcRenderer } from "electron";
 import path from "node:path";
+const bcrypt = require('bcrypt');
+const saltRounds = 10; // El coste del proceso de hashing
 
 //GUARDAR PETICION CUANDO SE ESTA OFFLINE
 //DATA BASES LOCALES
@@ -19,6 +21,10 @@ const cuentas = new Datastore({
 });
 const filters = new Datastore({
   filename: "database/filtersFile.js",
+  autoload: true,
+});
+const usuariosAdmin = new Datastore({
+  filename: "database/usuarioFile.js",
   autoload: true,
 });
 
@@ -119,6 +125,19 @@ function actualizarCliente(clientId: string, updateData: any) {
     );
   });
 }
+
+///////////////////////////////////
+/////FUNCIONES DE USUARIOS
+////////////////////////////////
+
+function guardarUsuarioAdmin(usuarioAdmin, callback) {
+  console.log("guardarUsuarioAdmin llamado con:", usuarioAdmin);
+  usuariosAdmin.insert(usuarioAdmin, callback);
+}
+
+///contraseña
+
+
 ////////////////////////////////
 //FUNCIONES DE ARTICULOS ARKCHIVO ARTICULOS.JS
 ///////////////////////////////
@@ -330,19 +349,7 @@ function accountToPay(account: object) {
     }
   });
 }
-async function getAccountsToPay() {
-  return new Promise((resolve, reject) => {
-    cuentas.find({}, (err: any, docs: any) => {
-      if (err) {
-        console.error("Error al obtener datos:", err);
-        reject(err);
-      } else {
-        console.log("Datos obtenidos:", docs);
-        resolve(docs);
-      }
-    });
-  });
-}
+
 
 function actualizarCuenta(idCuenta: string, datosActualizados: any) {
   if (idCuenta == null || datosActualizados == null) {
@@ -583,6 +590,206 @@ ipcMain.on("register-buy-client", async (event, clienteData) => {
 
   event.reply("response-register-buy", mensajeAResponder);
 });
+
+
+////////////////////////////////
+//////ESCUCHA DE USURARIOS
+////////////////////////////////
+
+ipcMain.on("guardar-usuario-admin", async (event, usuarioAdmin) => {
+  try {
+    // Genera un hash del password del usuario
+    const hashedPassword = await bcrypt.hash(usuarioAdmin.password, saltRounds);
+    // Sustituye el password en texto plano con el hash antes de guardar en la base de datos
+    const usuarioConPasswordEncriptado = {
+      ...usuarioAdmin,
+      password: hashedPassword,
+      esAdmin: true,
+    };
+
+    // Ahora guardas el usuario con el password encriptado en la base de datos
+    usuariosAdmin.insert(usuarioConPasswordEncriptado, (err, newDoc) => {
+      if (err) {
+        // Si hay un error, envía una respuesta al front-end
+        event.reply("respuesta-guardar-usuario-admin", { exito: false, error: err.message });
+      } else {
+        // Si tiene éxito, también envía una respuesta al front-end
+        event.reply("respuesta-guardar-usuario-admin", { exito: true, usuarioAdmin: newDoc });
+      }
+    });
+  } catch (error) {
+    // Si hay un error con el proceso de hashing, lo capturas aquí
+    console.error("Error al encriptar el password del usuario administrador:", error);
+    event.reply("respuesta-guardar-usuario-admin", { exito: false, error: error.message });
+  }
+});
+
+ipcMain.on('verificar-admin-existente', async (event) => {
+  usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
+    if (err) {
+      // En caso de error, comunicarlo al frontend
+      event.reply('respuesta-verificar-admin', false);
+    } else if (admin) {
+      // Si encontramos un administrador, comunicamos que existe y enviamos la cantidad de intentos restantes
+      event.reply('respuesta-verificar-admin', { existeAdmin: true, recuperacioncuenta: admin.recuperacioncuenta });
+    } else {
+      // Si no hay administrador, comunicamos que no existe
+      event.reply('respuesta-verificar-admin', { existeAdmin: false });
+    }
+  });
+});
+
+
+
+const jwt = require('jsonwebtoken');
+const secretKey = 'tu_clave_secreta'; // Asegúrate de usar una clave secreta segura y única
+
+ipcMain.on('iniciar-sesion', (event, credentials) => {
+  usuariosAdmin.findOne({ username: credentials.username }, (err, usuario) => {
+    if (err) {
+      console.error('Error al buscar el usuario:', err);
+      event.reply('respuesta-iniciar-sesion', { exito: false, mensaje: 'Error al buscar el usuario' });
+    } else {
+      if (usuario && bcrypt.compareSync(credentials.password, usuario.password)) {
+        // Genera un token JWT
+        const token = jwt.sign({ userId: usuario._id }, secretKey, { expiresIn: '4464h' }); // Token válido por 6 meses
+        console.log(usuario._id, token);
+        // Incluye el ID del usuario en la respuesta
+        event.reply('respuesta-iniciar-sesion', { exito: true, token, userId: usuario._id });
+      } else {
+        event.reply('respuesta-iniciar-sesion', { exito: false });
+      }
+    }
+  });
+});
+
+
+function verificarToken(token) {
+  try {
+    return jwt.verify(token, secretKey);
+  } catch (err) {
+    return null;
+  }
+}
+
+ipcMain.on('ruta-protegida', (event, token) => {
+  const decoded = verificarToken(token);
+  if (decoded) {
+    // Token válido, maneja la solicitud
+  } else {
+    // Token inválido o expirado, envía un mensaje de error
+    event.reply('respuesta-ruta-protegida', { exito: false, mensaje: 'Token inválido o expirado' });
+  }
+});
+
+
+function getUser(userId) {
+  return new Promise((resolve, reject) => {
+    usuariosAdmin.findOne({ _id: userId }, (err, doc) => {
+      console.log(userId, "este es  el id que recibo del fronend")
+      if (err) {
+        console.error('Error al obtener el usuario:', err);
+        reject(err);
+      } else {
+
+        resolve(doc);
+      }
+    });
+  });
+}
+
+
+
+
+// Backend
+ipcMain.on('obtener-datos-usuario', async (event, userId) => {
+  try {
+    const usuario = await getUser(userId);
+    if (usuario) {
+      // Asegúrate de que la función getUser devuelva la URL de la imagen del usuario
+      event.reply("datos-usuario-obtenidos", { success: true, data: usuario });
+    } else {
+      // Si el usuario no se encuentra, envía una respuesta de error
+      event.reply("datos-usuario-obtenidos", { success: false, error: 'Usuario no encontrado' });
+    }
+  } catch (error) {
+    console.error('Error al obtener los datos del usuario:', error);
+    event.reply("datos-usuario-obtenidos", { success: false, error: error.message });
+  }
+});
+
+
+
+// Función para actualizar la imagen del usuario
+function actualizarImagenUsuario(userId, imageUrl) {
+  console.log(`Actualizando imagen del usuario ${userId} con URL: ${imageUrl}`);
+  return new Promise((resolve, reject) => {
+    usuariosAdmin.update({ _id: userId }, { $set: { imageUrl: imageUrl } }, {}, (err) => {
+      if (err) {
+        console.error('Error al actualizar la imagen del usuario:', err);
+        reject(err);
+      } else {
+        console.log('Imagen del usuario actualizada con éxito');
+        resolve(true);
+      }
+    });
+  });
+}
+
+
+// Evento de IPC para actualizar la imagen del usuario
+ipcMain.on('actualizar-imagen-usuario', async (event, { userId, imageUrl }) => {
+  console.log('Evento actualizar-imagen-usuario recibido:', userId, imageUrl);
+  try {
+    await actualizarImagenUsuario(userId, imageUrl);
+    event.reply('respuesta-actualizar-imagen-usuario', { exito: true, imageUrl: imageUrl });
+  } catch (error) {
+    console.error('Error al actualizar la imagen del usuario:', error);
+    event.reply('respuesta-actualizar-imagen-usuario', { exito: false, mensaje: error.message });
+  }
+});
+
+
+
+
+// Backend
+ipcMain.on('obtener-admin', (event) => {
+  usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
+    if (err) {
+      console.error('Error al buscar el administrador:', err);
+      event.reply('respuesta-obtener-admin', { exito: false, error: err.message });
+    } else if (admin) {
+      event.reply('respuesta-obtener-admin', { exito: true, admin });
+    } else {
+      event.reply('respuesta-obtener-admin', { exito: false, error: 'No se encontró un administrador' });
+    }
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ///
 //ESCUCHAS DE EVENTOS DE GUARDADO DE ARTICULOS

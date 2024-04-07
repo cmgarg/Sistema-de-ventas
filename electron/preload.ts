@@ -152,6 +152,12 @@ contextBridge.exposeInMainWorld("api", {
       "save-category",
       "save-brand",
       "get-categoryAndBrand",
+      //Eventos Usuario
+      "guardar-usuario-admin",
+      "iniciar-sesion",
+      "obtener-datos-usuario",
+      'actualizar-imagen-usuario',
+      'obtener-admin',
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -170,10 +176,20 @@ contextBridge.exposeInMainWorld("api", {
       "response-get-accountToPay",
       "response-get-categoryAndBrand",
       "response-get-sales-stats",
+      "respuesta-iniciar-sesion",
+      "datos-usuario-obtenidos",
+      "datos-usuario-obtenidos",
+      'respuesta-obtener-admin',
+      
+      
     ];
 
     if (canalesPermitidos.includes(canal)) {
+      console.log(`Escuchando evento: ${canal}`); // Agrega esta línea
       ipcRenderer.on(canal, (event, ...args) => callback(...args));
     }
+  },
+  removeAllListeners: (canal: string) => {
+    ipcRenderer.removeAllListeners(canal);
   },
 });
