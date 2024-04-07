@@ -1,66 +1,32 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import TableMain from "../../tablaMain/TableMain";
 import TableHead from "../../tablaMain/TableHead";
 import TableRow from "../../tablaMain/TableRow";
-import MenuContextual2 from "../../../GMC/MenuContextual2";
-import Diamong from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/Diamong";
 import { Link } from "react-router-dom";
-import OrdenarPor from "../buttons/OrdenarPor";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "../../../../../app/ui/context-menu";
+import { useDispatch } from "react-redux";
+import { articleData } from "@/types";
 
 interface ArticleListProps {
-  articulos: object[];
-  setArticulos: (e: object[]) => void;
-  articleToEdit: { active: boolean; id: string };
-  setArticleToEdit: (e: { active: boolean; id: string }) => void;
-  searchActived: { actived: boolean; results: object[] };
+  articles: articleData[];
+  searchActived: { actived: boolean; results: articleData[] };
 }
 
 const ArticleList: React.FC<ArticleListProps> = ({
-  articulos,
-  setArticulos,
-  articleToEdit,
+  articles,
   searchActived,
-  setArticleToEdit,
 }) => {
-  //ORDENAR LISTA
-  function sortList(e: string) {
-    let articlesToOrder = [...articulos];
+  const dispatch = useDispatch();
 
-    if (e === "stock") {
-      articlesToOrder.sort((a: object, b: object) => b.stock - a.stock);
+  useEffect(() => {
+    console.log(articles, "|||||||||||||||||||||");
+  }, []);
 
-      setArticulos([...articlesToOrder]);
-    }
-  }
-  function ventas(ventas: []) {
-    if (!ventas) {
-      return 0;
-    }
-    return ventas.length;
-  }
-  function eliminarArticle(id: string) {
-    console.log("hasda");
-    window.api.enviarEvento("eliminar-articulo", id);
-    deleteArticleState(id);
-  }
-  //elimina venta del estado
-  function deleteArticleState(idSale: string) {
-    const articles = [...articulos];
-
-    const i = articles.findIndex((obj) => obj._id === idSale);
-
-    if (i !== -1) {
-      articles.splice(i, 1);
-    }
-    setArticulos([...articles]);
-    return;
-  }
   return (
     <TableMain>
       <TableHead>
@@ -82,41 +48,41 @@ const ArticleList: React.FC<ArticleListProps> = ({
       </TableHead>
       <div className="first:bg-white">
         {searchActived.actived && searchActived.results.length > 0 ? (
-          searchActived.results.map((fila) => (
+          searchActived.results.map((articleObject) => (
             <ContextMenu>
               <ContextMenuTrigger>
-                <TableRow key={fila._id}>
+                <TableRow key={articleObject.article.code || "PENE"}>
                   <div className="flex items-center flex-1 pl-2 space-x-1">
                     <Link
-                      to={`/articulo/${fila._id}`}
+                      to={`/articulo/${articleObject.article.code || "pene"}`}
                       className="flex-1 text-center"
-                    >{`${fila.articulo}`}</Link>
+                    >{`${articleObject.article.name}`}</Link>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{fila.brand.label}</p>
+                    <p>{articleObject.brand.label}</p>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>${fila.costo}</p>
+                    <p>${articleObject.article.costo}</p>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>${fila.venta}</p>
+                    <p>${articleObject.article.venta}</p>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{ventas(fila.ventas)}</p>
+                    <p>{articleObject.sales.length}</p>
                   </div>
                 </TableRow>
               </ContextMenuTrigger>
               <ContextMenuContent>
                 <ContextMenuItem
                   onClick={() => {
-                    editClient(fila._id);
+                    // editClient(fila._id);
                   }}
                 >
                   Editar
                 </ContextMenuItem>
                 <ContextMenuItem
                   onClick={() => {
-                    eliminarCliente(fila._id);
+                    // eliminarCliente(fila._id);
                   }}
                 >
                   Borrar
@@ -131,41 +97,41 @@ const ArticleList: React.FC<ArticleListProps> = ({
             </div>
           </TableRow>
         ) : (
-          articulos.map((fila) => (
+          articles.map(({ article, brand, sales }) => (
             <ContextMenu>
               <ContextMenuTrigger>
-                <TableRow key={fila._id}>
+                <TableRow key={article.code || "PENE"}>
                   <div className="flex items-center flex-1 pl-2 space-x-1">
                     <Link
-                      to={`/articulo/${fila._id}`}
+                      to={`/articulo/${article.code || "PENE"}`}
                       className="flex-1 text-center"
-                    >{`${fila.articulo}`}</Link>
+                    >{`${article.name}`}</Link>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{fila.brand.label}</p>
+                    <p>{brand.label}</p>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>${fila.costo}</p>
+                    <p>${article.costo}</p>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>${fila.venta}</p>
+                    <p>${article.venta}</p>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{ventas(fila.ventas)}</p>
+                    <p>{sales.length}</p>
                   </div>
                 </TableRow>
               </ContextMenuTrigger>
               <ContextMenuContent>
                 <ContextMenuItem
                   onClick={() => {
-                    edit(fila._id);
+                    // edit(fila._id);
                   }}
                 >
                   Editar
                 </ContextMenuItem>
                 <ContextMenuItem
                   onClick={() => {
-                    eliminarArticle(fila._id);
+                    // eliminarArticle(fila._id);
                   }}
                 >
                   Borrar

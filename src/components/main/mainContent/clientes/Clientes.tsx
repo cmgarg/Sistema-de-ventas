@@ -8,89 +8,100 @@ import EditarClientes from "./editarClientes/editarClientes";
 import Export from "../buttons/Export";
 import Imprimir from "../buttons/Imprimir";
 import ListClient from "./ListClient";
-import { ContextMenu } from "@radix-ui/react-context-menu";
-import ContextMenuG from "../ContextMenu/ContextMenu";
+import { clientData, storeType } from "@/types";
+import { useDispatch, useSelector } from "react-redux";
 
 interface ClientesContentProps {
   searchIn?: string;
 }
 
 const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
+  const dispatch = useDispatch();
+
+  const clients = useSelector((state: storeType) => state.clientState);
+
   const [activeModalForm, setActiveModalForm] = useState(false);
-  const [clienteAeditar, setClienteAeditar] = useState<{
+  const [clientToEdit, setClienteAeditar] = useState<{
     active: boolean;
-    id: string;
+    object: clientData;
   }>({
     active: false,
-    id: "",
+    object: {
+      name: "",
+      address: "",
+      phone: 0,
+      email: "",
+      birthdate: "",
+      DNI: 0,
+      shopping: [],
+    },
   });
   const [searchActived, setSearchActived] = useState<{
     actived: boolean;
-    results: object[];
+    results: clientData[];
   }>({
     actived: false,
     results: [],
   });
-  const [clientes, setClientes] = useState([]);
 
   function onChangeModal(p: boolean) {
     setActiveModalForm(p);
   }
   function clienteAeditarOff() {
-    setClienteAeditar({ active: false, id: "" });
+    setClienteAeditar({
+      active: false,
+      object: {
+        name: "",
+        address: "",
+        phone: 0,
+        email: "",
+        birthdate: "",
+        DNI: 0,
+        shopping: [],
+      },
+    });
   }
-  function onChangeClient(data: object) {
-    setClienteAeditar(data);
+  function onChangeClient(data: clientData) {
+    setClienteAeditar({ object: data, active: true });
   }
   ////ACTIVAR A EDITAR CLIENTES
   /////////////////////////////
   //OBTENER RESULTADOS DE BUSQUEDAD
-  function getResults(e: object[], actived: boolean) {
-    console.log(clientes, "FORRRRRRRRRRRRRRROO");
+  function getResults(e: clientData[], actived: boolean) {
     let object = { actived: actived, results: e };
     setSearchActived(object);
     console.log(object, "aca");
   }
-  //
-  function obtenerClientes() {
-    window.api.enviarEvento("obtener-clientes");
-  }
-  //OBTENER CLIENTES
-  useEffect(() => {
-    obtenerClientes();
-    window.api.recibirEvento("respuesta-obtener-clientes", (e) => {
-      console.log("ME EJECUTO A LA PERFECCIONE", e);
-      const arrayClientes = [];
-      e.map((e) => {
-        arrayClientes.push(e);
-      });
-      setClientes(arrayClientes);
-    });
-  }, []);
+
   return (
-    <div className="flex flex-col flex-1">
-      <div className="flex-2 pt-2">
+    <div className="h-full w-full grid-cmg-program">
+      <div className="row-start-1 row-end-2">
         <NavMain title="Clientes">
-          <Buscador searchIn={clientes} functionReturn={getResults}></Buscador>
+          <Buscador searchIn={clients} functionReturn={getResults}></Buscador>
           <Export></Export>
           <Imprimir></Imprimir>
           <Agregar title="cliente" onChangeModal={onChangeModal}></Agregar>
         </NavMain>
       </div>
-      <div className="flex flex-row flex-1">
+      <div className="flex flex-row pb-5 row-start-2 row-end-7">
         <AsideMain isActive={false}></AsideMain>
         <div className="flex-1 p-5 relative">
           {activeModalForm && (
             <AddClientresForm onChangeModal={onChangeModal}></AddClientresForm>
           )}
-          {clienteAeditar.active && (
-            <EditarClientes clienteAeditarOff={clienteAeditarOff} />
+          {clientToEdit.active && (
+            <EditarClientes
+              clienteAeditarOff={clienteAeditarOff}
+              dispatch={dispatch}
+              clientToEdit={clientToEdit.object}
+            />
           )}
 
           <ListClient
-            clienteAeditar={clienteAeditar}
+            clientAeditar={clientToEdit}
             searchActived={searchActived}
-            setClienteAeditar={onChangeClient}
+            setClientToEdit={onChangeClient}
+            dispatch={dispatch}
           />
         </div>
       </div>

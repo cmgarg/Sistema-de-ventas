@@ -55,7 +55,7 @@ const Ventas: React.FC<VentastProps> = (
   //////////////////////////////
 
   return (
-    <div className="flex flex-col flex-1 pt-2">
+    <div className="h-full w-full grid-cmg-program">
       <div className="flex-2">
         <NavMain title="Ventas">
           <Export></Export>
@@ -66,7 +66,7 @@ const Ventas: React.FC<VentastProps> = (
           <Agregar title="Venta" onChangeModal={onChangeModal}></Agregar>
         </NavMain>
       </div>
-      <div className="flex flex-row flex-1">
+      <div className="flex flex-row pb-5 row-start-2 row-end-7">
         <AsideMain isActive={false}></AsideMain>
         <div className="flex-1 p-5 relative">
           {activeModal && (

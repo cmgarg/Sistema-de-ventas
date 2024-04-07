@@ -1,52 +1,57 @@
 import React, { useEffect, useState } from "react";
-import AgregarCliente from "../../buttons/Agregar";
 import CheckSvg from "../../../../../assets/MAINSVGS/mainAsideSvg/editSVG/CheckSvg";
 import ErrorSvg from "../../../../../assets/MAINSVGS/mainAsideSvg/editSVG/ErrorSvg";
+import { clientData } from "@/types";
+import { editClient } from "../../../../../../src/redux/estados/clientesState";
 
 interface EditarClienteProps {
   clienteAeditarOff: () => void;
+  dispatch: (e: any) => void;
+  clientToEdit: clientData;
 }
 
 const EditarClientes: React.FC<EditarClienteProps> = ({
   clienteAeditarOff,
+  dispatch,
+  clientToEdit,
 }) => {
-  const [clienteData, setClienteData] = useState({});
+  const [clientData, setClienteData] = useState<clientData>(clientToEdit);
   const [mensajeTrueFalse, setmensajeTrueFalse] = useState({
     value: false,
     seGuardo: 0,
   });
 
-  function setChangeData(data: string, value: string) {
+  function setChangeData(data: string, value: any) {
     console.log("LLAMA LA FUNCION");
     const existingData = [
-      "nombre",
-      "apellido",
-      "direccion",
-      "telefono",
+      "name",
+      "address",
+      "phone",
       "email",
-      "dni",
+      "birthdate",
+      "DNI",
     ];
     console.log(existingData.includes(data), "esto");
     if (existingData.includes(data)) {
       switch (data) {
-        case "nombre":
+        case "name":
           console.log("se cumple esrte");
-          setClienteData({ ...clienteData, nombre: value });
+          setClienteData({ ...clientData, name: value });
           break;
-        case "apellido":
-          setClienteData({ ...clienteData, apellido: value });
+        case "address":
+          setClienteData({ ...clientData, address: value });
           break;
-        case "direccion":
-          setClienteData({ ...clienteData, direccion: value });
-          break;
-        case "telefono":
-          setClienteData({ ...clienteData, telefono: value });
+        case "phone":
+          setClienteData({ ...clientData, phone: parseInt(value) });
           break;
         case "email":
-          setClienteData({ ...clienteData, email: value });
+          setClienteData({ ...clientData, email: value });
           break;
-        case "dni":
-          setClienteData({ ...clienteData, dni: value });
+        case "birthdate":
+          setClienteData({ ...clientData, birthdate: value });
+          break;
+        case "DNI":
+          setClienteData({ ...clientData, DNI: value });
           break;
 
         default:
@@ -56,23 +61,11 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
       console.log("NO ESTA");
     }
   }
-  function guardarClienteEditado() {
-    window.api.enviarEvento("actualizar-cliente", clienteData);
+  function saveClientEdit() {
+    window.api.enviarEvento("update-client", clientData);
 
-    window.api.enviarEvento("obtener-clientes");
+    dispatch(editClient(clientData));
   }
-
-  useEffect(() => {
-    //SE GUARDA EL USUARIO ENCONTRADO EN SETCLIENTDATA PARA QUE APAREZCAN EN LOS INPUT CADA DATO, NOMBRE, APELLIDO, ETC.
-    window.api.recibirEvento("cliente-encontradoById", (e) => {
-      console.log("ME EJECUTO A LA PERFECCIONE QUERIDOOO", e);
-      setClienteData(e[0]);
-    });
-    window.api.recibirEvento("respuesta-actualizar-cliente", (e) => {
-      console.log(e);
-      setmensajeTrueFalse({ value: true, seGuardo: e });
-    });
-  }, []);
 
   //ESTILOS INPUT
   const estilosInput =
@@ -81,27 +74,15 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50">
       <div className="flex flex-col p-5 space-y-5 bg-slate-50 w-96 justify-center rounded-xl relative items-center">
-        <div className="flex flex-row space-x-1">
+        <div className="flex flex-row space-x-1 w-full">
           <div className="flex-1 w-full">
-            <label htmlFor="nombre">Nombre</label>
+            <label htmlFor="name">Nombre</label>
             <input
               type="text"
-              name="nombre"
-              value={clienteData.nombre}
+              name="name"
+              value={clientData.name}
               onChange={(e) => {
-                setChangeData("nombre", e.target.value);
-              }}
-              className={estilosInput}
-            />
-          </div>
-          <div className="flex-1 w-full">
-            <label htmlFor="apellido">Apellido</label>
-            <input
-              type="text"
-              name="apellido"
-              value={clienteData.apellido}
-              onChange={(e) => {
-                setChangeData("apellido", e.target.value);
+                setChangeData("name", e.target.value);
               }}
               className={estilosInput}
             />
@@ -109,25 +90,25 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
         </div>
 
         <div className="w-full">
-          <label htmlFor="direccion">Direccion</label>
+          <label htmlFor="address">Direccion</label>
           <input
             type="text"
-            name="direccion"
-            value={clienteData.direccion}
+            name="address"
+            value={clientData.address}
             onChange={(e) => {
-              setChangeData("direccion", e.target.value);
+              setChangeData("address", e.target.value);
             }}
             className={estilosInput}
           />
         </div>
         <div className="w-full">
-          <label htmlFor="telefono">Telefono</label>
+          <label htmlFor="phone">Telefono</label>
           <input
             type="text"
-            name="telefono"
-            value={clienteData.telefono}
+            name="phone"
+            value={clientData.phone}
             onChange={(e) => {
-              setChangeData("telefono", e.target.value);
+              setChangeData("phone", e.target.value);
             }}
             className={estilosInput}
           />
@@ -137,7 +118,7 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
           <input
             type="text"
             name="email"
-            value={clienteData.email}
+            value={clientData.email}
             onChange={(e) => {
               setChangeData("email", e.target.value);
             }}
@@ -149,9 +130,9 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
           <input
             type="text"
             name="dni"
-            value={clienteData.dni}
+            value={clientData.DNI}
             onChange={(e) => {
-              setChangeData("dni", e.target.value);
+              setChangeData("DNI", e.target.value);
             }}
             className={estilosInput}
           />
@@ -168,7 +149,7 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
           <button
             className="w-52 h-10 bg-green-400 rounded-md text-slate-50"
             onClick={() => {
-              guardarClienteEditado();
+              saveClientEdit();
             }}
           >
             Guardar

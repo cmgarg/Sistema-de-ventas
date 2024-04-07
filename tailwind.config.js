@@ -103,6 +103,10 @@ module.exports = {
         ".border-t-1": {
           "border-top-width": "1px",
         },
+        ".grid-cmg-program": {
+          display: "grid",
+          "grid-template-rows": "minmax(0, auto) repeat(5, minmax(0, 1fr))",
+        },
         ".custom-scrollbar::-webkit-scrollbar": {
           width: "3px" /* Ancho del scrollbar */,
           "border-radius": "5px",

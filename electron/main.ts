@@ -3,46 +3,34 @@ import path from "node:path";
 
 //GUARDAR PETICION CUANDO SE ESTA OFFLINE
 //DATA BASES LOCALES
-import Datastore from "nedb";
-const db = new Datastore({ filename: "database/datafile.js", autoload: true });
-const articulos = new Datastore({
-  filename: "database/articulos.js",
-  autoload: true,
-});
-const ventas = new Datastore({
-  filename: "database/ventasFile.js",
-  autoload: true,
-});
-const cuentas = new Datastore({
-  filename: "database/cuentasFile.js",
-  autoload: true,
-});
-const filters = new Datastore({
-  filename: "database/filtersFile.js",
-  autoload: true,
-});
+import { articleData } from "@/types";
+import Datastore from "@seald-io/nedb";
 
-//FUNCIONES DE CLIENTES ARCHIVO DATAFILE
+const db = {
+  clients: new Datastore({ filename: "database/clients.db", autoload: true }),
+  articles: new Datastore({ filename: "database/articles.db", autoload: true }),
+  sales: new Datastore({ filename: "database/sales.db", autoload: true }),
+  accounts: new Datastore({ filename: "database/accounts.db", autoload: true }),
+  users: new Datastore({ filename: "database/users.db", autoload: true }),
+  filters: new Datastore({ filename: "database/filters.db", autoload: true }),
+};
 
-function guardarUsuario(data: any) {
-  const client = {
-    ...data,
-    compras: [],
-  };
+////////////////////////////////
 
-  db.insert(client, (err, newDoc) => {
-    if (err) {
-      // Manejar el error
-      console.error("Error al guardar el objeto:", err);
-    } else {
-      // Objeto guardado con éxito
-      console.log("Objeto guardado:", newDoc);
-    }
-  });
-}
+const saveClient = async (data: object) => {
+  await db.clients
+    .insertAsync(data)
+    .then((res) => {
+      console.log("Cliente guardado con exito", res);
+    })
+    .catch((err) => {
+      console.log("Error al guardar el cliente", err);
+    });
+};
+
 async function registerBuyClient(clientBuy: any) {
   const client = await getClientById(clientBuy.cliente.idClient);
-  console.log("CLIENTE OBTENIDO APAPA", client[0].compras);
+  console.log("CLIENTE OBTENIDO APAPA", client[0].sales);
   const fechaActual = new Date();
   const año = fechaActual.getFullYear();
   const mes = fechaActual.getMonth() + 1;
@@ -55,16 +43,16 @@ async function registerBuyClient(clientBuy: any) {
   };
   const clientUpdated = {
     ...client[0],
-    compras: [...client[0].compras, clientWithDate],
+    compras: [...client[0].sales, clientWithDate],
   };
   console.log("WACHAAAA", clientUpdated);
   delete clientUpdated._id;
 
-  await actualizarCliente(client[0]._id, clientUpdated);
+  await updateClient(client[0]._id, clientUpdated);
 }
 function getClientById(clientId: string) {
   return new Promise((resolve, reject) => {
-    db.find({ _id: clientId }, (err: any, doc: any) => {
+    db.clients.find({ _id: clientId }, (err: any, doc: any) => {
       if (err) {
         console.log("error al buscar el cliente", err);
         reject(err);
@@ -75,21 +63,24 @@ function getClientById(clientId: string) {
     });
   });
 }
-function borrarCliente(data: any) {
+const deleteClient = async (data: any) => {
   console.log("ACA ERSTAMOS");
-  db.remove({ _id: data }, (err, newDoc) => {
-    if (err) {
-      // Manejar el error
-      console.error("Error al guardar el objeto:", err);
-    } else {
-      // Objeto guardado con éxito
-      console.log("Cliente eliminado:", newDoc);
-    }
-  });
-}
-function buscarClientes() {
+  await db.clients
+    .removeAsync({ _id: data._id }, {})
+    .then((data) => {
+      console.log("Cliente eliminado", data);
+
+      return { clientDelete: data.name };
+    })
+    .catch((err) => {
+      console.log("No se ha podido eliminar el cliente", err);
+
+      return false;
+    });
+};
+function findClients() {
   return new Promise((resolve, reject) => {
-    db.find({}, (err: any, docs: any) => {
+    db.clients.find({}, (err: any, docs: any) => {
       if (err) {
         console.error("Error al obtener datos:", err);
         reject(err);
@@ -100,10 +91,10 @@ function buscarClientes() {
     });
   });
 }
-function actualizarCliente(clientId: string, updateData: any) {
+function updateClient(clientId: string, updateData: any) {
   delete updateData._id;
   return new Promise((resolve, reject) => {
-    db.update(
+    db.clients.update(
       { _id: clientId },
       { $set: updateData },
       { multi: false },
@@ -123,13 +114,13 @@ function actualizarCliente(clientId: string, updateData: any) {
 //FUNCIONES DE ARTICULOS ARKCHIVO ARTICULOS.JS
 ///////////////////////////////
 
-function guardarArticulo(a: any) {
+function saveArticle(a: any) {
   const articleToSave = {
     ...a,
-    ventas: [],
+    sales: [],
   };
 
-  articulos.insert(articleToSave, (err, newDoc) => {
+  db.articles.insert(articleToSave, (err, newDoc) => {
     if (err) {
       // Manejar el error
       console.error("Error al guardar el objeto:", err);
@@ -139,9 +130,9 @@ function guardarArticulo(a: any) {
     }
   });
 }
-function getArticleById(articleId: string) {
+function getArticleById(articleId: string): Promise<object[]> {
   return new Promise((resolve, reject) => {
-    articulos.find({ _id: articleId }, (err: any, doc: any) => {
+    db.articles.find({ _id: articleId }, (err: any, doc: any) => {
       if (err) {
         console.log("error al buscar el Articulo", err);
         reject(err);
@@ -154,7 +145,7 @@ function getArticleById(articleId: string) {
 }
 function getArticleByName(articleName: string) {
   return new Promise((resolve, reject) => {
-    articulos.find({ articulo: articleName }, (err: any, doc: any) => {
+    db.articles.find({ articulo: articleName }, (err: any, doc: any) => {
       if (err) {
         console.log("error al buscar el Articulo", err);
         reject(err);
@@ -165,9 +156,9 @@ function getArticleByName(articleName: string) {
     });
   });
 }
-function buscarArticulos() {
+function findArticles() {
   return new Promise((resolve, reject) => {
-    articulos.find({}, (err: any, docs: any) => {
+    db.articles.find({}, (err: any, docs: any) => {
       if (err) {
         console.error("Error al obtener datos:", err);
         reject(err);
@@ -178,9 +169,9 @@ function buscarArticulos() {
     });
   });
 }
-function borrarArticulo(data: any) {
+function deleteArticle(data: any) {
   console.log("ACA ERSTAMOS");
-  articulos.remove({ _id: data }, (err, newDoc) => {
+  db.articles.remove({ _id: data }, (err, newDoc) => {
     if (err) {
       // Manejar el error
       console.error("Error al guardar el objeto:", err);
@@ -190,17 +181,26 @@ function borrarArticulo(data: any) {
     }
   });
 }
-async function updatedStockArticle(idArticle: any, sold: any) {
+async function updatedStockArticle(article: {
+  idArticle: string;
+  quantity: string;
+  nameArticle: string;
+  totalCost: string;
+}) {
+  const { idArticle, quantity } = article;
   const articleUpdate = await getArticleById(idArticle);
   console.log(articleUpdate, "ARTICULO A ACTUALIZAR STOCK");
-  const stock = parseInt(articleUpdate[0].stock);
-  console.log(articleUpdate[0].stock, "STOCK");
-  const restSold = stock - sold;
+  const stock = parseInt(articleUpdate[0].stock.amount);
+  console.log(articleUpdate[0].stock.amount, "STOCK");
+  const restSold = stock - parseInt(quantity);
 
   return new Promise((resolve, reject) => {
-    articulos.update(
+    db.articles.update(
       { _id: idArticle },
-      { ...articleUpdate[0], stock: restSold },
+      {
+        ...articleUpdate[0],
+        stock: { ...articleUpdate[0].stock, amount: restSold },
+      },
       { multi: false },
       (err: any, docs: any) => {
         if (err) {
@@ -214,15 +214,22 @@ async function updatedStockArticle(idArticle: any, sold: any) {
     );
   });
 }
-async function updateCountSaleArticle(articleId: string, sale: object) {
-  const article = await getArticleById(articleId);
+async function updateCountSaleArticle(article: {
+  idArticle: string;
+  quantity: string;
+  nameArticle: string;
+  totalCost: string;
+}) {
+  const { idArticle } = article;
 
-  const salesCount = article[0].ventas;
+  const articleUpdate: articleData[] = await getArticleById(idArticle);
+
+  const salesCount = articleUpdate[0].sales;
 
   return new Promise((resolve, reject) => {
-    articulos.update(
-      { _id: articleId },
-      { ...article[0], ventas: [...salesCount, sale] },
+    db.articles.update(
+      { _id: idArticle },
+      { ...articleUpdate[0], ventas: [...salesCount, article] },
       { multi: false },
       (err: any, docs: any) => {
         if (err) {
@@ -240,7 +247,7 @@ async function updateCountSaleArticle(articleId: string, sale: object) {
 //////////////////////////////////////////////////////
 //FUNCIONES DE CLIENTES ARCHIVO ventasFile.js////////
 ////////////////////////////////////////////////////
-function guardarVenta(a: any) {
+function saveSale(a: any) {
   const fechaActual = new Date();
   const año = fechaActual.getFullYear();
   const mes = fechaActual.getMonth() + 1;
@@ -251,7 +258,7 @@ function guardarVenta(a: any) {
       .toString()
       .padStart(2, "0")}-${año}`,
   };
-  ventas.insert(saleToSave, (err, newDoc) => {
+  db.sales.insert(saleToSave, (err, newDoc) => {
     if (err) {
       // Manejar el error
       console.error("Error al guardar el objeto:", err);
@@ -263,21 +270,62 @@ function guardarVenta(a: any) {
 }
 async function saleProcess(venta: any) {
   console.log("VENTA RECIBIDA", venta);
-  const articuloVendido = await getArticleById(venta.articulo.idArticle);
-  const cantidadVendida = parseInt(venta.cantidad);
-  const idArticle = articuloVendido[0]._id;
-  const totalMoneySold = venta.cantidad * articuloVendido[0].costo;
 
-  const saleComplete = { ...venta, sold: totalMoneySold };
+  const articlesOfSale = [...venta.articulos];
+  const totalCost = articlesOfSale.reduce((accumulator, currentArticle) => {
+    console.log(
+      accumulator.costoArticle,
+      currentArticle.costoArticle,
+      "ASDASDASDASDASWW"
+    );
+    return (
+      parseInt(accumulator.costoArticle) + parseInt(currentArticle.costoArticle)
+    );
+  });
 
-  await updatedStockArticle(idArticle, cantidadVendida); //actualiza el stock del articulo vendido
-  await updateCountSaleArticle(idArticle, saleComplete);
+  const quantityOfSale = articlesOfSale.map((article) => {
+    return {
+      idArticle: article.idArticle,
+      nameArticle: article.nombreArticle,
+      quantity: article.amount,
+      totalCost: article.costoArticle,
+    };
+  });
 
-  return guardarVenta(saleComplete);
+  quantityOfSale.map(
+    async (articleToUpdate: {
+      idArticle: string;
+      nameArticle: string;
+      quantity: string;
+      totalCost: string;
+    }) => {
+      await updatedStockArticle(articleToUpdate);
+    }
+  );
+
+  quantityOfSale.map(async (articleToUpdate) => {
+    await updateCountSaleArticle(articleToUpdate);
+  });
+
+  const saleComplete = { ...venta, sold: totalCost };
+
+  return saveSale(saleComplete);
+  //de articulo a articulos
+  // const articuloVendido = await getArticleById(venta.articulo.idArticle);
+  // const cantidadVendida = parseInt(venta.cantidad);
+  // const idArticle = articuloVendido[0]._id;
+  // const totalMoneySold = venta.cantidad * articuloVendido[0].costo;
+
+  // const saleComplete = { ...venta, sold: totalMoneySold };
+
+  // await updatedStockArticle(idArticle, cantidadVendida); //actualiza el stock del articulo vendido
+  // await updateCountSaleArticle(idArticle, saleComplete);
+
+  // return guardarVenta(saleComplete);
 }
-function buscarVentas() {
+function findSales() {
   return new Promise((resolve, reject) => {
-    ventas.find({}, (err: any, docs: any) => {
+    db.sales.find({}, (err: any, docs: any) => {
       if (err) {
         console.error("Error al obtener datos:", err);
         reject(err);
@@ -288,9 +336,9 @@ function buscarVentas() {
     });
   });
 }
-function borrarVentas(data: any) {
+function deleteSales(data: any) {
   console.log("ACA ERSTAMOS");
-  ventas.remove({ _id: data }, (err, newDoc) => {
+  db.sales.remove({ _id: data }, (err, newDoc) => {
     if (err) {
       // Manejar el error
       console.error("Error al guardar el objeto:", err);
@@ -304,7 +352,7 @@ function borrarVentas(data: any) {
 //FUNCIONES DE CUENTAS ARCHIVO cuentasFile.js////////
 /////////////////////////////////////////////////////
 function accountToPay(account: object) {
-  cuentas.insert(account, (err, newDoc) => {
+  db.accounts.insert(account, (err, newDoc) => {
     if (err) {
       // Manejar el error
       console.error("Error al guardar el objeto:", err);
@@ -316,7 +364,7 @@ function accountToPay(account: object) {
 }
 async function getAccountsToPay() {
   return new Promise((resolve, reject) => {
-    cuentas.find({}, (err: any, docs: any) => {
+    db.accounts.find({}, (err: any, docs: any) => {
       if (err) {
         console.error("Error al obtener datos:", err);
         reject(err);
@@ -330,24 +378,27 @@ async function getAccountsToPay() {
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
 /////////////////////////////////////////////////////
-function addCategory(e: { value: string; label: string; typeFilter: string }) {
-  console.log(e);
-  return new Promise((resolve, reject) => {
-    filters.insert(e, (err, docs) => {
-      if (err) {
-        console.error("Error al obtener datos:", err);
-        reject(err);
-      } else {
-        console.log("Datos obtenidos:", docs);
-        resolve(docs);
-      }
+const addCategory = async (newCategory: string) => {
+  const newCategoryLabel =
+    newCategory.charAt(0).toUpperCase() + newCategory.slice(1).toLowerCase();
+  const category = {
+    value: newCategory,
+    label: newCategoryLabel,
+    typeFilter: "category",
+  };
+  return await db.filters
+    .insertAsync(category)
+    .then((res) => {
+      console.log("Se guardo la cateogria correctamente :", res);
+    })
+    .catch((err) => {
+      console.log("No se pudo guardar la categoria", err);
     });
-  });
-}
+};
 function addBrand(e: { value: string; label: string; typeFilter: string }) {
   console.log(e);
   return new Promise((resolve, reject) => {
-    filters.insert(e, (err, docs) => {
+    db.filters.insert(e, (err, docs) => {
       if (err) {
         console.error("Error al obtener datos:", err);
         reject(err);
@@ -361,7 +412,7 @@ function addBrand(e: { value: string; label: string; typeFilter: string }) {
 
 function getCategoryAndBrand() {
   return new Promise((resolve, reject) => {
-    filters.find({}, (err: any, docs: unknown) => {
+    db.filters.find({}, (err: any, docs: unknown) => {
       if (err) {
         console.error("Error al obtener datos:", err);
         reject(err);
@@ -376,7 +427,7 @@ function getCategoryAndBrand() {
 //FUNCIONES DE PETICIONES DE ESTADISTICAS
 
 async function getStats() {
-  const ventasAll = await buscarVentas();
+  const ventasAll = await findSales();
 
   const ventasStats = ventasAll.map((e) => {
     return {
@@ -461,47 +512,90 @@ ipcMain.on("minimize-window", () => {
 //
 //ESCUCHAS DE EvENTOS DE GUARDADO DE CLIENTE
 //
-ipcMain.on("guardar-usuario", (e, clienteAGuardar) => {
-  guardarUsuario(clienteAGuardar);
-});
-ipcMain.on("obtener-clientes", async (event) => {
-  const clientes = await buscarClientes();
+ipcMain.on("save-client", async (event, clientToSave) => {
+  saveClient(clientToSave);
 
-  console.log("SE ENVIO LO PEDIDO", clientes);
-  event.reply("respuesta-obtener-clientes", clientes); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
+  const clients = await findClients();
+
+  event.reply("response-get-clients", clients);
+});
+ipcMain.on("get-clients", async (event) => {
+  const clients = await findClients();
+
+  console.log("Se enviaron los clientes ", clients);
+  event.reply("response-get-clients", clients); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
 });
 
-ipcMain.on("eliminar-cliente", (e, clienteAEliminar) => {
-  borrarCliente(clienteAEliminar);
+ipcMain.on("delete-client", (event, clienteAEliminar) => {
+  const result = deleteClient(clienteAEliminar);
+
+  event.reply("response-delete-client", result);
 });
-ipcMain.on("obtener-clienteById", async (event, clientId) => {
+ipcMain.on("get-client-byId", async (event, clientId) => {
   console.log("AGUANTEEEEE BOCAA LOCOOO");
   const cliente = await getClientById(clientId);
 
-  event.reply("cliente-encontradoById", cliente);
+  event.reply("response-get-client-byId", cliente);
 });
-ipcMain.on("actualizar-cliente", async (event, clienteData) => {
-  const mensajeAResponder = await actualizarCliente(
-    clienteData._id,
-    clienteData
-  );
+ipcMain.on("update-client", async (event, clienteData) => {
+  const mensajeAResponder = await updateClient(clienteData._id, clienteData);
 
-  event.reply("respuesta-actualizar-cliente", mensajeAResponder);
+  event.reply("response-update-client", mensajeAResponder);
 });
 
 ipcMain.on("register-buy-client", async (event, clienteData) => {
   console.log("ESTO LLEGO", clienteData);
   const mensajeAResponder = await registerBuyClient(clienteData);
 
-  event.reply("response-register-buy", mensajeAResponder);
+  event.reply("response-register-buy-client", mensajeAResponder);
 });
 
 ///
 //ESCUCHAS DE EVENTOS DE GUARDADO DE ARTICULOS
 //
 
-ipcMain.on("guardar-articulo", async (event, articuloAGuardar) => {
-  guardarArticulo(articuloAGuardar);
+ipcMain.on("save-article", async (event, articuloAGuardar) => {
+  const categoryAndBrands = await getCategoryAndBrand();
+
+  const { brand, category } = articuloAGuardar;
+
+  const categorys = categoryAndBrands.map((e) => {
+    return e.typeFilter === "category" && e.value;
+  });
+  const brands = categoryAndBrands.map((e) => {
+    return e.typeFilter === "brand" && e.value;
+  });
+
+  const existCategory = categorys.includes(category.value);
+
+  const existBrand = brands.includes(brand.value);
+
+  if (existCategory && existBrand) {
+    saveArticle(articuloAGuardar);
+    event.reply("error-save-article", {
+      message: "",
+      type: "",
+      active: false,
+    });
+  } else if (!existBrand && !existCategory) {
+    event.reply("error-save-article", {
+      message: " no registrada",
+      type: "all",
+      active: true,
+    });
+  } else if (!existCategory) {
+    event.reply("error-save-article", {
+      message: " no registrada",
+      type: "category",
+      active: true,
+    });
+  } else if (!existBrand) {
+    event.reply("error-save-article", {
+      message: " no registrada",
+      type: "brand",
+      active: true,
+    });
+  }
 });
 ipcMain.on("get-articleById", async (event, articleId) => {
   console.log("AGUANTEEEEE BOCAA LOCOOO");
@@ -516,14 +610,14 @@ ipcMain.on("get-articleByName", async (event, articleName) => {
   event.reply("article-foundByName", article);
 });
 ipcMain.on("get-articles", async (event) => {
-  const articulos = await buscarArticulos();
+  const articulos = await findArticles();
 
-  console.log("SE ENVIO LO PEDIDO", articulos);
+  console.log("Se enviaron los ARTICULOS", articulos);
   event.reply("response-get-articles", articulos); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
 });
 
-ipcMain.on("eliminar-articulo", (e, articuloAEliminar) => {
-  borrarArticulo(articuloAEliminar);
+ipcMain.on("delete-article", (e, articuloAEliminar) => {
+  deleteArticle(articuloAEliminar);
 });
 
 ///
@@ -537,18 +631,18 @@ ipcMain.on("get-sales-stats", async (event) => {
 });
 
 ipcMain.on("sale-process", async (event, venta) => {
-  saleProcess(venta);
+  await saleProcess(venta);
 });
 
 ipcMain.on("get-sales", async (event) => {
-  const ventas = await buscarVentas();
+  const ventas = await findSales();
 
-  console.log("SE ENVIO LO PEDIDO", ventas);
+  console.log("Se enviaron las ventas", ventas);
   event.reply("response-get-sales", ventas); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
 });
 
-ipcMain.on("eliminar-venta", (e, ventaAEliminar) => {
-  borrarVentas(ventaAEliminar);
+ipcMain.on("delete-sale", (e, ventaAEliminar) => {
+  deleteSales(ventaAEliminar);
 });
 ///
 //ESCUCHAS DE EVENTOS DE CUENTAS
