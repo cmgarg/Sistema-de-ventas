@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import TableMain from "../../tablaMain/TableMain";
 import TableHead from "../../tablaMain/TableHead";
 import TableRow from "../../tablaMain/TableRow";
@@ -48,6 +48,9 @@ const ItemList: React.FC<ItemListProps> = ({
     setVentas([...sales]);
     return;
   }
+  useEffect(() => {
+    console.log(ventas, "asdasda");
+  }, []);
 
   return (
     //PODER ORDENAR LAS LISTAS
@@ -56,8 +59,8 @@ const ItemList: React.FC<ItemListProps> = ({
         <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
           <p className="text-center">Articulo</p>
         </div>
-        <div className="bg-slate-600 flex-1 pl-2 rounded-tr-lg flex items-center justify-center">
-          <p className="text-center">Cantidad</p>
+        <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center">
+          <p className="text-center">Vendido</p>
         </div>
         <div className="bg-slate-600 flex-1 pl-2 flex items-center justify-center">
           <p className="text-center">Comprador</p>
@@ -71,13 +74,9 @@ const ItemList: React.FC<ItemListProps> = ({
                 <TableRow key={fila._id}>
                   <div className="flex justify-center items-center absolute top-0 left-0 bottom-0"></div>
                   <div className="flex items-center flex-1 pl-2 space-x-1">
-                    <Link
-                      to={`/articulo/${fila.articulo.idArticle}`}
-                      className="flex-1 text-center"
-                    >{`${fila.articulo.nombreArticulo}`}</Link>
-                  </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{fila.cantidad}</p>
+                    {fila.articulos.map((articulo) => {
+                      return <div>pene</div>;
+                    })}
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
                     <Link to={`/cliente/${fila.comprador.idClient}`}>
@@ -117,13 +116,16 @@ const ItemList: React.FC<ItemListProps> = ({
                 <TableRow key={fila._id}>
                   <div className="flex justify-center items-center absolute top-0 left-0 bottom-0"></div>
                   <div className="flex items-center flex-1 pl-2 space-x-1">
-                    <Link
-                      to={`/articulo/${fila.articulo.idArticle}`}
-                      className="flex-1 text-center"
-                    >{`${fila.articulo.nombreArticulo}`}</Link>
+                    <div>
+                      {fila.articulos.map((articles) => {
+                        return <div>{articles.nombreArticulo}</div>;
+                      })}
+                    </div>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{fila.cantidad}</p>
+                    <Link to={`/cliente/${fila.comprador.idClient}`}>
+                      {fila.sold}
+                    </Link>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
                     <Link to={`/cliente/${fila.comprador.idClient}`}>

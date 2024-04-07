@@ -1,9 +1,10 @@
+import { authType } from '@/types';
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
+const initialState:authType = {
   isAuthenticated: false,
-  userId: null,
-  token: null,
+  userId: "",
+  token: "",
 };
 
 export const authSlice = createSlice({
@@ -11,14 +12,13 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     login: (state, action) => {
-      state.isAuthenticated = true;
-      state.userId = action.payload.userId;
-      state.token = action.payload.token;
+      return {...action.payload,isAuthenticated:true}
     },
     logout: (state) => {
-      state.isAuthenticated = false;
-      state.userId = null;
-      state.token = null;
+      return {
+        isAuthenticated: false,
+        userId: "",
+        token: "",}
     },
   },
 });

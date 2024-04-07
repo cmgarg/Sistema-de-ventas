@@ -8,32 +8,33 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import CrearUsuarioAdmin from "./components/Usuario/CrearUsuarioAdmin";
 import Login from "./components/Usuario/Login";
 
-
 import { useSelector, useDispatch } from "react-redux";
-import { login, logout } from "./redux/estados/authSlice.js";
+import { login, logout } from "./redux/estados/authSlice.ts";
 import Programabloqueado from "./components/Usuario/Programabloqueado.js";
 
 function App() {
   const [adminExists, setAdminExists] = useState<boolean | null>(null);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const [bloqueoPrograma, setBloqueoPrograma] = useState(false)
+  const [bloqueoPrograma, setBloqueoPrograma] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    ipcRenderer.send('verificar-admin-existente');
-    ipcRenderer.on('respuesta-verificar-admin', (event, { existeAdmin, recuperacioncuenta }) => {
-      setAdminExists(existeAdmin);
-      if (recuperacioncuenta == 0) {
-        setBloqueoPrograma(true)
+    ipcRenderer.send("verificar-admin-existente");
+    ipcRenderer.on(
+      "respuesta-verificar-admin",
+      (event, { existeAdmin, recuperacioncuenta }) => {
+        setAdminExists(existeAdmin);
+        if (recuperacioncuenta == 0) {
+          setBloqueoPrograma(true);
+        }
       }
-    });
+    );
 
-  
     return () => {
-      ipcRenderer.removeAllListeners('respuesta-verificar-admin');
+      ipcRenderer.removeAllListeners("respuesta-verificar-admin");
     };
   }, []);
-  console.log(bloqueoPrograma, "programa bloqueado")
+  console.log(bloqueoPrograma, "programa bloqueado");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -49,7 +50,7 @@ function App() {
     if (adminExists === null) {
       return <div>Cargando...</div>;
     } else if (bloqueoPrograma) {
-      return <Programabloqueado/>;
+      return <Programabloqueado />;
     } else if (adminExists) {
       return isAuthenticated ? (
         <>
@@ -65,12 +66,10 @@ function App() {
   }
 
   return (
-    <div className="w-full h-screen flex flex-col bg-gray-200 font-medium overflow-hidden box-border">
+    <div className="w-full h-screen grid grid-cmg-program bg-gray-800 font-medium overflow-hidden box-border">
       <Header />
-      <div className="flex flex-row h-5/6 w-full max-w-full box-border flex-1">
-        <Router>
-          {renderContent()}
-        </Router>
+      <div className="flex flex-row row-start-2 row-end-7">
+        <Router>{renderContent()}</Router>
       </div>
     </div>
   );

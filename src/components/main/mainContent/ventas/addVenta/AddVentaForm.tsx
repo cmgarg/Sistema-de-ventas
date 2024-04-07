@@ -12,13 +12,14 @@ const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal, addSales }) => {
   const [clientes, setClientes] = useState([]);
 
   const [listProduct, setListProduct] = useState<object[]>([]);
-  const [cost, setCost] = useState<number>();
+  const [cost, setCost] = useState<number>(0);
   const [editClient, setEditClient] = useState(true);
 
   const addProduct = (e: object) => {
     const arr = [...listProduct];
     arr.push(e);
     setListProduct(arr);
+    setChangeData("articulo", arr);
   };
   const sumCost = () => {
     const arr = listProduct.map((product) => product.costoArticle);
@@ -70,7 +71,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal, addSales }) => {
       switch (data) {
         case "articulo":
           console.log("se cumple esrte");
-          setListProduct([...listProduct, value]);
+          setVentaData({ ...VentaData, articulos: [...value] });
           break;
         case "cantidad":
           setVentaData({ ...VentaData, cantidad: value });
@@ -94,12 +95,11 @@ const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal, addSales }) => {
 
     window.api.enviarEvento("register-buy-client", {
       cliente: VentaData.comprador,
-      compra: { articulo: VentaData.articulo, cantidad: VentaData.cantidad },
+      compra: { articulos: VentaData.articulos },
     });
     addSales(VentaData);
     setVentaData({
-      articulo: "",
-      cantidad: "",
+      articulos: [],
       comprador: { nombre: "", idClient: "" },
     });
   }
@@ -193,7 +193,6 @@ const AddVentaForm: React.FC<AddVentaForm> = ({ onChangeModal, addSales }) => {
               className="w-1/2 h-10 bg-green-400 rounded-md"
               onClick={() => {
                 subirVenta();
-                onChangeModal(false);
               }}
             >
               Añadir

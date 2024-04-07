@@ -2,14 +2,11 @@ import React, { useEffect, useState } from "react";
 import AsideMain from "../../asidemain/AsideMain";
 import NavMain from "../../navmain/NavMain";
 import Export from "../buttons/Export";
-import Agregar from "../buttons/Agregar";
 import StockList from "./StockList";
 import Category from "../Category/Category";
-import Select from "../Select/Select";
 import AddCategory from "./forms/AddCategory";
 import Addbrand from "./forms/AddBrand";
 import Buscador from "../../../buscador/Buscador";
-import Articulos from "../Articulos/Articulos";
 import SelectM from "../Select/Select";
 
 interface StocktProps {
@@ -129,49 +126,60 @@ const Stock: React.FC<StocktProps> = (
   }, [articulos]);
 
   return (
-    <div className="flex flex-col flex-1 relative max-w-full overflow-auto">
-      <div className="flex-2">
+    <div className="h-full w-full grid-cmg-program">
+      <div className="row-start-1 row-end-2">
         <NavMain title="Stock">
           <Export></Export>
           <Buscador searchIn={articulos} functionReturn={getResults}></Buscador>
         </NavMain>
       </div>
-      <Category>
-        <SelectM
-          options={optionsBrand}
-          value={filters.brand}
-          onChangeSelection={onChangeFilter}
-          filter={"brand"}
-          placeholder="Seleccionar Marca"
-          functionLastOption={changeBrand}
-        ></SelectM>
-        <SelectM
-          options={optionsCategory}
-          value={filters.category}
-          onChangeSelection={onChangeFilter}
-          filter={"category"}
-          placeholder="Seleccionar Categoria"
-          functionLastOption={changeCategory}
-        ></SelectM>
-      </Category>
-      <div className="flex flex-row flex-1 overflow-auto custom-scrollbar">
-        <AsideMain isActive={false}></AsideMain>
-        <div className="flex-1 p-2">
-          <StockList
-            searchActived={searchActived}
-            filtersActived={filters}
-          ></StockList>
+      <div className="flex flex-col pb-5 row-start-2 row-end-7">
+        <Category>
+          <div className="w-52">
+            <SelectM
+              options={optionsBrand}
+              value={filters.brand}
+              onChangeSelection={onChangeFilter}
+              filter={"brand"}
+              placeholder="Seleccionar Marca"
+              functionLastOption={changeBrand}
+              todos={true}
+            ></SelectM>
+          </div>
+          <div className="w-52">
+            <SelectM
+              options={optionsCategory}
+              value={filters.category}
+              onChangeSelection={onChangeFilter}
+              filter={"category"}
+              placeholder="Seleccionar Categoria"
+              functionLastOption={changeCategory}
+              todos={true}
+            ></SelectM>
+          </div>
+        </Category>
+        <div className="flex flex-row flex-1 overflow-auto">
+          <AsideMain isActive={false}></AsideMain>
+          <div className="w-full px-5 relative">
+            <StockList
+              searchActived={searchActived}
+              filtersActived={filters}
+            ></StockList>
+          </div>
         </div>
+        {formCategory && (
+          <AddCategory
+            onChangeModal={changeCategory}
+            addOptionCategory={addOptionCategory}
+          />
+        )}
+        {formBrand && (
+          <Addbrand
+            onChangeModal={changeBrand}
+            addOptionBrand={addOptionBrand}
+          />
+        )}
       </div>
-      {formCategory && (
-        <AddCategory
-          onChangeModal={changeCategory}
-          addOptionCategory={addOptionCategory}
-        />
-      )}
-      {formBrand && (
-        <Addbrand onChangeModal={changeBrand} addOptionBrand={addOptionBrand} />
-      )}
     </div>
   );
 };

@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { login, logout } from "../../redux/estados/authSlice.js";
-import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../redux/estados/authSlice.ts";
+import { useDispatch } from "react-redux";
 import PasswordRecovery from "./PasswordRecovery.js";
+//import { storeType } from "@/types.ts";
 
-function Login({ setLoginUser }) {
-  const [loginIncorrecto, setLoginIncorrecto] = useState(null);
+type loginProps = {
+  setLoginUser: (p: boolean) => void;
+};
+
+const Login: React.FC<loginProps> = ({ setLoginUser }) => {
+  const [loginIncorrecto, setLoginIncorrecto] = useState<boolean>();
   const [credentials, setCredentials] = useState({
     username: "",
     password: "",
@@ -15,7 +20,7 @@ function Login({ setLoginUser }) {
   });
 
   const dispatch = useDispatch();
-  const authState = useSelector((state) => state.auth);
+  //const authState = useSelector((state:storeType) => state.auth);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -26,7 +31,7 @@ function Login({ setLoginUser }) {
     }
   }, [dispatch, setLoginUser]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: { target: { name: string; value: string } }) => {
     const { name, value } = e.target;
     setCredentials({ ...credentials, [name]: value });
   };
@@ -35,7 +40,7 @@ function Login({ setLoginUser }) {
     window.api.enviarEvento("iniciar-sesion", credentials);
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: { key: string }) => {
     if (e.key === "Enter") {
       handleSubmit();
     }
@@ -80,7 +85,7 @@ function Login({ setLoginUser }) {
             name="username"
             value={credentials.username}
             onChange={handleChange}
-            onKeyPress={handleKeyPress}
+            onKeyUp={handleKeyPress}
             required
           />
           <label htmlFor="password">Contraseña</label>
@@ -92,7 +97,7 @@ function Login({ setLoginUser }) {
             name="password"
             value={credentials.password}
             onChange={handleChange}
-            onKeyPress={handleKeyPress}
+            onKeyUp={handleKeyPress}
             required
           />
           {loginIncorrecto && (
@@ -130,6 +135,6 @@ function Login({ setLoginUser }) {
       )}
     </div>
   );
-}
+};
 
 export default Login;

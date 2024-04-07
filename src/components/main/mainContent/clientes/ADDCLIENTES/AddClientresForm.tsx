@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AgregarCliente from "../../buttons/Agregar";
+import { clientData } from "@/types";
 
 interface AddClientresFormProps {
   onChangeModal: (p: boolean) => void;
@@ -8,66 +9,47 @@ interface AddClientresFormProps {
 const AddClientresForm: React.FC<AddClientresFormProps> = ({
   onChangeModal,
 }) => {
-  function obtenerClientes() {
-    window.api.enviarEvento("obtener-clientes");
-  }
-  //DATOS USUARIOS
-
-  type ClienteDataObject = {
-    nombre: string;
-    apellido: string;
-    direccion: string;
-    telefono: string;
-    email: string;
-    fechaNacimiento: string;
-    dni: string;
-  };
-
-  const [clienteData, setClienteData] = useState<ClienteDataObject>({
-    nombre: "",
-    apellido: "",
-    direccion: "",
-    telefono: "",
+  const [clienteData, setClienteData] = useState<clientData>({
+    name: "",
+    address: "",
+    phone: 0,
     email: "",
-    fechaNacimiento: "",
-    dni: "",
+    birthdate: "",
+    DNI: 0,
+    shopping: [],
   });
 
-  function setChangeData(data: string, value: string) {
+  function setChangeData(data: string, value: any) {
     console.log("LLAMA LA FUNCION");
     const existingData = [
-      "nombre",
-      "apellido",
-      "direccion",
-      "telefono",
+      "name",
+      "address",
+      "phone",
       "email",
-      "fechaNacimiento",
-      "dni",
+      "birthdate",
+      "DNI",
     ];
     console.log(existingData.includes(data), "esto");
     if (existingData.includes(data)) {
       switch (data) {
-        case "nombre":
+        case "name":
           console.log("se cumple esrte");
-          setClienteData({ ...clienteData, nombre: value });
+          setClienteData({ ...clienteData, name: value });
           break;
-        case "apellido":
-          setClienteData({ ...clienteData, apellido: value });
+        case "address":
+          setClienteData({ ...clienteData, address: value });
           break;
-        case "direccion":
-          setClienteData({ ...clienteData, direccion: value });
-          break;
-        case "telefono":
-          setClienteData({ ...clienteData, telefono: value });
+        case "phone":
+          setClienteData({ ...clienteData, phone: parseInt(value) });
           break;
         case "email":
           setClienteData({ ...clienteData, email: value });
           break;
-        case "fechaNacimiento":
-          setClienteData({ ...clienteData, fechaNacimiento: value });
+        case "birthdate":
+          setClienteData({ ...clienteData, birthdate: value });
           break;
-        case "dni":
-          setClienteData({ ...clienteData, dni: value });
+        case "DNI":
+          setClienteData({ ...clienteData, DNI: value });
           break;
 
         default:
@@ -84,18 +66,17 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
   //SUBIR USUARIO A BASE DE DATOS LOCAL
 
   function subirUsuario() {
-    window.api.enviarEvento("guardar-usuario", clienteData);
-
-    obtenerClientes();
+    window.api.enviarEvento("save-client", clienteData);
 
     setClienteData({
-      nombre: "",
-      apellido: "",
-      direccion: "",
-      telefono: "",
+      name: "",
+      address: "",
+      phone: 0,
       email: "",
-      fechaNacimiento: "",
-      dni: "",
+      birthdate: "",
+      DNI: 0,
+      shopping: [],
+      _id: "",
     });
   }
   //ESTILOS INPUT
@@ -121,38 +102,24 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
               type="text"
               name="nombre"
               className={estilosInput}
-              value={clienteData.nombre}
+              value={clienteData.name}
               onChange={(e) => {
-                setChangeData("nombre", e.target.value);
-              }}
-            />
-          </div>
-          <div className="flex-1">
-            <label htmlFor="apellido" className="text-slate-600">
-              Apellido
-            </label>
-            <input
-              type="text"
-              name="apellido"
-              className={estilosInput}
-              value={clienteData.apellido}
-              onChange={(e) => {
-                setChangeData("apellido", e.target.value);
+                setChangeData("name", e.target.value);
               }}
             />
           </div>
         </div>
         <div>
-          <label htmlFor="direccion" className="text-slate-600">
+          <label htmlFor="address" className="text-slate-600">
             Direccion
           </label>
           <input
             type="text"
-            name="direccion"
+            name="address"
             className={estilosInput}
-            value={clienteData.direccion}
+            value={clienteData.address}
             onChange={(e) => {
-              setChangeData("direccion", e.target.value);
+              setChangeData("address", e.target.value);
             }}
           />
         </div>
@@ -162,11 +129,11 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
           </label>
           <input
             type="text"
-            name="telefono"
+            name="phone"
             className={estilosInput}
-            value={clienteData.telefono}
+            value={clienteData.phone}
             onChange={(e) => {
-              setChangeData("telefono", e.target.value);
+              setChangeData("phone", e.target.value);
             }}
           />
         </div>
@@ -192,9 +159,9 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             type="date"
             name="fechaNacimiento"
             className={estilosInput}
-            value={clienteData.fechaNacimiento}
+            value={clienteData.birthdate}
             onChange={(e) => {
-              setChangeData("fechaNacimiento", e.target.value);
+              setChangeData("birthdate", e.target.value);
             }}
           />
         </div>
@@ -206,9 +173,9 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             type="text"
             name="dni"
             className={estilosInput}
-            value={clienteData.dni}
+            value={clienteData.DNI}
             onChange={(e) => {
-              setChangeData("dni", e.target.value);
+              setChangeData("DNI", e.target.value);
             }}
           />
         </div>

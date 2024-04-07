@@ -128,22 +128,22 @@ contextBridge.exposeInMainWorld("api", {
       "minimize-window",
       //EVENTOS DE ARTICULOS
       "get-articles",
-      "guardar-articulo",
-      "eliminar-articulo",
+      "save-article",
+      "delete-article",
       "get-articleById",
       "get-articleByName",
       //EVENTOS DE CLIENTES
-      "guardar-usuario",
-      "obtener-clientes",
-      "eliminar-cliente",
-      "obtener-clienteById",
-      "actualizar-cliente",
+      "save-client",
+      "get-clients",
+      "delete-client",
+      "get-client-byId",
+      "update-client",
       "register-buy-client",
       //EVENTOS DE VENTAS
-      "guardar-venta",
-      "sale-process",
       "get-sales",
-      "eliminar-venta",
+      "save-sale",
+      "sale-process",
+      "delete-sale",
       "get-sales-stats",
       //EVENTOS CUENTAS
       "save-accountToPay",
@@ -165,12 +165,18 @@ contextBridge.exposeInMainWorld("api", {
   },
   recibirEvento: (canal: string, callback: any) => {
     const canalesPermitidos = [
-      "respuesta-obtener-clientes",
-      "respuesta-actualizar-cliente",
+      //RESPUESTAS SOBRE ARTICULOS
       "response-get-articles",
-      "cliente-encontradoById",
+      "error-save-article", //ERROR AL GUARDAR EL ARTICULO
+      /////
+      //RESPUESTAS CLIENTES
+      "response-update-client",
+      "response-register-buy-client",
+      "response-get-client-byId",
+      "response-get-clients",
+      "response-delete-client",
+      ///
       "response-get-sales",
-      "response-register-buy",
       "article-foundById",
       "article-foundByName",
       "response-get-accountToPay",
@@ -189,7 +195,7 @@ contextBridge.exposeInMainWorld("api", {
       ipcRenderer.on(canal, (event, ...args) => callback(...args));
     }
   },
-  removeAllListeners: (canal: string) => {
+  removeAllListeners: (canal) => {
     ipcRenderer.removeAllListeners(canal);
   },
 });

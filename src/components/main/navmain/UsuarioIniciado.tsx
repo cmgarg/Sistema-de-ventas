@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../../redux/estados/authSlice.js";
+import { logout } from "../../../redux/estados/authSlice.ts";
 
 export default function UsuarioIniciado({ setLoginUser }) {
   const images = [
@@ -167,7 +167,6 @@ export default function UsuarioIniciado({ setLoginUser }) {
         <div
           className="relative  flex flex-row border border-gray-600 rounded-lg p-1"
           ref={menuRef}
-          
         >
           <div className="flex items-center justify-center text-2xl text-white mr-3">
             {datosUsuario ? datosUsuario.username : "Cargando..."}

@@ -62,10 +62,13 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
               </p>
             </div>
             <div className="flex-1 h-20 text-2xl text-center flex justify-start pl-5 items-center">
-              <p>
+              <div className="flex space-x-2">
                 <span>Stock: </span>
-                {articulo.stock}
-              </p>
+                <div className="flex space-x-1">
+                  <p>{articulo.stock.amount}</p>
+                  <p>{articulo.stock.unit}</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

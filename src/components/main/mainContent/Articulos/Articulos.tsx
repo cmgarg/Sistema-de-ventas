@@ -3,25 +3,22 @@ import NavMain from "../../navmain/NavMain";
 import Agregar from "../buttons/Agregar";
 import Buscador from "../../../buscador/Buscador";
 import AsideMain from "../../asidemain/AsideMain";
-import TableHead from "../../tablaMain/TableHead";
-import TableMain from "../../tablaMain/TableMain";
-import TableRow from "../../tablaMain/TableRow";
 import AddArticuloForm from "./ADDARTICULO/AddArticuloForm";
-import MenuContextual2 from "../../../GMC/MenuContextual2";
-import Diamong from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/Diamong";
 import Export from "../buttons/Export";
-import { Link } from "react-router-dom";
 import ArticleList from "./ArticleList";
+import { useDispatch, useSelector } from "react-redux";
+import { articleData, storeType } from "@/types";
 
 interface ArticulosProps {}
 
 const Articulos: React.FC<ArticulosProps> = ({}) => {
+  const articles = useSelector((state: storeType) => state.articleState);
+
   const [activeModal, setActiveModal] = useState(false);
 
-  const [articulos, setArticulos] = useState<object[]>([]);
   const [searchActived, setSearchActived] = useState<{
     actived: boolean;
-    results: object[];
+    results: articleData[];
   }>({
     actived: false,
     results: [],
@@ -36,15 +33,8 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
   function onChangeModal(p: boolean) {
     setActiveModal(p);
   }
-  function obtenerArticulos() {
-    window.api.enviarEvento("get-articles");
-  }
   function onChangeArticle(e: { active: boolean; id: string }) {
     setArticleToEdit(e);
-  }
-
-  function addArticles(article: object) {
-    setArticulos([...articulos, article]);
   }
   function resultFindArticles(e: object[], actived: boolean) {
     let object = { actived: actived, results: e };
@@ -53,48 +43,30 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
   }
   const estilosInput = "outline-none h-9 w-full bg-slate-600 px-2 rounded-md";
 
-  ///carga de articulos
-  useEffect(() => {
-    obtenerArticulos();
-    window.api.recibirEvento("response-get-articles", (e) => {
-      console.log("ME EJECUTO A LA PERFECCIONE", e);
-      const arrayArticulos = [];
-      e.map((e) => {
-        arrayArticulos.push(e);
-      });
-      setArticulos(arrayArticulos);
-    });
-  }, []);
   //////////////////////////////
+  useEffect(() => {
+    console.log(articles, "craneo");
+  }, []);
 
   return (
-    <div className="flex flex-col flex-1">
-      <div className="flex-2 pt-2">
+    <div className="h-full w-full grid-cmg-program">
+      <div className="row-start-1 row-end-2">
         <NavMain title="Articulos">
           <Buscador
-            searchIn={articulos}
+            searchIn={articles}
             functionReturn={resultFindArticles}
           ></Buscador>
           <Export></Export>
           <Agregar title="Articulo" onChangeModal={onChangeModal}></Agregar>
         </NavMain>
       </div>
-      <div className="flex flex-row flex-1">
+      <div className="flex flex-row pb-5 row-start-2 row-end-7">
         <AsideMain isActive={false}></AsideMain>
-        <div className="flex-1 p-5 relative">
+        <div className="w-full p-5 relative">
           {activeModal && (
-            <AddArticuloForm
-              onChangeModal={onChangeModal}
-              addArticles={addArticles}
-            ></AddArticuloForm>
+            <AddArticuloForm onChangeModal={onChangeModal}></AddArticuloForm>
           )}
-          <ArticleList
-            articulos={articulos}
-            setArticulos={setArticulos}
-            articleToEdit={articleToEdit}
-            setArticleToEdit={onChangeArticle}
-            searchActived={searchActived}
-          />
+          <ArticleList articles={articles} searchActived={searchActived} />
         </div>
       </div>
     </div>

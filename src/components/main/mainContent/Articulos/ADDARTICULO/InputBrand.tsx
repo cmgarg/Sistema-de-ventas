@@ -6,6 +6,7 @@ type propsInput = {
   setChangeData: (e: string, value: string) => void;
   articuloData: object;
   categorysAndBrands: object[];
+  brandError: { message: string; type: string; active: boolean };
 };
 
 const InputBrand = ({
@@ -13,8 +14,10 @@ const InputBrand = ({
   setChangeData,
   articuloData,
   categorysAndBrands,
+  brandError,
 }: propsInput) => {
   const [suggestion, setSuggestion] = useState([]);
+  const [newValue, setNewValue] = useState<string>("");
   const [suggestionActived, setSuggestionActived] = useState(false);
 
   const getSuggestions = (value: string) => {
@@ -27,10 +30,12 @@ const InputBrand = ({
     });
     console.log(brands);
 
+    const brandsString = brands.map((e) => e.value);
+
     return inputLength === 0
       ? []
-      : brands.filter((brand) => {
-          return brand.value.toLowerCase().slice(0, inputLength) === inputValue;
+      : brandsString.filter((brand) => {
+          return brand.toLowerCase().slice(0, inputLength) === inputValue;
         });
   };
   const renderSuggestionsContainer = ({ containerProps, children }) => (
@@ -42,18 +47,24 @@ const InputBrand = ({
     return (
       <div
         className={`w-full  z-50 flex justify-around ${
-          !isHighlighted.isHighlighted
+          isHighlighted.isHighlighted
             ? "bg-slate-100 text-black"
             : "bg-slate-900 text-white"
         }`}
       >
-        <p>{suggestion.label}</p>
+        <p>{suggestion}</p>
       </div>
     );
   }
   const handleSuggestionSelected = (event, { suggestionValue }) => {
     if (event.target.key !== "Enter") {
-      setChangeData("brand", newValue);
+      setChangeData("brand", suggestionValue);
+    }
+  };
+
+  const onChangeNewValue = (newValue: string) => {
+    if (/^[a-zA-Z]*$/.test(newValue)) {
+      setNewValue(newValue);
     }
   };
 
@@ -65,10 +76,22 @@ const InputBrand = ({
     }
     console.log(suggestion);
   }, [suggestion]);
+  useEffect(() => {
+    setChangeData("brand", newValue);
+  }, [newValue]);
 
   return (
-    <div className="w-full h-9">
-      <label htmlFor="brand">Marca</label>
+    <div className="w-full relative">
+      <label
+        htmlFor="brand"
+        className="flex items-end space-x-2 justify-between pr-2"
+      >
+        <p>Marca </p>
+        {brandError.active && brandError.type === "brand" && (
+          <p className="text-red-200 text-xs">{brandError.message}</p>
+        )}
+      </label>
+
       <AutoSuggest
         suggestions={suggestion} //AGREGAR CANTIDAD FALOPERO
         onSuggestionsFetchRequested={({ value }) => {
@@ -82,10 +105,17 @@ const InputBrand = ({
         inputProps={{
           className: `${style} rounded-lg w-full ${
             suggestionActived && "rounded-b-none"
+          } ${
+            brandError.active &&
+            (brandError.type === "brand" || "all") &&
+            "border border-red-200"
           }`,
+          name: "brand",
           placeholder: "Marca. . . ",
-          value: articuloData.brand,
-          onChange: (_, { newValue }) => setChangeData("brand", newValue),
+          value: newValue,
+          onChange: (_, { newValue }) => {
+            onChangeNewValue(newValue);
+          },
         }}
         onSuggestionSelected={handleSuggestionSelected}
       />

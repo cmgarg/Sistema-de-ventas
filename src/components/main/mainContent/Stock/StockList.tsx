@@ -128,14 +128,14 @@ const StockList: React.FC<StockListProps> = ({
     //PODER ORDENAR LAS LISTAS
     <TableMain>
       <TableHead>
-        <div className=" flex-1 pl-2 flex items-center justify-center">
+        <div className="bg-slate-700 flex-1 pl-2 flex items-center justify-center">
           <p className="text-center">Articulo</p>
         </div>
-        <div className=" flex-1 pl-2 flex items-center justify-center">
+        <div className="bg-slate-700 flex-1 pl-2 flex items-center justify-center">
           <p className="text-center">Marca</p>
         </div>
         <div
-          className=" flex-1 pl-2 flex items-center justify-center"
+          className="bg-slate-700 flex-1 pl-2 flex items-center justify-center"
           onClick={() => {
             onChangeOrderFor("costo");
           }}
@@ -143,7 +143,7 @@ const StockList: React.FC<StockListProps> = ({
           <p className="text-center">Costo</p>
         </div>
         <div
-          className=" flex-1 pl-2 flex items-center justify-center"
+          className="bg-slate-700 flex-1 pl-2 flex items-center justify-center"
           onClick={() => {
             onChangeOrderFor("stock");
           }}
@@ -168,8 +168,9 @@ const StockList: React.FC<StockListProps> = ({
               <div className="flex justify-center items-center flex-1 pl-2">
                 <p>${fila.costo}</p>
               </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.stock}</p>
+              <div className="flex space-x-1">
+                <p>{fila.stock.amount}</p>
+                <p>{fila.stock.unit.slice(0, 3)}</p>
               </div>
             </TableRow>
           ))
@@ -188,8 +189,9 @@ const StockList: React.FC<StockListProps> = ({
               <div className="flex justify-center items-center flex-1 pl-2">
                 <p>${fila.costo}</p>
               </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.stock}</p>
+              <div className="flex space-x-1">
+                <p>{fila.stock.amount}</p>
+                <p>{fila.stock.unit.slice(0, 3)}</p>
               </div>
             </TableRow>
           ))
@@ -209,7 +211,10 @@ const StockList: React.FC<StockListProps> = ({
                 <p>${fila.costo}</p>
               </div>
               <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.stock}</p>
+                <div className="flex space-x-1">
+                  <p>{fila.stock.amount}</p>
+                  <p>{fila.stock.unit.slice(0, 3)}</p>
+                </div>
               </div>
             </TableRow>
           ))

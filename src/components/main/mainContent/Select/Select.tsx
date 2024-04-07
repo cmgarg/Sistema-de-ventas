@@ -13,10 +13,13 @@ interface SelectProps {
   options: { value: string; label: string }[];
   onChangeSelection: (value: string, f: string) => void;
   placeholder: string;
-  filter: string;
+  slice: number;
+  backGround?: string;
   value: string;
+  filter?: string;
   functionLastOption?: () => void;
   label?: string;
+  todos: boolean;
 
   //PROPS
 }
@@ -27,7 +30,10 @@ const SelectM: React.FC<SelectProps> = ({
   onChangeSelection,
   filter,
   value,
+  slice,
+  todos,
   functionLastOption,
+  backGround,
   label,
 }) => {
   const [selected, setSelected] = useState(value);
@@ -46,7 +52,7 @@ const SelectM: React.FC<SelectProps> = ({
   }, []);
 
   return (
-    <div className="z-50 text-slate-50">
+    <div className="z-50 text-slate-50 max-w-full min-w-full">
       <Select
         onValueChange={(e) => {
           if (e === "todos") {
@@ -56,10 +62,20 @@ const SelectM: React.FC<SelectProps> = ({
           }
         }}
       >
-        <SelectTrigger className="w-[180px] bg-slate-950">
-          <SelectValue placeholder={placeholder} />
+        <SelectTrigger
+          className={`${backGround || `bg-slate-950`} max-w-full min-w-full`}
+        >
+          <div>
+            {(slice && selected.slice(0, slice)) || (
+              <SelectValue placeholder={placeholder}></SelectValue>
+            )}
+          </div>
         </SelectTrigger>
-        <SelectContent className="bg-slate-900 text-white border border-gray-600">
+        <SelectContent
+          className={`${
+            backGround || "bg-slate-900"
+          } text-white border border-gray-600 max-w-full min-w-full`}
+        >
           <SelectGroup>
             {label && <SelectLabel className="font-bold">Por</SelectLabel>}
             {options.map((e, i) => {
@@ -72,12 +88,14 @@ const SelectM: React.FC<SelectProps> = ({
                 </SelectItem>
               );
             })}
-            <SelectItem
-              value={"todos"}
-              className="flex-1 h-10 hover:bg-slate-700"
-            >
-              <p>Todos</p>
-            </SelectItem>
+            {todos && (
+              <SelectItem
+                value={"todos"}
+                className="flex-1 h-10 hover:bg-slate-700"
+              >
+                <p>Todos</p>
+              </SelectItem>
+            )}
           </SelectGroup>
         </SelectContent>
       </Select>

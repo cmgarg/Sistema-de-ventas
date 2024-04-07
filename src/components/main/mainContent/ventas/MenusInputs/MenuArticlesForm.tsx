@@ -11,13 +11,15 @@ interface MenuArticlesForm {
 const MenuArticlesForm: React.FC<MenuArticlesForm> = ({
   style,
   setChangeData,
+  addProduct,
 }) => {
   const [inputValue, setInputValue] = useState({
     nombreArticulo: "",
     idArticle: "",
-    costoArticle: "",
-    amount: "",
+    costoArticle: 0,
+    amount: 0,
   });
+  const [unitArticle, setUnitArticle] = useState<String>("");
   const [articulos, setArticulos] = useState([]);
 
   const [suggestion, setSuggestion] = useState<string[]>([]);
@@ -36,6 +38,7 @@ const MenuArticlesForm: React.FC<MenuArticlesForm> = ({
     let [articleInfo] = filterArticles;
     let object = {};
     if (filterArticles.length > 0) {
+      console.log(articleInfo._id, "HOLALALA");
       object = {
         nombreArticulo: articleInfo.articulo,
         idArticle: articleInfo._id,
@@ -56,11 +59,60 @@ const MenuArticlesForm: React.FC<MenuArticlesForm> = ({
 
     return inputLength === 0
       ? []
-      : articulos.filter(
-          (articulo) =>
+      : articulos.filter((articulo) => {
+          if (
             articulo.articulo.toLowerCase().slice(0, inputLength) === inputValue
-        );
+          ) {
+            setUnitArticle(articulo.stock.unit);
+            return articulo;
+          }
+        });
   };
+  const upArticle = () => {
+    const existArticle = verifExisting(inputValue);
+    const costoTotal = sumCost(existArticle);
+    if (existArticle) {
+      addProduct({
+        ...inputValue,
+        costoArticle: costoTotal,
+      });
+    }
+  };
+
+  const sumCost = (existArticle: boolean) => {
+    if (existArticle) {
+      if (parseInt(inputValue.amount) > 0) {
+        const searchArticle = articulos.filter((e) => {
+          return e.articulo == inputValue.nombreArticulo;
+        });
+        const articulo = searchArticle[0];
+
+        let sumaCantidad = 0;
+
+        if (inputValue.costoArticle === 0) {
+          sumaCantidad = parseInt(articulo.costo) * parseInt(inputValue.amount);
+        } else {
+          sumaCantidad =
+            parseInt(inputValue.costoArticle) * parseInt(inputValue.amount);
+        }
+
+        return sumaCantidad;
+      } else {
+        setErrorMessage({
+          actived: true,
+          message: "Cantidad no especificada",
+          type: "cantidad",
+        });
+      }
+    } else if (suggestion.length === 0) {
+      setErrorMessage({
+        actived: true,
+        message: "No existe el Articulo",
+        type: "articulo",
+      });
+    }
+  };
+
   const onChangeAmount = (e: string) => {
     let verifNumber = /^[0-9]*$/.test(e);
 
@@ -81,39 +133,29 @@ const MenuArticlesForm: React.FC<MenuArticlesForm> = ({
         nombreArticulo: suggestion[selectedIndex].articulo,
         idArticle: suggestion[selectedIndex]._id,
         costoArticle: suggestion[selectedIndex].costo,
-        amount: "",
+        amount: 0,
       });
     }
     if (event.key === "Enter") {
-      if (verifExisting(inputValue)) {
-        if (parseInt(inputValue.amount) > 0) {
-          let sumaCantidad =
-            parseInt(inputValue.costoArticle) * parseInt(inputValue.amount);
+      event.preventDefault();
 
-          setChangeData("articulo", {
-            ...inputValue,
-            costoArticle: sumaCantidad,
-          });
-        } else {
-          setErrorMessage({
-            actived: true,
-            message: "Cantidad no especificada",
-            type: "cantidad",
-          });
-        }
-      } else if (suggestion.length === 0) {
-        setErrorMessage({
-          actived: true,
-          message: "No existe el Articulo",
-          type: "articulo",
-        });
-      }
+      console.log("SE EJECUTA FREEZER Y DA ", inputValue.costoArticle);
+
+      upArticle();
     }
   };
 
   const handleSuggestionSelected = (event, { suggestionValue }) => {
-    if (event.target.key !== "Enter") {
-      setInputValue({ ...inputValue, nombreArticulo: suggestionValue });
+    console.log("QCYO VIEJITO", event);
+    if (event.key === "Enter") {
+      console.log("EN HANDLESUGGESTIONSELECTED", suggestion[selectedIndex]);
+      setInputValue({
+        ...inputValue,
+        nombreArticulo: suggestionValue,
+        idArticle: suggestion[selectedIndex]._id,
+        costoArticle: suggestion[selectedIndex].costo,
+        amount: 0,
+      });
     }
   };
   function renderSuggestion(
@@ -147,6 +189,7 @@ const MenuArticlesForm: React.FC<MenuArticlesForm> = ({
   };
 
   useEffect(() => {
+    console.log(suggestion);
     if (suggestion.length > 0) {
       setSuggestionActived(true);
     } else {
@@ -209,7 +252,7 @@ const MenuArticlesForm: React.FC<MenuArticlesForm> = ({
           onSuggestionSelected={handleSuggestionSelected}
         />
       </div>
-      <div className="h-9 w-20 border-l border-l-gray-600 right-10">
+      <div className="h-9 w-28 border-l border-l-gray-600 right-10 flex rounded-r-lg bg-slate-700">
         <input
           type="text"
           name="amount"
@@ -218,12 +261,15 @@ const MenuArticlesForm: React.FC<MenuArticlesForm> = ({
             onChangeAmount(e.target.value);
           }}
           onKeyDown={handleKeyDown}
-          className={`w-20 appearance-none text-xl pl-2 h-full rounded-r-lg outline-none text-gray-500 bg-slate-700 ${
+          className={`w-1/2 appearance-none text-xl pl-2 h-full outline-none text-gray-500  bg-slate-700 ${
             errorMessage.type === "cantidad" &&
             errorMessage.actived &&
             "border border-red-200"
           }`}
         />
+        <div className="w-1/2 flex items-center">
+          <p>{unitArticle.slice(0, 3)}</p>
+        </div>
       </div>
     </div>
   );

@@ -45,7 +45,10 @@ const MenuClientsForm: React.FC<MenuClientsForm> = ({
     }
   };
   const handleSuggestionSelected = (event, { suggestionValue }) => {
-    setInputValue({ ...inputValue, nombre: suggestionValue });
+    setInputValue({
+      nombre: suggestionValue,
+      idClient: suggestion[selectedIndex]._id,
+    });
   };
   function renderSuggestion(
     suggestion: { nombre: string; idClient: string },
