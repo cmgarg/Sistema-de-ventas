@@ -10,6 +10,7 @@ import AddCategory from "./forms/AddCategory";
 import Addbrand from "./forms/AddBrand";
 import Buscador from "../../../buscador/Buscador";
 import Articulos from "../Articulos/Articulos";
+import SelectM from "../Select/Select";
 
 interface StocktProps {
   //PROPS
@@ -129,33 +130,33 @@ const Stock: React.FC<StocktProps> = (
 
   return (
     <div className="flex flex-col flex-1 relative max-w-full overflow-auto">
-      <div className="flex-2 border-b-2 border-slate-100 bg-slate-800">
-        <NavMain title="Ventas">
+      <div className="flex-2">
+        <NavMain title="Stock">
           <Export></Export>
           <Buscador searchIn={articulos} functionReturn={getResults}></Buscador>
         </NavMain>
       </div>
       <Category>
-        <Select
+        <SelectM
           options={optionsBrand}
           value={filters.brand}
           onChangeSelection={onChangeFilter}
           filter={"brand"}
           placeholder="Seleccionar Marca"
           functionLastOption={changeBrand}
-        ></Select>
-        <Select
+        ></SelectM>
+        <SelectM
           options={optionsCategory}
           value={filters.category}
           onChangeSelection={onChangeFilter}
           filter={"category"}
           placeholder="Seleccionar Categoria"
           functionLastOption={changeCategory}
-        ></Select>
+        ></SelectM>
       </Category>
       <div className="flex flex-row flex-1 overflow-auto custom-scrollbar">
         <AsideMain isActive={false}></AsideMain>
-        <div className="flex-1 bg-slate-700 p-2">
+        <div className="flex-1 p-2">
           <StockList
             searchActived={searchActived}
             filtersActived={filters}

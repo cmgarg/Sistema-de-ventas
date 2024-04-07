@@ -40,10 +40,10 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
           <Export></Export>
         </NavMain>
       </div>
-      <div className="flex-1 flex flex-col space-y-5  bg-slate-900">
-        <div className="bg-slate-800 flex">
-          <div className="flex-1 border-r-2 border-slate-700">
-            <div className="flex-1 h-20 text-2xl text-center flex justify-start pl-5 items-center border-b-2  border-slate-700">
+      <div className="flex-1 flex flex-col p-1 mt-5 space-y-5">
+        <div className="flex border border-gray-600 rounded-lg">
+          <div className="flex-1 border-r border-gray-600">
+            <div className="flex-1 h-20 text-2xl text-center flex justify-start pl-5 items-center border-b border-gray-600">
               <p>
                 <span>Marca: </span>
                 {articulo.brand.value}
@@ -56,7 +56,7 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
             </div>
           </div>
           <div className="flex-1">
-            <div className="flex-1 h-20 text-2xl text-center flex justify-start pl-5 items-center border-b-2 border-slate-700">
+            <div className="flex-1 h-20 text-2xl border-b border-gray-600 text-center flex justify-start pl-5 items-center">
               <p>
                 <span>Venta: </span>${articulo.venta}
               </p>
@@ -70,20 +70,20 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
           </div>
         </div>
         {/* {"SPEARACION"} */}
-        <div className="flex-1 bg-slate-900 p-1">
-          <div className="w-full text-3xl bg-slate-900">
+        <div className="flex-1 p-1 space-y-5">
+          <div className="w-full text-3xl">
             <h1>Ventas [{articulo.ventas.length}]</h1>
           </div>
           <div className="flex-1">
             <TableMain>
               <TableHead>
-                <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
+                <div className="flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
                   <p className="text-center">Articulo</p>
                 </div>
-                <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
+                <div className="flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
                   <p className="text-center">Cantidad</p>
                 </div>
-                <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
+                <div className="flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
                   <p className="text-center">Comprador</p>
                 </div>
               </TableHead>
@@ -95,12 +95,9 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
                   <div className="flex justify-center items-center flex-1 pl-2">
                     <p>{compra.cantidad}</p>
                   </div>
-                  <Link
-                    to={`/cliente/${compra.comprador.idClient}`}
-                    className="flex justify-center items-center flex-1 pl-2"
-                  >
+                  <div className="flex justify-center items-center flex-1 pl-2">
                     <p>{compra.comprador.nombre}</p>
-                  </Link>
+                  </div>
                 </TableRow>
               ))}
             </TableMain>

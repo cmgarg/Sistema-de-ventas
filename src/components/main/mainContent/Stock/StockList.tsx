@@ -128,14 +128,14 @@ const StockList: React.FC<StockListProps> = ({
     //PODER ORDENAR LAS LISTAS
     <TableMain>
       <TableHead>
-        <div className="bg-slate-500 flex-1 pl-2 flex items-center justify-center">
+        <div className=" flex-1 pl-2 flex items-center justify-center">
           <p className="text-center">Articulo</p>
         </div>
-        <div className="bg-slate-500 flex-1 pl-2 flex items-center justify-center">
+        <div className=" flex-1 pl-2 flex items-center justify-center">
           <p className="text-center">Marca</p>
         </div>
         <div
-          className="bg-slate-500 flex-1 pl-2 flex items-center justify-center"
+          className=" flex-1 pl-2 flex items-center justify-center"
           onClick={() => {
             onChangeOrderFor("costo");
           }}
@@ -143,7 +143,7 @@ const StockList: React.FC<StockListProps> = ({
           <p className="text-center">Costo</p>
         </div>
         <div
-          className="bg-slate-500 flex-1 pl-2 flex items-center justify-center"
+          className=" flex-1 pl-2 flex items-center justify-center"
           onClick={() => {
             onChangeOrderFor("stock");
           }}
@@ -156,19 +156,19 @@ const StockList: React.FC<StockListProps> = ({
         (filtersActived.brand || filtersActived.category) ? ( //MOSTRAR RESULTADOS
           articlesFilter.map((fila) => (
             <TableRow key={fila._id}>
-              <div className="flex items-center flex-1 border-x-2 border-slate-400">
+              <div className="flex items-center flex-1">
                 <Link
                   to={`/articulo/${fila.idArticle}`}
                   className="flex-1 text-center"
                 >{`${fila.articulo}`}</Link>
               </div>
-              <div className="flex justify-center items-center flex-1 pl-2 border-x-2 border-slate-400">
+              <div className="flex justify-center items-center flex-1 pl-2">
                 <p>{fila.brand.label}</p>
               </div>
-              <div className="flex justify-center items-center flex-1 pl-2 border-x-2 border-slate-400">
+              <div className="flex justify-center items-center flex-1 pl-2">
                 <p>${fila.costo}</p>
               </div>
-              <div className="flex justify-center items-center flex-1 pl-2 border-x-2 border-slate-400">
+              <div className="flex justify-center items-center flex-1 pl-2">
                 <p>{fila.stock}</p>
               </div>
             </TableRow>

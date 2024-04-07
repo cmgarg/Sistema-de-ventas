@@ -1,92 +1,104 @@
 import React, { useEffect, useRef, useState } from "react";
+import AutoSuggest from "react-autosuggest";
+
 interface MenuClientsForm {
   style: string;
   clientes: any[];
   setChangeData: (data: string, value: any) => void;
+  setEditClient: (e: boolean) => void;
 }
 
 const MenuClientsForm: React.FC<MenuClientsForm> = ({
   style,
   clientes,
   setChangeData,
+  setEditClient,
 }) => {
-  const [menuActived, setMenuActived] = useState(true);
-  const [clientesEncontrados, setclientesEncontrados] = useState([]);
   const [inputValue, setInputValue] = useState({ nombre: "", idClient: "" });
+  const [suggestion, setSuggestion] = useState<string[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [suggestionActived, setSuggestionActived] = useState(false);
 
-  const inputRef = useRef();
+  const getSuggestions = (value: string) => {
+    const inputValue = value.trim().toLowerCase();
+    const inputLength = inputValue.length;
 
-  function listaClientes() {
-    console.log("PUIITO", clientesEncontrados);
+    return inputLength === 0
+      ? []
+      : clientes.filter(
+          (cliente) =>
+            cliente.nombre.toLowerCase().slice(0, inputLength) === inputValue
+        );
+  };
+  const handleKeyDown = (event) => {
+    console.log(event.key);
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setSelectedIndex((prevIndex) =>
+        prevIndex < suggestion.length - 1 ? prevIndex + 1 : 0
+      );
+    }
+    if (event.key === "Enter") {
+      setChangeData("comprador", inputValue);
+      setEditClient(false);
+    }
+  };
+  const handleSuggestionSelected = (event, { suggestionValue }) => {
+    setInputValue({ ...inputValue, nombre: suggestionValue });
+  };
+  function renderSuggestion(
+    suggestion: { nombre: string; idClient: string },
+    isHighlighted
+  ) {
+    console.log(isHighlighted.isHighlighted);
+
     return (
-      <div className="absolute w-full bg-gray-700 z-50 shadow-md shadow-black rounded-b-lg flex flex-col top-full">
-        {clientesEncontrados.map((cliente) => (
-          <button
-            onClick={() => {
-              setInputValue({
-                nombre: cliente.nombre,
-                idClient: cliente.idClient,
-              });
-              console.log("que onda");
-              setMenuActived(false);
-            }}
-            className="hover:bg-gray-800"
-          >
-            {cliente.nombre}
-          </button>
-        ))}
+      <div
+        className={`w-full bg-slate-900 right-0 z-50 ${
+          isHighlighted.isHighlighted ? "bg-slate-100 text-black" : ""
+        }`}
+      >
+        {suggestion.nombre}
       </div>
     );
   }
-  function buscarEnClientes(busca: string) {
-    console.log("me ejecuto locococococ", clientesEncontrados);
-    const arrayEncontrados = clientes.filter((cliente) => {
-      console.log(cliente, "acac");
-      console.log(
-        "SI INCLUYE  ",
-        busca,
-        cliente.nombre.toLocaleLowerCase().includes(busca)
-      );
-
-      return cliente.nombre
-        .toLocaleLowerCase()
-        .includes(busca !== "" ? busca.toLocaleLowerCase() : "|||");
-    });
-    console.log(clientes, "encontrados");
-    setclientesEncontrados(arrayEncontrados);
-  }
 
   useEffect(() => {
-    setChangeData("comprador", inputValue);
-    console.log(inputValue);
-  }, [inputValue]);
+    if (suggestion.length > 0) {
+      setSuggestionActived(true);
+      console.log("BUENAS NOCHES");
+      console.log(suggestion); ////////////////HACER LO MISMO CON LOS ARTICULOS
+    } else {
+      setSuggestionActived(false);
+      console.log("BUENAS PUTAS");
+    }
+  }, [suggestion]);
 
   return (
-    <div
-      onClick={() => {
-        setMenuActived(true);
-      }}
-      onBlur={(e) => {
-        setTimeout(() => setMenuActived(false), 200);
-      }}
-    >
-      <label htmlFor="comprador" className="text-slate-600">
-        Comprador
-      </label>
-      <div className="flex flex-row relative">
-        <input
-          ref={inputRef}
-          className={style}
-          type="text"
-          name="comprador"
-          value={inputValue.nombre}
-          onChange={(e) => {
-            buscarEnClientes(e.target.value);
-            setInputValue(e.target.value);
-          }}
-        />
-        {clientesEncontrados.length > 0 && menuActived && listaClientes()}
-      </div>
+    <div>
+      <label htmlFor="comprador">Comprador</label>
+      <AutoSuggest
+        suggestions={suggestion}
+        onSuggestionsFetchRequested={({ value }) => {
+          setSuggestion(getSuggestions(value));
+        }}
+        onSuggestionsClearRequested={() => setSuggestion([])}
+        renderSuggestion={renderSuggestion}
+        highlightFirstSuggestion={true}
+        getSuggestionValue={(suggestion) => suggestion.nombre}
+        inputProps={{
+          placeholder: "Comprador",
+          value: inputValue.nombre,
+          className: `${style} w-full rounded-lg ${
+            (suggestionActived && "rounded-b-none") || ""
+          }`,
+          onChange: (_, { newValue }) =>
+            setInputValue({ ...inputValue, nombre: newValue }),
+          onKeyDown: handleKeyDown,
+        }}
+        onSuggestionSelected={handleSuggestionSelected}
+      />
     </div>
   );
 };

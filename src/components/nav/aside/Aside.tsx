@@ -94,11 +94,6 @@ export default function Aside() {
                 {" "}
               </Ventas>
             </GoTo>
-            <GoTo title="Navegador" goTo="/navegador" isActive={isActive}>
-              <Navegador menuState={menuState} size={30} color={"#fff"}>
-                {" "}
-              </Navegador>
-            </GoTo>
             <GoTo title="Stock" goTo="/stock" isActive={isActive}>
               <Stock menuState={menuState} size={30} color={"#fff"}>
                 {" "}
@@ -118,6 +113,11 @@ export default function Aside() {
               <Estadisticas menuState={menuState} size={30} color={"#fff"}>
                 {" "}
               </Estadisticas>
+            </GoTo>
+            <GoTo title="Navegador" goTo="/navegador" isActive={isActive}>
+              <Navegador menuState={menuState} size={30} color={"#fff"}>
+                {" "}
+              </Navegador>
             </GoTo>
           </div>
 

@@ -55,8 +55,8 @@ const Ventas: React.FC<VentastProps> = (
   //////////////////////////////
 
   return (
-    <div className="flex flex-col flex-1">
-      <div className="flex-2 border-b-2 border-slate-100">
+    <div className="flex flex-col flex-1 pt-2">
+      <div className="flex-2">
         <NavMain title="Ventas">
           <Export></Export>
           <Buscador
@@ -68,7 +68,7 @@ const Ventas: React.FC<VentastProps> = (
       </div>
       <div className="flex flex-row flex-1">
         <AsideMain isActive={false}></AsideMain>
-        <div className="flex-1 bg-slate-700 p-5 relative">
+        <div className="flex-1 p-5 relative">
           {activeModal && (
             <AddVentaForm
               onChangeModal={onChangeModal}
