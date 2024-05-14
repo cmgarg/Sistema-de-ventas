@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ClientesContent from "./mainContent/clientes/Clientes";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Articulos from "./mainContent/Articulos/Articulos";
-import Caja from "./mainContent/Caja/caja";
+import Caja from "./mainContent/Caja/Caja";
 import ClienteInfo from "./mainContent/ApartadoCliente/ClienteInfo";
 import Ventas from "./mainContent/ventas/Ventas";
 import ArticuloInfo from "./mainContent/ApartadoArticulos/ArticuloInfo";
@@ -10,37 +10,52 @@ import Cuentas from "./mainContent/Cuentas/Cuentas";
 import Stock from "./mainContent/Stock/Stock";
 import Estadisticas from "./mainContent/Estadisticas/Estadisticas";
 import { useDispatch, useSelector } from "react-redux";
-import { storeType } from "../../../types";
 import { chargeArticles } from "../../redux/estados/articlesState";
 import { chargeClients } from "../../redux/estados/clientesState";
 import { chargeSales } from "../../redux/estados/salesState";
+import { loadBrands } from "../../redux/estados/brandState";
+import { loadCategorys } from "../../redux/estados/categoryState";
 
 interface MainContentProps {}
 
 const MainContent: React.FC<MainContentProps> = ({}) => {
   const dispatch = useDispatch();
 
+  function loadCategoryAndBrands(data: { categorys: {}[]; brands: {}[] }) {
+    const { categorys, brands } = data;
+
+    dispatch(loadBrands(brands));
+    dispatch(loadCategorys(categorys));
+  }
+
   useEffect(() => {
     window.api.enviarEvento("get-articles");
     window.api.enviarEvento("get-clients");
     window.api.enviarEvento("get-sales");
+    window.api.enviarEvento("get-brand");
+    window.api.enviarEvento("get-categoryAndBrand");
   }, []);
 
   useEffect(() => {
+    //ARTICULOS
     window.api.recibirEvento("response-get-articles", (articles) => {
       console.log(articles);
       dispatch(chargeArticles(articles));
     });
-    //CLIENTS
+    //CLIENTES
     window.api.recibirEvento("response-get-clients", (clients) => {
       console.log("cargandosss BUENOO", clients);
 
       dispatch(chargeClients(clients));
     });
-    //
+    //VENTAS
     window.api.recibirEvento("response-get-sales", (sales) => {
       console.log(sales);
       dispatch(chargeSales(sales));
+    });
+    //CATEGORIA Y MARCAS
+    window.api.recibirEvento("response-get-categoryAndBrand", (data) => {
+      loadCategoryAndBrands(data);
     });
   });
 

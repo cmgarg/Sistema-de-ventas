@@ -51,16 +51,16 @@ const ListClient: React.FC<listClientProps> = ({
     //PODER ORDENAR LAS LISTAS
     <TableMain>
       <TableHead>
-        <div className="bg-slate-700 flex-1 pl-2 flex items-center justify-center">
+        <div className="flex-1 pl-2 flex items-center justify-start">
           <p className="text-center">Nombre</p>
         </div>
-        <div className="bg-slate-700 flex-1 pl-2 flex items-center justify-center w-52">
+        <div className="flex-1 pl-2 flex items-center justify-center w-52">
           <p className="text-center">Email</p>
         </div>
-        <div className="bg-slate-700 flex-1 pl-2 flex items-center justify-center w-52">
+        <div className="flex-1 pl-2 flex items-center justify-center w-52">
           <p className="text-center">Direccion</p>
         </div>
-        <div className="bg-slate-700 flex-1 pl-2 flex items-center justify-center w-52">
+        <div className="flex-1 pl-2 flex items-center justify-end w-52">
           <p className="text-center">DNI</p>
         </div>
       </TableHead>
@@ -69,12 +69,10 @@ const ListClient: React.FC<listClientProps> = ({
           searchActived.results.map((fila, index) => (
             <ContextMenu>
               <ContextMenuTrigger>
-                <TableRow key={fila._id}>
-                  <div className="flex items-center flex-1 pl-2 space-x-2">
-                    <div className="flex-1 text-center hover:text-slate-400">
-                      <Link to={`/cliente/${fila._id}`} className="text-center">
-                        {fila.name}
-                      </Link>
+                <TableRow key={fila._id} padding={true}>
+                  <div className="flex items-center flex-1 pl-2 space-x-2 justify-center">
+                    <div className="flex-1 hover:text-slate-400">
+                      <Link to={`/cliente/${fila._id}`}>{fila.name}</Link>
                     </div>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
@@ -83,7 +81,7 @@ const ListClient: React.FC<listClientProps> = ({
                   <div className="flex justify-center items-center flex-1 pl-2">
                     <p>{fila.address}</p>
                   </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
+                  <div className="flex justify-end items-center flex-1 pl-2">
                     <p>{fila.DNI}</p>
                   </div>
                 </TableRow>
@@ -116,21 +114,19 @@ const ListClient: React.FC<listClientProps> = ({
           clients.map((fila, index) => (
             <ContextMenu>
               <ContextMenuTrigger>
-                <TableRow key={fila._id}>
-                  <div className="flex items-center flex-1 pl-2 space-x-2">
-                    <div className="flex-1 text-center hover:text-slate-400">
-                      <Link to={`/cliente/${fila._id}`} className="text-center">
-                        {fila.name}
-                      </Link>
+                <TableRow key={fila._id} padding={true}>
+                  <div className="flex items-center flex-1 justify-center">
+                    <div className="flex-1 hover:text-slate-400">
+                      <Link to={`/cliente/${fila._id}`}>{fila.name}</Link>
                     </div>
                   </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
+                  <div className="flex justify-center items-center flex-1">
                     <p>{fila.email}</p>
                   </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
+                  <div className="flex justify-center items-center flex-1">
                     <p>{fila.address}</p>
                   </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
+                  <div className="flex justify-end items-center flex-1">
                     <p>{fila.DNI}</p>
                   </div>
                 </TableRow>

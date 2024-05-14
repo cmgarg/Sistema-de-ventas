@@ -1,27 +1,23 @@
+import { categoryType } from "../../../../../../types";
 import React, { useEffect, useState } from "react";
-import AutoSuggest from "react-autosuggest";
+import Downshift from "downshift";
 
 type propsInput = {
   style: string;
   setChangeData: (e: string, value: string) => void;
   articuloData: object;
-  categorysAndBrands: object[];
+  categorys: categoryType[];
   categoryError: { message: string; type: string; active: boolean };
-};
-
-type categoryType = {
-  label: string;
-  typeFilter: string;
-  value: string;
-  _id: string;
+  value?: string;
 };
 
 const InputCategory = ({
   style,
   setChangeData,
   articuloData,
-  categorysAndBrands,
+  categorys,
   categoryError,
+  value,
 }: propsInput) => {
   const [suggestion, setSuggestion] = useState([]);
   const [newValue, setNewValue] = useState("");
@@ -31,25 +27,22 @@ const InputCategory = ({
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
 
-    const brands = categorysAndBrands.filter((e) => {
-      return e.typeFilter === "category";
-    });
-    console.log(brands);
+    console.log(categorys, "///////////");
 
-    const brandsString = brands.map((e) => e.label);
+    const categorysString = categorys.map((e) => e.label);
 
     return inputLength === 0
       ? []
-      : brandsString.filter((brand) => {
-          return brand.toLowerCase().slice(0, inputLength) === inputValue;
+      : categorysString.filter((category) => {
+          return category.toLowerCase().slice(0, inputLength) === inputValue;
         });
   };
-  const renderSuggestionsContainer = ({ containerProps, children }) => (
+  const renderSuggestionsContainer = ({ containerProps, children }: any) => (
     <div {...containerProps} className="w-full absolute top-full">
       {children}
     </div>
   );
-  function renderSuggestion(suggestion: categoryType, isHighlighted) {
+  function renderSuggestion(suggestion: string, isHighlighted: any) {
     console.log(isHighlighted, "LOCOLON");
     return (
       <div
@@ -63,9 +56,25 @@ const InputCategory = ({
       </div>
     );
   }
-  const handleSuggestionSelected = (event, { suggestionValue }) => {
+  const handleSuggestionSelected = (
+    event: any,
+    { suggestionValue }: { suggestionValue: string }
+  ) => {
     if (event.target.key !== "Enter") {
       setChangeData("category", suggestionValue);
+    }
+  };
+  const compareSelectItemWithInputValue = (i: string): string => {
+    const inputLength = newValue.length;
+    const itemValue = i;
+
+    if (newValue) {
+      return itemValue.toLowerCase().slice(0, inputLength) ===
+        newValue.toLowerCase()
+        ? itemValue
+        : newValue;
+    } else {
+      return itemValue;
     }
   };
   const onChangeNewValue = (newValue: string) => {
@@ -77,43 +86,89 @@ const InputCategory = ({
     setChangeData("category", newValue);
   }, [newValue]);
   return (
-    <div className="w-full relative">
-      <label
-        htmlFor="category"
-        className="flex space-x-2 items-end justify-between pr-2"
-      >
-        <p>Categoria</p>
-        {categoryError.active && categoryError.type === "category" && (
-          <p className="text-red-200 text-xs">{categoryError.message}</p>
-        )}
-      </label>
-
-      <AutoSuggest
-        suggestions={suggestion} //AGREGAR CANTIDAD FALOPERO
-        onSuggestionsFetchRequested={({ value }) => {
-          setSuggestion(getSuggestions(value));
-        }}
-        onSuggestionsClearRequested={() => setSuggestion([])}
-        renderSuggestion={renderSuggestion}
-        renderSuggestionsContainer={renderSuggestionsContainer}
-        highlightFirstSuggestion={true}
-        getSuggestionValue={(suggestion) => suggestion}
-        inputProps={{
-          className: `${style} rounded-lg w-full ${
-            suggestionActived && "rounded-b-none"
-          } ${
-            categoryError.active &&
-            (categoryError.type === "category" || "all") &&
-            "border border-red-200"
-          }`,
-          name: "category",
-          placeholder: "Categoria. . . ",
-          value: newValue,
-          onChange: (_, { newValue }) => onChangeNewValue(newValue),
-        }}
-        onSuggestionSelected={handleSuggestionSelected}
-      />
-    </div>
+    <Downshift
+      onChange={(selection) => {
+        onChangeNewValue(selection || "teta");
+      }}
+      inputValue={value || newValue}
+      itemToString={(item) =>
+        item ? compareSelectItemWithInputValue(item.label) : newValue
+      }
+      onInputValueChange={(e, stateAndHelpers) => {
+        onChangeNewValue(e);
+      }}
+      onSelect={(selectedItem) => {
+        onChangeNewValue(selectedItem || "teta");
+      }}
+    >
+      {({
+        getInputProps,
+        getItemProps,
+        getMenuProps,
+        isOpen,
+        inputValue,
+        highlightedIndex,
+        selectedItem,
+        getLabelProps,
+        getRootProps,
+      }) => (
+        <div className="w-full flex flex-col">
+          <label {...getLabelProps()}>Categoria</label>
+          <div
+            style={{ display: "inline-block" }}
+            {...getRootProps({}, { suppressRefError: true })}
+          >
+            <input
+              {...getInputProps()}
+              className={`${style} ${isOpen ? "rounded-b-none" : ""} 'w-full'`}
+            />
+          </div>
+          <ul
+            {...getMenuProps()}
+            className="w-full absolute top-full rounded-b-sm"
+          >
+            {isOpen
+              ? categorys
+                  .filter(
+                    (item) =>
+                      !inputValue ||
+                      item.label
+                        .toLowerCase()
+                        .includes(inputValue.toLowerCase())
+                  )
+                  .map((item, index) => (
+                    <li
+                      {...getItemProps({
+                        key: item.label,
+                        index,
+                        item,
+                        style: {
+                          border: selectedItem === item ? "2px blue" : "normal",
+                          paddingLeft: "0.250rem",
+                        },
+                      })}
+                      className={`${
+                        highlightedIndex === index
+                          ? "bg-teal-900"
+                          : "bg-teal-950"
+                      } ${
+                        highlightedIndex === index
+                          ? "text-slate-50"
+                          : "text-slate-200"
+                      }${
+                        highlightedIndex === index
+                          ? "bg-red-200"
+                          : "font-normal"
+                      }`}
+                    >
+                      {item.label}
+                    </li>
+                  ))
+              : null}
+          </ul>
+        </div>
+      )}
+    </Downshift>
   );
 };
 

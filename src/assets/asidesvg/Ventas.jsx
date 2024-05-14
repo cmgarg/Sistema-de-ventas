@@ -1,13 +1,12 @@
 import React from "react";
 
-export default function Ventas({ menuState, size, color }) {
+export default function Ventas({ size, color }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       style={{
         width: size,
         height: size,
-        fill: (menuState.value === "ventas" && "#fff") || "none",
       }}
       viewBox="0 0 114.62 244.57"
     >

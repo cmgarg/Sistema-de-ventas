@@ -1,45 +1,46 @@
 import React, { useEffect, useState } from "react";
-import InputBrand from "./InputBrand";
-import InputCategory from "./InputCategory";
+import InputBrand from "../ADDARTICULO/InputBrand";
+import InputCategory from "../ADDARTICULO/InputCategory";
 import Select from "../../Select/Select";
 import { BoxSvg } from "../../../../../assets/MAINSVGS/SVGSGLOBAL/Cmgsvg";
-import { articleData, brandType, categoryType } from "../../../../../../types";
+import {
+  articleData,
+  brandType,
+  categoryType,
+  dataToEditArticle,
+} from "../../../../../../types";
 import { useDispatch } from "react-redux";
 import { addArticle } from "../../../../../redux/estados/articlesState";
+import CheckSvg from "../../../../../assets/MAINSVGS/mainAsideSvg/editSVG/CheckSvg";
+import UnCheckSvg from "../../../../../assets/MAINSVGS/mainAsideSvg/editSVG/UnCheckSvg";
 
-interface AddArticulosFormProps {
+interface EditArticleFormProps {
   onChangeModal: (p: boolean) => void;
   categorys: categoryType[];
   brands: brandType[];
+  articles: articleData[];
+  articleToEdit: { active: boolean; code: string };
 }
 
-const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
+const EditArticleForm: React.FC<EditArticleFormProps> = ({
   onChangeModal,
   categorys,
   brands,
+  articles,
+  articleToEdit,
 }) => {
   //DATOS USUARIOS
+
   const dispatch = useDispatch();
-  const [articuloDataState, setarticuloData] = useState<articleData>({
-    article: {
-      name: "",
-      costo: 0,
-      venta: 0,
-      stock: { amount: 0, unit: "kg" },
-    },
+  const [articuloDataState, setarticuloData] = useState<dataToEditArticle>({
+    name: "",
+    costo: 0,
+    venta: 0,
+    stock: { amount: 0, unit: "kg" },
     brand: { value: "", label: "" },
     category: { value: "", label: "" },
     code: "",
-    dateToRegister: "",
-    sales: [],
   });
-  const optionsUnits = [
-    { value: "cajas", label: "Cajas", svg: <BoxSvg /> },
-    { value: "paquetes", label: "Paquetes" },
-    { value: "unidades", label: "Unidades" },
-    { value: "litros", label: "Litros" },
-    { value: "kg", label: "Kilogramos" },
-  ];
 
   const [unitSelect, setUnitSelect] = useState("Kg");
 
@@ -86,13 +87,29 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
     setAddBrandInput(false);
   };
   /////
+  const [editResponse, setEditResponse] = useState<{
+    edit: boolean;
+    active: boolean;
+  }>({
+    edit: false,
+    active: false,
+  });
+
+  ////
+  const optionsUnits = [
+    { value: "cajas", label: "Cajas", svg: <BoxSvg /> },
+    { value: "paquetes", label: "Paquetes" },
+    { value: "unidades", label: "Unidades" },
+    { value: "litros", label: "Litros" },
+    { value: "kg", label: "Kilogramos" },
+  ];
 
   function setChangeData(data: string, value: any) {
     const valueUpper =
       value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
     const valueLower = value.toLowerCase();
     const existingData = [
-      "article",
+      "name",
       "brand",
       "costo",
       "venta",
@@ -103,11 +120,11 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
     console.log(existingData.includes(data), "esto");
     if (existingData.includes(data)) {
       switch (data) {
-        case "article":
+        case "name":
           if (/^[a-zA-Z\s]*$/.test(value)) {
             setarticuloData({
               ...articuloDataState,
-              article: { ...articuloDataState.article, name: value },
+              name: value,
             });
           }
           break;
@@ -122,7 +139,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
           if (/^[0-9.]*$/.test(value)) {
             setarticuloData({
               ...articuloDataState,
-              article: { ...articuloDataState.article, costo: value },
+              costo: value,
             });
           }
           break;
@@ -130,7 +147,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
           if (/^[0-9.]*$/.test(value)) {
             setarticuloData({
               ...articuloDataState,
-              article: { ...articuloDataState.article, venta: value },
+              venta: value,
             });
           }
           break;
@@ -138,20 +155,14 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
           if (/^[0-9.]*$/.test(value)) {
             setarticuloData({
               ...articuloDataState,
-              article: {
-                ...articuloDataState.article,
-                stock: { ...articuloDataState.article.stock, amount: value },
-              },
+              stock: { ...articuloDataState.stock, amount: value },
             });
           }
           break;
         case "stock-unit":
           setarticuloData({
             ...articuloDataState,
-            article: {
-              ...articuloDataState.article,
-              stock: { ...articuloDataState.article.stock, unit: value },
-            },
+            stock: { ...articuloDataState.stock, unit: value },
           });
           break;
         case "category":
@@ -169,21 +180,53 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
     }
   }
 
-  function saveArticle() {
-    window.api.enviarEvento("save-article", articuloDataState);
+  function editArticle() {
+    window.api.enviarEvento("edit-article", {
+      ...articuloDataState,
+      code: articleToEdit.code,
+    });
   }
+
+  const chargeArticle = (code: string) => {
+    const articlesArray = [...articles];
+
+    const articleToEdit = articlesArray.filter((article) => {
+      return article.code === code;
+    });
+
+    if (articleToEdit.length > 0) {
+      let article = {
+        code: articleToEdit[0].code,
+        name: articleToEdit[0].article.name,
+        brand: articleToEdit[0].brand,
+        category: articleToEdit[0].category,
+        costo: articleToEdit[0].article.costo,
+        venta: articleToEdit[0].article.venta,
+        stock: { ...articleToEdit[0].article.stock },
+      };
+      setarticuloData(article);
+    }
+  };
   //ESTILOS INPUT
-  const estilosInput =
-    "outline-none h-12 w-full bg-slate-900 px-2 rounded-md border border-slate-800";
+  const estilosInput = "outline-none h-12 w-full bg-slate-600 px-2 rounded-md";
 
   useEffect(() => {
-    window.api.recibirEvento("error-save-article", (error) => {
-      console.log("GONZALO FIJATE ACA", error);
-      if (!error.active) {
-        console.log("LLEGA A CA", articuloDataState);
-        onChangeModal(false);
+    console.log("se carga....", articleToEdit.code);
+    chargeArticle(articleToEdit.code);
+
+    window.api.recibirEvento("response-edit-article", (res) => {
+      if (res) {
+        setEditResponse({
+          edit: true,
+          active: true,
+        });
+        window.api.enviarEvento("get-articles");
+      } else {
+        setEditResponse({
+          edit: false,
+          active: true,
+        });
       }
-      setErrorToSave({ ...error });
     });
   }, []);
   useEffect(() => {
@@ -191,11 +234,11 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
   }, [articuloDataState]);
 
   return (
-    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 text-lg bg-slate-950 bg-opacity-30 backdrop-blur-xl">
+    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 text-xl text-slate-50">
       {/*AÑADIR NUEVA CATEGORIA*/}
       {addCategoryInput && (
         <div className="absolute w-96 z-50 flex items-center justify-center flex-col">
-          <div className="w-full flex justify-center items-center flex-col rounded-md border h-36 bg-slate-950">
+          <div className="w-full flex justify-center items-center flex-col rounded-md border h-36 bg-slate-800">
             <div className="w-full px-5 flex-1 flex flex-col justify-evenly">
               <label
                 htmlFor="newcategory"
@@ -210,7 +253,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
                 onChange={(e) => {
                   onChangeCategory(e.target.value);
                 }}
-                className="bg-slate-900 h-12 w-full rounded-sm outline-none text-slate-50 px-2"
+                className="bg-gray-600 h-10 w-full rounded-sm outline-none text-slate-50 px-2"
               />
             </div>
             <div className="w-full flex justify-between">
@@ -233,7 +276,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
       {/*AÑADIR NUEVA MARCA*/}
       {addBrandInput && (
         <div className="absolute w-96 h-96 z-50 flex items-center justify-center flex-col">
-          <div className="w-full flex justify-center items-center flex-col rounded-md border h-36 bg-slate-950">
+          <div className="w-full flex justify-center items-center flex-col rounded-md border h-36 bg-slate-800">
             <div className="w-full px-5 flex-1 flex flex-col justify-evenly">
               <label
                 htmlFor="newbrand"
@@ -248,7 +291,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
                 onChange={(e) => {
                   onChangeBrand(e.target.value);
                 }}
-                className="bg-slate-900 h-12 w-full rounded-sm outline-none text-slate-50 px-2"
+                className="bg-gray-600 h-10 w-full rounded-sm outline-none text-slate-50 px-2"
               />
             </div>
             <div className="w-full flex justify-between">
@@ -269,10 +312,43 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
         </div>
       )}
       <div
-        className={`w-2/5 h-96 border border-gray-500 text-gray-200 bg-slate-950 bg-opacity-95 space-y-5 rounded-md relative flex flex-col justify-between ${
+        className={`w-2/5 h-96 border border-gray-500 text-gray-200 bg-slate-800 bg-opacity-95 space-y-5 rounded-md relative flex flex-col justify-between ${
           (addCategoryInput || addBrandInput) && "opacity-50"
         }`}
       >
+        {/*INFORMA SI SE EDITO O NO EL ARTICULO*/}
+        {editResponse.active && (
+          <div className="absolute z-50 bg-slate-950 w-full h-full rounded-md flex flex-col justify-around items-center">
+            <div className="text-4xl w-full flex justify-center">
+              <p
+                className={`${
+                  editResponse.edit ? "text-green-400" : "text-red-400"
+                }`}
+              >
+                {editResponse.edit
+                  ? "Se edito correctamente"
+                  : "Error al editar"}
+              </p>
+            </div>
+            {editResponse.edit ? (
+              <div className="flex-1 flex items-center">
+                <CheckSvg size={200} color="rgb(134 239 172)"></CheckSvg>
+              </div>
+            ) : (
+              <div className="flex-1 flex items-center">
+                <UnCheckSvg size={200} color="rgb(248 113 113)"></UnCheckSvg>
+              </div>
+            )}
+            <button
+              className="w-full bg-green-300 rounded-b-md flex justify-center text-black font-bold hover:bg-green-200"
+              onClick={() => {
+                onChangeModal(false);
+              }}
+            >
+              <p>Aceptar</p>
+            </button>
+          </div>
+        )}
         <div className="flex flex-row space-x-1 px-5 pt-5">
           <div className="flex-1">
             <label htmlFor="articulo">Articulo</label>
@@ -280,9 +356,9 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
               type="text"
               name="articulo"
               className={estilosInput}
-              value={articuloDataState.article.name}
+              value={articuloDataState.name}
               onChange={(e) => {
-                setChangeData("article", e.target.value);
+                setChangeData("name", e.target.value);
               }}
             />
           </div>
@@ -294,9 +370,9 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
                   type="text"
                   name="stock"
                   className={
-                    "outline-none h-12 w-full rounded-l-md bg-slate-900 px-2 "
+                    "outline-none h-12 w-full rounded-l-md bg-slate-600 px-2 "
                   }
-                  value={articuloDataState.article.stock.amount}
+                  value={articuloDataState.stock.amount}
                   onChange={(e) => {
                     setChangeData("stock", e.target.value);
                   }}
@@ -319,7 +395,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
           </div>
         </div>
         <div className="flex flex-row space-x-1 px-5">
-          <div className="flex flex-col flex-1 w-full relative ">
+          <div className="flex-1 relative">
             <div className="absolute  right-0 text-green-300 z-40 hover:text-green-200 flex space-x-2">
               {errorToSave.active &&
                 (errorToSave.type == "all" || errorToSave.type == "brand") && (
@@ -343,6 +419,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
               setChangeData={setChangeData}
               brands={brands}
               brandError={errorToSave}
+              value={articuloDataState.brand.label}
             />
           </div>
           <div className="flex-1 relative">
@@ -369,6 +446,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
               setChangeData={setChangeData}
               categorys={categorys}
               categoryError={errorToSave}
+              value={articuloDataState.category.label}
             />
           </div>
         </div>
@@ -379,7 +457,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
               type="text"
               name="costo"
               className={estilosInput}
-              value={articuloDataState.article.costo}
+              value={articuloDataState.costo}
               onChange={(e) => {
                 setChangeData("costo", e.target.value);
               }}
@@ -391,7 +469,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
               type="text"
               name="venta"
               className={estilosInput}
-              value={articuloDataState.article.venta}
+              value={articuloDataState.venta}
               onChange={(e) => {
                 setChangeData("venta", e.target.value);
               }}
@@ -410,9 +488,9 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
           </button>
           <button
             className="w-1/2 h-10 bg-green-400 rounded-br-sm"
-            onClick={saveArticle}
+            onClick={editArticle}
           >
-            Añadir
+            Editar
           </button>
         </div>
       </div>
@@ -420,4 +498,4 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
   );
 };
 
-export default AddArticuloForm;
+export default EditArticleForm;

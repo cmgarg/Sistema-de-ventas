@@ -19,6 +19,7 @@ interface SelectProps {
   filter?: string;
   functionLastOption?: () => void;
   label?: string;
+  border?: boolean;
   todos: boolean;
 
   //PROPS
@@ -33,6 +34,7 @@ const SelectM: React.FC<SelectProps> = ({
   slice,
   todos,
   functionLastOption,
+  border,
   backGround,
   label,
 }) => {
@@ -52,7 +54,7 @@ const SelectM: React.FC<SelectProps> = ({
   }, []);
 
   return (
-    <div className="z-50 text-slate-50 max-w-full min-w-full">
+    <div className="z-40 text-slate-50 max-w-full min-w-full">
       <Select
         onValueChange={(e) => {
           if (e === "todos") {
@@ -63,7 +65,9 @@ const SelectM: React.FC<SelectProps> = ({
         }}
       >
         <SelectTrigger
-          className={`${backGround || `bg-slate-950`} max-w-full min-w-full`}
+          className={`${backGround || `bg-slate-950`} max-w-full min-w-full ${
+            border ? "border border-red-600" : "border-none"
+          }`}
         >
           <div>
             {(slice && selected.slice(0, slice)) || (
@@ -74,7 +78,7 @@ const SelectM: React.FC<SelectProps> = ({
         <SelectContent
           className={`${
             backGround || "bg-slate-900"
-          } text-white border border-gray-600 max-w-full min-w-full`}
+          } text-white   max-w-full min-w-full`}
         >
           <SelectGroup>
             {label && <SelectLabel className="font-bold">Por</SelectLabel>}

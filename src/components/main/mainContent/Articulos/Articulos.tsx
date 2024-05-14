@@ -7,12 +7,17 @@ import AddArticuloForm from "./ADDARTICULO/AddArticuloForm";
 import Export from "../buttons/Export";
 import ArticleList from "./ArticleList";
 import { useDispatch, useSelector } from "react-redux";
-import { articleData, storeType } from "@/types";
+import { articleData, storeType } from ".././../../../../types";
+import EditArticleForm from "./EDITARTICLE/EditArticleForm";
+import CheckSvg from "../../../../assets/MAINSVGS/mainAsideSvg/editSVG/CheckSvg";
+import UnCheckSvg from "../../../../assets/MAINSVGS/mainAsideSvg/editSVG/UnCheckSvg";
 
 interface ArticulosProps {}
 
 const Articulos: React.FC<ArticulosProps> = ({}) => {
   const articles = useSelector((state: storeType) => state.articleState);
+  const categorys = useSelector((state: storeType) => state.categoryState);
+  const brands = useSelector((state: storeType) => state.brandState);
 
   const [activeModal, setActiveModal] = useState(false);
 
@@ -25,15 +30,25 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
   });
   const [articleToEdit, setArticleToEdit] = useState<{
     active: boolean;
-    id: string;
+    code: string;
   }>({
     active: false,
-    id: "",
+    code: "",
+  });
+  const [resDeleteArticle, setResDeleteArticle] = useState({
+    delete: false,
+    active: false,
   });
   function onChangeModal(p: boolean) {
     setActiveModal(p);
   }
-  function onChangeArticle(e: { active: boolean; id: string }) {
+  const onChangeModalEdit = (p: boolean) => {
+    setArticleToEdit({
+      active: p,
+      code: "",
+    });
+  };
+  function editArticleOn(e: { active: boolean; code: string }) {
     setArticleToEdit(e);
   }
   function resultFindArticles(e: object[], actived: boolean) {
@@ -41,13 +56,26 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
     setSearchActived(object);
     console.log(object, "aca");
   }
-  const estilosInput = "outline-none h-9 w-full bg-slate-600 px-2 rounded-md";
 
   //////////////////////////////
   useEffect(() => {
     console.log(articles, "craneo");
+    console.log(articles, "DAAAAAAAALEEEEEE");
+
+    console.log(categorys, "()()()()()()())(((())))");
+    console.log(brands, "%&%&%&%&%&%&%&%&");
   }, []);
 
+  useEffect(() => {
+    window.api.recibirEvento("response-delete-article", (e) => {
+      if (e) {
+        setResDeleteArticle({ delete: true, active: true });
+        window.api.enviarEvento("get-articles");
+      } else {
+        setResDeleteArticle({ delete: false, active: true });
+      }
+    });
+  }, []);
   return (
     <div className="h-full w-full grid-cmg-program">
       <div className="row-start-1 row-end-2">
@@ -62,11 +90,68 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
       </div>
       <div className="flex flex-row pb-5 row-start-2 row-end-7">
         <AsideMain isActive={false}></AsideMain>
-        <div className="w-full px-5 relative">
+        <div className="w-full px-5">
           {activeModal && (
-            <AddArticuloForm onChangeModal={onChangeModal}></AddArticuloForm>
+            <AddArticuloForm
+              onChangeModal={onChangeModal}
+              categorys={categorys}
+              brands={brands}
+            ></AddArticuloForm>
           )}
-          <ArticleList articles={articles} searchActived={searchActived} />
+          {articleToEdit.active && (
+            <EditArticleForm
+              onChangeModal={onChangeModalEdit}
+              categorys={categorys}
+              brands={brands}
+              articles={articles}
+              articleToEdit={articleToEdit}
+            ></EditArticleForm>
+          )}
+          <ArticleList
+            articles={articles}
+            searchActived={searchActived}
+            editArticleOn={editArticleOn}
+            setResDeleteArticle={setResDeleteArticle}
+          />
+          {resDeleteArticle.active && (
+            <div className="absolute z-50 top-0 right-0 left-0 bottom-0 flex justify-center items-center">
+              <div className="bg-slate-950 w-2/5 h-2/5 rounded-md flex flex-col justify-around items-center">
+                <div className="text-4xl w-full flex justify-center">
+                  <p
+                    className={`${
+                      resDeleteArticle.delete
+                        ? "text-green-400"
+                        : "text-red-400"
+                    }`}
+                  >
+                    {resDeleteArticle.delete
+                      ? "Se borro correctamente"
+                      : "Error al borrar"}
+                  </p>
+                </div>
+                {resDeleteArticle.delete ? (
+                  <div className="flex-1 flex items-center">
+                    <CheckSvg size={100} color="rgb(134 239 172)"></CheckSvg>
+                  </div>
+                ) : (
+                  <div className="flex-1 flex items-center">
+                    <UnCheckSvg
+                      size={100}
+                      color="rgb(248 113 113)"
+                    ></UnCheckSvg>
+                  </div>
+                )}
+                <button
+                  className="w-full bg-green-300 rounded-b-md flex justify-center text-black font-bold hover:bg-green-200"
+                  onClick={() => {
+                    setResDeleteArticle({ delete: false, active: false });
+                  }}
+                >
+                  <p>Aceptar</p>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

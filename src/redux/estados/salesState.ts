@@ -9,17 +9,17 @@ export const saleSlice = createSlice({
     chargeSales: (state, action) => {
       console.log("EJECUTO CARGA ventas", action.payload);
 
-      const sales = action.payload.value;
+      const sales = action.payload;
 
       return sales;
     },
     addSale: (state, action) => {
-      const saleToAdd: saleData = action.payload.value;
+      const saleToAdd: saleData = action.payload;
 
       return [...state, saleToAdd];
     },
     deleteSale: (state, action) => {
-      const saleToDelete: saleToDelete = action.payload.value;
+      const saleToDelete: saleToDelete = action.payload;
 
       const result = state.filter((articleData) => {
         return articleData.id !== saleToDelete.id;

@@ -22,11 +22,6 @@ const Caja: React.FC<VentastProps> = (
   const [ventas, setVentas] = useState([]);
   const [totalCantidad, setTotalCantidad] = useState(0);
 
-  function obtenerVentas() {
-    window.api.enviarEvento("get-sales");
-    console.log("obtner ventas se llamo");
-  }
-
   function ventasEchas() {
     console.log(ventas);
     return (
@@ -35,12 +30,12 @@ const Caja: React.FC<VentastProps> = (
           {ventas.map((e) => {
             return (
               <div
-                key={e._id}
+                key={"sasa"}
                 className="flex flex-1 flex-row bg-slate-700 h-12 rounded-e-lg items-center p-2 "
               >
                 <div className=" flex flex-1 flex-row items-center h-12 text-white text-lg">
                   <div className=" flex items-center p-2"></div>
-                  {e.articulo.nombreArticulo}
+                  sasa
                 </div>
                 <div className=" flex flex-1 flex-row items-center text-green-400 text-lg">
                   <div className=" flex items-center p-2">
@@ -55,7 +50,7 @@ const Caja: React.FC<VentastProps> = (
                       <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z" />
                     </svg>
                   </div>
-                  <p className="">{e.amount}</p>
+                  <p className="">asd</p>
                 </div>
               </div>
             );
@@ -64,28 +59,6 @@ const Caja: React.FC<VentastProps> = (
       </div>
     );
   }
-
-  useEffect(() => {
-    obtenerVentas();
-    window.api.recibirEvento("response-get-sales", (e) => {
-      console.log("ME EJECUTO A LA PERFECCIONE", e);
-
-      const arrayVentas = e.map((venta) => {
-        // Asegúrate de que cantidad sea un número, aquí se asume que es un entero
-        return { ...venta, amount: parseInt(venta.sold) };
-      });
-
-      setVentas(arrayVentas);
-
-      // Calcula el total después de establecer las ventas
-      const total = arrayVentas.reduce(
-        (acumulado, venta) => acumulado + venta.sold,
-        0
-      );
-      setTotalCantidad(total);
-    });
-    ventasEchas();
-  }, []);
 
   //////////////total a fabor
 

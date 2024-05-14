@@ -13,7 +13,7 @@ export default function Stock({ menuState, size }) {
           <polygon
             class="cls-1"
             points="2.5 62.93 2.5 183.02 106.5 243.06 210.5 183.02 210.5 62.93 106.5 2.89 2.5 62.93"
-            fill={(menuState.value === "stock" && "#fff") || "none"}
+            fill={"none"}
             stroke={"#fff"}
             strokeWidth={"9"}
           />
@@ -23,7 +23,7 @@ export default function Stock({ menuState, size }) {
             y1="62.98"
             x2="106.5"
             y2="122.98"
-            stroke={(menuState.value === "stock" && "#000") || "#fff"}
+            stroke={"#fff"}
             strokeWidth={"9"}
           />
           <line
@@ -32,7 +32,7 @@ export default function Stock({ menuState, size }) {
             y1="62.98"
             x2="106.5"
             y2="122.98"
-            stroke={(menuState.value === "stock" && "#000") || "#fff"}
+            stroke={"#fff"}
             strokeWidth={"9"}
           />
           <line
@@ -41,7 +41,7 @@ export default function Stock({ menuState, size }) {
             y1="62.98"
             x2="106.5"
             y2="122.98"
-            stroke={(menuState.value === "stock" && "#000") || "#fff"}
+            stroke={"#fff"}
             strokeWidth={"9"}
           />
           <line
@@ -50,7 +50,7 @@ export default function Stock({ menuState, size }) {
             y1="242.98"
             x2="106.5"
             y2="122.98"
-            stroke={(menuState.value === "stock" && "#000") || "#fff"}
+            stroke={"#fff"}
             strokeWidth={"9"}
           />
           <line
@@ -59,7 +59,7 @@ export default function Stock({ menuState, size }) {
             y1="92.98"
             x2="158.5"
             y2="32.98"
-            stroke={(menuState.value === "stock" && "#000") || "#fff"}
+            stroke={"#fff"}
             strokeWidth={"9"}
           />
         </g>
