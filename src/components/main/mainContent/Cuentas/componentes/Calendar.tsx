@@ -13,11 +13,17 @@ import {
 } from "date-fns";
 import { es } from "date-fns/locale";
 
-const Calendar = () => {
+interface CalendarProps {
+  diaSeleccionado: string | null;
+  setDiaSeleccionado: (dia: string) => void;
+}
+
+const Calendar: React.FC<CalendarProps> = ({ diaSeleccionado, setDiaSeleccionado }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [events, setEvents] = useState<{ [key: string]: string[] }>({});
+  
 
-  const capitalizeFirstLetter = (string) => {
+  const capitalizeFirstLetter = (string:string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
@@ -92,12 +98,8 @@ const Calendar = () => {
   };
 
   const handleCellClick = (dayKey: string) => {
-    const dayEvents = events[dayKey];
-    if (dayEvents && dayEvents.length > 0) {
-      alert(dayEvents.join("\n"));
-    } else {
-      alert("No hay eventos para este día");
-    }
+    setDiaSeleccionado(dayKey)
+    console.log(diaSeleccionado,"dia seleccionaod ene l calendario")
   };
 
   const renderCells = () => {
@@ -121,18 +123,20 @@ const Calendar = () => {
         const isCurrentDay = isToday(day);
         days.push(
           <div
-            className={`py-2 border border-gray-200 text-center ${
-              !isCurrentMonth ? "text-gray-700" : ""
-            } ${isCurrentDay ? "bg-blue-700 font-bold" : ""}`}
-            key={day.toString()}
-            onClick={() => handleCellClick(dayKey)}
-          >
-            {formattedDate}
-            {events[dayKey]?.map((event, eventIndex) => (
-              <div key={eventIndex}>{event}</div>
-            ))}
-          </div>
-        );
+          className={`py-2 border border-gray-200 text-center ${
+            !isCurrentMonth ? "text-gray-700" : ""
+          } ${isCurrentDay ? "bg-blue-700 font-bold" : ""} ${
+            diaSeleccionado === dayKey ? "bg-gray-600" : ""
+          }`} // Añade esta línea
+          key={day.toString()}
+          onClick={() => handleCellClick(dayKey)}
+        >
+          {formattedDate}
+          {events[dayKey]?.map((event, eventIndex) => (
+            <div key={eventIndex}>{event}</div>
+          ))}
+        </div>
+      );
         day = addDays(day, 1);
       }
       rows.push(

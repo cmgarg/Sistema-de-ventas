@@ -4,6 +4,7 @@ import articleSlice from "./estados/articlesState.ts";
 import categorySlice from "./estados/categoryState.ts";
 import brandSlice from "./estados/brandState.ts";
 import saleSlice from "./estados/salesState.ts";
+import authReducer from "./estados/authSlice.ts";
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     saleState: saleSlice,
     categoryState: categorySlice,
     brandState: brandSlice,
+    auth: authReducer,
   },
 });

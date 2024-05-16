@@ -21,7 +21,8 @@ import { BsBoxSeamFill } from "react-icons/bs";
 import { BsPcDisplayHorizontal } from "react-icons/bs";
 import { TbBusinessplan } from "react-icons/tb";
 
-export default function Aside() {
+
+export default function Aside({setLoginUser}) {
   const [isActive, setIsActive] = useState(false);
   const location = useLocation();
   ////funciones ventana emergente con nombre.

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 interface AddAccountToPayProps {
   onChangeModal: (p: boolean) => void;
@@ -14,6 +15,8 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
     date: string;
     pay: string;
     descripcion: string;
+    pagado: boolean;
+    meses: number;
   };
 
   const [accountData, setAccountData] = useState<accountObject>({
@@ -21,85 +24,88 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
     date: "",
     pay: "",
     descripcion: "",
+    pagado: false,
+    meses: 1,
   });
 
-  function setChangeData(data: string, value: string) {
-    const existingData = ["tipodegasto", "date", "pay", "descripcion"];
-    if (existingData.includes(data)) {
-      let newValue = value;
-  
-      // Limitar la longitud del texto a 20 caracteres para los campos específicos
-      if (data === "pay" || data === "descripcion") {
-        newValue = value.slice(0, 20);
-      }
-  
-      let newAccountData = { ...accountData };
-  
-      if (data === "tipodegasto") {
-        newAccountData.tipodegasto = newValue;
-        // Si el tipo de gasto es Vencimiento Mensual y ya se tiene una fecha, actualizar solo el día
-        if (newValue === "Vencimiento Mensual" && newAccountData.date) {
-          newAccountData.date = newAccountData.date.split("-").pop(); // Conservar solo el día
-        }
-      } else if (data === "date") {
-        // Si el tipo de gasto es Vencimiento Mensual, actualizar solo el día
-        if (newAccountData.tipodegasto === "Vencimiento Mensual") {
-          newAccountData.date = newValue.split("-").pop();
-        } else {
-          newAccountData.date = newValue;
-        }
-      } else {
-        newAccountData[data] = newValue;
-      }
-  
-      setAccountData(newAccountData);
-    }
+  function setChangeData(data: string, value: string | number) {
+    let newAccountData = { ...accountData };
+    newAccountData[data] = value;
+    setAccountData(newAccountData);
   }
-  
 
   useEffect(() => {
     console.log(accountData);
   }, [accountData]);
 
   function subirArticulo() {
-    console.log("se subio el articulo", accountData);
-    window.api.enviarEvento("save-accountToPay", accountData);
-    addAccountToPay(accountData);
+    if (accountData.tipodegasto === "Vencimiento Mensual") {
+      for (let i = 0; i < accountData.meses; i++) {
+        const newAccount = {
+          ...accountData,
+          date: new Date(
+            new Date(accountData.date).setMonth(
+              new Date(accountData.date).getMonth() + i
+            )
+          )
+            .toISOString()
+            .split("T")[0],
+        };
+        window.api.enviarEvento("save-accountToPay", newAccount);
+        addAccountToPay(newAccount);
+      }
+    } else {
+      window.api.enviarEvento("save-accountToPay", accountData);
+      addAccountToPay(accountData);
+    }
     setAccountData({
       tipodegasto: "",
       date: "",
       pay: "",
       descripcion: "",
+      pagado: false,
+      meses: 1,
     });
     onChangeModal(false);
   }
 
-  const estilosInput = "outline-none h-9 w-full bg-slate-600 px-2 rounded-md";
+
+  function validateAndSubmit() {
+    const { tipodegasto, date, pay, descripcion } = accountData;
+    if (!tipodegasto || !date || !pay || !descripcion) {
+      Swal.fire({
+        title: "Error!",
+        text: "Por favor, completa todos los campos antes de continuar.",
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+      return;
+    }
+
+    subirArticulo();
+    // Resto de la función...
+  }
 
   return (
-    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50">
+    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 w-full h-full">
       <div className="absolute top-0 right-0 bottom-0 left-0 bg-black opacity-60"></div>
-      <div className="w-96 bg-white space-y-5 rounded-md relative justify-start text-white  border-black border-2">
-        <div className="flex-1 flex flex-row h-8 justify-between bg-slate-700">
-          <div className="flex items-center p-1 pl-2">Agrega un Gasto</div>
-          <button
-            className="bg-red-700 h-8 w-8"
-            onClick={() => {
-              onChangeModal(false);
-            }}
-          >
-            X
-          </button>
+      <div className="w-1/4 h-2/2 bg-gray-600 space-y-5 rounded-3xl relative justify-start text-white  border-gray-50 border"
+      style={{ backgroundColor: 'rgba(30, 41, 59, 0.9)' }}>
+        <div className="flex-1 flex flex-row h-8 mt-6 text-3xl items-center justify-center">
+          <div>Agregar Cuenta</div>
         </div>
-        <div className="flex-1 flex space-y-5 flex-col px-2 pb-2">
-          <div className="flex flex-row space-x-1">
-            <div className="flex-1">
-              <label htmlFor="tipodegasto" className="text-slate-600">
+        <div className="flex-1 flex space-y-5 flex-col px-2 pb-2 items-center justify-center">
+          <div className="flex flex-row space-x-1 items-center justify-center">
+            <div className="flex-1 flex flex-col">
+              <label htmlFor="tipodegasto" className=" text-xl p-2">
                 Tipo De Gasto
               </label>
+              <div className="flex flex-row flex-1">
               <select
                 name="tipodegasto"
-                className={estilosInput}
+                className={
+                  " outline-none h-9 w-56 px-2 rounded-md bg-slate-700"
+                }
                 value={accountData.tipodegasto}
                 onChange={(e) => {
                   setChangeData("tipodegasto", e.target.value);
@@ -109,68 +115,90 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
                 <option value="Vencimiento Mensual">Vencimiento Mensual</option>
                 <option value="Gasto Diario">Gasto Diario</option>
               </select>
+
+              {accountData.tipodegasto === "Vencimiento Mensual" ? (
+                <div className=" flex w-10 ">
+                  <input
+                    type="number"
+                    name="meses"
+                    className={"bg-slate-700 ml-1 rounded-md w-12 text-center outline-none" }
+                    value={accountData.meses}
+                    min="1"
+                    onChange={(e) => {
+                      setChangeData("meses", e.target.value);
+                    }}
+                  />
+                </div>
+              ) : null}
+              </div>
+              
             </div>
           </div>
-          <div className="flex-1">
-            <label htmlFor="date" className="text-slate-600">
-              Dia De Vencimiento
-            </label>
-            <input
-              type={
-                accountData.tipodegasto === "Vencimiento Mensual"
-                  ? "text"
-                  : "date"
-              }
-              name="date"
-              className={estilosInput}
-              value={accountData.date}
-              onChange={(e) => {
-                setChangeData("date", e.target.value);
-              }}
-            />
-          </div>
-          <div>
-            <label htmlFor="pay" className="text-slate-600">
-              Monto
-            </label>
-            <input
-              type="number"
-              name="pay"
-              className={estilosInput}
-              value={accountData.pay}
-              onChange={(e) => {
-                setChangeData("pay", e.target.value);
-              }}
-            />
-          </div>
-          <div>
-            <label htmlFor="descripcion" className="text-slate-600">
+
+          <div className="flex flex-col">
+            <label htmlFor="descripcion" className="text-xl p-2">
               Descripcion
             </label>
             <input
               type="text"
               name="descripcion"
-              className={estilosInput}
+              className={
+                 " outline-none h-9 w-56 px-2 rounded-md bg-slate-700"
+              }
               value={accountData.descripcion}
               onChange={(e) => {
                 setChangeData("descripcion", e.target.value);
               }}
             />
           </div>
-          <div className="flex flex-row space-x-5">
+
+          <div className="flex-1 flex flex-col">
+            <label htmlFor="date" className=" text-xl p-2">
+              Dia De Vencimiento
+            </label>
+            <input
+              type="date"
+              name="date"
+              className={
+                " outline-none h-9 w-56 px-2 rounded-md bg-slate-700 fecha-input fecha-input:focus"
+              }
+              value={accountData.date}
+              onChange={(e) => {
+                setChangeData("date", e.target.value);
+              }}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="pay" className=" text-xl p-2">
+              Monto
+            </label>
+            <input
+              type="number"
+              name="pay"
+              className={
+                " outline-none h-9 w-56 px-2 rounded-md bg-slate-700"
+              }
+              value={accountData.pay}
+              onChange={(e) => {
+                setChangeData("pay", e.target.value);
+              }}
+            />
+          </div>
+          <div className="flex flex-row space-x-10 p-8">
             <button
-              className="w-52 h-10 bg-red-700 rounded-md"
+              className="p-2 bg-blue-600 rounded-md"
+              onClick={validateAndSubmit}
+            >
+              Agregar
+            </button>
+            <button
+              className="p-2 bg-red-600 rounded-md"
               onClick={() => {
                 onChangeModal(false);
               }}
             >
               Cancelar
-            </button>
-            <button
-              className="w-52 h-10 bg-green-700 rounded-md"
-              onClick={subirArticulo}
-            >
-              Agregar
             </button>
           </div>
         </div>

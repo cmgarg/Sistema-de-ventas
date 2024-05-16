@@ -8,6 +8,7 @@
 
 ::-webkit-scrollbar-track {
   background: #334155; /* Color de fondo del riel */
+  
 }
 
 ::-webkit-scrollbar-thumb {
@@ -29,5 +30,46 @@ li:last-child {
 }
 
 .shadow-inset-cmg {
-  box-shadow: inset 0px -40px 200px -100px #ee0909;
+  box-shadow: inset 0px -40px 200px -100px #ee0909;}
+.scroll-container {
+  overflow: hidden; /* Oculta el desbordamiento del contenedor exterior */
+}
+
+.scroll-content {
+  overflow-y: auto; /* Habilita el desplazamiento vertical en el contenedor interno */
+  margin-right: -6px; /* Ajusta este valor al ancho de tu barra de desplazamiento */
+}
+
+
+.medidas{
+  max-height: 85vh; /* O el porcentaje que se ajuste a tu diseño */
+}
+
+.medidas-1{
+  height: 58vh;
+  max-height: 58vh;
+   /* O el porcentaje que se ajuste a tu diseño */
+}
+
+.medidas-2{
+  height: 29vh;
+  max-height: 29vh;
+  
+   /* O el porcentaje que se ajuste a tu diseño */
+}
+
+.medidas-3{
+  height: 22.9vh;
+  max-height: 22.9vh;
+  
+   /* O el porcentaje que se ajuste a tu diseño */
+}
+
+
+.fecha-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+.fecha-input:focus {
+  outline: none; /* Opcional: elimina el contorno azul predeterminado */
 }

@@ -122,4 +122,14 @@ export type storeType = {
   categoryState: categoryType[];
   brandState: brandType[];
   saleState: saleData[];
+  auth:authType
 };
+
+
+/////////////usuario auth 
+
+export type authType = {
+  isAuthenticated: boolean,
+  userId: string,
+  token: string,
+}
