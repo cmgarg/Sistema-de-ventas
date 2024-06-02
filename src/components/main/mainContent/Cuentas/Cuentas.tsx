@@ -171,8 +171,8 @@ const Cuentas: React.FC<CuentasProps> = (
           />
         </div>
 
-        <div className=" flex h-full text-white justify-start flex-col  mt-2 mr-3  rounded-lg">
-          <div className="px-5 mb-6">
+        <div className=" flex text-white justify-start flex-col  mt-2 mr-3  rounded-lg">
+          <div className="w-[22rem] h-[21rem] px-5 mb-6">
             <Calendar
               diaSeleccionado={diaSeleccionado}
               setDiaSeleccionado={setDiaSeleccionado}
@@ -180,7 +180,7 @@ const Cuentas: React.FC<CuentasProps> = (
           </div>
           <div className=" medidas-1 flex flex-col">
 
-            <div className="medidas-2 mb-6">
+            <div className="medidas-2 ">
             <div className="  flex border-gray-600 border mb-2 rounded-lg p-2 items-center justify-center  ">
               <p className="pl-3">Vencimiento Mensual</p>
             </div>

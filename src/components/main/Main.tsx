@@ -14,6 +14,7 @@ import { storeType } from "../../../types";
 import { chargeArticles } from "../../redux/estados/articlesState";
 import { chargeClients } from "../../redux/estados/clientesState";
 import { chargeSales } from "../../redux/estados/salesState";
+import Configuracion from "./mainContent/Configuracion/Configuracion";
 
 interface MainContentProps {}
 
@@ -57,6 +58,7 @@ const MainContent: React.FC<MainContentProps> = ({}) => {
         <Route path="/estadisticas" element={<Estadisticas />} />
         <Route path="/cliente/:id" element={<ClienteInfo />} />
         <Route path="/articulo/:id" element={<ArticuloInfo />} />
+        <Route path="/configuracion" element={<Configuracion />} />
       </Routes>
     </div>
   );

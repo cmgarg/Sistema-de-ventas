@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../../redux/estados/authSlice.ts";
+import { MdAddPhotoAlternate } from "react-icons/md";
 
 export default function UsuarioIniciado({ setLoginUser }) {
   const images = [
@@ -17,11 +18,12 @@ export default function UsuarioIniciado({ setLoginUser }) {
 
   const [menuVisible, setMenuVisible] = useState(false);
   const [changeImageVisible, setChangeImageVisible] = useState(false);
-  const imageMenuRef = useRef(null);
   const [datosUsuario, setDatosUsuario] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const menuRef = useRef(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   const handleImageSelect = async (index) => {
     setSelectedImage(images[index]);
@@ -30,7 +32,6 @@ export default function UsuarioIniciado({ setLoginUser }) {
     const userId = localStorage.getItem("userId");
     if (userId) {
       try {
-        // Envía la imagen seleccionada al backend
         window.api.enviarEvento("actualizar-imagen-usuario", {
           userId,
           imageUrl: images[index],
@@ -40,12 +41,6 @@ export default function UsuarioIniciado({ setLoginUser }) {
         console.error("Error al actualizar la imagen del usuario:", error);
       }
     }
-
-    console.log("Enviando al backend:", { userId, imageUrl: images[index] });
-    window.api.enviarEvento("actualizar-imagen-usuario", {
-      userId,
-      imageUrl: images[index],
-    });
   };
 
   const handleFileChange = (event) => {
@@ -53,7 +48,7 @@ export default function UsuarioIniciado({ setLoginUser }) {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setSelectedImage(e.target.result); // Actualiza selectedImage en lugar de fileImage
+        setSelectedImage(e.target.result);
         setChangeImageVisible(false);
       };
       reader.readAsDataURL(file);
@@ -70,56 +65,36 @@ export default function UsuarioIniciado({ setLoginUser }) {
     setMenuVisible(false);
   };
 
-  console.log(selectedImage, "esta es la imagen q cliceo");
+  const handleClickOutside = (event) => {
+    if (
+      !event.target.closest(".menu-container") &&
+      !event.target.closest(".image-menu-container")
+    ) {
+      setMenuVisible(false);
+      setChangeImageVisible(false);
+    }
+  };
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target) &&
-        imageMenuRef.current &&
-        !imageMenuRef.current.contains(event.target)
-      ) {
-        setMenuVisible(false);
-        setChangeImageVisible(false);
-      }
-    };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [menuRef, imageMenuRef]);
-
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { isAuthenticated } = useSelector((state) => state.auth); // Accede al estado de autenticación
+  }, []);
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate("/login"); // Redirige al usuario a la página de inicio de sesión si no está autenticado
+      navigate("/login");
     }
   }, [isAuthenticated, navigate]);
 
-  // UsuarioIniciado.js
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     dispatch(logout());
-    setLoginUser(false); // Asegúrate de pasar setLoginUser como prop a este componente
-    navigate("/login"); // Redirige al usuario a la página de inicio de sesión
+    setLoginUser(false);
+    navigate("/login");
   };
-
-  // Ejemplo de cómo podrías manejar una respuesta de inicio de sesión
-  // Suponiendo que esta es una función donde manejas la respuesta del inicio de sesión.
-  function manejarRespuestaInicioSesion(respuesta) {
-    if (respuesta.exito) {
-      localStorage.setItem("userId", respuesta.userId);
-      // Navegar al dashboard o actualizar el estado del usuario aquí
-    } else {
-      // Mostrar mensaje de error
-    }
-  }
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -134,39 +109,34 @@ export default function UsuarioIniciado({ setLoginUser }) {
           setSelectedImage(respuesta.data.imageUrl);
         } else {
           console.error(respuesta.error);
-          // Manejar el error aquí
         }
       } else {
-        console.error(
-          "La respuesta del evento datos-usuario-obtenidos es undefined"
-        );
+        console.error("La respuesta del evento datos-usuario-obtenidos es undefined");
       }
     };
 
-    window.api.recibirEvento(
-      "datos-usuario-obtenidos",
-      handleDatosUsuarioObtenidos
-    );
+    window.api.recibirEvento("datos-usuario-obtenidos", handleDatosUsuarioObtenidos);
 
     return () => {
       window.api.removeAllListeners("datos-usuario-obtenidos");
     };
   }, []);
 
-  const userId = localStorage.getItem("userId");
-  console.log(userId, "noooooooooooooooooo estaa el idd"); // Deberías ver un valor que no sea null o undefined
+  const navigate2 = useNavigate();
 
-  console.log(datosUsuario, "datos sobtenido de ususartio");
+  const abrirConfiguracion = () => {
+    navigate("/configuracion");
+  };
 
   return (
     <>
-      <div className=" flex text-white text-lg mr-4 items-center justify-center">
+      <div className="flex text-white text-lg mr-4 items-center justify-center">
         <div></div>
       </div>
-      <div>
+      <div className="relative">
         <div
-          className="relative  flex flex-row border border-gray-600 rounded-lg p-1"
-          ref={menuRef}
+          className="flex flex-row border border-gray-600 rounded-lg p-1 menu-container"
+          onClick={toggleMenu}
         >
           <div className="flex items-center justify-center text-2xl text-white mr-3">
             {datosUsuario ? datosUsuario.username : "Cargando..."}
@@ -174,35 +144,36 @@ export default function UsuarioIniciado({ setLoginUser }) {
 
           <div
             className="w-11 h-11 bg-cover bg-center rounded-full cursor-pointer"
-            style={{ backgroundImage: `url(${selectedImage})` }} // Usa selectedImage para la imagen actual
-            onClick={toggleMenu}
+            style={{ backgroundImage: `url(${selectedImage})` }}
           />
-
-          {menuVisible && (
-            <div className="absolute right-0 top-full w-48 bg-white shadow-lg rounded-lg py-2 z-50">
-              <div
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                onClick={toggleChangeImage}
-              >
-                Cambiar imagen
-              </div>
-              <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                Configuración
-              </div>
-              <div
-                onClick={handleLogout}
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-              >
-                Cerrar sesión
-              </div>
-            </div>
-          )}
         </div>
+
+        {menuVisible && (
+          <div className="absolute right-0 top-full w-48 bg-gray-800 shadow-lg border border-gray-600 rounded-lg text-white py-2 z-50 menu-container">
+            <div
+              className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
+              onClick={toggleChangeImage}
+            >
+              Cambiar imagen
+            </div>
+            <div
+              className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
+              onClick={abrirConfiguracion}
+            >
+              Configuración
+            </div>
+            <div
+              onClick={handleLogout}
+              className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
+            >
+              Cerrar sesión
+            </div>
+          </div>
+        )}
 
         {changeImageVisible && (
           <div
-            className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg py-2 z-50"
-            ref={imageMenuRef}
+            className="absolute right-0 w-48 bg-gray-800 border border-gray-600 shadow-lg rounded-lg py-4 z-50 image-menu-container"
           >
             <div className="flex flex-wrap justify-between px-2 py-2">
               {images.map((image, index) => (
@@ -224,9 +195,9 @@ export default function UsuarioIniciado({ setLoginUser }) {
                   type="file"
                   accept="image/*"
                   onChange={handleFileChange}
-                  className="hidden"
+                  className="hidden text-5xl"
                 />
-                +
+                <MdAddPhotoAlternate size={35} color="black"/>
               </label>
             </div>
           </div>

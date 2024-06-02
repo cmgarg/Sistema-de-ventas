@@ -17,6 +17,8 @@ function App() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const [bloqueoPrograma, setBloqueoPrograma] = useState(false);
   const dispatch = useDispatch();
+  const [idUsuario, setIdUsuario] = useState()
+  const [estadoRecuperacionCuenta, setEstadoRecuperacionCuenta] = useState(false)
 
   useEffect(() => {
     ipcRenderer.send("verificar-admin-existente");
@@ -33,12 +35,13 @@ function App() {
     return () => {
       ipcRenderer.removeAllListeners("respuesta-verificar-admin");
     };
-  }, []);
+  }, [estadoRecuperacionCuenta]);
   console.log(bloqueoPrograma, "programa bloqueado");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
+    setIdUsuario(userId)
     if (token && userId) {
       dispatch(login({ userId, token }));
     } else {
@@ -50,7 +53,7 @@ function App() {
     if (adminExists === null) {
       return <div>Cargando...</div>;
     } else if (bloqueoPrograma) {
-      return <Programabloqueado />;
+      return <Programabloqueado setBloqueoPrograma={setBloqueoPrograma}/>;
     } else if (adminExists) {
       return isAuthenticated ? (
         <>
@@ -58,7 +61,7 @@ function App() {
           <Main />
         </>
       ) : (
-        <Login />
+        <Login setEstadoRecuperacionCuenta={setEstadoRecuperacionCuenta} />
       );
     } else {
       return <CrearUsuarioAdmin setAdminExists={setAdminExists} />;

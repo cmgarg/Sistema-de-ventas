@@ -8,7 +8,7 @@ type loginProps = {
   setLoginUser: (p: boolean) => void;
 };
 
-const Login: React.FC<loginProps> = ({ setLoginUser }) => {
+const Login: React.FC<loginProps> = ({ setLoginUser, setEstadoRecuperacionCuenta }) => {
   const [loginIncorrecto, setLoginIncorrecto] = useState<boolean>();
   const [credentials, setCredentials] = useState({
     username: "",
@@ -129,6 +129,7 @@ const Login: React.FC<loginProps> = ({ setLoginUser }) => {
       </div>
       {showRecovery.show && (
         <PasswordRecovery
+        setEstadoRecuperacionCuenta={setEstadoRecuperacionCuenta}
           username={showRecovery.username}
           onClose={() => setShowRecovery({ show: false, username: "" })}
         />

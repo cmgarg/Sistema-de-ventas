@@ -16,6 +16,7 @@ const db = {
   users: new Datastore({ filename: "database/users.db", autoload: true }),
   filters: new Datastore({ filename: "database/filters.db", autoload: true }),
   usuariosAdmin:new Datastore({ filename: "database/usuarios.db", autoload: true }),
+  usuarios:new Datastore({ filename: "database/sub-usuarios.db", autoload: true }),
 };
 
 ////////////////////////////////
@@ -367,7 +368,7 @@ function deleteSales(data: any) {
 
 function obtenerEstadoPagado(idCuenta) {
   return new Promise((resolve, reject) => {
-    cuentas.findOne({ _id: idCuenta }, (err, doc) => {
+    db.accounts.findOne({ _id: idCuenta }, (err, doc) => {
       if (err) {
         console.error("Error al obtener el estado de pagado:", err);
         reject(err);
@@ -557,8 +558,8 @@ function createWindow() {
     icon: path.join(process.env.VITE_PUBLIC, "logo-cmg.png"),
     width: 1000,
     height: 1800,
-    minWidth: 900,
-    minHeight: 500,
+    minWidth: 1100,
+    minHeight: 600,
     titleBarStyle: "hidden",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -817,6 +818,233 @@ ipcMain.on('obtener-admin', (event) => {
 });
 
 
+ipcMain.on("verificar-codigo-desbloqueo", (event, codigoIngresado) => {
+  db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
+    if (err) {
+      console.error("Error al buscar el administrador:", err);
+      event.reply("respuesta-verificar-codigo", { exito: false });
+    } else if (admin && admin.bloqueo === codigoIngresado) {
+      event.reply("respuesta-verificar-codigo", { exito: true });
+    } else {
+      event.reply("respuesta-verificar-codigo", { exito: false });
+    }
+  });
+});
+
+
+
+
+// Evento de IPC para cambiar la contraseña
+ipcMain.on('cambiar-contrasena', async (event, { userId, nuevaContrasena }) => {
+  try {
+    // Encripta la nueva contraseña
+    const hashedPassword = await bcrypt.hash(nuevaContrasena, saltRounds);
+
+    // Actualiza la contraseña del usuario en la base de datos
+    db.usuariosAdmin.update({ _id: userId }, { $set: { password: hashedPassword } }, {}, (err) => {
+      if (err) {
+        console.error('Error al actualizar la contraseña:', err);
+        event.reply('respuesta-cambiar-contrasena', { exito: false, error: err.message });
+      } else {
+        console.log('Contraseña actualizada con éxito');
+        event.reply('respuesta-cambiar-contrasena', { exito: true });
+      }
+    });
+  } catch (error) {
+    console.error('Error al encriptar la nueva contraseña:', error);
+    event.reply('respuesta-cambiar-contrasena', { exito: false, error: error.message });
+  }
+});
+
+
+ipcMain.on('restar-recuperacioncuenta', async (event, userId) => {
+  // Restar 1 a recuperacioncuenta del usuario con el ID proporcionado
+  db.usuariosAdmin.update({ _id: userId }, { $inc: { recuperacioncuenta: -1 } }, {}, async (err, numAffected) => {
+    if (err) {
+      console.error('Error al restar recuperacioncuenta:', err);
+    } else {
+      console.log('recuperacioncuenta restada con éxito');
+      // Obtén el valor actualizado de recuperacioncuenta y envíalo al frontend
+      const usuarioActualizado = await getUser(userId);
+      win.webContents.send('actualizacion-recuperacioncuenta', usuarioActualizado.recuperacioncuenta);
+    }
+  });
+});
+
+
+ipcMain.on('reiniciar-recuperacioncuenta', async (event, userId) => {
+  // Reiniciar recuperacioncuenta a 3 para el usuario con el ID proporcionado
+  db.usuariosAdmin.update({ _id: userId }, { $set: { recuperacioncuenta: 3 } }, {}, (err, numAffected) => {
+    if (err) {
+      console.error('Error al reiniciar recuperacioncuenta:', err);
+    } else {
+      console.log('recuperacioncuenta reiniciada con éxito');
+    }
+  });
+});
+
+
+
+
+
+////////crear subUsuarios
+
+ipcMain.on("guardar-usuario-secundario", async (event, usuario) => {
+  try {
+    // Genera un hash del password del usuario
+    const hashedPassword = await bcrypt.hash(usuario.password, saltRounds);
+    // Sustituye el password en texto plano con el hash antes de guardar en la base de datos
+    const usuarioConPasswordEncriptado = {
+      ...usuario,
+      password: hashedPassword,
+      esusuario: true,
+    };
+
+    // Guarda el usuario con el password encriptado en la base de datos
+    db.usuarios.insert(usuarioConPasswordEncriptado, async (err, newDoc) => {
+      if (err) {
+        // Si hay un error, envía una respuesta al front-end
+        event.reply("respuesta-guardar-usuario", { exito: false, error: err.message });
+      } else {
+        // Si tiene éxito, obtiene la lista actualizada de todos los usuarios
+        db.usuarios.find({}, (error, docs) => {
+          if (error) {
+            // Maneja errores al intentar recuperar la lista de usuarios
+            console.error("Error al cargar la lista de usuarios:", error);
+            event.reply("respuesta-cargar-todos-usuarios", { exito: false, error: error.message });
+          } else {
+            // Envía la lista actualizada de usuarios al frontend
+            event.reply("respuesta-cargar-todos-usuarios", { exito: true, usuarios: docs });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    // Si hay un error con el proceso de hashing, lo capturas aquí
+    console.error("Error al encriptar el password del usuario:", error);
+    event.reply("respuesta-guardar-usuario", { exito: false, error: error.message });
+  }
+});
+
+
+///////carga de usuarios inicial
+
+// Función para cargar todos los usuarios
+function cargarTodosLosUsuarios() {
+  return new Promise((resolve, reject) => {
+    db.usuarios.find({}, (err, docs) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(docs);
+      }
+    });
+  });
+}
+
+// Evento IPC para cargar todos los usuarios
+ipcMain.on("cargar-todos-usuarios", async (event) => {
+  try {
+    const usuarios = await cargarTodosLosUsuarios();
+    event.reply("respuesta-cargar-todos-usuarios", { exito: true, usuarios });
+  } catch (error) {
+    console.error("Error al cargar usuarios:", error);
+    event.reply("respuesta-cargar-todos-usuarios", { exito: false, error: error.message });
+  }
+});
+
+
+// Función para actualizar la imagen del subusuario
+function actualizarImagenSubusuario(userId, imageUrl) {
+  console.log(`Actualizando imagen del subusuario ${userId} con URL: `);
+  return new Promise((resolve, reject) => {
+    db.usuarios.update({ _id: userId }, { $set: { imageUrl: imageUrl } }, {}, (err) => {
+      if (err) {
+        console.error('Error al actualizar la imagen del subusuario:', err);
+        reject(err);
+      } else {
+        console.log('Imagen del subusuario actualizada con éxito');
+        resolve(true);
+      }
+    });
+  });
+}
+
+// Evento de IPC para actualizar la imagen del subusuario
+ipcMain.on('actualizar-imagen-subusuario', async (event, { userId, imageUrl }) => {
+  console.log('Evento actualizar-imagen-subusuario recibido:', userId);
+  try {
+    await actualizarImagenSubusuario(userId, imageUrl);
+    event.reply('respuesta-actualizar-imagen-subusuario', { exito: true, userId, imageUrl });
+  } catch (error) {
+    console.error('Error al actualizar la imagen del subusuario:', error);
+    event.reply('respuesta-actualizar-imagen-subusuario', { exito: false, mensaje: error.message });
+  }
+});
+
+
+/////cambiar permisos de sub-usuarios
+
+// Función para actualizar los permisos del usuario
+async function actualizarPermisosUsuario(userId, nuevosPermisos) {
+  return new Promise((resolve, reject) => {
+    db.usuarios.update({ _id: userId }, { $set: { permisos: nuevosPermisos } }, {}, (err, numReplaced) => {
+      if (err) {
+        reject(err);
+      } else {
+        db.usuarios.findOne({ _id: userId }, (err, usuario) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(usuario);
+          }
+        });
+      }
+    });
+  });
+}
+
+// Evento de IPC para actualizar permisos de usuario
+ipcMain.on('actualizar-permisos-usuario', async (event, { userId, nuevosPermisos }) => {
+  try {
+    const usuarioActualizado = await actualizarPermisosUsuario(userId, nuevosPermisos);
+    event.reply('respuesta-actualizar-permisos-usuario', { exito: true, usuario: usuarioActualizado });
+  } catch (error) {
+    console.error('Error al actualizar los permisos del usuario:', error);
+    event.reply('respuesta-actualizar-permisos-usuario', { exito: false, mensaje: error.message });
+  }
+});
+
+
+
+// Función para actualizar el usuario en la base de datos
+async function actualizarUsuario(userId, updatedUser) {
+  return new Promise((resolve, reject) => {
+    db.usuarios.update({ _id: userId }, { $set: updatedUser }, {}, (err, numReplaced) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(numReplaced);
+      }
+    });
+  });
+}
+
+// Evento de IPC para actualizar el usuario
+ipcMain.on('guardar-usuario-editado', async (event, updatedUser) => {
+  try {
+    const userId = updatedUser._id;
+    delete updatedUser._id; // Asegúrate de eliminar el campo _id antes de actualizar
+    await actualizarUsuario(userId, updatedUser);
+    event.reply('respuesta-guardar-usuario-editado', { exito: true });
+  } catch (error) {
+    console.error('Error al actualizar el usuario:', error);
+    event.reply('respuesta-guardar-usuario-editado', { exito: false, mensaje: error.message });
+  }
+});
+
+
+
 
 
 
@@ -998,7 +1226,7 @@ ipcMain.on('eliminar-cuenta', async (event, { id }) => {
 // Función para obtener las cuentas a pagar
 async function getAccountsToPay() {
   return new Promise((resolve, reject) => {
-    cuentas.find({}, (err, docs) => {
+    db.accounts.find({}, (err, docs) => {
       if (err) {
         reject(err);
       } else {

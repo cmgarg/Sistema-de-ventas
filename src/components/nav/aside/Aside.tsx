@@ -15,8 +15,7 @@ import Tooltip from "../aside/Tooltip.jsx";
 import { Link, useLocation } from "react-router-dom";
 import GoTo from "./GoTo.js";
 
-
-export default function Aside({setLoginUser}) {
+export default function Aside({ setLoginUser }) {
   const [isActive, setIsActive] = useState(false);
   const location = useLocation();
   ////funciones ventana emergente con nombre.

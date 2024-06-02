@@ -79,7 +79,8 @@ export type storeType = {
   menuState: { value: string };
   clientState: clientData[];
   articleState: articleData[];
-  auth:authType
+  auth:authType;
+  updateImgState:{value: boolean}
 };
 
 

@@ -21,7 +21,7 @@ const NavMain: React.FC<MainContentProps> = ({
       <div className=" flex-1 flex justify-center">
         <div className="flex flex-row space-x-5">{children}</div>
       </div>
-      <div className=" flex-1 flex justify-end">
+      <div className=" flex-1 flex justify-end items-end mt-3 ">
         <UsuarioIniciado setLoginUser={setLoginUser} />
       </div>
     </div>

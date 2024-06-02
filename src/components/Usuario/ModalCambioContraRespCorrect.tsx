@@ -2,7 +2,7 @@ import ContraVisibleSVG from "/src/assets/SvgUsuario/ContraVisibleSVG";
 import ContraNoVisibleSVG from "/src/assets/SvgUsuario/ContraNoVisibleSVG";
 import React, { useEffect, useState } from "react";
 
-const ModalCambiarContraseña = ({setBloqueoPrograma}) => {
+const ModalCambioContraRespCorrect = ({setCambiarContraseña, onClose}) => {
   const [nuevaContraseña, setNuevaContraseña] = useState("");
   const [mostrarContraseña, setMostrarContraseña] = useState(false);
   const [datosUsuario, setDatosUsuario] = useState();
@@ -24,7 +24,8 @@ const ModalCambiarContraseña = ({setBloqueoPrograma}) => {
         nuevaContrasena: nuevaContraseña,
       });
       window.api.enviarEvento("reiniciar-recuperacioncuenta", datosUsuario._id);
-      setBloqueoPrograma(false)
+      setCambiarContraseña(false)
+      onClose();
     } else {
       console.error("No se han obtenido los datos del usuario");
     }
@@ -93,4 +94,4 @@ const ModalCambiarContraseña = ({setBloqueoPrograma}) => {
   
 };
 
-export default ModalCambiarContraseña;
+export default ModalCambioContraRespCorrect;

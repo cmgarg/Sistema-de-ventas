@@ -158,6 +158,15 @@ contextBridge.exposeInMainWorld("api", {
       "obtener-datos-usuario",
       'actualizar-imagen-usuario',
       'obtener-admin',
+      "verificar-codigo-desbloqueo",
+      'cambiar-contrasena',
+      'reiniciar-recuperacioncuenta',
+      'restar-recuperacioncuenta',
+      "guardar-usuario-secundario",
+      "cargar-todos-usuarios",
+      'actualizar-imagen-subusuario',
+      "actualizar-permisos-usuario",
+      "guardar-usuario-editado",
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -186,7 +195,13 @@ contextBridge.exposeInMainWorld("api", {
       "datos-usuario-obtenidos",
       "datos-usuario-obtenidos",
       'respuesta-obtener-admin',
-      
+      "respuesta-verificar-codigo",
+      'actualizacion-recuperacioncuenta',
+      'respuesta-actualizar-imagen-usuario',
+      "respuesta-guardar-usuario",
+      "respuesta-cargar-todos-usuarios",
+      'respuesta-actualizar-imagen-subusuario',
+      "respuesta-actualizar-permisos-usuario"
       
     ];
 
