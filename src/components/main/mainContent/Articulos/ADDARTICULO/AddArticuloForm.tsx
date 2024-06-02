@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import InputBrand from "./InputBrand";
-import InputCategory from "./InputCategory";
-import Select from "../../Select/Select";
-import { BoxSvg } from "../../../../../assets/MAINSVGS/SVGSGLOBAL/Cmgsvg";
+import InputBrand from "./InputBrandAndCategory/InputBrand";
+import InputCategory from "./InputBrandAndCategory/InputCategory";
 import { articleData, brandType, categoryType } from "../../../../../../types";
 import { useDispatch } from "react-redux";
-import { addArticle } from "../../../../../redux/estados/articlesState";
+import StockArticleForm from "./StockAndWeight/StockArticleForm";
+import Impuestos from "./Impuestos";
+import ButtonCheck from "./ButtonCheck";
+import CategoryAndBrand from "./InputBrandAndCategory/CategoryAndBrand";
+import CategoryAndBrandForm from "./CategoryAndBrandForm";
 
 interface AddArticulosFormProps {
   onChangeModal: (p: boolean) => void;
@@ -25,28 +27,18 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
       name: "",
       costo: 0,
       venta: 0,
-      stock: { amount: 0, unit: "kg" },
+      stock: { amount: 0, unit: "kg", minStock: 0 },
+      wApp: false,
+      weight: "0",
+      description: "",
     },
     brand: { value: "", label: "" },
     category: { value: "", label: "" },
     code: "",
     dateToRegister: "",
     sales: [],
+    taxes: [],
   });
-  const optionsUnits = [
-    { value: "cajas", label: "Cajas", svg: <BoxSvg /> },
-    { value: "paquetes", label: "Paquetes" },
-    { value: "unidades", label: "Unidades" },
-    { value: "litros", label: "Litros" },
-    { value: "kg", label: "Kilogramos" },
-  ];
-
-  const [unitSelect, setUnitSelect] = useState("Kg");
-
-  function onChangeSelectUnit(unit: string, filter: string) {
-    setUnitSelect(unit);
-    setChangeData("stock-unit", unit);
-  }
 
   const [errorToSave, setErrorToSave] = useState({
     message: "",
@@ -88,9 +80,12 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
   /////
 
   function setChangeData(data: string, value: any) {
-    const valueUpper =
-      value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-    const valueLower = value.toLowerCase();
+    let valueUpper = "";
+    let valueLower = "";
+    if (data === "category" || data === "brand") {
+      valueUpper = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+      valueLower = value.toLowerCase();
+    }
     const existingData = [
       "article",
       "brand",
@@ -98,7 +93,13 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
       "venta",
       "stock",
       "stock-unit",
+      "min-stock",
       "category",
+      "description",
+      "newTax",
+      "deleteTax",
+      "weight",
+      "wApp",
     ];
     console.log(existingData.includes(data), "esto");
     if (existingData.includes(data)) {
@@ -115,6 +116,13 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
           setarticuloData({
             ...articuloDataState,
             brand: { value: valueLower, label: valueUpper },
+          });
+
+          break;
+        case "description":
+          setarticuloData({
+            ...articuloDataState,
+            article: { ...articuloDataState.article, description: value },
           });
 
           break;
@@ -154,10 +162,45 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
             },
           });
           break;
+        case "min-stock":
+          setarticuloData({
+            ...articuloDataState,
+            article: {
+              ...articuloDataState.article,
+              stock: { ...articuloDataState.article.stock, minStock: value },
+            },
+          });
+          break;
         case "category":
           setarticuloData({
             ...articuloDataState,
             category: { value: valueLower, label: valueUpper },
+          });
+          break;
+        case "wApp":
+          setarticuloData({
+            ...articuloDataState,
+            article: { ...articuloDataState.article, wApp: value },
+          });
+          break;
+        case "weight":
+          setarticuloData({
+            ...articuloDataState,
+            article: { ...articuloDataState.article, weight: value },
+          });
+          break;
+        case "newTax":
+          setarticuloData({
+            ...articuloDataState,
+            taxes: [...articuloDataState.taxes, value],
+          });
+          break;
+        case "deleteTax":
+          const taxes = [...articuloDataState.taxes];
+          taxes.splice(value, 1);
+          setarticuloData({
+            ...articuloDataState,
+            taxes: [...taxes],
           });
           break;
 
@@ -173,7 +216,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
     window.api.enviarEvento("save-article", articuloDataState);
   }
   //ESTILOS INPUT
-  const estilosInput =
+  const inputStyle =
     "outline-none h-12 w-full bg-slate-900 px-2 rounded-md border border-slate-800";
 
   useEffect(() => {
@@ -191,215 +234,138 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
   }, [articuloDataState]);
 
   return (
-    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 text-lg bg-slate-950 bg-opacity-30 backdrop-blur-xl">
+    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 text-base bg-slate-950 bg-opacity-30 backdrop-blur-xl">
       {/*AÑADIR NUEVA CATEGORIA*/}
-      {addCategoryInput && (
-        <div className="absolute w-96 z-50 flex items-center justify-center flex-col">
-          <div className="w-full flex justify-center items-center flex-col rounded-md border h-36 bg-slate-950">
-            <div className="w-full px-5 flex-1 flex flex-col justify-evenly">
-              <label
-                htmlFor="newcategory"
-                className="flex justify-start w-80 text-slate-50"
-              >
-                <p>Nueva Categoria</p>
-              </label>
-              <input
-                name="newcategory"
-                type="text"
-                value={newCategory}
-                onChange={(e) => {
-                  onChangeCategory(e.target.value);
-                }}
-                className="bg-slate-900 h-12 w-full rounded-sm outline-none text-slate-50 px-2"
-              />
-            </div>
-            <div className="w-full flex justify-between">
-              <button
-                className="h-10 w-1/2 bg-red-400 rounded-bl-sm"
-                onClick={() => setAddCategoryInput(false)}
-              >
-                Cancelar
-              </button>
-              <button
-                className="h-10 w-1/2 bg-green-300 rounded-br-sm"
-                onClick={() => saveNewCategory(newCategory)}
-              >
-                Crear Categoria
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/*AÑADIR NUEVA MARCA*/}
-      {addBrandInput && (
-        <div className="absolute w-96 h-96 z-50 flex items-center justify-center flex-col">
-          <div className="w-full flex justify-center items-center flex-col rounded-md border h-36 bg-slate-950">
-            <div className="w-full px-5 flex-1 flex flex-col justify-evenly">
-              <label
-                htmlFor="newbrand"
-                className="flex justify-start w-80 text-slate-50"
-              >
-                <p>Nueva Marca</p>
-              </label>
-              <input
-                name="newbrand"
-                type="text"
-                value={newBrand}
-                onChange={(e) => {
-                  onChangeBrand(e.target.value);
-                }}
-                className="bg-slate-900 h-12 w-full rounded-sm outline-none text-slate-50 px-2"
-              />
-            </div>
-            <div className="w-full flex justify-between">
-              <button
-                className="h-10 w-1/2 bg-red-400 rounded-bl-sm"
-                onClick={() => setAddBrandInput(false)}
-              >
-                Cancelar
-              </button>
-              <button
-                className="h-10 w-1/2 bg-green-300 rounded-br-sm"
-                onClick={() => saveNewBrand(newBrand)}
-              >
-                Crear Marca
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
       <div
-        className={`w-2/5 h-96 border border-gray-500 text-gray-200 bg-slate-950 bg-opacity-95 space-y-5 rounded-md relative flex flex-col justify-between ${
+        className={`w-5/6 h-5/6 border border-gray-500 text-gray-200 bg-slate-950 bg-opacity-95 space-y-5 rounded-md relative flex flex-col ${
           (addCategoryInput || addBrandInput) && "opacity-50"
         }`}
       >
-        <div className="flex flex-row space-x-1 px-5 pt-5">
-          <div className="flex-1">
-            <label htmlFor="articulo">Articulo</label>
-            <input
-              type="text"
-              name="articulo"
-              className={estilosInput}
-              value={articuloDataState.article.name}
-              onChange={(e) => {
-                setChangeData("article", e.target.value);
-              }}
-            />
-          </div>
-          <div className="w-32 flex flex-1 items-end">
+        <CategoryAndBrandForm
+          setAddBrandInput={setAddBrandInput}
+          setAddCategoryInput={setAddCategoryInput}
+          addBrandInput={addBrandInput}
+          addCategoryInput={addCategoryInput}
+          newBrand={newBrand}
+          newCategory={newCategory}
+          onChangeBrand={onChangeBrand}
+          onChangeCategory={onChangeCategory}
+          saveNewBrand={saveNewBrand}
+          saveNewCategory={saveNewCategory}
+        />
+        <div className="flex flex-col flex-1 items-center px-5 pt-5 border-b border-slate-800 rounded-b-2xl">
+          <div className="flex w-full space-x-5 flex-1">
             <div className="flex-1">
-              <label htmlFor="stock">Stock</label>
-              <div className="bg-slate-600 flex rounded-md relative">
-                <input
-                  type="text"
-                  name="stock"
-                  className={
-                    "outline-none h-12 w-full rounded-l-md bg-slate-900 px-2 "
-                  }
-                  value={articuloDataState.article.stock.amount}
-                  onChange={(e) => {
-                    setChangeData("stock", e.target.value);
-                  }}
-                />
-                <div className="w-32 max-w-16 min-w-16 h-12 flex items-center rounded-r-sm bg-slate-700">
-                  <Select
-                    options={optionsUnits}
-                    value={unitSelect}
-                    onChangeSelection={onChangeSelectUnit}
-                    filter={"Unit"}
-                    slice={3}
-                    placeholder={unitSelect}
-                    backGround="bg-slate-700"
-                    border={false}
-                    todos={false}
-                  ></Select>
-                </div>
-              </div>
+              <label htmlFor="articulo" className="select-none">
+                Articulo
+              </label>
+              <input
+                type="text"
+                name="articulo"
+                className={inputStyle}
+                value={articuloDataState.article.name}
+                onChange={(e) => {
+                  setChangeData("article", e.target.value);
+                }}
+              />
+            </div>
+            <div className="flex-1">
+              <label htmlFor="articulo" className="select-none">
+                Código
+              </label>
+              <input
+                type="text"
+                name="articulo"
+                className={inputStyle}
+                value={articuloDataState.article.name}
+                onChange={(e) => {
+                  setChangeData("article", e.target.value);
+                }}
+              />
             </div>
           </div>
-        </div>
-        <div className="flex flex-row space-x-1 px-5">
-          <div className="flex flex-col flex-1 w-full relative ">
-            <div className="absolute  right-0 text-green-300 z-40 hover:text-green-200 flex space-x-2">
-              {errorToSave.active &&
-                (errorToSave.type == "all" || errorToSave.type == "brand") && (
-                  <div className="flex items-center">
-                    <p className="text-red-200 text-xs">
-                      {errorToSave.message}
-                    </p>
-                  </div>
-                )}
-              <button
-                onClick={() => {
-                  setAddBrandInput(true);
-                }}
-              >
-                +
-              </button>
-            </div>
-            <InputBrand
-              style={estilosInput}
-              articuloData={articuloDataState}
-              setChangeData={setChangeData}
+          {/** CODIGO DEL ARTICULO */}
+          <div className="flex flex-1  w-full space-x-5">
+            <CategoryAndBrand
+              articuloDataState={articuloDataState}
               brands={brands}
-              brandError={errorToSave}
-            />
-          </div>
-          <div className="flex-1 relative">
-            <div className="absolute  right-0 text-green-300 z-40 hover:text-green-200 flex space-x-2">
-              {errorToSave.active &&
-                (errorToSave.type == "all" || "category") && (
-                  <div className="flex items-center">
-                    <p className="text-red-200 text-xs">
-                      {errorToSave.message}
-                    </p>
-                  </div>
-                )}
-              <button
-                onClick={() => {
-                  setAddCategoryInput(true);
-                }}
-              >
-                +
-              </button>
-            </div>
-            <InputCategory
-              style={estilosInput}
-              articuloData={articuloDataState}
-              setChangeData={setChangeData}
               categorys={categorys}
-              categoryError={errorToSave}
+              errorToSave={errorToSave}
+              inputStyle={inputStyle}
+              setAddBrandInput={setAddBrandInput}
+              setAddCategoryInput={setAddCategoryInput}
+              setChangeData={setChangeData}
+            />
+            <StockArticleForm
+              articuloDataState={articuloDataState}
+              inputStyle={inputStyle}
+              setChangeData={setChangeData}
             />
           </div>
         </div>
-        <div className="flex flex-row space-x-1 px-5">
+        <div className="flex space-x-5 px-5 items-center">
           <div className="flex-1">
-            <label htmlFor="costo">Costo</label>
+            <label htmlFor="proveedor">Proveedor</label>
             <input
               type="text"
-              name="costo"
-              className={estilosInput}
-              value={articuloDataState.article.costo}
+              name="proveedor"
+              className={inputStyle}
               onChange={(e) => {
-                setChangeData("costo", e.target.value);
+                setChangeData("proveedor", e.target.value);
               }}
             />
           </div>
-          <div className="flex-1">
-            <label htmlFor="venta">Venta</label>
-            <input
-              type="text"
-              name="venta"
-              className={estilosInput}
-              value={articuloDataState.article.venta}
+          <div className="flex-1 flex h-full">
+            <div className="flex-1">
+              <label htmlFor="costo" className="select-none">
+                Costo
+              </label>
+              <input
+                type="text"
+                name="costo"
+                className={inputStyle}
+                value={articuloDataState.article.costo}
+                onChange={(e) => {
+                  setChangeData("costo", e.target.value);
+                }}
+              />
+            </div>
+            <div className="flex-1">
+              <label htmlFor="venta" className="select-none">
+                Venta
+              </label>
+              <input
+                type="text"
+                name="venta"
+                className={inputStyle}
+                value={articuloDataState.article.venta}
+                onChange={(e) => {
+                  setChangeData("venta", e.target.value);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-row flex-1 items-center space-x-5 px-5 border-t rounded-t-lg border-slate-800">
+          <div className="flex-1 flex flex-col h-full border-r border-slate-800 pr-2 relative">
+            <div className="absolute right-0 bottom-0 h-10 w-10"></div>
+            <p className="select-none">Descripción</p>
+            <textarea
+              value={articuloDataState.article.description}
               onChange={(e) => {
-                setChangeData("venta", e.target.value);
+                setChangeData("description", e.target.value);
               }}
+              className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2 pt-1 outline-none text-sm"
             />
           </div>
+          <Impuestos
+            articleData={articuloDataState}
+            setChangeData={setChangeData}
+          />
         </div>
 
-        <div className="flex flex-row w-full">
+        <div className="flex flex-row w-full select-none">
           <button
             className="w-1/2 h-10 bg-red-400 rounded-bl-sm"
             onClick={() => {

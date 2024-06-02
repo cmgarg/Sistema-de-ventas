@@ -65,38 +65,12 @@ const Caja: React.FC<VentastProps> = (
     );
   }
 
-  useEffect(() => {
-    obtenerVentas();
-    window.api.recibirEvento("response-get-sales", (e) => {
-      console.log("ME EJECUTO A LA PERFECCIONE", e);
-
-      const arrayVentas = e.map((venta) => {
-        // Asegúrate de que cantidad sea un número, aquí se asume que es un entero
-        return { ...venta, amount: parseInt(venta.sold) };
-      });
-
-      setVentas(arrayVentas);
-
-      // Calcula el total después de establecer las ventas
-      const total = arrayVentas.reduce(
-        (acumulado, venta) => acumulado + venta.sold,
-        0
-      );
-      setTotalCantidad(total);
-    });
-    ventasEchas();
-  }, []);
-
   const [fecha, setFecha] = useState(() => {
     const fechaActual = new Date();
     const offset = fechaActual.getTimezoneOffset() * 60000; // Diferencia en milisegundos entre UTC y la zona horaria local
     const fechaLocal = new Date(fechaActual.getTime() - offset);
     return fechaLocal.toISOString().split("T")[0];
   });
-
-  function sumaTotal() {
-    return totalCantidad - totalCuentas;
-  }
 
   return (
     <div className="flex flex-col flex-1">
@@ -187,7 +161,7 @@ const Caja: React.FC<VentastProps> = (
             </div>
             <div className=" flex flex-1 ">
               <div className=" w-full space-y-2 flex-col">
-                {cuentasP.map((e) => {
+                {/* {cuentasP.map((e) => {
                   return (
                     <div
                       key={e._id}
@@ -202,7 +176,7 @@ const Caja: React.FC<VentastProps> = (
                       </div>
                     </div>
                   );
-                })}
+                })} */}
               </div>
             </div>
           </div>
@@ -213,13 +187,13 @@ const Caja: React.FC<VentastProps> = (
             <div className=" flex flex-2 border-b-1 border-gray-600 items-center justify-center h-16">
               <div className=" text-white text-2xl">Transacciones</div>
             </div>
-            <SalesList
+            {/* <SalesList
               ventas={ventas}
               fecha={fecha}
               setTotalCantidad={setTotalCantidad}
-              setTotalCuentas={setTotalCuentas}
-              setCuentasP={setCuentasP}
-            />
+              // setTotalCuentas={setTotalCuentas}
+              // setCuentasP={setCuentasP}
+            /> */}
             <div className=" h-1/5 w-full flex flex-col border-t-1 border-gray-600 border-opacity-50">
               <div className="flex-1 flex flex-row pr-4 items-end">
                 <div className="flex-1 flex text-lime-500 justify-end">
@@ -228,14 +202,14 @@ const Caja: React.FC<VentastProps> = (
               </div>
               <div className="flex-1 flex flex-row pr-4 items-end">
                 <div className="flex-1 flex text-red-600 justify-end">
-                  <div className="text-2xl p-1">$ {totalCuentas}</div>
+                  {/* <div className="text-2xl p-1">$ {totalCuentas}</div> */}
                 </div>
               </div>
               <div className="flex-1 flex flex-row border-t-1 border-gray-600 border-opacity-50">
                 <div className="flex-1 flex flex-row text-white items-center">
                   <div className=" flex text-2xl pl-5">Total Caja</div>
                   <div className=" flex-1 flex text-2xl justify-end pr-4">
-                    $ {sumaTotal()}
+                    {/* $ {sumaTotal()} */}
                   </div>
                 </div>
               </div>

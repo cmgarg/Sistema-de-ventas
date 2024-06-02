@@ -90,7 +90,7 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
       </div>
       <div className="flex flex-row pb-5 row-start-2 row-end-7">
         <AsideMain isActive={false}></AsideMain>
-        <div className="w-full px-5">
+        <div className="w-full p-5">
           {activeModal && (
             <AddArticuloForm
               onChangeModal={onChangeModal}

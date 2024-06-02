@@ -45,6 +45,8 @@ const ListClient: React.FC<listClientProps> = ({
     window.api.recibirEvento("response-delete-client", (result) => {
       dispatch(deleteClientState(result));
     });
+
+    console.log(clients, "CLIENTES");
   }, []);
 
   return (

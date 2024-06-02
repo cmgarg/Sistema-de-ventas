@@ -1,4 +1,10 @@
-import { app, BrowserWindow, ipcMain, ipcRenderer } from "electron";
+import {
+  app,
+  BrowserWindow,
+  globalShortcut,
+  ipcMain,
+  ipcRenderer,
+} from "electron";
 import path from "node:path";
 const Afip = require("@afipsdk/afip.js");
 const afip = new Afip({ CUIT: 20409378472 });
@@ -48,7 +54,7 @@ const pruebaAfip = async () => {
     }
   }
 };
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 const saltRounds = 10; // El coste del proceso de hashing
 
 //GUARDAR PETICION CUANDO SE ESTA OFFLINE
@@ -72,7 +78,10 @@ const db = {
   accounts: new Datastore({ filename: "database/accounts.db", autoload: true }),
   users: new Datastore({ filename: "database/users.db", autoload: true }),
   filters: new Datastore({ filename: "database/filters.db", autoload: true }),
-  usuariosAdmin:new Datastore({ filename: "database/usuarios.db", autoload: true }),
+  usuariosAdmin: new Datastore({
+    filename: "database/usuarios.db",
+    autoload: true,
+  }),
 };
 
 ////////////////////////////////
@@ -125,6 +134,7 @@ const findClients = async () => {
     .findAsync({})
     .then((clients: any) => {
       console.log("clientes encontrados", clients);
+      return clients;
     })
     .catch((err: any) => {
       console.log("Error al tratar de encontrar clientes", err);
@@ -156,10 +166,7 @@ function updateClient(clientId: string, updateData: any) {
 /////FUNCIONES DE USUARIOS
 ////////////////////////////////
 
-
-
 ///contraseña
-
 
 ////////////////////////////////
 //FUNCIONES DE ARTICULOS ARKCHIVO ARTICULOS.JS
@@ -200,6 +207,7 @@ const saveArticle = async (a: articleData) => {
     });
 };
 const getArticleByCode = async (articleCode: string): Promise<articleData> => {
+  console.log("SE RESPONDE a la peticion de ", articleCode);
   return await db.articles.findOneAsync({ code: articleCode });
 };
 function getArticleByName(articleName: string) {
@@ -496,7 +504,6 @@ function obtenerEstadoPagado(idCuenta) {
   });
 }
 
-
 function accountToPay(account: object) {
   db.accounts.insert(account, (err, newDoc) => {
     if (err) {
@@ -509,10 +516,11 @@ function accountToPay(account: object) {
   });
 }
 
-
 function actualizarCuenta(idCuenta: string, datosActualizados: any) {
   if (idCuenta == null || datosActualizados == null) {
-    console.error("Error: El ID de la cuenta y los datos actualizados no pueden ser nulos o indefinidos.");
+    console.error(
+      "Error: El ID de la cuenta y los datos actualizados no pueden ser nulos o indefinidos."
+    );
     return Promise.reject("ID de la cuenta o datos actualizados no válidos");
   }
 
@@ -521,7 +529,7 @@ function actualizarCuenta(idCuenta: string, datosActualizados: any) {
 
   // Mostrar los datos que se van a actualizar
   console.log(`Actualizando cuenta con ID: ${idCuenta}`);
-  console.log('Datos actualizados:', datosActualizados);
+  console.log("Datos actualizados:", datosActualizados);
 
   return new Promise((resolve, reject) => {
     db.accounts.update(
@@ -533,9 +541,13 @@ function actualizarCuenta(idCuenta: string, datosActualizados: any) {
           console.error("Error al actualizar la cuenta:", err);
           reject(err);
         } else {
-          console.log(`Cuenta actualizada con éxito. Número de documentos actualizados: ${numUpdated}`);
+          console.log(
+            `Cuenta actualizada con éxito. Número de documentos actualizados: ${numUpdated}`
+          );
           if (numUpdated === 0) {
-            console.warn('Advertencia: No se actualizó ningún documento. Verifique que el ID de la cuenta sea correcto.');
+            console.warn(
+              "Advertencia: No se actualizó ningún documento. Verifique que el ID de la cuenta sea correcto."
+            );
           }
           resolve(numUpdated);
         }
@@ -544,30 +556,30 @@ function actualizarCuenta(idCuenta: string, datosActualizados: any) {
   });
 }
 
-
-
-
-
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
 /////////////////////////////////////////////////////
 function actualizarEstadoPagado(idCuenta, estadoPagado) {
   return new Promise((resolve, reject) => {
-    db.accounts.update({ _id: idCuenta }, { $set: { pagado: estadoPagado } }, {}, (err, numReplaced) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(numReplaced); // numReplaced es el número de documentos actualizados
+    db.accounts.update(
+      { _id: idCuenta },
+      { $set: { pagado: estadoPagado } },
+      {},
+      (err, numReplaced) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(numReplaced); // numReplaced es el número de documentos actualizados
+        }
       }
-    });
+    );
   });
 }
-
 
 // Suponiendo que `cuentas` es tu Datastore de NeDB para las cuentas
 async function obtenerEstadosPagadosInicial() {
   return new Promise((resolve, reject) => {
-   db.accounts.find({}, (err, docs) => {
+    db.accounts.find({}, (err, docs) => {
       if (err) {
         reject(err);
       } else {
@@ -581,7 +593,6 @@ async function obtenerEstadosPagadosInicial() {
     });
   });
 }
-
 
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
@@ -700,7 +711,10 @@ function createWindow() {
     // win.loadFile('dist/index.html')
     win.loadFile(path.join(process.env.DIST, "index.html"));
   }
-  win.webContents.openDevTools();
+  globalShortcut.register("CommandOrControl+Shift+I", () => {
+    console.log("PASPASPASPASASP");
+    win?.webContents.openDevTools();
+  });
 }
 
 ipcMain.on("unmaximize-window", () => {
@@ -756,7 +770,6 @@ ipcMain.on("register-buy-client", async (event, clienteData) => {
   event.reply("response-register-buy-client", mensajeAResponder);
 });
 
-
 ////////////////////////////////
 //////ESCUCHA DE USURARIOS
 ////////////////////////////////
@@ -776,58 +789,85 @@ ipcMain.on("guardar-usuario-admin", async (event, usuarioAdmin) => {
     db.usuariosAdmin.insert(usuarioConPasswordEncriptado, (err, newDoc) => {
       if (err) {
         // Si hay un error, envía una respuesta al front-end
-        event.reply("respuesta-guardar-usuario-admin", { exito: false, error: err.message });
+        event.reply("respuesta-guardar-usuario-admin", {
+          exito: false,
+          error: err.message,
+        });
       } else {
         // Si tiene éxito, también envía una respuesta al front-end
-        event.reply("respuesta-guardar-usuario-admin", { exito: true, usuarioAdmin: newDoc });
+        event.reply("respuesta-guardar-usuario-admin", {
+          exito: true,
+          usuarioAdmin: newDoc,
+        });
       }
     });
   } catch (error) {
     // Si hay un error con el proceso de hashing, lo capturas aquí
-    console.error("Error al encriptar el password del usuario administrador:", error);
-    event.reply("respuesta-guardar-usuario-admin", { exito: false, error: error.message });
+    console.error(
+      "Error al encriptar el password del usuario administrador:",
+      error
+    );
+    event.reply("respuesta-guardar-usuario-admin", {
+      exito: false,
+      error: error.message,
+    });
   }
 });
 
-ipcMain.on('verificar-admin-existente', async (event) => {
+ipcMain.on("verificar-admin-existente", async (event) => {
   db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
     if (err) {
       // En caso de error, comunicarlo al frontend
-      event.reply('respuesta-verificar-admin', false);
+      event.reply("respuesta-verificar-admin", false);
     } else if (admin) {
       // Si encontramos un administrador, comunicamos que existe y enviamos la cantidad de intentos restantes
-      event.reply('respuesta-verificar-admin', { existeAdmin: true, recuperacioncuenta: admin.recuperacioncuenta });
+      event.reply("respuesta-verificar-admin", {
+        existeAdmin: true,
+        recuperacioncuenta: admin.recuperacioncuenta,
+      });
     } else {
       // Si no hay administrador, comunicamos que no existe
-      event.reply('respuesta-verificar-admin', { existeAdmin: false });
+      event.reply("respuesta-verificar-admin", { existeAdmin: false });
     }
   });
 });
 
+const jwt = require("jsonwebtoken");
+const secretKey = "tu_clave_secreta"; // Asegúrate de usar una clave secreta segura y única
 
-
-const jwt = require('jsonwebtoken');
-const secretKey = 'tu_clave_secreta'; // Asegúrate de usar una clave secreta segura y única
-
-ipcMain.on('iniciar-sesion', (event, credentials) => {
-  db.usuariosAdmin.findOne({ username: credentials.username }, (err, usuario) => {
-    if (err) {
-      console.error('Error al buscar el usuario:', err);
-      event.reply('respuesta-iniciar-sesion', { exito: false, mensaje: 'Error al buscar el usuario' });
-    } else {
-      if (usuario && bcrypt.compareSync(credentials.password, usuario.password)) {
-        // Genera un token JWT
-        const token = jwt.sign({ userId: usuario._id }, secretKey, { expiresIn: '4464h' }); // Token válido por 6 meses
-        console.log(usuario._id, token);
-        // Incluye el ID del usuario en la respuesta
-        event.reply('respuesta-iniciar-sesion', { exito: true, token, userId: usuario._id });
+ipcMain.on("iniciar-sesion", (event, credentials) => {
+  db.usuariosAdmin.findOne(
+    { username: credentials.username },
+    (err, usuario) => {
+      if (err) {
+        console.error("Error al buscar el usuario:", err);
+        event.reply("respuesta-iniciar-sesion", {
+          exito: false,
+          mensaje: "Error al buscar el usuario",
+        });
       } else {
-        event.reply('respuesta-iniciar-sesion', { exito: false });
+        if (
+          usuario &&
+          bcrypt.compareSync(credentials.password, usuario.password)
+        ) {
+          // Genera un token JWT
+          const token = jwt.sign({ userId: usuario._id }, secretKey, {
+            expiresIn: "4464h",
+          }); // Token válido por 6 meses
+          console.log(usuario._id, token);
+          // Incluye el ID del usuario en la respuesta
+          event.reply("respuesta-iniciar-sesion", {
+            exito: true,
+            token,
+            userId: usuario._id,
+          });
+        } else {
+          event.reply("respuesta-iniciar-sesion", { exito: false });
+        }
       }
     }
-  });
+  );
 });
-
 
 function verificarToken(token) {
   try {
@@ -837,37 +877,35 @@ function verificarToken(token) {
   }
 }
 
-ipcMain.on('ruta-protegida', (event, token) => {
+ipcMain.on("ruta-protegida", (event, token) => {
   const decoded = verificarToken(token);
   if (decoded) {
     // Token válido, maneja la solicitud
   } else {
     // Token inválido o expirado, envía un mensaje de error
-    event.reply('respuesta-ruta-protegida', { exito: false, mensaje: 'Token inválido o expirado' });
+    event.reply("respuesta-ruta-protegida", {
+      exito: false,
+      mensaje: "Token inválido o expirado",
+    });
   }
 });
-
 
 function getUser(userId) {
   return new Promise((resolve, reject) => {
     db.usuariosAdmin.findOne({ _id: userId }, (err, doc) => {
-      console.log(userId, "este es  el id que recibo del fronend")
+      console.log(userId, "este es  el id que recibo del fronend");
       if (err) {
-        console.error('Error al obtener el usuario:', err);
+        console.error("Error al obtener el usuario:", err);
         reject(err);
       } else {
-
         resolve(doc);
       }
     });
   });
 }
 
-
-
-
 // Backend
-ipcMain.on('obtener-datos-usuario', async (event, userId) => {
+ipcMain.on("obtener-datos-usuario", async (event, userId) => {
   try {
     const usuario = await getUser(userId);
     if (usuario) {
@@ -875,86 +913,78 @@ ipcMain.on('obtener-datos-usuario', async (event, userId) => {
       event.reply("datos-usuario-obtenidos", { success: true, data: usuario });
     } else {
       // Si el usuario no se encuentra, envía una respuesta de error
-      event.reply("datos-usuario-obtenidos", { success: false, error: 'Usuario no encontrado' });
+      event.reply("datos-usuario-obtenidos", {
+        success: false,
+        error: "Usuario no encontrado",
+      });
     }
   } catch (error) {
-    console.error('Error al obtener los datos del usuario:', error);
-    event.reply("datos-usuario-obtenidos", { success: false, error: error.message });
+    console.error("Error al obtener los datos del usuario:", error);
+    event.reply("datos-usuario-obtenidos", {
+      success: false,
+      error: error.message,
+    });
   }
 });
-
-
 
 // Función para actualizar la imagen del usuario
 function actualizarImagenUsuario(userId, imageUrl) {
   console.log(`Actualizando imagen del usuario ${userId} con URL: ${imageUrl}`);
   return new Promise((resolve, reject) => {
-    db.usuariosAdmin.update({ _id: userId }, { $set: { imageUrl: imageUrl } }, {}, (err) => {
-      if (err) {
-        console.error('Error al actualizar la imagen del usuario:', err);
-        reject(err);
-      } else {
-        console.log('Imagen del usuario actualizada con éxito');
-        resolve(true);
+    db.usuariosAdmin.update(
+      { _id: userId },
+      { $set: { imageUrl: imageUrl } },
+      {},
+      (err) => {
+        if (err) {
+          console.error("Error al actualizar la imagen del usuario:", err);
+          reject(err);
+        } else {
+          console.log("Imagen del usuario actualizada con éxito");
+          resolve(true);
+        }
       }
-    });
+    );
   });
 }
 
-
 // Evento de IPC para actualizar la imagen del usuario
-ipcMain.on('actualizar-imagen-usuario', async (event, { userId, imageUrl }) => {
-  console.log('Evento actualizar-imagen-usuario recibido:', userId, imageUrl);
+ipcMain.on("actualizar-imagen-usuario", async (event, { userId, imageUrl }) => {
+  console.log("Evento actualizar-imagen-usuario recibido:", userId, imageUrl);
   try {
     await actualizarImagenUsuario(userId, imageUrl);
-    event.reply('respuesta-actualizar-imagen-usuario', { exito: true, imageUrl: imageUrl });
+    event.reply("respuesta-actualizar-imagen-usuario", {
+      exito: true,
+      imageUrl: imageUrl,
+    });
   } catch (error) {
-    console.error('Error al actualizar la imagen del usuario:', error);
-    event.reply('respuesta-actualizar-imagen-usuario', { exito: false, mensaje: error.message });
+    console.error("Error al actualizar la imagen del usuario:", error);
+    event.reply("respuesta-actualizar-imagen-usuario", {
+      exito: false,
+      mensaje: error.message,
+    });
   }
 });
 
-
-
-
 // Backend
-ipcMain.on('obtener-admin', (event) => {
+ipcMain.on("obtener-admin", (event) => {
   db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
     if (err) {
-      console.error('Error al buscar el administrador:', err);
-      event.reply('respuesta-obtener-admin', { exito: false, error: err.message });
+      console.error("Error al buscar el administrador:", err);
+      event.reply("respuesta-obtener-admin", {
+        exito: false,
+        error: err.message,
+      });
     } else if (admin) {
-      event.reply('respuesta-obtener-admin', { exito: true, admin });
+      event.reply("respuesta-obtener-admin", { exito: true, admin });
     } else {
-      event.reply('respuesta-obtener-admin', { exito: false, error: 'No se encontró un administrador' });
+      event.reply("respuesta-obtener-admin", {
+        exito: false,
+        error: "No se encontró un administrador",
+      });
     }
   });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ///
 //ESCUCHAS DE EVENTOS DE GUARDADO DE ARTICULOS
@@ -1020,7 +1050,7 @@ ipcMain.on("save-article", async (event, articuloAGuardar) => {
 ipcMain.on("get-articleByCode", async (event, articleCode) => {
   console.log("AGUANTEEEEE BOCAA LOCOOO");
   const article = await getArticleByCode(articleCode);
-
+  console.log("SE RESPONDE CON , ", article);
   event.reply("response-get-articleByCode", article);
 });
 ipcMain.on("get-articleByName", async (event, articleName) => {
@@ -1082,21 +1112,31 @@ ipcMain.on("prueba-afipo", (e) => {
 //ESCUCHAS DE EVENTOS DE CUENTAS
 //
 
-
-ipcMain.on("actualizar-estado-pagado", async (event, { idCuenta, estadoPagado }) => {
-  try {
-    // Actualiza el estado de 'pagado' en la base de datos
-    await actualizarEstadoPagado(idCuenta, estadoPagado);
-    // Aquí deberías añadir lógica para recuperar el estado actualizado de 'pagado' de la base de datos para 'idCuenta'
-    // Por ejemplo, supongamos que tienes una función 'obtenerEstadoPagado' que hace exactamente eso:
-    const estadoPagadoActualizado = await obtenerEstadoPagado(idCuenta);
-    // Envía el estado actualizado de vuelta al frontend
-    event.reply("estado-pagado-actualizado", { exitoso: true, idCuenta, estadoPagado: estadoPagadoActualizado });
-  } catch (error) {
-    console.error(error);
-    event.reply("estado-pagado-actualizado", { exitoso: false, error: error.message, idCuenta });
+ipcMain.on(
+  "actualizar-estado-pagado",
+  async (event, { idCuenta, estadoPagado }) => {
+    try {
+      // Actualiza el estado de 'pagado' en la base de datos
+      await actualizarEstadoPagado(idCuenta, estadoPagado);
+      // Aquí deberías añadir lógica para recuperar el estado actualizado de 'pagado' de la base de datos para 'idCuenta'
+      // Por ejemplo, supongamos que tienes una función 'obtenerEstadoPagado' que hace exactamente eso:
+      const estadoPagadoActualizado = await obtenerEstadoPagado(idCuenta);
+      // Envía el estado actualizado de vuelta al frontend
+      event.reply("estado-pagado-actualizado", {
+        exitoso: true,
+        idCuenta,
+        estadoPagado: estadoPagadoActualizado,
+      });
+    } catch (error) {
+      console.error(error);
+      event.reply("estado-pagado-actualizado", {
+        exitoso: false,
+        error: error.message,
+        idCuenta,
+      });
+    }
   }
-});
+);
 
 ipcMain.on("solicitar-estado-pagado-inicial", async (event) => {
   try {
@@ -1105,36 +1145,40 @@ ipcMain.on("solicitar-estado-pagado-inicial", async (event) => {
     event.reply("estado-pagado-inicial", { exitoso: true, estados });
   } catch (error) {
     console.error(error);
-    event.reply("estado-pagado-inicial", { exitoso: false, error: error.message });
+    event.reply("estado-pagado-inicial", {
+      exitoso: false,
+      error: error.message,
+    });
   }
 });
 
 // En tu archivo del proceso principal de Electron (backend)
-ipcMain.on('actualizar-cuenta', async (event, { idCuenta, datosActualizados }) => {
-  try {
-    await actualizarCuenta(idCuenta, datosActualizados);
-    const cuentasActualizadas = await obtenerCuentas(); // Supongamos que esta función obtiene todas las cuentas actualizadas
-    event.reply('cuentas-actualizadas', cuentasActualizadas);
-  } catch (error) {
-    console.error('Error al actualizar la cuenta:', error);
-    event.reply('error-actualizando-cuenta', error.message);
+ipcMain.on(
+  "actualizar-cuenta",
+  async (event, { idCuenta, datosActualizados }) => {
+    try {
+      await actualizarCuenta(idCuenta, datosActualizados);
+      const cuentasActualizadas = await obtenerCuentas(); // Supongamos que esta función obtiene todas las cuentas actualizadas
+      event.reply("cuentas-actualizadas", cuentasActualizadas);
+    } catch (error) {
+      console.error("Error al actualizar la cuenta:", error);
+      event.reply("error-actualizando-cuenta", error.message);
+    }
   }
-});
+);
 
 //////eliminar cuentas
-ipcMain.on('eliminar-cuenta', async (event, { id }) => {
+ipcMain.on("eliminar-cuenta", async (event, { id }) => {
   try {
     // Intentar eliminar la cuenta de la base de datos
     await cuentas.remove({ _id: id }, {});
     // Enviar respuesta exitosa al proceso de renderizado
-    event.reply('cuenta-eliminada', { exitoso: true});
+    event.reply("cuenta-eliminada", { exitoso: true });
   } catch (error) {
     // Enviar respuesta de error al proceso de renderizado
-    event.reply('cuenta-eliminada', { exitoso: false, error: error.message });
+    event.reply("cuenta-eliminada", { exitoso: false, error: error.message });
   }
 });
-
-
 
 //////evento cuentas para caja
 
@@ -1161,14 +1205,6 @@ ipcMain.on("get-accountToPay", async (event) => {
     event.reply("response-get-accountToPay", []);
   }
 });
-
-
-
-
-
-
-
-
 
 ipcMain.on("save-accountToPay", async (event, account) => {
   const accountToSave = account;
@@ -1207,13 +1243,13 @@ ipcMain.on("actualizar-cuenta", async (event, { id, updatedAccount }) => {
     event.reply("cuenta-actualizada", { exitoso: true, id, resultado });
   } catch (error) {
     console.error(error);
-    event.reply("cuenta-actualizada", { exitoso: false, error: error.message, id });
+    event.reply("cuenta-actualizada", {
+      exitoso: false,
+      error: error.message,
+      id,
+    });
   }
 });
-
-
-
-
 
 //////////////
 //////////////
@@ -1225,6 +1261,12 @@ app.on("window-all-closed", () => {
     app.quit();
     win = null;
   }
+});
+app.on("ready", () => {
+  // Registrar atajos globales
+  globalShortcut.register("CommandOrControl+R", () => {
+    win?.reload();
+  });
 });
 
 app.on("activate", () => {

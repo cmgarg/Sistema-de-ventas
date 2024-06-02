@@ -71,7 +71,7 @@ const MainContent: React.FC<MainContentProps> = ({}) => {
         <Route path="/stock" element={<Stock />} />
         <Route path="/estadisticas" element={<Estadisticas />} />
         <Route path="/cliente/:id" element={<ClienteInfo />} />
-        <Route path="/articulo/:id" element={<ArticuloInfo />} />
+        <Route path="/articulo/:code" element={<ArticuloInfo />} />
       </Routes>
     </div>
   );

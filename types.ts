@@ -4,17 +4,32 @@ export type articleData = {
     name: string;
     costo: number;
     venta: number;
-    stock: { amount: number; unit: string };
+    stock: { amount: number; unit: string; minStock: number };
+    weight: number;
+    wApp: boolean;
+    description: string;
   };
   brand: { value: string; label: string };
   code: string;
   category: { value: string; label: string };
   dateToRegister: string;
   sales: {
-    comprador: { name: string; id: string };
-    quantity: number;
-    totalCost: number;
+    buyer: {
+      client: {
+        active: boolean;
+        clientData: {
+          name: string;
+          email: string;
+          address: string;
+          phone: string;
+        };
+      };
+      finalConsumer: { active: boolean; cae: string };
+    };
+    amount: { value: number; unit: string };
+    sold: number;
   }[];
+  taxes: { name: string; percentage: number }[];
 };
 
 export type dataToDeleteArticle = {
@@ -122,14 +137,13 @@ export type storeType = {
   categoryState: categoryType[];
   brandState: brandType[];
   saleState: saleData[];
-  auth:authType
+  auth: authType;
 };
 
-
-/////////////usuario auth 
+/////////////usuario auth
 
 export type authType = {
-  isAuthenticated: boolean,
-  userId: string,
-  token: string,
-}
+  isAuthenticated: boolean;
+  userId: string;
+  token: string;
+};

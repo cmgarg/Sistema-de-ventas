@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import InputBrand from "../ADDARTICULO/InputBrand";
-import InputCategory from "../ADDARTICULO/InputCategory";
+import InputBrand from "../ADDARTICULO/InputBrandAndCategory/InputBrand";
+import InputCategory from "../ADDARTICULO/InputBrandAndCategory/InputCategory";
 import Select from "../../Select/Select";
 import { BoxSvg } from "../../../../../assets/MAINSVGS/SVGSGLOBAL/Cmgsvg";
 import {

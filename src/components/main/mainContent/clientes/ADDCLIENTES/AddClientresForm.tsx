@@ -164,7 +164,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
         </div>
         <div className="flex flex-row w-full">
           <button
-            className="flex-1 h-10 bg-red-400 rounded-bl-md"
+            className="flex-1 h-10 bg-red-900 rounded-bl-md hover:bg-red-800"
             onClick={() => {
               onChangeModal(false);
             }}
@@ -172,7 +172,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             Cancelar
           </button>
           <button
-            className="flex-1 h-10 bg-green-400 rounded-br-md"
+            className="flex-1 h-10 bg-green-900 rounded-br-md hover:bg-green-800"
             onClick={() => {
               subirUsuario();
               onChangeModal(false);

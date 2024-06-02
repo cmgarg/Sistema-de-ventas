@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import MoreIcon from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/MoreIcon";
 import {
   Select,
   SelectContent,
@@ -12,9 +11,11 @@ import {
 interface SelectProps {
   options: { value: string; label: string }[];
   onChangeSelection: (value: string, f: string) => void;
+  abreviationUnit: (v: string, u?: string) => string;
   placeholder: string;
   slice: number;
   backGround?: string;
+  backGround2?: string;
   value: string;
   filter?: string;
   functionLastOption?: () => void;
@@ -32,7 +33,9 @@ const SelectM: React.FC<SelectProps> = ({
   filter,
   value,
   slice,
+  abreviationUnit,
   todos,
+  backGround2,
   functionLastOption,
   border,
   backGround,
@@ -60,7 +63,7 @@ const SelectM: React.FC<SelectProps> = ({
           if (e === "todos") {
             setSelected("");
           } else {
-            setSelected(e);
+            setSelected(abreviationUnit(e));
           }
         }}
       >
@@ -70,15 +73,15 @@ const SelectM: React.FC<SelectProps> = ({
           }`}
         >
           <div>
-            {(slice && selected.slice(0, slice)) || (
+            {(slice && selected) || (
               <SelectValue placeholder={placeholder}></SelectValue>
             )}
           </div>
         </SelectTrigger>
         <SelectContent
           className={`${
-            backGround || "bg-slate-900"
-          } text-white   max-w-full min-w-full`}
+            backGround2 || "bg-slate-950"
+          } text-white   max-w-full min-w-full border-l border-r border-b border-slate-800`}
         >
           <SelectGroup>
             {label && <SelectLabel className="font-bold">Por</SelectLabel>}

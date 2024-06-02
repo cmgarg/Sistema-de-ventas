@@ -1,4 +1,4 @@
-import { brandType, categoryType } from "../../../../../../types";
+import { brandType, categoryType } from "../../../../../../../types";
 import React, { useEffect, useState } from "react";
 import Downshift from "downshift";
 
@@ -72,7 +72,9 @@ const InputBrand = ({
         getRootProps,
       }) => (
         <div className="w-full flex flex-col">
-          <label {...getLabelProps()}>Marca</label>
+          <label {...getLabelProps()} className="select-none">
+            Marca
+          </label>
           <div
             style={{ display: "inline-block" }}
             {...getRootProps({}, { suppressRefError: true })}

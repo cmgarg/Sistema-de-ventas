@@ -1,28 +1,20 @@
 import React, { useEffect, useState } from "react";
 import Menu from "../../../assets/asidesvg/Menu.jsx";
-import Usuario from "../../../assets/asidesvg/Usuario.tsx";
-import Articulos from "../../../assets/asidesvg/Articulos.jsx";
-import Ventas from "../../../assets/asidesvg/Ventas.jsx";
-import Navegador from "../../../assets/asidesvg/Navegador.jsx";
-import Stock from "../../../assets/asidesvg/Stock.jsx";
-import Caja from "../../../assets/asidesvg/Caja.jsx";
-import Cuentas from "../../../assets/asidesvg/Cuentas.jsx";
-import Estadisticas from "../../../assets/asidesvg/Estadisticas.jsx";
-import Configuracion from "../../../assets/asidesvg/Configuracion.jsx";
+import { TbWorld } from "react-icons/tb";
 import { useSelector, useDispatch } from "react-redux";
 import Tooltip from "../aside/Tooltip.jsx";
 import { Link, useLocation } from "react-router-dom";
 import GoTo from "./GoTo.js";
-import { PersonIcon } from "@radix-ui/react-icons";
-import { IoPerson } from "react-icons/io5";
+import { IoPerson, IoSettingsOutline } from "react-icons/io5";
 import { GiShoppingBag } from "react-icons/gi";
 import { BsCurrencyDollar } from "react-icons/bs";
 import { BsBoxSeamFill } from "react-icons/bs";
 import { BsPcDisplayHorizontal } from "react-icons/bs";
 import { TbBusinessplan } from "react-icons/tb";
+import { SiGoogleanalytics } from "react-icons/si";
+import { IoIosMenu } from "react-icons/io";
 
-
-export default function Aside({setLoginUser}) {
+export default function Aside({ setLoginUser }) {
   const [isActive, setIsActive] = useState(false);
   const location = useLocation();
   ////funciones ventana emergente con nombre.
@@ -56,14 +48,16 @@ export default function Aside({setLoginUser}) {
           <div>
             <div
               onClick={handleClick}
-              className={`flex flex-row  justify-center items-center mt-5 mb-5 hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none `}
+              className={`flex flex-row  justify-center items-center mt-5 mb-5 ${
+                isActive && "bg-cyan-800"
+              } hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none `}
             >
-              <div className=" w-10 h-10">
+              <div className={`h-10 w-10 flex justify-center items-center `}>
                 {isActive ? (
-                  <Menu></Menu>
+                  <IoIosMenu size={30} color="#fff"></IoIosMenu>
                 ) : (
                   <Tooltip content="Menu">
-                    <Menu></Menu>
+                    <IoIosMenu size={30} color="#fff"></IoIosMenu>
                   </Tooltip>
                 )}
               </div>
@@ -100,14 +94,14 @@ export default function Aside({setLoginUser}) {
               <TbBusinessplan size={30} color={"#fff"} />
             </GoTo>
             <GoTo title="Estadisticas" goTo="/estadisticas" isActive={isActive}>
-              <Estadisticas menuState={menuState} size={30} color={"#fff"}>
+              <SiGoogleanalytics size={30} color={"#fff"}>
                 {" "}
-              </Estadisticas>
+              </SiGoogleanalytics>
             </GoTo>
             <GoTo title="Navegador" goTo="/navegador" isActive={isActive}>
-              <Navegador menuState={menuState} size={30} color={"#fff"}>
+              <TbWorld size={30} color={"#fff"}>
                 {" "}
-              </Navegador>
+              </TbWorld>
             </GoTo>
           </div>
 
@@ -118,9 +112,9 @@ export default function Aside({setLoginUser}) {
               goTo="/configuracion"
               isActive={isActive}
             >
-              <Configuracion menuState={menuState} size={30} color={"#fff"}>
+              <IoSettingsOutline size={30} color={"#fff"}>
                 {" "}
-              </Configuracion>
+              </IoSettingsOutline>
             </GoTo>
           </div>
         </div>

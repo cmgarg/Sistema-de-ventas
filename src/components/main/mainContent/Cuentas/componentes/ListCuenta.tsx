@@ -5,16 +5,15 @@ import { es } from "date-fns/locale";
 import PagadoSVG from "../../../../../assets/MAINSVGS/Cuentas SVG/PagadoSVG";
 import ImpagaSVG from "../../../../../assets/MAINSVGS/Cuentas SVG/ImpagaSVG";
 import EditarCuenta from "./EditarCuenta";
-import Swal from 'sweetalert2';
-
+import Swal from "sweetalert2";
 
 interface ListCuentaProps {
-  Cuentas: any[];
+  cuentas: any[];
   filtroBoton: boolean;
   filtroBoton2: boolean;
   filtroBoton3: boolean;
   filtroBoton4: boolean;
-  getAccountsToPay: () => any[]; 
+  getAccountsToPay: () => any[];
 }
 
 interface Cuenta {
@@ -22,18 +21,11 @@ interface Cuenta {
   date: string;
   pay: number;
   descripcion: string;
-  _id: string; 
+  _id: string;
 }
 
-const sumaTotalDeCuentas = (cuentas) => {
-  return cuentas.reduce((acumulador, cuenta) => {
-    const monto = parseFloat(cuenta.pay) || 0;
-    return acumulador + monto;
-  }, 0);
-};
-
 const ListCuenta: React.FC<ListCuentaProps> = ({
-  Cuentas,
+  cuentas,
   filtroBoton,
   filtroBoton2,
   filtroBoton3,
@@ -52,7 +44,12 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
   const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-
+  const sumaTotalDeCuentas = (cuentas) => {
+    return cuentas.reduce((acumulador, cuenta) => {
+      const monto = parseFloat(cuenta.pay) || 0;
+      return acumulador + monto;
+    }, 0);
+  };
   const getMes = (fecha: Date) => {
     return capitalizeFirstLetter(format(fecha, "MMMM yyyy", { locale: es }));
   };
@@ -500,47 +497,42 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
 
   const updateAccount = (id, updatedAccount) => {
     // Aquí enviarías la cuenta actualizada al backend usando IPC
-    ipcRenderer.send('actualizar-cuenta', { id, updatedAccount });
-    console.log(id, updatedAccount,"esto le estoy pasando al backend usando IPC");
+    ipcRenderer.send("actualizar-cuenta", { id, updatedAccount });
+    console.log(
+      id,
+      updatedAccount,
+      "esto le estoy pasando al backend usando IPC"
+    );
   };
-
 
   ////////// Borrar cuenta
 
   const deleteAccount = (id) => {
     Swal.fire({
-      title: '¿Estás seguro?',
-      text: '¡No podrás revertir esto!',
-      icon: 'warning',
+      title: "¿Estás seguro?",
+      text: "¡No podrás revertir esto!",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, borrar cuenta',
-      cancelButtonText: 'Cancelar'
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, borrar cuenta",
+      cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        ipcRenderer.send('eliminar-cuenta', { id });
+        ipcRenderer.send("eliminar-cuenta", { id });
         // Escuchar la respuesta del proceso principal
-        ipcRenderer.once('cuenta-eliminada', (event, { exitoso }) => {
+        ipcRenderer.once("cuenta-eliminada", (event, { exitoso }) => {
           if (exitoso) {
             // Actualizar el estado local para reflejar la eliminación de la cuenta
             getAccountsToPay(); // Llamar a getAccountsToPay solo después de confirmar la eliminación
-            Swal.fire(
-              'Eliminado',
-              'La cuenta ha sido eliminada.',
-              'success'
-            );
+            Swal.fire("Eliminado", "La cuenta ha sido eliminada.", "success");
           } else {
-            console.error('Error al eliminar la cuenta');
+            console.error("Error al eliminar la cuenta");
           }
         });
       }
     });
   };
-  
-  
-  
-  
 
   return (
     <div onWheel={handleWheel} className="flex flex-col h-full ">
@@ -567,7 +559,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
             className=" p-2 border-b-1 border-gray-600 hover:bg-gray-700"
             onClick={() => {
               setEditar(true);
-              setMostrarOpciones(false); 
+              setMostrarOpciones(false);
             }}
           >
             Editar Cuenta

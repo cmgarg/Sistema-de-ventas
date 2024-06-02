@@ -1,4 +1,4 @@
-import { categoryType } from "../../../../../../types";
+import { categoryType } from "../../../../../../../types";
 import React, { useEffect, useState } from "react";
 import Downshift from "downshift";
 
@@ -14,56 +14,11 @@ type propsInput = {
 const InputCategory = ({
   style,
   setChangeData,
-  articuloData,
   categorys,
-  categoryError,
   value,
 }: propsInput) => {
-  const [suggestion, setSuggestion] = useState([]);
   const [newValue, setNewValue] = useState("");
-  const [suggestionActived, setSuggestionActived] = useState(false);
 
-  const getSuggestions = (value: string) => {
-    const inputValue = value.trim().toLowerCase();
-    const inputLength = inputValue.length;
-
-    console.log(categorys, "///////////");
-
-    const categorysString = categorys.map((e) => e.label);
-
-    return inputLength === 0
-      ? []
-      : categorysString.filter((category) => {
-          return category.toLowerCase().slice(0, inputLength) === inputValue;
-        });
-  };
-  const renderSuggestionsContainer = ({ containerProps, children }: any) => (
-    <div {...containerProps} className="w-full absolute top-full">
-      {children}
-    </div>
-  );
-  function renderSuggestion(suggestion: string, isHighlighted: any) {
-    console.log(isHighlighted, "LOCOLON");
-    return (
-      <div
-        className={`w-full  z-50 flex justify-around ${
-          isHighlighted.isHighlighted
-            ? "bg-slate-100 text-black"
-            : "bg-slate-900 text-white"
-        }`}
-      >
-        <p>{suggestion}</p>
-      </div>
-    );
-  }
-  const handleSuggestionSelected = (
-    event: any,
-    { suggestionValue }: { suggestionValue: string }
-  ) => {
-    if (event.target.key !== "Enter") {
-      setChangeData("category", suggestionValue);
-    }
-  };
   const compareSelectItemWithInputValue = (i: string): string => {
     const inputLength = newValue.length;
     const itemValue = i;
@@ -113,7 +68,9 @@ const InputCategory = ({
         getRootProps,
       }) => (
         <div className="w-full flex flex-col">
-          <label {...getLabelProps()}>Categoria</label>
+          <label {...getLabelProps()} className="select-none">
+            Categoria
+          </label>
           <div
             style={{ display: "inline-block" }}
             {...getRootProps({}, { suppressRefError: true })}
