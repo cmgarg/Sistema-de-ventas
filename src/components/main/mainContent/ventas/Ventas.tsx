@@ -50,9 +50,6 @@ const Ventas: React.FC<VentastProps> = (
     window.api.enviarEvento("prueba-afipo");
   };
 
-  const formatMony = (n: number) => {
-    return formatterCurrency.format(n);
-  };
   /////LISTA DE ARTICULSO
 
   ///carga de ventas

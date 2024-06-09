@@ -13,7 +13,7 @@ interface ListCuentaProps {
   filtroBoton2: boolean;
   filtroBoton3: boolean;
   filtroBoton4: boolean;
-  getAccountsToPay: () => any[];
+  getAccountsToPay: () => void;
 }
 
 interface Cuenta {
@@ -84,8 +84,8 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
   const filtrarCuentasPorFecha = (fecha: Date) => {
     const mesReferencia = getMonth(fecha) + 1; // Ajustando mes a base 1
     const anioReferencia = getYear(fecha);
-
-    return Cuentas.filter((cuenta) => {
+    console.log(cuentas, "pedaso de pelotudo");
+    return cuentas.filter((cuenta) => {
       const [anioCuenta, mesCuenta] = cuenta.date.split("-").map(Number);
       return anioCuenta === anioReferencia && mesCuenta === mesReferencia;
     });
@@ -156,7 +156,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
     setTieneAmbosTiposDeGasto(tieneVencimientoMensual && tieneGastoDiario);
     setTieneAmbosTiposDeGasto2(tieneVencimientoMensual2 && tieneGastoDiario2);
     setTieneAmbosTiposDeGasto3(tieneVencimientoMensual3 && tieneGastoDiario3);
-  }, [Cuentas, fechaActual]);
+  }, [cuentas, fechaActual]);
 
   // Utiliza useEffect para calcular el total después de filtrar y ordenar las cuentas
   const [total1, settotal1] = useState();
@@ -175,7 +175,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
     settotal1(totalMesActual);
     settotal2(totalMesActual2);
     settotal3(totalMesActual3);
-  }, [Cuentas, fechaActual]);
+  }, [cuentas, fechaActual]);
 
   ///evitar el scroll en los div hijos
   // Referencias para cada div

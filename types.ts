@@ -4,14 +4,18 @@ export type articleData = {
     name: string;
     costo: number;
     venta: number;
+    percentajeToSale: number;
     stock: { amount: number; unit: string; minStock: number };
-    weight: number;
+    grossWeight: number;
+    liquidWeight: number;
     wApp: boolean;
+    wlApp: boolean;
     description: string;
   };
   brand: { value: string; label: string };
   code: string;
   category: { value: string; label: string };
+  subCategory: { value: string; label: string };
   dateToRegister: string;
   sales: {
     buyer: {
@@ -88,6 +92,7 @@ export type saleData = {
     dni: string;
   };
   sold: number;
+
   dateToRegister?: string;
   id?: string;
 };
@@ -128,6 +133,8 @@ export type dataToDeleteClient = {
 export type brandType = { label: string; value: string; _id?: string };
 //
 export type categoryType = { label: string; value: string; _id?: string };
+export type subCategoryType = { label: string; value: string; _id?: string };
+
 //TYPE STORE
 
 export type storeType = {
@@ -135,6 +142,7 @@ export type storeType = {
   clientState: clientData[];
   articleState: articleData[];
   categoryState: categoryType[];
+  subCategoryState: subCategoryType[];
   brandState: brandType[];
   saleState: saleData[];
   auth: authType;

@@ -15,17 +15,23 @@ import { chargeClients } from "../../redux/estados/clientesState";
 import { chargeSales } from "../../redux/estados/salesState";
 import { loadBrands } from "../../redux/estados/brandState";
 import { loadCategorys } from "../../redux/estados/categoryState";
+import { loadSubCategorys } from "../../redux/estados/subCategoryState";
 
 interface MainContentProps {}
 
 const MainContent: React.FC<MainContentProps> = ({}) => {
   const dispatch = useDispatch();
 
-  function loadCategoryAndBrands(data: { categorys: {}[]; brands: {}[] }) {
-    const { categorys, brands } = data;
+  function loadCategoryAndBrands(data: {
+    categorys: {}[];
+    brands: {}[];
+    subCategorys: {}[];
+  }) {
+    const { categorys, brands, subCategorys } = data;
 
     dispatch(loadBrands(brands));
     dispatch(loadCategorys(categorys));
+    dispatch(loadSubCategorys(subCategorys));
   }
 
   useEffect(() => {
