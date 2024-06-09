@@ -1,24 +1,36 @@
 import React, { useEffect, useState } from "react";
 import InputBrand from "./InputBrandAndCategory/InputBrand";
 import InputCategory from "./InputBrandAndCategory/InputCategory";
-import { articleData, brandType, categoryType } from "../../../../../../types";
+import {
+  articleData,
+  brandType,
+  categoryType,
+  subCategoryType,
+  unitType,
+} from "../../../../../../types";
 import { useDispatch } from "react-redux";
 import StockArticleForm from "./StockAndWeight/StockArticleForm";
 import Impuestos from "./Impuestos";
 import ButtonCheck from "./ButtonCheck";
 import CategoryAndBrand from "./InputBrandAndCategory/CategoryAndBrand";
-import CategoryAndBrandForm from "./CategoryAndBrandForm";
+import CategoryAndBrandForm from "./InputBrandAndCategory/CategoryAndBrandForm";
+import { NumericFormat } from "react-number-format";
+import CreateUnit from "./StockAndWeight/CreateUnit";
 
 interface AddArticulosFormProps {
   onChangeModal: (p: boolean) => void;
   categorys: categoryType[];
   brands: brandType[];
+  subCategorys: subCategoryType[];
+  formatMony: (n: number) => number;
 }
 
 const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
   onChangeModal,
   categorys,
+  subCategorys,
   brands,
+  formatMony,
 }) => {
   //DATOS USUARIOS
   const dispatch = useDispatch();
@@ -29,11 +41,15 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
       venta: 0,
       stock: { amount: 0, unit: "kg", minStock: 0 },
       wApp: false,
-      weight: "0",
+      wlApp: false,
+      grossWeight: 0,
+      percentajeToSale: 0,
+      liquidWeight: 0,
       description: "",
     },
     brand: { value: "", label: "" },
     category: { value: "", label: "" },
+    subCategory: { value: "", label: "" },
     code: "",
     dateToRegister: "",
     sales: [],
@@ -45,6 +61,10 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
     type: "",
     active: false,
   });
+
+  //CREAR UNIDAD COSAS
+  const [createUnitForm, setCreateUnitForm] = useState(false);
+  const [unitsArticleForm, setUnitsArticleForm] = useState<unitType[]>([]);
 
   //CATEGORY
 
@@ -61,7 +81,18 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
 
     setAddCategoryInput(false);
   };
+  //SUB CATEGORY
+  const [newSubCategory, setNewSubCategory] = useState<string>("");
 
+  const [addSubCategoryInput, setAddSubCategoryInput] = useState(false);
+  const onChangeSubCategory = (e: string) => {
+    setNewSubCategory(e);
+  };
+  const saveNewSubCategory = (newSubCategory: string) => {
+    window.api.enviarEvento("save-subcategory", newSubCategory);
+
+    setAddSubCategoryInput(false);
+  };
   //BRAND
 
   const [newBrand, setNewBrand] = useState<string>("");
@@ -95,11 +126,15 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
       "stock-unit",
       "min-stock",
       "category",
+      "subcategory",
       "description",
       "newTax",
       "deleteTax",
-      "weight",
       "wApp",
+      "wlApp",
+      "grossWeight",
+      "liquidWeight",
+      "percentajeToSale",
     ];
     console.log(existingData.includes(data), "esto");
     if (existingData.includes(data)) {
@@ -130,7 +165,10 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
           if (/^[0-9.]*$/.test(value)) {
             setarticuloData({
               ...articuloDataState,
-              article: { ...articuloDataState.article, costo: value },
+              article: {
+                ...articuloDataState.article,
+                costo: value,
+              },
             });
           }
           break;
@@ -177,19 +215,43 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
             category: { value: valueLower, label: valueUpper },
           });
           break;
+        case "subcategory":
+          setarticuloData({
+            ...articuloDataState,
+            subCategory: { value: valueLower, label: valueUpper },
+          });
+          break;
         case "wApp":
           setarticuloData({
             ...articuloDataState,
             article: { ...articuloDataState.article, wApp: value },
           });
           break;
-        case "weight":
+        case "grossWeight":
           setarticuloData({
             ...articuloDataState,
-            article: { ...articuloDataState.article, weight: value },
+            article: { ...articuloDataState.article, grossWeight: value },
+          });
+          break;
+        case "liquidWeight":
+          setarticuloData({
+            ...articuloDataState,
+            article: { ...articuloDataState.article, liquidWeight: value },
           });
           break;
         case "newTax":
+          setarticuloData({
+            ...articuloDataState,
+            taxes: [...articuloDataState.taxes, value],
+          });
+          break;
+        case "percentajeToSale":
+          setarticuloData({
+            ...articuloDataState,
+            article: { ...articuloDataState.article, percentajeToSale: value },
+          });
+          break;
+        case "wlApp":
           setarticuloData({
             ...articuloDataState,
             taxes: [...articuloDataState.taxes, value],
@@ -217,7 +279,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
   }
   //ESTILOS INPUT
   const inputStyle =
-    "outline-none h-12 w-full bg-slate-900 px-2 rounded-md border border-slate-800";
+    "outline-none h-12 w-full text-slate-50 bg-slate-900 px-2 rounded-md border border-slate-800";
 
   useEffect(() => {
     window.api.recibirEvento("error-save-article", (error) => {
@@ -228,23 +290,38 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
       }
       setErrorToSave({ ...error });
     });
+    console.log(formatMony(articuloDataState.article.costo));
+
+    window.api.enviarEvento("get-unitsArticleForm");
+
+    window.api.recibirEvento("response-get-unitsArticleForm", (units) => {
+      setUnitsArticleForm(units);
+    });
   }, []);
   useEffect(() => {
     console.log(articuloDataState);
   }, [articuloDataState]);
+  const applyPercentaje = (value: string, porcentaje: string) => {
+    const aumento = Number(value) * (Number(porcentaje) / 100);
 
+    return formatMony(Number(value) + aumento);
+  };
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 text-base bg-slate-950 bg-opacity-30 backdrop-blur-xl">
+      {/* CREAR UNIDAD */}
+      {createUnitForm && <CreateUnit setCreateUnitForm={setCreateUnitForm} />}
       {/*AÑADIR NUEVA CATEGORIA*/}
-
       <div
-        className={`w-5/6 h-5/6 border border-gray-500 text-gray-200 bg-slate-950 bg-opacity-95 space-y-5 rounded-md relative flex flex-col ${
+        className={`w-5/6 h-5/6 border border-gray-500 text-teal-200 bg-slate-950 bg-opacity-95 space-y-5 rounded-md relative flex flex-col ${
           (addCategoryInput || addBrandInput) && "opacity-50"
         }`}
       >
         <CategoryAndBrandForm
           setAddBrandInput={setAddBrandInput}
           setAddCategoryInput={setAddCategoryInput}
+          addSubCategoryInput={addSubCategoryInput}
+          onChangeSubCategory={onChangeSubCategory}
+          newSubCategory={newSubCategory}
           addBrandInput={addBrandInput}
           addCategoryInput={addCategoryInput}
           newBrand={newBrand}
@@ -253,6 +330,8 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
           onChangeCategory={onChangeCategory}
           saveNewBrand={saveNewBrand}
           saveNewCategory={saveNewCategory}
+          saveNewSubCategory={saveNewSubCategory}
+          setAddSubCategoryInput={setAddSubCategoryInput}
         />
         <div className="flex flex-col flex-1 items-center px-5 pt-5 border-b border-slate-800 rounded-b-2xl">
           <div className="flex w-full space-x-5 flex-1">
@@ -291,16 +370,20 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
               articuloDataState={articuloDataState}
               brands={brands}
               categorys={categorys}
+              subCategorys={subCategorys}
               errorToSave={errorToSave}
               inputStyle={inputStyle}
               setAddBrandInput={setAddBrandInput}
               setAddCategoryInput={setAddCategoryInput}
               setChangeData={setChangeData}
+              setAddSubCategoryInput={setAddSubCategoryInput}
             />
             <StockArticleForm
               articuloDataState={articuloDataState}
               inputStyle={inputStyle}
+              setCreateUnitForm={setCreateUnitForm}
               setChangeData={setChangeData}
+              unitsArticleForm={unitsArticleForm}
             />
           </div>
         </div>
@@ -321,28 +404,50 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
               <label htmlFor="costo" className="select-none">
                 Costo
               </label>
-              <input
-                type="text"
-                name="costo"
-                className={inputStyle}
-                value={articuloDataState.article.costo}
-                onChange={(e) => {
-                  setChangeData("costo", e.target.value);
+              <NumericFormat
+                thousandSeparator={true}
+                prefix={"$"}
+                decimalScale={2}
+                fixedDecimalScale={true}
+                allowNegative={false}
+                valueIsNumericString={true}
+                onValueChange={(values) => {
+                  const { formattedValue, value } = values;
+                  setChangeData("costo", value);
                 }}
+                className={inputStyle}
               />
             </div>
             <div className="flex-1">
               <label htmlFor="venta" className="select-none">
-                Venta
+                Porcentaje de Venta
+              </label>
+              <NumericFormat
+                thousandSeparator={true}
+                suffix="%"
+                fixedDecimalScale={true}
+                allowNegative={false}
+                valueIsNumericString={true}
+                onValueChange={(values) => {
+                  const { formattedValue, value } = values;
+                  setChangeData("percentajeToSale", value);
+                }}
+                className={inputStyle}
+                value={articuloDataState.article.percentajeToSale}
+              />
+            </div>
+            <div className="flex-1">
+              <label htmlFor="venta" className="select-none">
+                Precio final
               </label>
               <input
                 type="text"
                 name="venta"
                 className={inputStyle}
-                value={articuloDataState.article.venta}
-                onChange={(e) => {
-                  setChangeData("venta", e.target.value);
-                }}
+                value={applyPercentaje(
+                  `${articuloDataState.article.costo}`,
+                  `${articuloDataState.article.percentajeToSale}`
+                )}
               />
             </div>
           </div>

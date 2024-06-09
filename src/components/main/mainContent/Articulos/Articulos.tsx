@@ -17,8 +17,19 @@ interface ArticulosProps {}
 const Articulos: React.FC<ArticulosProps> = ({}) => {
   const articles = useSelector((state: storeType) => state.articleState);
   const categorys = useSelector((state: storeType) => state.categoryState);
+  const subCategorys = useSelector(
+    (state: storeType) => state.subCategoryState
+  );
   const brands = useSelector((state: storeType) => state.brandState);
 
+  const formatterCurrency = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    currencyDisplay: "symbol",
+  });
+  const formatMony = (n: number) => {
+    return formatterCurrency.format(n);
+  };
   const [activeModal, setActiveModal] = useState(false);
 
   const [searchActived, setSearchActived] = useState<{
@@ -48,6 +59,7 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
       code: "",
     });
   };
+
   function editArticleOn(e: { active: boolean; code: string }) {
     setArticleToEdit(e);
   }
@@ -96,6 +108,8 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
               onChangeModal={onChangeModal}
               categorys={categorys}
               brands={brands}
+              subCategorys={subCategorys}
+              formatMony={formatMony}
             ></AddArticuloForm>
           )}
           {articleToEdit.active && (

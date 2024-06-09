@@ -174,7 +174,7 @@ const Graphics: React.FC<GraphicsProps> = ({}) => {
         </ul>
         <div className="flex flex-col w-full h-96 bg-slate-950 rounded-lg">
           <ResponsiveContainer width={"100%"} height={"100%"}>
-            <BarChart data={datosxMes}>
+            <BarChart data={datos}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis dataKey="ventas" />
@@ -190,8 +190,8 @@ const Graphics: React.FC<GraphicsProps> = ({}) => {
         <ResponsiveContainer width={"100%"} height={"100%"}>
           <PieChart width={730} height={250}>
             <Pie
-              data={data01}
-              dataKey="value"
+              data={datos}
+              dataKey="ventas"
               nameKey="name"
               cx="50%"
               cy="50%"

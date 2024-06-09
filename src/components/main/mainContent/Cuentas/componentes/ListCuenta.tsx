@@ -84,6 +84,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
     const mesReferencia = getMonth(fecha) + 1; // Ajustando mes a base 1
     const anioReferencia = getYear(fecha);
 
+    console.log(cuentas, "pedaso de pelotudo");
     return cuentas.filter((cuenta) => {
       const [anioCuenta, mesCuenta] = cuenta.date.split("-").map(Number);
       return anioCuenta === anioReferencia && mesCuenta === mesReferencia;

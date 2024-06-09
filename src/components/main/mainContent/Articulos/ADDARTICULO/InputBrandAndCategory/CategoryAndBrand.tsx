@@ -2,6 +2,7 @@ import React from "react";
 import InputBrand from "./InputBrand";
 import { articleData, brandType, categoryType } from "@/types";
 import InputCategory from "./InputCategory";
+import InputSubCategory from "./InputSubCategory";
 
 interface CategoryAndBrandProps {
   errorToSave: { active: boolean; type: string; message: string };
@@ -11,14 +12,18 @@ interface CategoryAndBrandProps {
   setChangeData: (e: string, f: any) => void;
   brands: brandType[];
   setAddCategoryInput: (e: boolean) => void;
+  setAddSubCategoryInput: (e: boolean) => void;
   categorys: categoryType[];
+  subCategorys: categoryType[];
 }
 
 const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
   errorToSave,
   categorys,
   brands,
+  setAddSubCategoryInput,
   setAddCategoryInput,
+  subCategorys,
   setAddBrandInput,
   inputStyle,
   articuloDataState,
@@ -72,6 +77,30 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
           articuloData={articuloDataState}
           setChangeData={setChangeData}
           categorys={categorys}
+          categoryError={errorToSave}
+        />
+      </div>
+      <div className="flex-1 relative w-full">
+        <div className="absolute  right-0 text-green-300 z-40 hover:text-green-200 flex space-x-2">
+          {errorToSave.active && (errorToSave.type == "all" || "category") && (
+            <div className="flex items-center">
+              <p className="text-red-200 text-xs">{errorToSave.message}</p>
+            </div>
+          )}
+          <button
+            onClick={() => {
+              setAddSubCategoryInput(true);
+            }}
+            className="select-none"
+          >
+            +
+          </button>
+        </div>
+        <InputSubCategory
+          style={inputStyle}
+          articuloData={articuloDataState}
+          setChangeData={setChangeData}
+          subCategorys={subCategorys}
           categoryError={errorToSave}
         />
       </div>
