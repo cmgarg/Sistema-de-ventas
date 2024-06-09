@@ -3,10 +3,12 @@ import TableMain from "../../tablaMain/TableMain";
 import TableHead from "../../tablaMain/TableHead";
 import TableRow from "../../tablaMain/TableRow";
 import { Link } from "react-router-dom";
+import { articleData, storeType } from "../../../../../types";
+import { useSelector } from "react-redux";
 
 interface StockListProps {
   filtersActived: { category: string; brand: string };
-  searchActived: { actived: boolean; results: object[] };
+  searchActived: { actived: boolean; results: articleData[] };
 }
 
 const StockList: React.FC<StockListProps> = ({
@@ -15,111 +17,92 @@ const StockList: React.FC<StockListProps> = ({
 }) => {
   // HACEEEER QUE EL BUSCADOR FUNCIONE
   //ORDENAR LISTA
-  const [articulos, setArticulos] = useState<object[]>([]);
+  const articles = useSelector((state: storeType) => state.articleState);
+  const [articlesFilter, setArticlesFilter] = useState<articleData[]>([]);
+  const [articlesOrder, setArticlesOrder] = useState<articleData[]>([]);
+  const [optionsFilterActived, setOptionsFilterActived] = useState({
+    costo: false,
+    venta: false,
+    date: false,
+    stock: false,
+  });
 
-  const [articlesFilter, setArticlesFilter] = useState<object[]>([]);
+  const orderArticlesFor = () => {
+    const { costo, venta, date, stock } = optionsFilterActived;
+    const articlesToOrder = [...articles];
 
-  const [orderFor, setOrderFor] = useState<string>("");
-
-  //elimina venta del estado
-
-  useEffect(() => {
-    window.api.recibirEvento("response-get-articles", (e) => {
-      console.log("ME EJECUTO A LA PERFECCIONE", e);
-      const arrayArticulos = [];
-      e.map((e) => {
-        arrayArticulos.push(e);
+    if (costo) {
+      articlesToOrder.sort((a, b) => {
+        if (Number(a.article.costo) > Number(b.article.costo)) return -1;
+        if (Number(a.article.costo) < Number(b.article.costo)) return 1;
+        return 0;
       });
-      setArticulos(arrayArticulos);
-    });
-  }, []);
-
-  useEffect(() => {
-    //NO SE FILTRA BIEN
-    let articlesFilered = [];
-    if (filtersActived.brand && filtersActived.category === "") {
-      console.log(filtersActived.brand, "AGUANTEEEEEEEEE MILEI");
-      console.log(articulos, "LOS ARTICULOS ");
-      const filter = articulos.filter((e) => {
-        let lowerCase = e.brand.value.toLowerCase();
-        console.log(lowerCase === filtersActived.brand, "BOOOLEANOOO");
-        return e.brand.value.toLowerCase() === filtersActived.brand;
+    }
+    if (venta) {
+      articlesToOrder.sort((a, b) => {
+        if (Number(a.article.venta) > Number(b.article.venta)) return -1;
+        if (Number(a.article.venta) < Number(b.article.venta)) return 1;
+        return 0;
       });
-      articlesFilered = filter;
-    } else if (filtersActived.category && filtersActived.brand === "") {
-      let filter = articulos.filter((e) => {
-        let lowerCase = e.category.value.toLowerCase();
-        return lowerCase === filtersActived.category;
+    }
+    if (date) {
+      articlesToOrder.sort((a, b) => {
+        let dateA = new Date(a.dateToRegister);
+        let dateB = new Date(b.dateToRegister);
+        if (dateA > dateB) return -1;
+        if (dateA < dateB) return 1;
+        return 0;
       });
-      articlesFilered = filter;
-    } else if (filtersActived.brand && filtersActived.category) {
-      const filter = articulos.filter((e) => {
-        console.log(
-          e.brand.value === filtersActived.brand &&
-            e.category.value === filtersActived.category
-        );
-        let lowerCaseBrand = e.brand.value.toLowerCase();
-        let lowerCaseCategory = e.category.value.toLowerCase();
+    }
+    if (stock) {
+      articlesToOrder.sort((a, b) => {
+        if (Number(a.article.stock.amount) > Number(b.article.stock.amount))
+          return -1;
+        if (Number(a.article.stock.amount) < Number(b.article.stock.amount))
+          return 1;
+        return 0;
+      });
+    }
+    console.log("ME EJECUTE GONZA ", articlesToOrder);
+    setArticlesOrder(articlesToOrder);
+  };
 
+  const applyFilters = () => {
+    const { category, brand } = filtersActived;
+    const articlesToFilter = [...articles];
+
+    let articlesFilter: articleData[] = [];
+
+    if (category !== "" && category !== "") {
+      articlesFilter = articlesToFilter.filter((article) => {
         return (
-          lowerCaseBrand === filtersActived.brand &&
-          lowerCaseCategory === filtersActived.category
+          article.category.value == category && article.brand.value == category
         );
       });
-      articlesFilered = filter;
-    }
-    setArticlesFilter([...articlesFilered]);
-    console.log(articlesFilter, "BOOOOOOOOOOO", articlesFilered);
-  }, [filtersActived]);
-  function agregarPrueba() {
-    let arr = [];
-
-    for (let i = 0; i < 30; i++) {
-      arr.push({
-        articulo: "Gaseosa",
-        costo: "400",
-        venta: "800",
-        stock: "200",
-        brand: { value: "Mocoreta", label: "Mocoreta" },
-        category: { value: "Bebidas", label: "Bebidas" },
-        ventas: [],
-        _id: "88zOUgvxxDqZJCE3",
+    } else if (brand !== "") {
+      articlesFilter = articlesToFilter.filter((article) => {
+        return article.brand.value == brand;
+      });
+    } else if (category !== "") {
+      articlesFilter = articlesToFilter.filter((article) => {
+        return article.category.value == category;
       });
     }
 
-    let articulosAll = [...arr];
-
-    setArticulos(articulosAll);
-  }
-  function onChangeOrderFor(e: string) {
-    setOrderFor(e);
-    sortArticleFor(e);
-  }
-  function sortArticleFor(e: string) {
-    let salesToOrder = [...articulos];
-
-    if (e === "stock") {
-      if (orderFor === "stock") {
-        salesToOrder.sort((a: object, b: object) => a.stock - b.stock);
-        setOrderFor("");
-        console.log("koku");
-      } else {
-        salesToOrder.sort((a: object, b: object) => b.stock - a.stock);
-        console.log("yuya");
-      }
-
-      setArticulos([...salesToOrder]);
-    } else if (e === "costo") {
-      if (orderFor === "costo") {
-        salesToOrder.sort((a: object, b: object) => a.costo - b.costo);
-        setOrderFor("");
-      } else {
-        salesToOrder.sort((a: object, b: object) => b.costo - a.costo);
-      }
-
-      setArticulos([...salesToOrder]);
+    if (articlesFilter.length > 0) {
+      setArticlesFilter(articlesFilter);
     }
-  }
+  };
+
+  useEffect(() => {
+    if (filtersActived.brand !== "" || filtersActived.category !== "") {
+      applyFilters();
+    }
+  }, [filtersActived]);
+  useEffect(() => {
+    orderArticlesFor();
+    console.log(articlesOrder, "ARGENT", searchActived);
+  }, [optionsFilterActived]);
   useEffect(() => {
     console.log(searchActived.results, "RESULTADOS DE LA BUSQUEDAD");
   }, [searchActived]);
@@ -128,103 +111,95 @@ const StockList: React.FC<StockListProps> = ({
     //PODER ORDENAR LAS LISTAS
     <TableMain>
       <TableHead>
-        <div className="bg-slate-700 flex-1 pl-2 flex items-center justify-center">
+        <div className="flex-1 pl-2 flex items-center justify-start">
           <p className="text-center">Articulo</p>
         </div>
-        <div className="bg-slate-700 flex-1 pl-2 flex items-center justify-center">
+        <div className="flex-1 pl-2 flex items-center justify-center">
           <p className="text-center">Marca</p>
         </div>
         <div
-          className="bg-slate-700 flex-1 pl-2 flex items-center justify-center"
+          className="flex-1 pl-2 flex items-center justify-center"
           onClick={() => {
-            onChangeOrderFor("costo");
+            setOptionsFilterActived({ ...optionsFilterActived, costo: true });
           }}
         >
           <p className="text-center">Costo</p>
         </div>
         <div
-          className="bg-slate-700 flex-1 pl-2 flex items-center justify-center"
+          className="flex-1 pl-2 flex items-center justify-end"
           onClick={() => {
-            onChangeOrderFor("stock");
+            setOptionsFilterActived({ ...optionsFilterActived, stock: true });
           }}
         >
           <p className="text-center">Cantidad</p>
         </div>
       </TableHead>
       <div className="first:bg-white">
-        {articlesFilter.length > 0 &&
-        (filtersActived.brand || filtersActived.category) ? ( //MOSTRAR RESULTADOS
-          articlesFilter.map((fila) => (
-            <TableRow key={fila._id}>
-              <div className="flex items-center flex-1">
-                <Link
-                  to={`/articulo/${fila.idArticle}`}
-                  className="flex-1 text-center"
-                >{`${fila.articulo}`}</Link>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.brand.label}</p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>${fila.costo}</p>
-              </div>
-              <div className="flex space-x-1">
-                <p>{fila.stock.amount}</p>
-                <p>{fila.stock.unit.slice(0, 3)}</p>
-              </div>
-            </TableRow>
-          ))
-        ) : searchActived.actived && searchActived.results.length > 0 ? (
-          searchActived.results.map((fila) => (
-            <TableRow key={fila._id}>
-              <div className="flex items-center flex-1">
-                <Link
-                  to={`/articulo/${fila.idArticle}`}
-                  className="flex-1 text-center"
-                >{`${fila.articulo}`}</Link>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.brand.label}</p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>${fila.costo}</p>
-              </div>
-              <div className="flex space-x-1">
-                <p>{fila.stock.amount}</p>
-                <p>{fila.stock.unit.slice(0, 3)}</p>
-              </div>
-            </TableRow>
-          ))
-        ) : !filtersActived.category && !filtersActived.brand ? (
-          articulos.map((fila) => (
-            <TableRow key={fila._id}>
-              <div className="flex items-center flex-1 pl-2 space-x-1">
-                <Link
-                  to={`/articulo/${fila._id}`}
-                  className="flex-1 text-center"
-                >{`${fila.articulo}`}</Link>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>{fila.brand.label}</p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <p>${fila.costo}</p>
-              </div>
-              <div className="flex justify-center items-center flex-1 pl-2">
-                <div className="flex space-x-1">
-                  <p>{fila.stock.amount}</p>
-                  <p>{fila.stock.unit.slice(0, 3)}</p>
-                </div>
-              </div>
-            </TableRow>
-          ))
-        ) : (
-          <TableRow>
-            <div className="flex justify-center items-center flex-1 pl-2">
-              <p>No hay resultados</p>
-            </div>
-          </TableRow>
-        )}
+        {!searchActived.actived
+          ? articlesOrder.map((article, index) => {
+              return (
+                <TableRow key={index} padding={true}>
+                  <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+                    <Link
+                      to={`/articulo/${article.article.code}`}
+                      className="flex-1 text-start"
+                    >{`${article.article.name}`}</Link>
+                  </div>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>{article.brand.label}</p>
+                  </div>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>${article.article.costo}</p>
+                  </div>
+                  <div className="flex justify-end items-center flex-1 pl-2">
+                    <p>{article.article.stock.amount}</p>
+                  </div>
+                </TableRow>
+              );
+            })
+          : articlesFilter.length > 0
+          ? articlesFilter.map((article) => {
+              return (
+                <TableRow>
+                  <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+                    <Link
+                      to={`/articulo/${article.article.code}`}
+                      className="flex-1 text-center"
+                    >{`${article.article.name}`}</Link>
+                  </div>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>{article.brand.label}</p>
+                  </div>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>${article.article.costo}</p>
+                  </div>
+                  <div className="flex justify-end items-center flex-1 pl-2">
+                    <p>{article.article.stock.amount}</p>
+                  </div>
+                </TableRow>
+              );
+            })
+          : searchActived.results.map((article) => {
+              return (
+                <TableRow>
+                  <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+                    <Link
+                      to={`/articulo/${article.article.code}`}
+                      className="flex-1 text-center"
+                    >{`${article.article.name}s`}</Link>
+                  </div>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>{article.brand.label}</p>
+                  </div>
+                  <div className="flex justify-center items-center flex-1 pl-2">
+                    <p>${article.article.costo}</p>
+                  </div>
+                  <div className="flex justify-end items-center flex-1 pl-2">
+                    <p>{article.article.stock.amount}</p>
+                  </div>
+                </TableRow>
+              );
+            })}
       </div>
     </TableMain>
   );

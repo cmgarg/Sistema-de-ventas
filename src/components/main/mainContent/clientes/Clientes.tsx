@@ -85,7 +85,7 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
       </div>
       <div className="flex flex-row pb-5 row-start-2 row-end-7">
         <AsideMain isActive={false}></AsideMain>
-        <div className="flex-1 p-5 relative">
+        <div className="flex-1 p-5">
           {activeModalForm && (
             <AddClientresForm onChangeModal={onChangeModal}></AddClientresForm>
           )}

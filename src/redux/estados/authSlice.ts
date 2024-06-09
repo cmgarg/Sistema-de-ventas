@@ -1,24 +1,25 @@
-import { authType } from '@/types';
-import { createSlice } from '@reduxjs/toolkit';
+import { authType } from "../../../types";
+import { createSlice } from "@reduxjs/toolkit";
 
-const initialState:authType = {
+const initialState: authType = {
   isAuthenticated: false,
   userId: "",
   token: "",
 };
 
 export const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     login: (state, action) => {
-      return {...action.payload,isAuthenticated:true}
+      return { ...action.payload, isAuthenticated: true };
     },
     logout: (state) => {
       return {
         isAuthenticated: false,
         userId: "",
-        token: "",}
+        token: "",
+      };
     },
   },
 });

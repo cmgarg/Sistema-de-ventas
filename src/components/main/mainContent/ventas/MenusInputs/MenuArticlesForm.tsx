@@ -1,277 +1,334 @@
-import React, { useEffect, useRef, useState } from "react";
-import AutoSuggest from "react-autosuggest";
+import { articleData, brandType, categoryType } from "../../../../../../types";
+import React, { useEffect, useState } from "react";
+import Downshift from "downshift";
 
-interface MenuArticlesForm {
+type propsInput = {
   style: string;
-  setChangeData: (data: string, value: any) => void;
-  addProduct: (product: object) => void;
-  amount: string;
-}
+  articles: articleData[];
+  addProduct: (article: {
+    name: string;
+    code?: string;
+    total: string;
+    amount: string;
+  }) => void;
+  value?: string;
+};
 
-const MenuArticlesForm: React.FC<MenuArticlesForm> = ({
+const MenuArticlesForm = ({
   style,
-  setChangeData,
   addProduct,
-}) => {
-  const [inputValue, setInputValue] = useState({
-    nombreArticulo: "",
-    idArticle: "",
-    costoArticle: 0,
-    amount: 0,
-  });
-  const [unitArticle, setUnitArticle] = useState<String>("");
-  const [articulos, setArticulos] = useState([]);
+  articles,
+  value,
+}: propsInput) => {
+  const [newValue, setNewValue] = useState<string>("");
+  const [amountArticle, setAmountArticle] = useState<string>("");
+  const [articleSelect, setarticleSelect] = useState<articleData>();
+  const [unitShow, setUnitShow] = useState<string>("Ud");
+  const [errorShowAmount, setErrorShowAmount] = useState(false);
+  const [errorShowArticle, setErrorShowArticle] = useState(false);
 
-  const [suggestion, setSuggestion] = useState<string[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [suggestionActived, setSuggestionActived] = useState(false);
-  const [errorMessage, setErrorMessage] = useState({
-    actived: false,
-    message: "El articulo no existe",
-    type: "",
-  });
+  const onChangeNewValue = (newValue: string) => {
+    if (/^[a-zA-Z0-9\s]*$/.test(newValue)) {
+      setNewValue(newValue);
+      sendArticle("", false, true);
+    }
+  };
 
-  const verifExisting = (a: object) => {
-    let filterArticles = articulos.filter((article) => {
-      return article.articulo.toLowerCase() === a.nombreArticulo.toLowerCase();
+  const sendArticle = (
+    code: String,
+    send?: boolean,
+    showCurrentArticle?: boolean
+  ) => {
+    const [articleToSend] = articles.filter((article) => {
+      if (code) {
+        return article.code === code;
+      } else {
+        return (
+          article.article.name.slice(0, newValue.length).toLowerCase() ===
+          newValue.toLowerCase()
+        );
+      }
     });
-    let [articleInfo] = filterArticles;
-    let object = {};
-    if (filterArticles.length > 0) {
-      console.log(articleInfo._id, "HOLALALA");
-      object = {
-        nombreArticulo: articleInfo.articulo,
-        idArticle: articleInfo._id,
-        costoArticle: articleInfo.costo,
-        amount: a.amount,
+    if (articleToSend) {
+      const price = articleToSend.article.venta;
+
+      const totalAmount = Number(amountArticle) * Number(price);
+
+      const articleForList = {
+        name: articleToSend.article.name,
+        code: articleToSend.code,
+        total: `${totalAmount}`,
+        amount: {
+          value: `${amountArticle}`,
+          unit: `${articleToSend.article.stock.unit}`,
+        },
       };
 
-      setInputValue(object);
+      if (send) {
+        if (amountArticle && newValue) {
+          addProduct(articleForList);
 
-      return true;
+          setErrorShowArticle(false);
+          setErrorShowAmount(false);
+        } else if (!amountArticle && !newValue) {
+          setErrorShowAmount(true);
+          setErrorShowArticle(true);
+          setTimeout(() => {
+            setErrorShowAmount(false);
+            setErrorShowArticle(false);
+          }, 3000);
+        } else if (!newValue) {
+          setErrorShowArticle(true);
+          setTimeout(() => {
+            setErrorShowArticle(false);
+          }, 3000);
+          setErrorShowAmount(false);
+        } else if (!amountArticle) {
+          setErrorShowAmount(true);
+          setTimeout(() => {
+            setErrorShowAmount(false);
+          }, 3000);
+          setErrorShowArticle(false);
+
+          console.log(newValue, "putasd");
+        }
+      }
     }
-    return false;
+    if (showCurrentArticle) {
+      setarticleSelect(articleToSend);
+    }
   };
+  const abreviationUnit = (unit: string) => {
+    let abreviation = "";
+    const units = ["kilogramos", "unidades", "litros", "paquetes", "cajas"];
+    if (units.includes(unit.toLowerCase())) {
+      console.log("MATANGA");
+      switch (unit.toLowerCase()) {
+        case "kilogramos":
+          abreviation = "Kg";
+          break;
+        case "unidades":
+          abreviation = "Ud";
+          break;
+        case "litros":
+          abreviation = "L";
+          break;
+        case "paquetes":
+          abreviation = "Paq";
+          break;
+        case "cajas":
+          abreviation = "Caj";
+          break;
 
-  const getSuggestions = (value: string) => {
-    const inputValue = value.trim().toLowerCase();
-    const inputLength = inputValue.length;
+        default:
+          break;
+      }
+    }
+    if (abreviation !== "") {
+      setUnitShow(abreviation);
+    }
+  };
+  const compareSelectItemWithInputValue = (i: articleData): any => {
+    const toSearch = i;
+    const inputLength = newValue.length;
 
-    return inputLength === 0
-      ? []
-      : articulos.filter((articulo) => {
-          if (
-            articulo.articulo.toLowerCase().slice(0, inputLength) === inputValue
-          ) {
-            setUnitArticle(articulo.stock.unit);
-            return articulo;
+    const result = Object.values(toSearch).some((val) => {
+      if (typeof val === "string") {
+        return val
+          .toLowerCase()
+          .slice(0, inputLength)
+          .includes(newValue.toLowerCase());
+      } else if (typeof val === "object") {
+        return Object.values(val).some((u) => {
+          if (typeof u === "string") {
+            return u
+              .toLowerCase()
+              .slice(0, inputLength)
+              .includes(newValue.toLowerCase());
           }
         });
-  };
-  const upArticle = () => {
-    const existArticle = verifExisting(inputValue);
-    const costoTotal = sumCost(existArticle);
-    if (existArticle) {
-      addProduct({
-        ...inputValue,
-        costoArticle: costoTotal,
-      });
+      }
+    });
+
+    if (result) {
+      return toSearch.article.name;
     }
   };
+  const searchInArticles = (e: articleData) => {
+    const toSearch = e;
+    const inputLength = newValue.length;
 
-  const sumCost = (existArticle: boolean) => {
-    if (existArticle) {
-      if (parseInt(inputValue.amount) > 0) {
-        const searchArticle = articulos.filter((e) => {
-          return e.articulo == inputValue.nombreArticulo;
-        });
-        const articulo = searchArticle[0];
-
-        let sumaCantidad = 0;
-
-        if (inputValue.costoArticle === 0) {
-          sumaCantidad = parseInt(articulo.costo) * parseInt(inputValue.amount);
-        } else {
-          sumaCantidad =
-            parseInt(inputValue.costoArticle) * parseInt(inputValue.amount);
+    const result = Object.values(toSearch).some((val) => {
+      if (typeof val === "string") {
+        if (
+          val
+            .toLowerCase()
+            .slice(0, inputLength)
+            .includes(newValue.toLowerCase())
+        ) {
+          return true;
+        } else if (val.toLowerCase().includes(newValue.toLowerCase())) {
+          return true;
         }
-
-        return sumaCantidad;
-      } else {
-        setErrorMessage({
-          actived: true,
-          message: "Cantidad no especificada",
-          type: "cantidad",
+        return val
+          .toLowerCase()
+          .slice(0, inputLength)
+          .includes(newValue.toLowerCase());
+      } else if (typeof val === "object") {
+        return Object.values(val).some((u) => {
+          if (typeof u === "string") {
+            return u
+              .toLowerCase()
+              .slice(0, inputLength)
+              .includes(newValue.toLowerCase());
+          }
         });
       }
-    } else if (suggestion.length === 0) {
-      setErrorMessage({
-        actived: true,
-        message: "No existe el Articulo",
-        type: "articulo",
-      });
-    }
-  };
-
-  const onChangeAmount = (e: string) => {
-    let verifNumber = /^[0-9]*$/.test(e);
-
-    console.log(e, "AKA FIJATE", verifNumber);
-
-    if (verifNumber) {
-      setInputValue({ ...inputValue, amount: e });
-    }
-  };
-  const handleKeyDown = (event) => {
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      setSelectedIndex((prevIndex) =>
-        prevIndex < suggestion.length - 1 ? prevIndex + 1 : 0
-      );
-      setInputValue({
-        ...inputValue,
-        nombreArticulo: suggestion[selectedIndex].articulo,
-        idArticle: suggestion[selectedIndex]._id,
-        costoArticle: suggestion[selectedIndex].costo,
-        amount: 0,
-      });
-    }
-    if (event.key === "Enter") {
-      event.preventDefault();
-
-      console.log("SE EJECUTA FREEZER Y DA ", inputValue.costoArticle);
-
-      upArticle();
-    }
-  };
-
-  const handleSuggestionSelected = (event, { suggestionValue }) => {
-    console.log("QCYO VIEJITO", event);
-    if (event.key === "Enter") {
-      console.log("EN HANDLESUGGESTIONSELECTED", suggestion[selectedIndex]);
-      setInputValue({
-        ...inputValue,
-        nombreArticulo: suggestionValue,
-        idArticle: suggestion[selectedIndex]._id,
-        costoArticle: suggestion[selectedIndex].costo,
-        amount: 0,
-      });
-    }
-  };
-  function renderSuggestion(
-    suggestion: { nombre: string; idClient: string },
-    isHighlighted
-  ) {
-    console.log(isHighlighted.isHighlighted);
-
-    return (
-      <div
-        className={`w-full  z-50 flex justify-around ${
-          !isHighlighted.isHighlighted
-            ? "bg-slate-100 text-black"
-            : "bg-slate-900 text-white"
-        }`}
-      >
-        <p>{suggestion.articulo}</p>
-        <p>{suggestion.costo}</p>
-      </div>
-    );
-  }
-
-  const renderSuggestionsContainer = ({ containerProps, children }) => (
-    <div {...containerProps} className="w-full absolute top-full">
-      {children}
-    </div>
-  );
-
-  const getArticles = () => {
-    window.api.enviarEvento("get-articles");
-  };
-
-  useEffect(() => {
-    console.log(suggestion);
-    if (suggestion.length > 0) {
-      setSuggestionActived(true);
-    } else {
-      setSuggestionActived(false);
-    }
-  }, [suggestion]);
-
-  useEffect(() => {
-    getArticles();
-    window.api.recibirEvento("response-get-articles", (e) => {
-      const arrayArticulos = [];
-      e.map((e) => {
-        arrayArticulos.push(e);
-      });
-      setArticulos(arrayArticulos);
     });
-  }, []);
 
+    if (result) {
+      return true;
+    }
+  };
   useEffect(() => {
-    setTimeout(() => {
-      setErrorMessage({
-        ...errorMessage,
-        actived: false,
-      });
-    }, 3000);
-    console.log("ILLOJUAN PETE");
-  }, [inputValue]);
+    if (articleSelect) {
+      abreviationUnit(articleSelect.article.stock.unit);
+    }
+  }, [articleSelect]);
 
   return (
-    <div className="relative flex items-end">
-      <div className="w-full">
-        <div className="flex justify-between items-end">
-          <label htmlFor="comprador">Articulo</label>
-          {errorMessage.actived && (
-            <p className="text-red-200 text-sm">{errorMessage.message}</p>
-          )}
+    <Downshift
+      onChange={(selection) => {
+        onChangeNewValue(selection);
+      }}
+      inputValue={newValue}
+      itemToString={(item) => (newValue ? newValue : "")}
+      onInputValueChange={(e, stateAndHelpers) => {
+        onChangeNewValue(e);
+      }}
+      onSelect={(selectedItem) => {
+        onChangeNewValue(selectedItem.article.name);
+        setarticleSelect(selectedItem);
+      }}
+    >
+      {({
+        getInputProps,
+        getItemProps,
+        getMenuProps,
+        isOpen,
+        inputValue,
+        highlightedIndex,
+        selectedItem,
+        getLabelProps,
+        getRootProps,
+      }) => (
+        <div className="relative flex flex-col flex-1 h-12 bg-slate-800 rounded-lg text-xl">
+          <div className="absolute h-12 right-0 rounded-md bg-green-500 flex justify-center hover:bg-green-600">
+            <div className="flex relative">
+              <input
+                type="text"
+                name="amount"
+                placeholder="0"
+                onChange={(e) => {
+                  console.log(/^[0-9]*$/.test(e.target.value));
+                  if (/^[0-9]*$/.test(e.target.value)) {
+                    setAmountArticle(e.target.value);
+                  }
+                }}
+                value={amountArticle}
+                className={`w-32 outline-none rounded-l-md border-l-2 pl-2 border-slate-600 bg-teal-800 ${
+                  errorShowAmount && " shadow-inset-cmg"
+                }`}
+              />
+              <p className="absolute bottom-1 right-1 text-slate-500 text-xs select-none">
+                {unitShow}
+              </p>
+            </div>
+            <button
+              className="flex justify-center items-center rounded-md px-2 bg-green-500  hover:bg-green-600"
+              onClick={() => sendArticle("", true, true)}
+            >
+              <p>AÑADIR</p>
+            </button>
+          </div>
+          <div
+            style={{ display: "inline-block" }}
+            {...getRootProps({}, { suppressRefError: true })}
+            className="w-full h-full"
+          >
+            <input
+              placeholder="Añadir articulo"
+              {...getInputProps()}
+              className={`${style} ${
+                isOpen ? "rounded-b-none" : "rounded-r-md"
+              } w-full h-full bg-teal-950 ${
+                errorShowArticle && "shadow-inset-cmg"
+              }`}
+            />
+          </div>
+          <ul
+            {...getMenuProps()}
+            className="w-full absolute top-full rounded-b-sm text-2xl z-50"
+          >
+            {isOpen ? (
+              <li className="w-full flex bg-teal-400 px-1 text-slate-700 h-10 items-center justify-center border-b-2 border-teal-200">
+                <div className="flex-1 flex justify-start items-center">
+                  <p>Nombre</p>
+                </div>
+                <div className="flex-1 flex justify-center">
+                  <p>Marca</p>
+                </div>
+                <div className="flex-1 flex justify-center">
+                  <p>Venta</p>
+                </div>
+                <div className="flex-1 flex justify-end">
+                  <p>Codigo</p>
+                </div>
+              </li>
+            ) : null}
+            {isOpen
+              ? articles
+                  .filter((item) => !inputValue || searchInArticles(item))
+                  .map((item, index) => (
+                    <li
+                      {...getItemProps({
+                        key: item.code,
+                        index,
+                        item,
+                        style: {
+                          border: selectedItem === item ? "2px blue" : "normal",
+                          position: "relative",
+                        },
+                      })}
+                      className={`flex px-1 h-12 ${
+                        highlightedIndex === index
+                          ? "bg-teal-700"
+                          : "bg-teal-600 bg-"
+                      } ${
+                        highlightedIndex === index
+                          ? "text-slate-50"
+                          : "text-blue-200"
+                      }`}
+                    >
+                      <div className="flex justify-start flex-1 items-center">
+                        <p>{item.article.name}</p>
+                      </div>
+                      <div className="flex justify-center flex-1 items-center">
+                        <p>{item.brand.label}</p>
+                      </div>
+                      <div className="flex justify-center flex-1 items-center">
+                        <p>${item.article.venta}</p>
+                      </div>
+                      <div className="flex justify-end flex-1 items-center">
+                        <p>{item.code}</p>
+                      </div>
+                    </li>
+                  ))
+              : null}
+          </ul>
         </div>
-        <AutoSuggest
-          suggestions={suggestion} //AGREGAR CANTIDAD FALOPERO
-          onSuggestionsFetchRequested={({ value }) => {
-            setSuggestion(getSuggestions(value));
-          }}
-          onSuggestionsClearRequested={() => setSuggestion([])}
-          renderSuggestion={renderSuggestion}
-          renderSuggestionsContainer={renderSuggestionsContainer}
-          highlightFirstSuggestion={true}
-          getSuggestionValue={(suggestion) => suggestion.articulo}
-          inputProps={{
-            className: `${style} rounded-l-lg w-full ${
-              errorMessage.actived &&
-              errorMessage.type === "articulo" &&
-              "border border-red-200"
-            } ${(suggestionActived && "rounded-b-none") || ""}`,
-            placeholder: "Articulo. . . ",
-            value: inputValue.nombreArticulo,
-            onChange: (_, { newValue }) =>
-              setInputValue({ ...inputValue, nombreArticulo: newValue }),
-            onKeyDown: handleKeyDown,
-          }}
-          onSuggestionSelected={handleSuggestionSelected}
-        />
-      </div>
-      <div className="h-9 w-28 border-l border-l-gray-600 right-10 flex rounded-r-lg bg-slate-700">
-        <input
-          type="text"
-          name="amount"
-          value={inputValue.amount}
-          onChange={(e) => {
-            onChangeAmount(e.target.value);
-          }}
-          onKeyDown={handleKeyDown}
-          className={`w-1/2 appearance-none text-xl pl-2 h-full outline-none text-gray-500  bg-slate-700 ${
-            errorMessage.type === "cantidad" &&
-            errorMessage.actived &&
-            "border border-red-200"
-          }`}
-        />
-        <div className="w-1/2 flex items-center">
-          <p>{unitArticle.slice(0, 3)}</p>
-        </div>
-      </div>
-    </div>
+      )}
+    </Downshift>
   );
 };
 

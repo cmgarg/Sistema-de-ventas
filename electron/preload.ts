@@ -129,8 +129,9 @@ contextBridge.exposeInMainWorld("api", {
       //EVENTOS DE ARTICULOS
       "get-articles",
       "save-article",
+      "edit-article",
       "delete-article",
-      "get-articleById",
+      "get-articleByCode",
       "get-articleByName",
       //EVENTOS DE CLIENTES
       "save-client",
@@ -141,6 +142,7 @@ contextBridge.exposeInMainWorld("api", {
       "register-buy-client",
       //EVENTOS DE VENTAS
       "get-sales",
+      "prueba-afipo",
       "save-sale",
       "sale-process",
       "delete-sale",
@@ -177,6 +179,9 @@ contextBridge.exposeInMainWorld("api", {
       //RESPUESTAS SOBRE ARTICULOS
       "response-get-articles",
       "error-save-article", //ERROR AL GUARDAR EL ARTICULO
+      "response-edit-article",
+      "response-delete-article",
+      "response-get-articleByCode",
       /////
       //RESPUESTAS CLIENTES
       "response-update-client",
@@ -191,6 +196,7 @@ contextBridge.exposeInMainWorld("api", {
       "response-get-accountToPay",
       "response-get-categoryAndBrand",
       "response-get-sales-stats",
+      "response-sale-process",
       "respuesta-iniciar-sesion",
       "datos-usuario-obtenidos",
       "datos-usuario-obtenidos",

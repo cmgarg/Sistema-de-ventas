@@ -10,36 +10,32 @@ interface MainContentProps {
 const Buscador: React.FC<MainContentProps> = ({ searchIn, functionReturn }) => {
   const [ActivarBuscador, setActivarBuscador] = useState(false);
   const [result, setResult] = useState<object[]>([]);
+  const [toSearch, setToSearch] = useState<object[]>([]);
   const [inputValue, setInputValue] = useState("");
   const searchRef = useRef();
 
   function search(e: string) {
-    let toSearch = [...searchIn];
-    console.log(searchIn, "LOCAAAAAAAAA");
-    let results = toSearch.filter((obj: object) => {
-      let valoresObjeto = Object.values(obj);
-      let valoresDeObjetos = [];
-      let strings = valoresObjeto.filter((e) => {
-        if (typeof e === "string") {
-          return e;
-        } else if (typeof e === "object") {
-          Object.values(e).map((u: string) => {
-            console.log(u, "PAJERA");
-            valoresDeObjetos.push(u);
+    const toSearch = [...searchIn];
+
+    const result = toSearch.filter((object) => {
+      return Object.values(object).some((val) => {
+        if (typeof val === "string") {
+          val.toLowerCase().slice(0, e.length).includes(e.toLowerCase());
+        } else if (typeof val === "object") {
+          return Object.values(val).some((u) => {
+            if (typeof u === "string") {
+              return u
+                .toLowerCase()
+                .slice(0, e.length)
+                .includes(e.toLowerCase());
+            }
           });
         }
       });
-      console.log(valoresDeObjetos, "FALOPERO");
-      let stringsLogrados = [...valoresDeObjetos, ...strings];
-      console.log(stringsLogrados);
-      let isTrue = stringsLogrados.filter((s) => {
-        return s.toLowerCase().includes(e); // Tenes que hacer que si es un objeto retorne los strings de estos.
-      });
-
-      console.log(isTrue, "PELOTUDO");
-      return isTrue.length > 0;
     });
-    setResult([...results]);
+    console.log(toSearch, "BUSCANDO EN");
+    setResult([...result]);
+    functionReturn(result, true);
   }
 
   function onChangeInput(target: string) {
@@ -65,11 +61,13 @@ const Buscador: React.FC<MainContentProps> = ({ searchIn, functionReturn }) => {
   }, [inputValue]);
 
   useEffect(() => {
-    functionReturn(result, true);
+    if (result.length > 0) {
+      functionReturn(result, true);
+    }
     console.log("cambiooooooooo", result);
   }, [result]);
   useEffect(() => {
-    setActivarBuscador(false); //////TERMINASTE CON EL BUSCADOR EN CLIENTES
+    setActivarBuscador(false);
     functionReturn([], false);
     console.log(searchIn, "falopa");
   }, []);

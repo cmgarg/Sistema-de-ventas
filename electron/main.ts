@@ -1,12 +1,75 @@
-import { app, BrowserWindow, ipcMain, ipcRenderer } from "electron";
+import {
+  app,
+  BrowserWindow,
+  globalShortcut,
+  ipcMain,
+  ipcRenderer,
+} from "electron";
 import path from "node:path";
-const bcrypt = require('bcrypt');
+const Afip = require("@afipsdk/afip.js");
+const afip = new Afip({ CUIT: 20409378472 });
+
+const pruebaAfip = async () => {
+  const data = {
+    PtoVta: 1,
+    CbteTipo: 6,
+    ImpTotal: 121,
+    Concepto: 1, // Asumiendo que se requiere
+    DocTipo: 80, // Tipo de documento del cliente (80 podría ser CUIT)
+    DocNro: 20123456789, // Número de documento del cliente
+    CbteDesde: 1, // Número de comprobante desde
+    CbteHasta: 1, // Número de comprobante hasta
+    CbteFch: "20240512", // Fecha de emisión (yyyymmdd)
+    ImpNeto: 100, // Importe neto
+    ImpIVA: 21, // Importe del IVA
+    cantReg: 20,
+    // Otros campos como ImpOpEx, ImpTrib, etc., según sea necesario
+  };
+
+  try {
+    const res = await afip.ElectronicBilling.createVoucher(data);
+    // Usar el resultado, por ejemplo, imprimir el CAE
+    console.log(res);
+    console.log(
+      {
+        cae: res["CAE"],
+        vencimiento: res["CAEFchVto"],
+      },
+      "||||||||||||||||||||||||||"
+    );
+  } catch (error) {
+    console.error("Error al crear el voucher:", error);
+    if (error.response) {
+      // Detalles adicionales del error HTTP, si están disponibles
+      console.error("Response status:", error.response.status);
+      console.error("Response data:", error.response.data);
+
+      console.log(
+        {
+          cae: res["CAE"],
+          vencimiento: res["CAEFchVto"],
+        },
+        "||||||||||||||||||||||||||"
+      );
+    }
+  }
+};
+const bcrypt = require("bcrypt");
 const saltRounds = 10; // El coste del proceso de hashing
 
 //GUARDAR PETICION CUANDO SE ESTA OFFLINE
 //DATA BASES LOCALES
-import { articleData } from "@/types";
+import {
+  articleData,
+  brandType,
+  categoryType,
+  clientData,
+  dataToEditArticle,
+  saleData,
+} from "@/types";
 import Datastore from "@seald-io/nedb";
+import { getDate } from "./vFunctions";
+import crypto from "crypto";
 
 const db = {
   clients: new Datastore({ filename: "database/clients.db", autoload: true }),
@@ -32,41 +95,23 @@ const saveClient = async (data: object) => {
     });
 };
 
-async function registerBuyClient(clientBuy: any) {
-  const client = await getClientById(clientBuy.cliente.idClient);
-  console.log("CLIENTE OBTENIDO APAPA", client[0].sales);
-  const fechaActual = new Date();
-  const año = fechaActual.getFullYear();
-  const mes = fechaActual.getMonth() + 1;
-  const dia = fechaActual.getDate();
-  const clientWithDate = {
-    compra: clientBuy.compra,
-    dateOfRegister: `${dia.toString().padStart(2, "0")}-${mes
-      .toString()
-      .padStart(2, "0")}-${año}`,
-  };
-  const clientUpdated = {
-    ...client[0],
-    compras: [...client[0].sales, clientWithDate],
-  };
-  console.log("WACHAAAA", clientUpdated);
-  delete clientUpdated._id;
+const registerBuyClient = async (sale: saleData) => {
+  if (sale.buyer.client.active) {
+    const buyer = getClientById(sale.buyer.client.clientData._id);
 
-  await updateClient(client[0]._id, clientUpdated);
-}
-function getClientById(clientId: string) {
-  return new Promise((resolve, reject) => {
-    db.clients.find({ _id: clientId }, (err: any, doc: any) => {
-      if (err) {
-        console.log("error al buscar el cliente", err);
-        reject(err);
-      } else {
-        console.log("Cliente encontrado", doc);
-        resolve(doc);
-      }
-    });
-  });
-}
+    const sales = [...(await buyer).shopping, sale];
+
+    await db.clients.updateAsync(
+      { _id: (await buyer)._id },
+      { $set: { shopping: sales } }
+    );
+  }
+};
+const getClientById = async (clientId: string): Promise<clientData> => {
+  const client: clientData = await db.clients.findOneAsync({ _id: clientId });
+
+  return client;
+};
 const deleteClient = async (data: any) => {
   console.log("ACA ERSTAMOS");
   await db.clients
@@ -82,19 +127,19 @@ const deleteClient = async (data: any) => {
       return false;
     });
 };
-function findClients() {
-  return new Promise((resolve, reject) => {
-    db.clients.find({}, (err: any, docs: any) => {
-      if (err) {
-        console.error("Error al obtener datos:", err);
-        reject(err);
-      } else {
-        console.log("Datos obtenidos:", docs);
-        resolve(docs);
-      }
+const findClients = async () => {
+  const clients = await db.clients
+    .findAsync({})
+    .then((clients: any) => {
+      console.log("clientes encontrados", clients);
+      return clients;
+    })
+    .catch((err: any) => {
+      console.log("Error al tratar de encontrar clientes", err);
     });
-  });
-}
+  return clients;
+};
+const findClientById = (clientId: string) => {};
 function updateClient(clientId: string, updateData: any) {
   delete updateData._id;
   return new Promise((resolve, reject) => {
@@ -119,44 +164,50 @@ function updateClient(clientId: string, updateData: any) {
 /////FUNCIONES DE USUARIOS
 ////////////////////////////////
 
-
-
 ///contraseña
-
 
 ////////////////////////////////
 //FUNCIONES DE ARTICULOS ARKCHIVO ARTICULOS.JS
 ///////////////////////////////
 
-function saveArticle(a: any) {
+const generateCodeArticle = (category: string, brand: string) => {
+  const timeStamp = Date.now().toString();
+
+  const randomPart = crypto.randomBytes(4).toString("hex");
+
+  const uniqueCode = `${timeStamp.slice(0, 3)}${randomPart.slice(
+    0,
+    3
+  )}-${category.slice(0, 2).toUpperCase()}${brand.slice(0, 2).toUpperCase()}`;
+
+  return uniqueCode;
+};
+
+const saveArticle = async (a: articleData) => {
+  const date = getDate();
+
+  const code = generateCodeArticle(a.category.value, a.brand.value);
+
   const articleToSave = {
     ...a,
+    code: code,
     sales: [],
+    dateToRegister: date,
   };
 
-  db.articles.insert(articleToSave, (err, newDoc) => {
-    if (err) {
-      // Manejar el error
-      console.error("Error al guardar el objeto:", err);
-    } else {
-      // Objeto guardado con éxito
-      console.log("Objeto guardado:", newDoc);
-    }
-  });
-}
-function getArticleById(articleId: string): Promise<object[]> {
-  return new Promise((resolve, reject) => {
-    db.articles.find({ _id: articleId }, (err: any, doc: any) => {
-      if (err) {
-        console.log("error al buscar el Articulo", err);
-        reject(err);
-      } else {
-        console.log("Artciulo encontrado", doc);
-        resolve(doc);
-      }
+  db.articles
+    .insertAsync(articleToSave)
+    .then((res) => {
+      console.log("Articulo guardado correctamente", res);
+    })
+    .catch((err) => {
+      console.log("No se pudo guardar el articulo", err);
     });
-  });
-}
+};
+const getArticleByCode = async (articleCode: string): Promise<articleData> => {
+  console.log("SE RESPONDE a la peticion de ", articleCode);
+  return await db.articles.findOneAsync({ code: articleCode });
+};
 function getArticleByName(articleName: string) {
   return new Promise((resolve, reject) => {
     db.articles.find({ articulo: articleName }, (err: any, doc: any) => {
@@ -170,31 +221,60 @@ function getArticleByName(articleName: string) {
     });
   });
 }
-function findArticles() {
-  return new Promise((resolve, reject) => {
-    db.articles.find({}, (err: any, docs: any) => {
-      if (err) {
-        console.error("Error al obtener datos:", err);
-        reject(err);
-      } else {
-        console.log("Datos obtenidos:", docs);
-        resolve(docs);
-      }
+const editArticle = async (articleEdit: dataToEditArticle) => {
+  console.log(articleEdit);
+  const { numAffected } = await db.articles.updateAsync(
+    {
+      code: articleEdit.code,
+    },
+    {
+      $set: {
+        article: {
+          name: articleEdit.name,
+          costo: articleEdit.costo,
+          venta: articleEdit.venta,
+          stock: {
+            amount: articleEdit.stock.amount,
+            unit: articleEdit.stock.unit,
+          },
+        },
+        brand: articleEdit.brand,
+        category: articleEdit.category,
+      },
+    },
+    {}
+  );
+  if (numAffected) {
+    console.log("ARTICULO ACTUALIZADO CORRECTAMENTE", numAffected);
+    return true;
+  } else {
+    console.log("NO SE PUDO ACTUALIZAR EL ARTICULO", numAffected);
+    return false;
+  }
+};
+const findArticles = async (): Promise<articleData[]> => {
+  return await db.articles
+    .findAsync({})
+    .then((doc: any) => {
+      console.log("OBJETOS ENCONTRADOS ", doc);
+      return doc;
+    })
+    .catch((err: any) => {
+      console.log("ERROR AL BUSCAR OBJETOS ", err);
     });
-  });
-}
-function deleteArticle(data: any) {
+};
+const deleteArticle = async (code: string) => {
   console.log("ACA ERSTAMOS");
-  db.articles.remove({ _id: data }, (err, newDoc) => {
-    if (err) {
-      // Manejar el error
-      console.error("Error al guardar el objeto:", err);
-    } else {
-      // Objeto guardado con éxito
-      console.log("Cliente eliminado:", newDoc);
-    }
-  });
-}
+  const numRemoved = await db.articles.removeAsync({ code: code }, {});
+
+  if (numRemoved) {
+    console.log("ARTICULO ACTUALIZADO CORRECTAMENTE", numRemoved);
+    return true;
+  } else {
+    console.log("NO SE PUDO ACTUALIZAR EL ARTICULO", numRemoved);
+    return false;
+  }
+};
 async function updatedStockArticle(article: {
   idArticle: string;
   quantity: string;
@@ -261,69 +341,91 @@ async function updateCountSaleArticle(article: {
 //////////////////////////////////////////////////////
 //FUNCIONES DE CLIENTES ARCHIVO ventasFile.js////////
 ////////////////////////////////////////////////////
-function saveSale(a: any) {
+function saveSale(a: saleData) {
   const fechaActual = new Date();
   const año = fechaActual.getFullYear();
   const mes = fechaActual.getMonth() + 1;
   const dia = fechaActual.getDate();
+
+  const articlesTotalSold = a.articles.map((ar) => ar.total);
+  console.log("TOTAL VENDIDO", articlesTotalSold);
+  const soldTotal = articlesTotalSold.reduce((acc, ad) => {
+    return Number(acc) + Number(ad);
+  });
+  console.log("TOTAL VENDIDO 2", soldTotal);
+
   const saleToSave = {
     ...a,
     dateOfRegister: `${dia.toString().padStart(2, "0")}-${mes
       .toString()
       .padStart(2, "0")}-${año}`,
+    sold: soldTotal,
   };
-  db.sales.insert(saleToSave, (err, newDoc) => {
-    if (err) {
-      // Manejar el error
-      console.error("Error al guardar el objeto:", err);
-    } else {
-      // Objeto guardado con éxito
-      console.log("Objeto guardado:", newDoc);
-    }
-  });
+  const resultSave = db.sales
+    .insertAsync(saleToSave)
+    .then((saleResult) => {
+      console.log(saleResult, "SE GUARDO CORRECTAMENTE");
+      return { save: true, res: saleResult };
+    })
+    .catch((err) => {
+      console.log(err, "error al guardar la venta");
+      return { save: false, res: err };
+    });
+
+  return resultSave;
 }
-async function saleProcess(venta: any) {
-  console.log("VENTA RECIBIDA", venta);
+async function saleProcess(venta: saleData) {
+  //registrar venta
+  await registBuyInArticle(venta);
+  //registrar compra en cliente
+  await registerBuyClient(venta);
+  //GUARDAR VENTA
 
-  const articlesOfSale = [...venta.articulos];
-  const totalCost = articlesOfSale.reduce((accumulator, currentArticle) => {
-    console.log(
-      accumulator.costoArticle,
-      currentArticle.costoArticle,
-      "ASDASDASDASDASWW"
-    );
-    return (
-      parseInt(accumulator.costoArticle) + parseInt(currentArticle.costoArticle)
-    );
-  });
+  const resultToProcess = saveSale(venta);
 
-  const quantityOfSale = articlesOfSale.map((article) => {
-    return {
-      idArticle: article.idArticle,
-      nameArticle: article.nombreArticle,
-      quantity: article.amount,
-      totalCost: article.costoArticle,
-    };
-  });
+  return resultToProcess;
 
-  quantityOfSale.map(
-    async (articleToUpdate: {
-      idArticle: string;
-      nameArticle: string;
-      quantity: string;
-      totalCost: string;
-    }) => {
-      await updatedStockArticle(articleToUpdate);
-    }
-  );
+  // console.log("VENTA RECIBIDA", venta);
 
-  quantityOfSale.map(async (articleToUpdate) => {
-    await updateCountSaleArticle(articleToUpdate);
-  });
+  // const articlesOfSale = [...venta.articulos];
+  // const totalCost = articlesOfSale.reduce((accumulator, currentArticle) => {
+  //   console.log(
+  //     accumulator.costoArticle,
+  //     currentArticle.costoArticle,
+  //     "ASDASDASDASDASWW"
+  //   );
+  //   return (
+  //     parseInt(accumulator.costoArticle) + parseInt(currentArticle.costoArticle)
+  //   );
+  // });
 
-  const saleComplete = { ...venta, sold: totalCost };
+  // const quantityOfSale = articlesOfSale.map((article) => {
+  //   return {
+  //     idArticle: article.idArticle,
+  //     nameArticle: article.nombreArticle,
+  //     quantity: article.amount,
+  //     totalCost: article.costoArticle,
+  //   };
+  // });
 
-  return saveSale(saleComplete);
+  // quantityOfSale.map(
+  //   async (articleToUpdate: {
+  //     idArticle: string;
+  //     nameArticle: string;
+  //     quantity: string;
+  //     totalCost: string;
+  //   }) => {
+  //     await updatedStockArticle(articleToUpdate);
+  //   }
+  // );
+
+  // quantityOfSale.map(async (articleToUpdate) => {
+  //   await updateCountSaleArticle(articleToUpdate);
+  // });
+
+  // const saleComplete = { ...venta, sold: totalCost };
+
+  // return saveSale(saleComplete);
   //de articulo a articulos
   // const articuloVendido = await getArticleById(venta.articulo.idArticle);
   // const cantidadVendida = parseInt(venta.cantidad);
@@ -337,18 +439,38 @@ async function saleProcess(venta: any) {
 
   // return guardarVenta(saleComplete);
 }
-function findSales() {
-  return new Promise((resolve, reject) => {
-    db.sales.find({}, (err: any, docs: any) => {
-      if (err) {
-        console.error("Error al obtener datos:", err);
-        reject(err);
-      } else {
-        console.log("Datos obtenidos:", docs);
-        resolve(docs);
-      }
-    });
+const registBuyInArticle = async (saleInfo: saleData) => {
+  const articlesOfSale = [...saleInfo.articles];
+
+  articlesOfSale.map(async (article) => {
+    const articleOfDb = await getArticleByCode(article.code);
+    await db.articles
+      .updateAsync(
+        { code: article.code },
+        {
+          $set: {
+            sales: [
+              ...articleOfDb.sales,
+              {
+                buyer: saleInfo.buyer,
+                amount: article.amount,
+                sold: article.total,
+              },
+            ],
+          },
+        },
+        { multi: false }
+      )
+      .catch((error) => {
+        console.log(
+          error,
+          "OCURRIO UN ERROR AL REGISTRAR LA COMPRA EN EL ARTICULO"
+        );
+      });
   });
+};
+function findSales() {
+  return db.sales.findAsync({});
 }
 function deleteSales(data: any) {
   console.log("ACA ERSTAMOS");
@@ -380,7 +502,6 @@ function obtenerEstadoPagado(idCuenta) {
   });
 }
 
-
 function accountToPay(account: object) {
   db.accounts.insert(account, (err, newDoc) => {
     if (err) {
@@ -393,10 +514,11 @@ function accountToPay(account: object) {
   });
 }
 
-
 function actualizarCuenta(idCuenta: string, datosActualizados: any) {
   if (idCuenta == null || datosActualizados == null) {
-    console.error("Error: El ID de la cuenta y los datos actualizados no pueden ser nulos o indefinidos.");
+    console.error(
+      "Error: El ID de la cuenta y los datos actualizados no pueden ser nulos o indefinidos."
+    );
     return Promise.reject("ID de la cuenta o datos actualizados no válidos");
   }
 
@@ -405,7 +527,7 @@ function actualizarCuenta(idCuenta: string, datosActualizados: any) {
 
   // Mostrar los datos que se van a actualizar
   console.log(`Actualizando cuenta con ID: ${idCuenta}`);
-  console.log('Datos actualizados:', datosActualizados);
+  console.log("Datos actualizados:", datosActualizados);
 
   return new Promise((resolve, reject) => {
     db.accounts.update(
@@ -417,9 +539,13 @@ function actualizarCuenta(idCuenta: string, datosActualizados: any) {
           console.error("Error al actualizar la cuenta:", err);
           reject(err);
         } else {
-          console.log(`Cuenta actualizada con éxito. Número de documentos actualizados: ${numUpdated}`);
+          console.log(
+            `Cuenta actualizada con éxito. Número de documentos actualizados: ${numUpdated}`
+          );
           if (numUpdated === 0) {
-            console.warn('Advertencia: No se actualizó ningún documento. Verifique que el ID de la cuenta sea correcto.');
+            console.warn(
+              "Advertencia: No se actualizó ningún documento. Verifique que el ID de la cuenta sea correcto."
+            );
           }
           resolve(numUpdated);
         }
@@ -428,30 +554,30 @@ function actualizarCuenta(idCuenta: string, datosActualizados: any) {
   });
 }
 
-
-
-
-
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
 /////////////////////////////////////////////////////
 function actualizarEstadoPagado(idCuenta, estadoPagado) {
   return new Promise((resolve, reject) => {
-    db.accounts.update({ _id: idCuenta }, { $set: { pagado: estadoPagado } }, {}, (err, numReplaced) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(numReplaced); // numReplaced es el número de documentos actualizados
+    db.accounts.update(
+      { _id: idCuenta },
+      { $set: { pagado: estadoPagado } },
+      {},
+      (err, numReplaced) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(numReplaced); // numReplaced es el número de documentos actualizados
+        }
       }
-    });
+    );
   });
 }
-
 
 // Suponiendo que `cuentas` es tu Datastore de NeDB para las cuentas
 async function obtenerEstadosPagadosInicial() {
   return new Promise((resolve, reject) => {
-   db.accounts.find({}, (err, docs) => {
+    db.accounts.find({}, (err, docs) => {
       if (err) {
         reject(err);
       } else {
@@ -466,15 +592,15 @@ async function obtenerEstadosPagadosInicial() {
   });
 }
 
-
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
 /////////////////////////////////////////////////////
 const addCategory = async (newCategory: string) => {
   const newCategoryLabel =
     newCategory.charAt(0).toUpperCase() + newCategory.slice(1).toLowerCase();
+  const newBrandValue = newCategory.toLowerCase();
   const category = {
-    value: newCategory,
+    value: newBrandValue,
     label: newCategoryLabel,
     typeFilter: "category",
   };
@@ -487,51 +613,48 @@ const addCategory = async (newCategory: string) => {
       console.log("No se pudo guardar la categoria", err);
     });
 };
-function addBrand(e: { value: string; label: string; typeFilter: string }) {
-  console.log(e);
-  return new Promise((resolve, reject) => {
-    db.filters.insert(e, (err, docs) => {
-      if (err) {
-        console.error("Error al obtener datos:", err);
-        reject(err);
-      } else {
-        console.log("Datos obtenidos:", docs);
-        resolve(docs);
-      }
-    });
-  });
-}
+const addBrand = async (newBrand: string) => {
+  const newBrandLabel =
+    newBrand.charAt(0).toUpperCase() + newBrand.slice(1).toLowerCase();
+  const newBrandValue = newBrand.toLowerCase();
 
-function getCategoryAndBrand() {
-  return new Promise((resolve, reject) => {
-    db.filters.find({}, (err: any, docs: unknown) => {
-      if (err) {
-        console.error("Error al obtener datos:", err);
-        reject(err);
-      } else {
-        console.log("Datos obtenidos:", docs);
-        resolve(docs);
-      }
+  const brand = {
+    value: newBrandValue,
+    label: newBrandLabel,
+    typeFilter: "brand",
+  };
+  return await db.filters
+    .insertAsync(brand)
+    .then((res) => {
+      console.log("Se guardo la cateogria correctamente :", res);
+    })
+    .catch((err) => {
+      console.log("No se pudo guardar la categoria", err);
     });
-  });
-}
+};
+
+const getCategoryAndBrand = async () => {
+  const categorys = await db.filters.findAsync({ typeFilter: "category" });
+  const brands = await db.filters.findAsync({ typeFilter: "brand" });
+
+  return { categorys: categorys, brands: brands };
+};
 
 //FUNCIONES DE PETICIONES DE ESTADISTICAS
 
-async function getStats() {
-  const ventasAll = await findSales();
+const getStats = async () => {
+  const articles = await findArticles();
+  const sales = await findSales();
+  const clients = await findClients();
 
-  const ventasStats = ventasAll.map((e) => {
-    return {
-      article: e.articulo.nombreArticulo,
-      amount: e.cantidad,
-      sold: e.sold,
-      date: e.dateOfRegister,
-    };
-  });
+  const lastSale = sales[sales.length - 1];
 
-  return ventasStats;
-}
+  const allStats = {
+    lastSale: lastSale,
+  };
+
+  return allStats;
+};
 
 //////////////////////////////////////////////////////
 
@@ -556,7 +679,7 @@ const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
 function createWindow() {
   win = new BrowserWindow({
     icon: path.join(process.env.VITE_PUBLIC, "logo-cmg.png"),
-    width: 1000,
+    width: 1100,
     height: 1800,
     minWidth: 1100,
     minHeight: 600,
@@ -586,7 +709,10 @@ function createWindow() {
     // win.loadFile('dist/index.html')
     win.loadFile(path.join(process.env.DIST, "index.html"));
   }
-  win.webContents.openDevTools();
+  globalShortcut.register("CommandOrControl+Shift+I", () => {
+    console.log("PASPASPASPASASP");
+    win?.webContents.openDevTools();
+  });
 }
 
 ipcMain.on("unmaximize-window", () => {
@@ -618,8 +744,8 @@ ipcMain.on("get-clients", async (event) => {
   event.reply("response-get-clients", clients); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
 });
 
-ipcMain.on("delete-client", (event, clienteAEliminar) => {
-  const result = deleteClient(clienteAEliminar);
+ipcMain.on("delete-client", async (event, clienteAEliminar) => {
+  const result = await deleteClient(clienteAEliminar);
 
   event.reply("response-delete-client", result);
 });
@@ -642,7 +768,6 @@ ipcMain.on("register-buy-client", async (event, clienteData) => {
   event.reply("response-register-buy-client", mensajeAResponder);
 });
 
-
 ////////////////////////////////
 //////ESCUCHA DE USURARIOS
 ////////////////////////////////
@@ -662,57 +787,112 @@ ipcMain.on("guardar-usuario-admin", async (event, usuarioAdmin) => {
     db.usuariosAdmin.insert(usuarioConPasswordEncriptado, (err, newDoc) => {
       if (err) {
         // Si hay un error, envía una respuesta al front-end
-        event.reply("respuesta-guardar-usuario-admin", { exito: false, error: err.message });
+        event.reply("respuesta-guardar-usuario-admin", {
+          exito: false,
+          error: err.message,
+        });
       } else {
         // Si tiene éxito, también envía una respuesta al front-end
-        event.reply("respuesta-guardar-usuario-admin", { exito: true, usuarioAdmin: newDoc });
+        event.reply("respuesta-guardar-usuario-admin", {
+          exito: true,
+          usuarioAdmin: newDoc,
+        });
       }
     });
   } catch (error) {
     // Si hay un error con el proceso de hashing, lo capturas aquí
-    console.error("Error al encriptar el password del usuario administrador:", error);
-    event.reply("respuesta-guardar-usuario-admin", { exito: false, error: error.message });
+    console.error(
+      "Error al encriptar el password del usuario administrador:",
+      error
+    );
+    event.reply("respuesta-guardar-usuario-admin", {
+      exito: false,
+      error: error.message,
+    });
   }
 });
 
-ipcMain.on('verificar-admin-existente', async (event) => {
+ipcMain.on("verificar-admin-existente", async (event) => {
   db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
     if (err) {
       // En caso de error, comunicarlo al frontend
-      event.reply('respuesta-verificar-admin', false);
+      event.reply("respuesta-verificar-admin", false);
     } else if (admin) {
       // Si encontramos un administrador, comunicamos que existe y enviamos la cantidad de intentos restantes
-      event.reply('respuesta-verificar-admin', { existeAdmin: true, recuperacioncuenta: admin.recuperacioncuenta });
+      event.reply("respuesta-verificar-admin", {
+        existeAdmin: true,
+        recuperacioncuenta: admin.recuperacioncuenta,
+      });
     } else {
       // Si no hay administrador, comunicamos que no existe
-      event.reply('respuesta-verificar-admin', { existeAdmin: false });
+      event.reply("respuesta-verificar-admin", { existeAdmin: false });
     }
   });
 });
 
+const jwt = require("jsonwebtoken");
+const secretKey = "tu_clave_secreta"; // Asegúrate de usar una clave secreta segura y única
 
+ipcMain.on("iniciar-sesion", (event, credentials) => {
+  console.log("Iniciar sesión con credenciales:", credentials);
 
-const jwt = require('jsonwebtoken');
-const secretKey = 'tu_clave_secreta'; // Asegúrate de usar una clave secreta segura y única
-
-ipcMain.on('iniciar-sesion', (event, credentials) => {
-  db.usuariosAdmin.findOne({ username: credentials.username }, (err, usuario) => {
+  // Primero, buscamos en la colección de administradores
+  db.usuariosAdmin.findOne({ username: credentials.username }, (err, usuarioAdmin) => {
     if (err) {
-      console.error('Error al buscar el usuario:', err);
-      event.reply('respuesta-iniciar-sesion', { exito: false, mensaje: 'Error al buscar el usuario' });
-    } else {
-      if (usuario && bcrypt.compareSync(credentials.password, usuario.password)) {
-        // Genera un token JWT
-        const token = jwt.sign({ userId: usuario._id }, secretKey, { expiresIn: '4464h' }); // Token válido por 6 meses
-        console.log(usuario._id, token);
-        // Incluye el ID del usuario en la respuesta
-        event.reply('respuesta-iniciar-sesion', { exito: true, token, userId: usuario._id });
+      console.error("Error al buscar el usuario administrador:", err);
+      event.reply("respuesta-iniciar-sesion", {
+        exito: false,
+        mensaje: "Error al buscar el usuario",
+      });
+    } else if (usuarioAdmin) {
+      console.log("Usuario administrador encontrado:", usuarioAdmin);
+      if (bcrypt.compareSync(credentials.password, usuarioAdmin.password)) {
+        const token = jwt.sign({ userId: usuarioAdmin._id, isAdmin: true }, secretKey, {
+          expiresIn: "4464h",
+        });
+        event.reply("respuesta-iniciar-sesion", {
+          exito: true,
+          token,
+          userId: usuarioAdmin._id,
+        });
       } else {
-        event.reply('respuesta-iniciar-sesion', { exito: false });
+        console.log("Contraseña incorrecta para el usuario administrador.");
+        event.reply("respuesta-iniciar-sesion", { exito: false, mensaje: "Contraseña incorrecta" });
       }
+    } else {
+      // Si no encontramos un usuario administrador, buscamos en la colección de subusuarios
+      console.log("No se encontró un usuario administrador, buscando subusuario...");
+      db.usuarios.findOne({ nombre: credentials.username }, (err, subUsuario) => {
+        if (err) {
+          console.error("Error al buscar el subusuario:", err);
+          event.reply("respuesta-iniciar-sesion", {
+            exito: false,
+            mensaje: "Error al buscar el usuario",
+          });
+        } else if (subUsuario) {
+          console.log("Subusuario encontrado:", subUsuario);
+          if (bcrypt.compareSync(credentials.password, subUsuario.password)) {
+            const token = jwt.sign({ userId: subUsuario._id, isAdmin: false }, secretKey, {
+              expiresIn: "4464h",
+            });
+            event.reply("respuesta-iniciar-sesion", {
+              exito: true,
+              token,
+              userId: subUsuario._id,
+            });
+          } else {
+            console.log("Contraseña incorrecta para el subusuario.");
+            event.reply("respuesta-iniciar-sesion", { exito: false, mensaje: "Contraseña incorrecta" });
+          }
+        } else {
+          console.log("No se encontró un subusuario con ese nombre de usuario.");
+          event.reply("respuesta-iniciar-sesion", { exito: false, mensaje: "Usuario no encontrado" });
+        }
+      });
     }
   });
 });
+
 
 
 function verificarToken(token) {
@@ -723,37 +903,44 @@ function verificarToken(token) {
   }
 }
 
-ipcMain.on('ruta-protegida', (event, token) => {
+ipcMain.on("ruta-protegida", (event, token) => {
   const decoded = verificarToken(token);
   if (decoded) {
     // Token válido, maneja la solicitud
   } else {
     // Token inválido o expirado, envía un mensaje de error
-    event.reply('respuesta-ruta-protegida', { exito: false, mensaje: 'Token inválido o expirado' });
+    event.reply("respuesta-ruta-protegida", {
+      exito: false,
+      mensaje: "Token inválido o expirado",
+    });
   }
 });
 
-
 function getUser(userId) {
   return new Promise((resolve, reject) => {
-    db.usuariosAdmin.findOne({ _id: userId }, (err, doc) => {
-      console.log(userId, "este es  el id que recibo del fronend")
+    db.usuariosAdmin.findOne({ _id: userId }, (err, admin) => {
       if (err) {
-        console.error('Error al obtener el usuario:', err);
+        console.error("Error al obtener el usuario:", err);
         reject(err);
+      } else if (admin) {
+        resolve(admin);
       } else {
-
-        resolve(doc);
+        db.usuarios.findOne({ _id: userId }, (err, subUsuario) => {
+          if (err) {
+            console.error("Error al obtener el subusuario:", err);
+            reject(err);
+          } else {
+            resolve(subUsuario);
+          }
+        });
       }
     });
   });
 }
 
 
-
-
 // Backend
-ipcMain.on('obtener-datos-usuario', async (event, userId) => {
+ipcMain.on("obtener-datos-usuario", async (event, userId) => {
   try {
     const usuario = await getUser(userId);
     if (usuario) {
@@ -761,58 +948,75 @@ ipcMain.on('obtener-datos-usuario', async (event, userId) => {
       event.reply("datos-usuario-obtenidos", { success: true, data: usuario });
     } else {
       // Si el usuario no se encuentra, envía una respuesta de error
-      event.reply("datos-usuario-obtenidos", { success: false, error: 'Usuario no encontrado' });
+      event.reply("datos-usuario-obtenidos", {
+        success: false,
+        error: "Usuario no encontrado",
+      });
     }
   } catch (error) {
-    console.error('Error al obtener los datos del usuario:', error);
-    event.reply("datos-usuario-obtenidos", { success: false, error: error.message });
+    console.error("Error al obtener los datos del usuario:", error);
+    event.reply("datos-usuario-obtenidos", {
+      success: false,
+      error: error.message,
+    });
   }
 });
-
-
 
 // Función para actualizar la imagen del usuario
 function actualizarImagenUsuario(userId, imageUrl) {
   console.log(`Actualizando imagen del usuario ${userId} con URL: ${imageUrl}`);
   return new Promise((resolve, reject) => {
-    db.usuariosAdmin.update({ _id: userId }, { $set: { imageUrl: imageUrl } }, {}, (err) => {
-      if (err) {
-        console.error('Error al actualizar la imagen del usuario:', err);
-        reject(err);
-      } else {
-        console.log('Imagen del usuario actualizada con éxito');
-        resolve(true);
+    db.usuariosAdmin.update(
+      { _id: userId },
+      { $set: { imageUrl: imageUrl } },
+      {},
+      (err) => {
+        if (err) {
+          console.error("Error al actualizar la imagen del usuario:", err);
+          reject(err);
+        } else {
+          console.log("Imagen del usuario actualizada con éxito");
+          resolve(true);
+        }
       }
-    });
+    );
   });
 }
 
-
 // Evento de IPC para actualizar la imagen del usuario
-ipcMain.on('actualizar-imagen-usuario', async (event, { userId, imageUrl }) => {
-  console.log('Evento actualizar-imagen-usuario recibido:', userId, imageUrl);
+ipcMain.on("actualizar-imagen-usuario", async (event, { userId, imageUrl }) => {
+  console.log("Evento actualizar-imagen-usuario recibido:", userId, imageUrl);
   try {
     await actualizarImagenUsuario(userId, imageUrl);
-    event.reply('respuesta-actualizar-imagen-usuario', { exito: true, imageUrl: imageUrl });
+    event.reply("respuesta-actualizar-imagen-usuario", {
+      exito: true,
+      imageUrl: imageUrl,
+    });
   } catch (error) {
-    console.error('Error al actualizar la imagen del usuario:', error);
-    event.reply('respuesta-actualizar-imagen-usuario', { exito: false, mensaje: error.message });
+    console.error("Error al actualizar la imagen del usuario:", error);
+    event.reply("respuesta-actualizar-imagen-usuario", {
+      exito: false,
+      mensaje: error.message,
+    });
   }
 });
 
-
-
-
 // Backend
-ipcMain.on('obtener-admin', (event) => {
+ipcMain.on("obtener-admin", (event) => {
   db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
     if (err) {
-      console.error('Error al buscar el administrador:', err);
-      event.reply('respuesta-obtener-admin', { exito: false, error: err.message });
+      console.error("Error al buscar el administrador:", err);
+      event.reply("respuesta-obtener-admin", {
+        exito: false,
+        error: err.message,
+      });
     } else if (admin) {
-      event.reply('respuesta-obtener-admin', { exito: true, admin });
+      event.reply("respuesta-obtener-admin", { exito: true, admin });
     } else {
-      event.reply('respuesta-obtener-admin', { exito: false, error: 'No se encontró un administrador' });
+      event.reply("respuesta-obtener-admin", {
+        exito: false,
+        error: "No se encontró un administrador",
+      });
     }
   });
 });
@@ -889,6 +1093,8 @@ ipcMain.on('reiniciar-recuperacioncuenta', async (event, userId) => {
 
 ////////crear subUsuarios
 
+////////crear subUsuarios
+
 ipcMain.on("guardar-usuario-secundario", async (event, usuario) => {
   try {
     // Genera un hash del password del usuario
@@ -925,6 +1131,7 @@ ipcMain.on("guardar-usuario-secundario", async (event, usuario) => {
     event.reply("respuesta-guardar-usuario", { exito: false, error: error.message });
   }
 });
+
 
 
 ///////carga de usuarios inicial
@@ -1043,6 +1250,28 @@ ipcMain.on('guardar-usuario-editado', async (event, updatedUser) => {
   }
 });
 
+////////////// obener los permisos de usuarios para aplicar las restricciones
+ipcMain.on("obtener-permisos-usuario", async (event, userId) => {
+  try {
+    let usuario = await db.usuariosAdmin.findOneAsync({ _id: userId });
+    if (usuario) {
+      event.reply("respuesta-obtener-permisos-usuario", { success: true, data: usuario.permisos || {}, isAdmin: true });
+    } else {
+      usuario = await db.usuarios.findOneAsync({ _id: userId });
+      if (usuario) {
+        event.reply("respuesta-obtener-permisos-usuario", { success: true, data: usuario.permisos || {}, isAdmin: false });
+      } else {
+        event.reply("respuesta-obtener-permisos-usuario", { success: false, error: "Usuario no encontrado" });
+      }
+    }
+  } catch (error) {
+    console.error("Error al obtener los permisos del usuario:", error);
+    event.reply("respuesta-obtener-permisos-usuario", { success: false, error: error.message });
+  }
+});
+
+
+
 
 
 
@@ -1078,37 +1307,51 @@ ipcMain.on("save-article", async (event, articuloAGuardar) => {
 
   const { brand, category } = articuloAGuardar;
 
-  const categorys = categoryAndBrands.map((e) => {
-    return e.typeFilter === "category" && e.value;
+  const categorys = categoryAndBrands.categorys; //SEGUIR CONLAS VERIFICIA
+  const brands = categoryAndBrands.brands;
+
+  console.log("VERIFICANDO CATEGORIA", categorys);
+  console.log("VERIFICANDO MARCA", brands);
+
+  const categoryString = categorys.map((cat) => {
+    return cat.value;
   });
-  const brands = categoryAndBrands.map((e) => {
-    return e.typeFilter === "brand" && e.value;
+
+  const brandString = brands.map((br) => {
+    return br.value;
   });
 
-  const existCategory = categorys.includes(category.value);
+  const categoryExist = categoryString.includes(category.value.toLowerCase());
+  console.log("categoria", categoryString, categoryExist);
 
-  const existBrand = brands.includes(brand.value);
+  const brandExist = brandString.includes(brand.value.toLowerCase());
 
-  if (existCategory && existBrand) {
+  console.log("marca", brandString, brandExist);
+
+  if (categoryExist && brandExist) {
     saveArticle(articuloAGuardar);
+    const articles = await findArticles();
+
+    console.log("Se enviaron los ARTICULOS desde save articles ", articles);
+    event.reply("response-get-articles", articles);
     event.reply("error-save-article", {
       message: "",
       type: "",
       active: false,
     });
-  } else if (!existBrand && !existCategory) {
+  } else if (!brandExist && !categoryExist) {
     event.reply("error-save-article", {
-      message: " no registrada",
+      message: "no registrada",
       type: "all",
       active: true,
     });
-  } else if (!existCategory) {
+  } else if (!categoryExist) {
     event.reply("error-save-article", {
       message: " no registrada",
       type: "category",
       active: true,
     });
-  } else if (!existBrand) {
+  } else if (!brandExist) {
     event.reply("error-save-article", {
       message: " no registrada",
       type: "brand",
@@ -1116,11 +1359,11 @@ ipcMain.on("save-article", async (event, articuloAGuardar) => {
     });
   }
 });
-ipcMain.on("get-articleById", async (event, articleId) => {
+ipcMain.on("get-articleByCode", async (event, articleCode) => {
   console.log("AGUANTEEEEE BOCAA LOCOOO");
-  const article = await getArticleById(articleId);
-
-  event.reply("article-foundById", article);
+  const article = await getArticleByCode(articleCode);
+  console.log("SE RESPONDE CON , ", article);
+  event.reply("response-get-articleByCode", article);
 });
 ipcMain.on("get-articleByName", async (event, articleName) => {
   console.log("AGUANTEEEEE BOCAA LOCOOO");
@@ -1135,8 +1378,16 @@ ipcMain.on("get-articles", async (event) => {
   event.reply("response-get-articles", articulos); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
 });
 
-ipcMain.on("delete-article", (e, articuloAEliminar) => {
-  deleteArticle(articuloAEliminar);
+ipcMain.on("edit-article", async (e, articleEdit) => {
+  const articleEditResult = await editArticle(articleEdit);
+
+  e.reply("response-edit-article", articleEditResult);
+});
+
+ipcMain.on("delete-article", async (e, articuloAEliminar) => {
+  const result = await deleteArticle(articuloAEliminar);
+
+  e.reply("response-delete-article", result);
 });
 
 ///
@@ -1150,7 +1401,9 @@ ipcMain.on("get-sales-stats", async (event) => {
 });
 
 ipcMain.on("sale-process", async (event, venta) => {
-  await saleProcess(venta);
+  const res = await saleProcess(venta);
+
+  event.reply("response-sale-process", res);
 });
 
 ipcMain.on("get-sales", async (event) => {
@@ -1163,25 +1416,39 @@ ipcMain.on("get-sales", async (event) => {
 ipcMain.on("delete-sale", (e, ventaAEliminar) => {
   deleteSales(ventaAEliminar);
 });
+
+ipcMain.on("prueba-afipo", (e) => {
+  pruebaAfip();
+});
 ///
 //ESCUCHAS DE EVENTOS DE CUENTAS
 //
 
-
-ipcMain.on("actualizar-estado-pagado", async (event, { idCuenta, estadoPagado }) => {
-  try {
-    // Actualiza el estado de 'pagado' en la base de datos
-    await actualizarEstadoPagado(idCuenta, estadoPagado);
-    // Aquí deberías añadir lógica para recuperar el estado actualizado de 'pagado' de la base de datos para 'idCuenta'
-    // Por ejemplo, supongamos que tienes una función 'obtenerEstadoPagado' que hace exactamente eso:
-    const estadoPagadoActualizado = await obtenerEstadoPagado(idCuenta);
-    // Envía el estado actualizado de vuelta al frontend
-    event.reply("estado-pagado-actualizado", { exitoso: true, idCuenta, estadoPagado: estadoPagadoActualizado });
-  } catch (error) {
-    console.error(error);
-    event.reply("estado-pagado-actualizado", { exitoso: false, error: error.message, idCuenta });
+ipcMain.on(
+  "actualizar-estado-pagado",
+  async (event, { idCuenta, estadoPagado }) => {
+    try {
+      // Actualiza el estado de 'pagado' en la base de datos
+      await actualizarEstadoPagado(idCuenta, estadoPagado);
+      // Aquí deberías añadir lógica para recuperar el estado actualizado de 'pagado' de la base de datos para 'idCuenta'
+      // Por ejemplo, supongamos que tienes una función 'obtenerEstadoPagado' que hace exactamente eso:
+      const estadoPagadoActualizado = await obtenerEstadoPagado(idCuenta);
+      // Envía el estado actualizado de vuelta al frontend
+      event.reply("estado-pagado-actualizado", {
+        exitoso: true,
+        idCuenta,
+        estadoPagado: estadoPagadoActualizado,
+      });
+    } catch (error) {
+      console.error(error);
+      event.reply("estado-pagado-actualizado", {
+        exitoso: false,
+        error: error.message,
+        idCuenta,
+      });
+    }
   }
-});
+);
 
 ipcMain.on("solicitar-estado-pagado-inicial", async (event) => {
   try {
@@ -1190,36 +1457,40 @@ ipcMain.on("solicitar-estado-pagado-inicial", async (event) => {
     event.reply("estado-pagado-inicial", { exitoso: true, estados });
   } catch (error) {
     console.error(error);
-    event.reply("estado-pagado-inicial", { exitoso: false, error: error.message });
+    event.reply("estado-pagado-inicial", {
+      exitoso: false,
+      error: error.message,
+    });
   }
 });
 
 // En tu archivo del proceso principal de Electron (backend)
-ipcMain.on('actualizar-cuenta', async (event, { idCuenta, datosActualizados }) => {
-  try {
-    await actualizarCuenta(idCuenta, datosActualizados);
-    const cuentasActualizadas = await obtenerCuentas(); // Supongamos que esta función obtiene todas las cuentas actualizadas
-    event.reply('cuentas-actualizadas', cuentasActualizadas);
-  } catch (error) {
-    console.error('Error al actualizar la cuenta:', error);
-    event.reply('error-actualizando-cuenta', error.message);
+ipcMain.on(
+  "actualizar-cuenta",
+  async (event, { idCuenta, datosActualizados }) => {
+    try {
+      await actualizarCuenta(idCuenta, datosActualizados);
+      const cuentasActualizadas = await obtenerCuentas(); // Supongamos que esta función obtiene todas las cuentas actualizadas
+      event.reply("cuentas-actualizadas", cuentasActualizadas);
+    } catch (error) {
+      console.error("Error al actualizar la cuenta:", error);
+      event.reply("error-actualizando-cuenta", error.message);
+    }
   }
-});
+);
 
 //////eliminar cuentas
-ipcMain.on('eliminar-cuenta', async (event, { id }) => {
+ipcMain.on("eliminar-cuenta", async (event, { id }) => {
   try {
     // Intentar eliminar la cuenta de la base de datos
     await cuentas.remove({ _id: id }, {});
     // Enviar respuesta exitosa al proceso de renderizado
-    event.reply('cuenta-eliminada', { exitoso: true});
+    event.reply("cuenta-eliminada", { exitoso: true });
   } catch (error) {
     // Enviar respuesta de error al proceso de renderizado
-    event.reply('cuenta-eliminada', { exitoso: false, error: error.message });
+    event.reply("cuenta-eliminada", { exitoso: false, error: error.message });
   }
 });
-
-
 
 //////evento cuentas para caja
 
@@ -1247,14 +1518,6 @@ ipcMain.on("get-accountToPay", async (event) => {
   }
 });
 
-
-
-
-
-
-
-
-
 ipcMain.on("save-accountToPay", async (event, account) => {
   const accountToSave = account;
 
@@ -1270,11 +1533,17 @@ ipcMain.on("get-accountToPay", async (event, account) => {
 ipcMain.on("save-category", async (event, category) => {
   // GUARDAR CATEGORIA EN FILTROS
   await addCategory(category);
+
+  const categorysAndBrands = await getCategoryAndBrand();
+  event.reply("response-get-categoryAndBrand", categorysAndBrands);
 });
 ipcMain.on("save-brand", async (event, brand) => {
   await addBrand(brand);
+
+  const categorysAndBrands = await getCategoryAndBrand();
+  event.reply("response-get-categoryAndBrand", categorysAndBrands);
 });
-ipcMain.on("get-categoryAndBrand", async (event, category) => {
+ipcMain.on("get-categoryAndBrand", async (event) => {
   const categorysAndBrands = await getCategoryAndBrand();
 
   event.reply("response-get-categoryAndBrand", categorysAndBrands);
@@ -1286,13 +1555,13 @@ ipcMain.on("actualizar-cuenta", async (event, { id, updatedAccount }) => {
     event.reply("cuenta-actualizada", { exitoso: true, id, resultado });
   } catch (error) {
     console.error(error);
-    event.reply("cuenta-actualizada", { exitoso: false, error: error.message, id });
+    event.reply("cuenta-actualizada", {
+      exitoso: false,
+      error: error.message,
+      id,
+    });
   }
 });
-
-
-
-
 
 //////////////
 //////////////
@@ -1304,6 +1573,12 @@ app.on("window-all-closed", () => {
     app.quit();
     win = null;
   }
+});
+app.on("ready", () => {
+  // Registrar atajos globales
+  globalShortcut.register("CommandOrControl+R", () => {
+    win?.reload();
+  });
 });
 
 app.on("activate", () => {

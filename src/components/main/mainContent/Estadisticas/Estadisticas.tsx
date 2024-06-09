@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Cards } from "./Cards";
-import { Graphic } from "./Graphic";
-import { SalesRecen } from "./SalesRecen";
-import SalesTop from "./SalesTop";
+import Cards from "./Cards/Cards";
+
+import { useSelector } from "react-redux";
+import { storeType } from "@/types";
+import Graphics from "./Graphics";
 
 interface EstadisticastProps {
   //PROPS
@@ -12,29 +13,15 @@ const Estadisticas: React.FC<EstadisticastProps> = (
     /*PROPS*/
   }
 ) => {
-  type salesType = {
-    amount: string;
-    article: string;
-    sold: number;
-    date: string;
-  };
-  const [salesData, setSalesData] = useState<salesType[]>([]);
-
-  function getSalesData() {
-    window.api.enviarEvento("get-sales-stats");
-  }
+  const ventas = useSelector((state: storeType) => state.saleState);
 
   useEffect(() => {
-    getSalesData();
-    window.api.recibirEvento("response-get-sales-stats", (salesDate) => {
-      setSalesData(salesDate);
-    });
+    console.log(ventas);
   }, []);
+
   return (
-    <div className="grid grid-cols-10 grid-rows-6 grid-flow-col h-full gap-3 p-2">
-      <Cards sales={salesData}></Cards>
-      <Graphic salesData={salesData}></Graphic>
-      <SalesRecen salesData={salesData}></SalesRecen>
+    <div className="flex flex-col w-full overflow-auto">
+      <Graphics />
     </div>
   );
 };

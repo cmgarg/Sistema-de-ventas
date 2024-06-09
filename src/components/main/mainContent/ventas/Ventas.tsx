@@ -6,6 +6,10 @@ import Export from "../buttons/Export";
 import Agregar from "../buttons/Agregar";
 import AddVentaForm from "./addVenta/AddVentaForm";
 import ItemList from "./ItemList";
+import { useDispatch, useSelector } from "react-redux";
+import { saleData, storeType } from "../../../../../types";
+import { addSale } from "../../../../../src/redux/estados/salesState";
+import Afip from "../../../../../node_modules/@afipsdk/afip.js";
 
 interface VentastProps {
   //PROPS
@@ -16,9 +20,14 @@ const Ventas: React.FC<VentastProps> = (
     /*PROPS*/
   }
 ) => {
+  const dispatch = useDispatch();
+  const formatterCurrency = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    currencyDisplay: "symbol",
+  });
+  const sales = useSelector((state: storeType) => state.saleState);
   const [activeModal, setActiveModal] = useState(false);
-
-  const [ventas, setVentas] = useState<object[]>([]);
   const [searchActived, setSearchActived] = useState<{
     actived: boolean;
     results: object[];
@@ -26,31 +35,29 @@ const Ventas: React.FC<VentastProps> = (
     actived: false,
     results: [],
   });
-  function addSale(e: object) {
-    setVentas([...ventas, e]);
+  function addNewSale(e: saleData) {
+    dispatch(addSale(e));
   }
   function onChangeModal(p: boolean) {
     setActiveModal(p);
-  }
-  function obtenerVentas() {
-    window.api.enviarEvento("get-sales");
   }
   function getResultsSales(p: object[], e: boolean) {
     setSearchActived({ actived: e, results: p });
     console.log(p);
   }
+
+  const pruenaAfipo = () => {
+    window.api.enviarEvento("prueba-afipo");
+  };
+
+  const formatMony = (n: number) => {
+    return formatterCurrency.format(n);
+  };
   /////LISTA DE ARTICULSO
 
   ///carga de ventas
   useEffect(() => {
-    obtenerVentas();
-    window.api.recibirEvento("response-get-sales", (e) => {
-      const arraySales: object[] = [];
-      e.map((e: any) => {
-        arraySales.push(e);
-      });
-      setVentas(arraySales);
-    });
+    console.log(formatMony(4300));
   }, []);
   //////////////////////////////
 
@@ -60,7 +67,7 @@ const Ventas: React.FC<VentastProps> = (
         <NavMain title="Ventas">
           <Export></Export>
           <Buscador
-            searchIn={ventas}
+            searchIn={sales}
             functionReturn={getResultsSales}
           ></Buscador>
           <Agregar title="Venta" onChangeModal={onChangeModal}></Agregar>
@@ -68,18 +75,22 @@ const Ventas: React.FC<VentastProps> = (
       </div>
       <div className="flex flex-row pb-5 row-start-2 row-end-7">
         <AsideMain isActive={false}></AsideMain>
-        <div className="flex-1 p-5 relative">
+        <div className="flex-1 p-5">
           {activeModal && (
             <AddVentaForm
               onChangeModal={onChangeModal}
-              addSales={addSale}
+              addSales={addNewSale}
+              formatMony={formatMony}
             ></AddVentaForm>
           )}
           <ItemList
-            ventas={ventas}
-            setVentas={setVentas}
+            sales={sales}
             searchActived={searchActived}
+            formatMony={formatMony}
           />
+          <button onClick={pruenaAfipo} className="w-52 h-96 bg-teal-500">
+            PRUEBA AFIPO
+          </button>
         </div>
       </div>
     </div>

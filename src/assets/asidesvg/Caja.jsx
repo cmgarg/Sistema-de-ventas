@@ -7,8 +7,8 @@ export default function Caja({ menuState, size }) {
       viewBox="0 0 197.5 195.9"
       width={size}
       height={size}
-      fill={(menuState.value === "caja" && "#fff") || "none"}
-      stroke={(menuState.value === "caja" && "#fff") || "#fff"}
+      fill={"none"}
+      stroke={"#fff"}
       strokeWidth={"5"}
     >
       <g id="Capa_2" data-name="Capa 2">
@@ -30,7 +30,7 @@ export default function Caja({ menuState, size }) {
             height="121.41"
             rx="12"
             fill="none"
-            stroke={(menuState.value === "caja" && "#fff") || "#fff"}
+            stroke={"#fff"}
             strokeWidth={"5"}
           />
           <rect
@@ -40,43 +40,43 @@ export default function Caja({ menuState, size }) {
             width="191.7"
             height="57.51"
             rx="12"
-            fill={(menuState.value === "caja" && "#fff") || "none"}
+            fill={"#fff"}
           />
           <rect
             x="24.57"
             y="148.37"
             width="107.63"
             height="6.99"
-            fill={(menuState.value === "caja" && "#000") || "none"}
-            stroke={(menuState.value === "caja" && "#000") || "#fff"}
+            fill={"none"}
+            stroke={"#fff"}
             strokeWidth={"5"}
           />
           <path
             class="cls-3"
             d="M131.7,148.87v6H25.07v-6H131.7m1-1H24.07v8H132.7v-8Z"
-            fill={(menuState.value === "caja" && "#000") || "none"}
-            stroke={(menuState.value === "caja" && "#000") || "#fff"}
+            fill={"none"}
+            stroke={"#fff"}
           />
           <rect
             x="24.57"
             y="165.95"
             width="58.11"
             height="8.58"
-            fill={(menuState.value === "caja" && "#000") || "none"}
-            stroke={(menuState.value === "caja" && "#000") || "#fff"}
+            fill={"none"}
+            stroke={"#fff"}
           />
           <path
             class="cls-3"
             d="M82.17,166.45V174H25.07v-7.58h57.1m1-1H24.07V175h59.1v-9.58Z"
-            fill={(menuState.value === "caja" && "#000") || "none"}
-            stroke={(menuState.value === "caja" && "#000") || "#fff"}
+            fill={"none"}
+            stroke={"#fff"}
           />
           <circle
             cx="169.44"
             cy="175.03"
             r="9.59"
-            fill={(menuState.value === "caja" && "#000") || "#fff"}
-            stroke={(menuState.value === "caja" && "#000") || "#fff"}
+            fill={"#fff"}
+            stroke={"#fff"}
           />
         </g>
       </g>

@@ -10,15 +10,15 @@ export const articleSlice = createSlice({
       console.log("EJECUTO CARGA", action.payload);
       const articles = action.payload;
 
-      return articles;
+      return [...articles];
     },
     addArticle: (state, action) => {
-      const articleToAdd: articleData = action.payload.value;
+      const articleToAdd: articleData = action.payload;
 
       return [...state, articleToAdd];
     },
     deleteArticle: (state, action) => {
-      const clientToDelete: dataToDeleteArticle = action.payload.value;
+      const clientToDelete: dataToDeleteArticle = action.payload;
 
       const result = state.filter((articleData) => {
         return (
