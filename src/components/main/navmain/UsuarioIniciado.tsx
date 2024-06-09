@@ -25,6 +25,16 @@ export default function UsuarioIniciado({ setLoginUser }) {
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.auth);
 
+  useEffect(() => {
+    console.log("Componente UsuarioIniciado montado");
+  
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleImageSelect = async (index) => {
     setSelectedImage(images[index]);
     setChangeImageVisible(false);
@@ -76,23 +86,17 @@ export default function UsuarioIniciado({ setLoginUser }) {
   };
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login");
     }
   }, [isAuthenticated, navigate]);
 
   const handleLogout = () => {
+    console.log("Ejecutando handleLogout");
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     dispatch(logout());
-    setLoginUser(false);
+    setLoginUser(false); // Aquí ocurre el error
     navigate("/login");
   };
 
@@ -135,15 +139,15 @@ export default function UsuarioIniciado({ setLoginUser }) {
       </div>
       <div className="relative">
         <div
-          className="flex flex-row border border-gray-600 rounded-lg p-1 menu-container"
+          className="flex flex-row border-4 border-gray-600 rounded-lg p-1 menu-container "
           onClick={toggleMenu}
         >
           <div className="flex items-center justify-center text-2xl text-white mr-3">
-            {datosUsuario ? datosUsuario.username : "Cargando..."}
+            {datosUsuario ? datosUsuario.username || datosUsuario.nombre : "Cargando..."}
           </div>
 
           <div
-            className="w-11 h-11 bg-cover bg-center rounded-full cursor-pointer"
+            className="w-11 h-11 bg-cover bg-center rounded-full cursor-pointer border "
             style={{ backgroundImage: `url(${selectedImage})` }}
           />
         </div>

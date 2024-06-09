@@ -4,6 +4,7 @@ import UsuarioIniciado from "./UsuarioIniciado";
 interface MainContentProps {
   children: ReactNode;
   title?: string;
+  setLoginUser: any;
 }
 
 const NavMain: React.FC<MainContentProps> = ({

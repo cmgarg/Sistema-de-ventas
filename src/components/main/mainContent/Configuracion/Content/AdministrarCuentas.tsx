@@ -5,7 +5,7 @@ import EditUserModal from "./AdministrarCuentas/EditUserModal";
 import Permisos from "./AdministrarCuentas/Permisos";
 import { MdAddPhotoAlternate } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
-import Tooltip from "../../../../nav/aside/Tooltip"; // Asegúrate de ajustar la ruta si es necesario
+import Tooltip from "../../../../nav/aside/Tooltip";
 
 export default function AdministrarCuentas() {
   const [showModal, setShowModal] = useState(false);
@@ -99,7 +99,7 @@ export default function AdministrarCuentas() {
     }
   };
 
-  const handleImageSelectt = (index) => {
+  const handleImageSelectt = (index:number) => {
     setSelectedImagee(images[index]);
     setChangeImageVisible(false);
 

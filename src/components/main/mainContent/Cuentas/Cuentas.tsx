@@ -26,7 +26,7 @@ const Cuentas: React.FC<CuentasProps> = (
   const [diaSeleccionado, setDiaSeleccionado] = useState(
     format(new Date(), "yyyy-MM-dd")
   );
-  console.log(accountToPay, "estas son las cuentas obtenidas en cuentas")
+  console.log(accountToPay, "estas son las cuentas obtenidas en cuentas");
 
   function onChangeModal(p: boolean) {
     setActiveModalForm(p);
@@ -161,54 +161,60 @@ const Cuentas: React.FC<CuentasProps> = (
           </div>
 
           <ListCuenta
-            Cuentas={accountToPay}
+            cuentas={accountToPay}
             filtroBoton={filtroBoton}
             filtroBoton2={filtroBoton2}
             filtroBoton3={filtroBoton3}
             filtroBoton4={filtroBoton4}
-            setAccountToPay={setAccountToPay}
             getAccountsToPay={getAccountsToPay}
           />
         </div>
 
-        <div className=" flex text-white justify-start flex-col  mt-2 mr-3  rounded-lg">
+        <div className="flex text-white justify-start flex-col mt-2 mr-3 rounded-lg">
           <div className="w-[22rem] h-[21rem] px-5 mb-6">
             <Calendar
               diaSeleccionado={diaSeleccionado}
               setDiaSeleccionado={setDiaSeleccionado}
             />
           </div>
-          <div className=" medidas-1 flex flex-col">
-
-            <div className="medidas-2 ">
-            <div className="  flex border-gray-600 border mb-2 rounded-lg p-2 items-center justify-center  ">
-              <p className="pl-3">Vencimiento Mensual</p>
-            </div>
-            <div className=" mb-10 border border-gray-600 rounded-lg medidas-3 overflow-auto">
-              {cuentasFiltradasPorDia1.map((cuenta, index) => (
-                <div className="p-2 border-b-1 border-gray-600 " key={index}>
-                  <div className="flex flex-row">
-                    <p className="flex-1 pl-1 text-center">{cuenta.descripcion}</p>{" "}
-                    <p className="flex-1 text-center">${cuenta.pay}</p>
-                  </div>
+          <div className="medidas-1 flex flex-col">
+            <div className="medidas-2">
+              <div className="flex border-gray-600 border mb-2 rounded-lg p-2 items-center justify-center">
+                <p className="pl-3">Vencimiento Mensual</p>
+              </div>
+              <div className="mb-10 border border-gray-600 rounded-lg medidas-3 overflow-auto scroll-container">
+                <div className="scroll-content">
+                  {cuentasFiltradasPorDia1.map((cuenta, index) => (
+                    <div className="p-2 border-b-1 border-gray-600" key={index}>
+                      <div className="flex flex-row">
+                        <p className="flex-1 pl-1 text-center">
+                          {cuenta.descripcion}
+                        </p>{" "}
+                        <p className="flex-1 text-center">${cuenta.pay}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
-            </div>
-            <div className=" medidas-2 ">
-            <div className=" flex p-2 items-center mb-3 border border-gray-600 rounded-lg justify-center ">
-              <p className="pl-3">Gastos Diario</p>
-            </div>
-            <div className=" border border-gray-600 rounded-lg medidas-3 overflow-auto">
-              {cuentasFiltradasPorDia2.map((cuenta, index) => (
-                <div className="p-2 border-b-1 border-gray-600 " key={index}>
-                  <div className="flex flex-row ">
-                    <p className="flex-1 pl-1 text-center">{cuenta.descripcion}</p>{" "}
-                    <p className="flex-1 text-center">${cuenta.pay}</p>
-                  </div>
+            <div className="medidas-2">
+              <div className="flex p-2 items-center mb-3 border border-gray-600 rounded-lg justify-center">
+                <p className="pl-3">Gastos Diario</p>
+              </div>
+              <div className="border border-gray-600 rounded-lg medidas-3 overflow-auto scroll-container">
+                <div className="scroll-content">
+                  {cuentasFiltradasPorDia2.map((cuenta, index) => (
+                    <div className="p-2 border-b-1 border-gray-600" key={index}>
+                      <div className="flex flex-row">
+                        <p className="flex-1 pl-1 text-center">
+                          {cuenta.descripcion}
+                        </p>{" "}
+                        <p className="flex-1 text-center">${cuenta.pay}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
             </div>
           </div>
         </div>

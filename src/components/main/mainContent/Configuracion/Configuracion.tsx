@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NavMain from "../../navmain/NavMain";
 import MenuConfig from "./MenuConfig";
 import General from "./Content/General";
 import AdministrarCuentas from "./Content/AdministrarCuentas";
 import InfoCmg from "./Content/InfoCmg";
-
+import { useDispatch, useSelector } from "react-redux";
+import { cambiar } from "@/src/redux/estados/estadoTipoDeUser";
+  
 export default function Configuracion() {
+  const dispatch = useDispatch(); 
+  const userType = useSelector((state: RootState) => state.estadoTipoDeUser);
   const [estado, setEstado] = useState("general-1");
-
   const contenido = () => {
     if (estado === "general-1") {
       return <General />;
@@ -19,6 +22,18 @@ export default function Configuracion() {
       return <InfoCmg />;
     }
   }
+
+
+
+ ///estado redux saber q tipo de usuario se inicio y aplicar las restricciones
+  useEffect(() => {
+    console.log("User Type:", userType);
+  }, [userType]);
+
+
+
+
+
   return (
     <div className="flex flex-1 flex-col">
       <div className="flex">

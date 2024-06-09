@@ -64,7 +64,7 @@ const Stock: React.FC<StocktProps> = (
 
   return (
     <div className="h-full w-full grid-cmg-program">
-      <div className="row-start-1 row-end-2">
+      <div className="row-start-1 row-end-2 pb-5">
         <NavMain title="Stock">
           <Export></Export>
           <Buscador searchIn={articles} functionReturn={getResults}></Buscador>

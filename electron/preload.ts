@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
+
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld("ipcRenderer", withPrototype(ipcRenderer));
 
@@ -169,6 +170,8 @@ contextBridge.exposeInMainWorld("api", {
       'actualizar-imagen-subusuario',
       "actualizar-permisos-usuario",
       "guardar-usuario-editado",
+      "obtener-permisos-usuario",
+      "verificar-admin-existente",
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -207,14 +210,19 @@ contextBridge.exposeInMainWorld("api", {
       "respuesta-guardar-usuario",
       "respuesta-cargar-todos-usuarios",
       'respuesta-actualizar-imagen-subusuario',
-      "respuesta-actualizar-permisos-usuario"
-      
+      "respuesta-actualizar-permisos-usuario",
+      "respuesta-iniciar-sesion",
+      "respuesta-obtener-permisos-usuario",
+      "respuesta-verificar-admin",
     ];
 
     if (canalesPermitidos.includes(canal)) {
       console.log(`Escuchando evento: ${canal}`); // Agrega esta línea
       ipcRenderer.on(canal, (event, ...args) => callback(...args));
     }
+  },
+  removeListener: (canal, callback) => {
+    ipcRenderer.removeListener(canal, callback);
   },
   removeAllListeners: (canal) => {
     ipcRenderer.removeAllListeners(canal);

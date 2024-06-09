@@ -3,8 +3,6 @@ import CerrarIcon from "../../assets/headersvg/cerraricon.jsx";
 import Minimize from "../../assets/headersvg/Minimize.jsx";
 import Maximize from "../../assets/headersvg/Maximize.jsx";
 import Guion from "../../assets/headersvg/Guion.jsx";
-import usuarioIcon from "aside/UsuarioIcon.jsx";
-import UsuarioIniciado from "../main/navmain/UsuarioIniciado.js";
 function Header() {
   const closeWindow = () => {
     window.api.enviarEvento("close-window");
