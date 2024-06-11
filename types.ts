@@ -147,7 +147,8 @@ export type storeType = {
   saleState: saleData[];
   auth: authType;
 };
-
+//UNIDAD TYPE
+export type unitType = { label: string; value: string; abrevUnit: string };
 /////////////usuario auth
 
 export type authType = {

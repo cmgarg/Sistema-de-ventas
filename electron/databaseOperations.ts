@@ -1,5 +1,4 @@
 import crypto from "crypto";
-
 import {
   articleData,
   clientData,
@@ -9,11 +8,20 @@ import {
 } from "../types";
 import Datastore from "@seald-io/nedb";
 import { getDate } from "./vFunctions";
+import bcrypt from "bcrypt";
+const saltRounds = 10; // El coste del proceso de hashing
+
 const db = {
   clients: new Datastore({ filename: "database/clients.db", autoload: true }),
-  articles: new Datastore({ filename: "database/articles.db", autoload: true }),
+  articles: new Datastore({
+    filename: "database/articles.db",
+    autoload: true,
+  }),
   sales: new Datastore({ filename: "database/sales.db", autoload: true }),
-  accounts: new Datastore({ filename: "database/accounts.db", autoload: true }),
+  accounts: new Datastore({
+    filename: "database/accounts.db",
+    autoload: true,
+  }),
   users: new Datastore({ filename: "database/users.db", autoload: true }),
   filters: new Datastore({ filename: "database/filters.db", autoload: true }),
   unitsArticleForm: new Datastore({
@@ -657,5 +665,118 @@ export const actualizarImagenUsuario = (userId, imageUrl) => {
         }
       }
     );
+  });
+};
+
+//FUNCIONES DE MARTIN QUE DEBERIAN ESTAR TERMINADAS POR EL, PERO LAS TERMINE YO PARA PODER VER BIEN LA APP
+
+export const guardarUsuario = async (usuarioAdmin) => {
+  try {
+    // Genera un hash del password del usuario
+    const hashedPassword = await bcrypt.hash(usuarioAdmin.password, saltRounds);
+    // Sustituye el password en texto plano con el hash antes de guardar en la base de datos
+    const usuarioConPasswordEncriptado = {
+      ...usuarioAdmin,
+      password: hashedPassword,
+      esAdmin: true,
+    };
+    //Ahora guardas el usuario con el password encriptado en la base de datos
+    db.usuariosAdmin.insert(usuarioConPasswordEncriptado, (err, newDoc) => {
+      if (err) {
+        // Si hay un error, envía una respuesta al front-end
+        return {
+          exito: false,
+          error: err.message,
+        };
+      } else {
+        // Si tiene éxito, también envía una respuesta al front-end
+        return {
+          exito: true,
+          usuarioAdmin: newDoc,
+        };
+      }
+    });
+  } catch (error) {
+    // Si hay un error con el proceso de hashing, lo capturas aquí
+    console.error(
+      "Error al encriptar el password del usuario administrador:",
+      error
+    );
+    return {
+      exito: false,
+      error: error,
+    };
+  }
+};
+
+export const verificarAdminExistente = () => {
+  db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
+    if (err) {
+      // En caso de error, comunicarlo al frontend
+      return false;
+    } else if (admin) {
+      // Si encontramos un administrador, comunicamos que existe y enviamos la cantidad de intentos restantes
+      return {
+        existeAdmin: true,
+        recuperacioncuenta: admin.recuperacioncuenta,
+      };
+    } else {
+      // Si no hay administrador, comunicamos que no existe
+      return { existeAdmin: false };
+    }
+  });
+};
+const jwt = require("jsonwebtoken");
+const secretKey = "tu_clave_secreta"; // Asegúrate de usar una clave secreta segura y única
+export const iniciarSesion = (credentials) => {
+  db.usuariosAdmin.findOne(
+    { username: credentials.username },
+    (err, usuario) => {
+      if (err) {
+        console.error("Error al buscar el usuario:", err);
+        return {
+          exito: false,
+          mensaje: "Error al buscar el usuario",
+        };
+      } else {
+        if (
+          usuario &&
+          bcrypt.compareSync(credentials.password, usuario.password)
+        ) {
+          // Genera un token JWT
+          const token = jwt.sign({ userId: usuario._id }, secretKey, {
+            expiresIn: "4464h",
+          }); // Token válido por 6 meses
+          console.log(usuario._id, token);
+          // Incluye el ID del usuario en la respuesta
+          return {
+            exito: true,
+            token,
+            userId: usuario._id,
+          };
+        } else {
+          return { exito: false };
+        }
+      }
+    }
+  );
+};
+
+export const obtenerAdmin = () => {
+  db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
+    if (err) {
+      console.error("Error al buscar el administrador:", err);
+      return {
+        exito: false,
+        error: err.message,
+      };
+    } else if (admin) {
+      return { exito: true, admin };
+    } else {
+      return {
+        exito: false,
+        error: "No se encontró un administrador",
+      };
+    }
   });
 };

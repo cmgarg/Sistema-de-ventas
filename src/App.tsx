@@ -18,22 +18,7 @@ function App() {
   const [bloqueoPrograma, setBloqueoPrograma] = useState(false);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    ipcRenderer.send("verificar-admin-existente");
-    ipcRenderer.on(
-      "respuesta-verificar-admin",
-      (event, { existeAdmin, recuperacioncuenta }) => {
-        setAdminExists(existeAdmin);
-        if (recuperacioncuenta == 0) {
-          setBloqueoPrograma(true);
-        }
-      }
-    );
-
-    return () => {
-      ipcRenderer.removeAllListeners("respuesta-verificar-admin");
-    };
-  }, []);
+  useEffect(() => {}, []);
   console.log(bloqueoPrograma, "programa bloqueado");
 
   useEffect(() => {
