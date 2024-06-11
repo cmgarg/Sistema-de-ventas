@@ -1,5 +1,9 @@
 //types ARTICULOS
 export type articleData = {
+
+
+
+
   article: {
     name: string;
     costo: number;
@@ -53,6 +57,13 @@ export type dataToEditArticle = {
   category: { value: string; label: string };
   code: string;
 };
+
+export type unitType = {
+  label: string;
+  value: string;
+  _id?: string;
+};
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// TYPES VENTAS

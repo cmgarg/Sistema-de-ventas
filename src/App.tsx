@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,13 +16,13 @@ import { RootState } from "./redux/store";
 function App() {
   const [adminExists, setAdminExists] = useState<boolean | null>(null);
   const [bloqueoPrograma, setBloqueoPrograma] = useState(false);
-  const [idUsuario, setIdUsuario] = useState<string | null>(null);
+  const [_idUsuario, setIdUsuario] = useState<string | null>(null);
   const [estadoRecuperacionCuenta, setEstadoRecuperacionCuenta] = useState(false);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const userType = useSelector((state: RootState) => state.estadoTipoDeUser.userType);
-  const [estadoRedux, setestadoRedux] = useState("")
+  const [_estadoRedux, setestadoRedux] = useState("")
 
   useEffect(() => {
     window.api.enviarEvento("verificar-admin-existente");
@@ -31,7 +31,7 @@ function App() {
       if (recuperacioncuenta === 0) {
         setBloqueoPrograma(true);
       }
-      setLoading(false); // Actualizar el estado de carga después de verificar el administrador existente
+      setLoading(true); // Actualizar el estado de carga después de verificar el administrador existente
     });
 
     return () => {
@@ -42,6 +42,7 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
+    console.log(token, userId,"estos son los datos q le paso al backend")
     setIdUsuario(userId);
     if (token && userId) {
       dispatch(login({ userId, token }));
@@ -53,8 +54,8 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
-    const handleObtenerPermisosUsuario = (response) => {
-      console.log("Escuchando evento: respuesta-obtener-permisos-usuario");
+    const handleObtenerPermisosUsuario = (response:any) => {
+      console.log(response,"Escuchando evento: respuesta-obtener-permisos-usuario");
       if (response.success) {
         const permisos = response.data || {};
         if (response.isAdmin) {

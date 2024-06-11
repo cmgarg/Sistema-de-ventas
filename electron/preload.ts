@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 
-// --------- Expose some API to the Renderer process ---------
+// Expose some API to the Renderer process
 contextBridge.exposeInMainWorld("ipcRenderer", withPrototype(ipcRenderer));
 
 // `exposeInMainWorld` can't detect attributes and methods of `prototype`, manually patching it.
@@ -22,7 +22,7 @@ function withPrototype(obj: Record<string, any>) {
   return obj;
 }
 
-// --------- Preload scripts loading ---------
+// Preload scripts loading
 function domReady(
   condition: DocumentReadyState[] = ["complete", "interactive"]
 ) {
@@ -232,14 +232,20 @@ contextBridge.exposeInMainWorld("api", {
 
     if (canalesPermitidos.includes(canal)) {
       console.log(`Escuchando evento: ${canal}`); // Agrega esta línea
-      ipcRenderer.on(canal, (event, ...args) => callback(...args));
+      ipcRenderer.on(canal, (_event, ...args) => callback(...args));
     }
   },
-  removeListener: (canal, callback) => {
-    ipcRenderer.removeListener(canal, callback);
+  removeListener: (canal: string, callback: (...args: any[]) => void) => {
+    if (ipcRenderer.listenerCount(canal) > 0) {
+      console.log(`Removiendo listener del canal: ${canal}`);
+      ipcRenderer.removeListener(canal, callback);
+    } else {
+      console.warn(`No hay listeners para el canal: ${canal}`);
+    }
   },
 
   removeAllListeners: (canal: string) => {
+    console.log(`Removiendo todos los listeners del canal: ${canal}`);
     ipcRenderer.removeAllListeners(canal);
   },
 });

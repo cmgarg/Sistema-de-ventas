@@ -9,6 +9,7 @@ import {
 } from "../types";
 import Datastore from "@seald-io/nedb";
 import { getDate } from "./vFunctions";
+import jwt from "jsonwebtoken";
 const db = {
   clients: new Datastore({ filename: "database/clients.db", autoload: true }),
   articles: new Datastore({ filename: "database/articles.db", autoload: true }),
@@ -16,12 +17,10 @@ const db = {
   accounts: new Datastore({ filename: "database/accounts.db", autoload: true }),
   users: new Datastore({ filename: "database/users.db", autoload: true }),
   filters: new Datastore({ filename: "database/filters.db", autoload: true }),
+  usuariosAdmin:new Datastore({ filename: "database/usuarios.db", autoload: true }),
+  usuarios:new Datastore({ filename: "database/sub-usuarios.db", autoload: true }),
   unitsArticleForm: new Datastore({
     filename: "database/unitsArticleForm.db",
-    autoload: true,
-  }),
-  usuariosAdmin: new Datastore({
-    filename: "database/usuarios.db",
     autoload: true,
   }),
 };
@@ -521,9 +520,10 @@ export const deleteUnit = async (e: string) => {
 //FUNCIONES DE CUENTAS ARCHIVO cuentasFile.js////////
 /////////////////////////////////////////////////////
 
-export const obtenerEstadoPagado = (idCuenta) => {
+
+export const obtenerEstadoPagado = (idCuenta:any) => {
   return new Promise((resolve, reject) => {
-    accounts.findOne({ _id: idCuenta }, (err, doc) => {
+    db.accounts.findOne({ _id: idCuenta }, (err, doc) => {
       if (err) {
         console.error("Error al obtener el estado de pagado:", err);
         reject(err);
@@ -590,7 +590,7 @@ export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
 /////////////////////////////////////////////////////
-export const actualizarEstadoPagado = (idCuenta, estadoPagado) => {
+export const actualizarEstadoPagado = (idCuenta:any, estadoPagado:any) => {
   return new Promise((resolve, reject) => {
     db.accounts.update(
       { _id: idCuenta },
@@ -610,12 +610,12 @@ export const actualizarEstadoPagado = (idCuenta, estadoPagado) => {
 // Suponiendo que `cuentas` es tu Datastore de NeDB para las cuentas
 export const obtenerEstadosPagadosInicial = async () => {
   return new Promise((resolve, reject) => {
-    db.accounts.find({}, (err, docs) => {
+    db.accounts.find({}, (err: any, docs: any[]) => {
       if (err) {
         reject(err);
       } else {
         // Transforma los documentos para obtener solo los IDs y los estados de pagado
-        const estados = docs.reduce((acc, doc) => {
+        const estados = docs.reduce((acc: { [x: string]: any; }, doc: { _id: string | number; pagado: any; }) => {
           acc[doc._id] = doc.pagado; // Suponiendo que `pagado` es un campo en tus documentos
           return acc;
         }, {});
@@ -625,22 +625,31 @@ export const obtenerEstadosPagadosInicial = async () => {
   });
 };
 
-export const getUser = (userId) => {
+
+export const getUser = (userId: any) => {
   return new Promise((resolve, reject) => {
-    db.usuariosAdmin.findOne({ _id: userId }, (err, doc) => {
-      console.log(userId, "este es  el id que recibo del fronend");
+    db.usuariosAdmin.findOne({ _id: userId }, (err, admin) => {
       if (err) {
         console.error("Error al obtener el usuario:", err);
         reject(err);
+      } else if (admin) {
+        resolve(admin);
       } else {
-        resolve(doc);
+        db.usuarios.findOne({ _id: userId }, (err, subUsuario) => {
+          if (err) {
+            console.error("Error al obtener el subusuario:", err);
+            reject(err);
+          } else {
+            resolve(subUsuario);
+          }
+        });
       }
     });
   });
 };
 
 // Función para actualizar la imagen del usuario
-export const actualizarImagenUsuario = (userId, imageUrl) => {
+export const actualizarImagenUsuario = (userId: any, imageUrl: any) => {
   console.log(`Actualizando imagen del usuario ${userId} con URL: ${imageUrl}`);
   return new Promise((resolve, reject) => {
     db.usuariosAdmin.update(
@@ -657,5 +666,351 @@ export const actualizarImagenUsuario = (userId, imageUrl) => {
         }
       }
     );
+  });
+};
+
+
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+
+export const guardarUsuarioAdmin = async (usuarioAdmin: { password: any; }) => {
+  try {
+    // Genera un hash del password del usuario
+    const hashedPassword = await bcrypt.hash(usuarioAdmin.password, saltRounds);
+    // Sustituye el password en texto plano con el hash antes de guardar en la base de datos
+    const usuarioConPasswordEncriptado = {
+      ...usuarioAdmin,
+      password: hashedPassword,
+      esAdmin: true,
+    };
+
+    // Ahora guardas el usuario con el password encriptado en la base de datos
+    return new Promise((resolve, reject) => {
+      db.usuariosAdmin.insert(usuarioConPasswordEncriptado, (err, newDoc) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(newDoc);
+        }
+      });
+    });
+  } catch (error:any) {
+    console.error("Error al encriptar el password del usuario administrador:", error);
+    throw new Error(error.message);
+  }
+};
+
+export const verificarAdminExistente = () => {
+  return new Promise((resolve, reject) => {
+    console.log("Iniciando verificación de admin existente..."); // Log para iniciar la verificación
+    db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
+      if (err) {
+        console.error("Error al buscar el administrador:", err); // Log de error
+        reject(err);
+      } else if (admin) {
+        console.log("Administrador encontrado:", admin); // Log del admin encontrado
+        resolve({
+          existeAdmin: true,
+          recuperacioncuenta: admin.recuperacioncuenta,
+        });
+      } else {
+        console.log("No se encontró un administrador."); // Log de admin no encontrado
+        resolve({ existeAdmin: false });
+      }
+    });
+  });
+};
+
+
+
+
+
+
+
+
+
+const secretKey = "tu_clave_secreta"; // Asegúrate de usar una clave secreta segura y única
+
+export const iniciarSesion = async (credentials: { username: string; password: string }) => {
+  console.log("Iniciar sesión con credenciales:", credentials);
+
+  try {
+    // Primero, buscamos en la colección de administradores
+    const usuarioAdmin = await new Promise<any>((resolve, reject) => {
+      db.usuariosAdmin.findOne({ username: credentials.username }, (err, doc) => {
+        if (err) reject(err);
+        else resolve(doc);
+      });
+    });
+
+    if (usuarioAdmin) {
+      console.log("Usuario administrador encontrado:", usuarioAdmin);
+      if (bcrypt.compareSync(credentials.password, usuarioAdmin.password)) {
+        const token = jwt.sign({ userId: usuarioAdmin._id, isAdmin: true }, secretKey, {
+          expiresIn: "4464h",
+        });
+        return {
+          exito: true,
+          token,
+          userId: usuarioAdmin._id,
+        };
+      } else {
+        console.log("Contraseña incorrecta para el usuario administrador.");
+        return { exito: false, mensaje: "Contraseña incorrecta" };
+      }
+    } else {
+      // Si no encontramos un usuario administrador, buscamos en la colección de subusuarios
+      console.log("No se encontró un usuario administrador, buscando subusuario...");
+      const subUsuario = await new Promise<any>((resolve, reject) => {
+        db.usuarios.findOne({ username: credentials.username }, (err, doc) => {
+          if (err) reject(err);
+          else resolve(doc);
+        });
+      });
+
+      if (subUsuario) {
+        console.log("Subusuario encontrado:", subUsuario);
+        if (bcrypt.compareSync(credentials.password, subUsuario.password)) {
+          const token = jwt.sign({ userId: subUsuario._id, isAdmin: false }, secretKey, {
+            expiresIn: "4464h",
+          });
+          return {
+            exito: true,
+            token,
+            userId: subUsuario._id,
+          };
+        } else {
+          console.log("Contraseña incorrecta para el subusuario.");
+          return { exito: false, mensaje: "Contraseña incorrecta" };
+        }
+      } else {
+        console.log("No se encontró un subusuario con ese nombre de usuario.");
+        return { exito: false, mensaje: "Usuario no encontrado" };
+      }
+    }
+  } catch (error) {
+    console.error("Error al buscar el usuario:", error);
+    return { exito: false, mensaje: "Error al buscar el usuario" };
+  }
+};
+
+
+export const verificarToken = (token: any) => {
+  try {
+    return jwt.verify(token, secretKey);
+  } catch (err) {
+    return null;
+  }
+};
+
+
+
+
+
+export const obtenerAdmin = () => {
+  return new Promise((resolve, reject) => {
+    db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
+      if (err) {
+        console.error("Error al buscar el administrador:", err);
+        reject({ exito: false, error: err.message });
+      } else if (admin) {
+        resolve({ exito: true, admin });
+      } else {
+        resolve({
+          exito: false,
+          error: "No se encontró un administrador",
+        });
+      }
+    });
+  });
+};
+
+
+export const verificarCodigoDesbloqueo = (codigoIngresado: any) => {
+  return new Promise((resolve, reject) => {
+    db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
+      if (err) {
+        console.error("Error al buscar el administrador:", err);
+        reject(err);
+      } else if (admin && admin.bloqueo === codigoIngresado) {
+        resolve({ exito: true });
+      } else {
+        resolve({ exito: false });
+      }
+    });
+  });
+};
+
+
+export const cambiarContrasena = async (userId: any, nuevaContrasena: any) => {
+  try {
+    // Encripta la nueva contraseña
+    const hashedPassword = await bcrypt.hash(nuevaContrasena, saltRounds);
+
+    // Actualiza la contraseña del usuario en la base de datos
+    return new Promise((resolve, reject) => {
+      db.usuariosAdmin.update({ _id: userId }, { $set: { password: hashedPassword } }, {}, (err) => {
+        if (err) {
+          console.error('Error al actualizar la contraseña:', err);
+          reject({ exito: false, error: err.message });
+        } else {
+          console.log('Contraseña actualizada con éxito');
+          resolve({ exito: true });
+        }
+      });
+    });
+  } catch (error:any) {
+    console.error('Error al encriptar la nueva contraseña:', error);
+    throw new Error(error.message);
+  }
+};
+
+
+export const restarRecuperacionCuenta = async (userId: any) => {
+  return new Promise((resolve, reject) => {
+    db.usuariosAdmin.update({ _id: userId }, { $inc: { recuperacioncuenta: -1 } }, {}, async (err, _numAffected) => {
+      if (err) {
+        reject(err);
+      } else {
+        const usuarioActualizado = await getUser(userId);
+        resolve(usuarioActualizado);
+      }
+    });
+  });
+};
+
+export const reiniciarRecuperacionCuenta = async (userId: any) => {
+  return new Promise<void>((resolve, reject) => {
+    db.usuariosAdmin.update({ _id: userId }, { $set: { recuperacioncuenta: 3 } }, {}, (err, _numAffected) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+export const guardarUsuarioSecundario = async (usuario: { password: any; }) => {
+  const hashedPassword = await bcrypt.hash(usuario.password, saltRounds);
+  const usuarioConPasswordEncriptado = {
+    ...usuario,
+    password: hashedPassword,
+    esusuario: true,
+  };
+
+  return new Promise((resolve, reject) => {
+    db.usuarios.insert(usuarioConPasswordEncriptado, (err, _newDoc) => {
+      if (err) {
+        reject(err);
+      } else {
+        db.usuarios.find({}, (error: any, docs: unknown) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(docs);
+          }
+        });
+      }
+    });
+  });
+};
+
+export const cargarTodosLosUsuarios = () => {
+  return new Promise((resolve, reject) => {
+    db.usuarios.find({}, (err: any, docs: unknown) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(docs);
+      }
+    });
+  });
+};
+
+export const actualizarImagenSubusuario = (userId: any, imageUrl: any) => {
+  return new Promise((resolve, reject) => {
+    db.usuarios.update({ _id: userId }, { $set: { imageUrl: imageUrl } }, {}, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(true);
+      }
+    });
+  });
+};
+
+export const actualizarPermisosUsuario = (userId: any, nuevosPermisos: any) => {
+  return new Promise((resolve, reject) => {
+    db.usuarios.update({ _id: userId }, { $set: { permisos: nuevosPermisos } }, {}, (err, _numReplaced) => {
+      if (err) {
+        reject(err);
+      } else {
+        db.usuarios.findOne({ _id: userId }, (err, usuario) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(usuario);
+          }
+        });
+      }
+    });
+  });
+};
+
+export const actualizarUsuario = (userId: any, updatedUser: any) => {
+  return new Promise((resolve, reject) => {
+    db.usuarios.update({ _id: userId }, { $set: updatedUser }, {}, (err, numReplaced) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(numReplaced);
+      }
+    });
+  });
+};
+
+export const obtenerPermisosUsuario = async (userId: any) => {
+
+  try {
+
+    let usuario = await db.usuariosAdmin.findOneAsync({ _id: userId })
+    if (usuario) {
+      return { success: true, data: usuario.permisos || {}, isAdmin: true };
+    } else {
+      usuario = await db.usuarios.findOneAsync({ _id: userId });
+      if (usuario) {
+        return { success: true, data: usuario.permisos || {}, isAdmin: false };
+      } else {
+        return { success: false, error: "Usuario no encontrado" };
+      }
+    }
+  } catch (error:any) {
+    throw new Error(error.message);
+  }
+};
+
+
+export async function getAccountsToPay() {
+  return new Promise((resolve, reject) => {
+    db.accounts.find({}, (err: any, docs: unknown) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(docs);
+      }
+    });
+  });
+}
+
+export const eliminarCuenta = async (id:any) => {
+  return new Promise((resolve, reject) => {
+    db.accounts.remove({ _id: id }, {}, (err, numRemoved) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(numRemoved);
+      }
+    });
   });
 };
