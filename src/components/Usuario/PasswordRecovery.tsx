@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ModalIntentoDeOpciones from "./ModalIntentoDeOpciones";
+import ModalCambioContraRespCorrect from "./ModalCambioContraRespCorrect";
 
-function PasswordRecovery({ onClose, username }) {
+function PasswordRecovery({ onClose, username, setEstadoRecuperacionCuenta }) {
   const [answers, setAnswers] = useState({
     question1: "",
     question2: "",
@@ -16,6 +17,8 @@ function PasswordRecovery({ onClose, username }) {
   const [opciones4, setOpciones4] = useState([]);
   const [respuestasCorrectas, setRespuestasCorrectas] = useState(false);
   const [mostrarModalEspera, setMostrarModalEspera] = useState(false);
+  const [idUser, setIdUser] = useState("");
+  const [cambiarContraseña, setCambiarContraseña] = useState()
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,11 +38,14 @@ function PasswordRecovery({ onClose, username }) {
         datosUsuario.codigopostal
     ) {
       setRespuestasCorrectas(true);
-      // Aquí puedes mostrar el modal para cambiar o ver la contraseña
+      // Reiniciar el contador de recuperación en la base de datos
+      window.api.enviarEvento("reiniciar-recuperacioncuenta", datosUsuario._id);
+      setCambiarContraseña(true); 
     } else {
       setRespuestasCorrectas(false);
       setMostrarModalEspera(true); // Muestra el modal de espera
-      // Cierra el modal actual
+      // Restar 1 al contador de recuperación en la base de datos
+      window.api.enviarEvento("restar-recuperacioncuenta", datosUsuario._id);
     }
   };
 
@@ -84,6 +90,13 @@ function PasswordRecovery({ onClose, username }) {
       setOpciones(opcionesMezcladas);
     }
   }, [datosUsuario]);
+  // En ModalIntentoDeOpciones
+  useEffect(() => {
+    if ( datosUsuario) {
+      if(datosUsuario.recuperacioncuenta == 0)
+      setEstadoRecuperacionCuenta(true); // Esto activará el useEffect en App
+    }
+  }, [ datosUsuario]);
 
   const shuffleOptions2 = (options2) => {
     return options2.sort(() => Math.random() - 0.5);
@@ -134,10 +147,18 @@ function PasswordRecovery({ onClose, username }) {
     <>
       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
         <div className="bg-gradient-to-b to-blue-950 from-slate-800 text-white p-5 rounded-lg relative">
+
+          {cambiarContraseña && (
+            <ModalCambioContraRespCorrect setCambiarContraseña={setCambiarContraseña} onClose={onClose} />
+          )}
+
+
           {mostrarModalEspera && (
             <ModalIntentoDeOpciones
               mostrarModalEspera={mostrarModalEspera}
               setMostrarModalEspera={setMostrarModalEspera}
+              datosUsuario={datosUsuario}
+              setEstadoRecuperacionCuenta={setEstadoRecuperacionCuenta}
             />
           )}
 

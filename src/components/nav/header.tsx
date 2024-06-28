@@ -3,8 +3,6 @@ import CerrarIcon from "../../assets/headersvg/cerraricon.jsx";
 import Minimize from "../../assets/headersvg/Minimize.jsx";
 import Maximize from "../../assets/headersvg/Maximize.jsx";
 import Guion from "../../assets/headersvg/Guion.jsx";
-import usuarioIcon from "aside/UsuarioIcon.jsx";
-import UsuarioIniciado from "../main/navmain/UsuarioIniciado.js";
 function Header() {
   const closeWindow = () => {
     window.api.enviarEvento("close-window");
@@ -76,7 +74,7 @@ function Header() {
         </div>
       </div>
       <button
-        className="app-region-no-drag flex items-center hover:bg-gray-700 h-full w-10 justify-center"
+        className="app-region-no-drag flex items-center hover:bg-gray-700 h-full w-8 justify-center"
         onClick={() => {
           minimizeWindow();
         }}
@@ -84,7 +82,7 @@ function Header() {
         <Guion color={"#fff"} size={20} />
       </button>
       <button
-        className="app-region-no-drag flex items-center hover:bg-gray-700 h-full w-10 justify-center"
+        className="app-region-no-drag flex items-center hover:bg-gray-700 h-full w-8 justify-center"
         onClick={() => {
           if (!isMaximized) {
             maximizeWindow();
@@ -100,7 +98,7 @@ function Header() {
         )}
       </button>
       <button
-        className="app-region-no-drag items-center flex hover:bg-red-700 h-full w-10 justify-center"
+        className="app-region-no-drag items-center flex hover:bg-red-700 h-full w-8 justify-center"
         onClick={() => {
           closeWindow();
         }}

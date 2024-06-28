@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { chargeArticles } from "../../redux/estados/articlesState";
 import { chargeClients } from "../../redux/estados/clientesState";
 import { chargeSales } from "../../redux/estados/salesState";
+import Configuracion from "./mainContent/Configuracion/Configuracion";
 import { loadBrands } from "../../redux/estados/brandState";
 import { loadCategorys } from "../../redux/estados/categoryState";
 import { loadSubCategorys } from "../../redux/estados/subCategoryState";
@@ -77,6 +78,7 @@ const MainContent: React.FC<MainContentProps> = ({}) => {
         <Route path="/stock" element={<Stock />} />
         <Route path="/estadisticas" element={<Estadisticas />} />
         <Route path="/cliente/:id" element={<ClienteInfo />} />
+        <Route path="/configuracion" element={<Configuracion />} />
         <Route path="/articulo/:code" element={<ArticuloInfo />} />
       </Routes>
     </div>

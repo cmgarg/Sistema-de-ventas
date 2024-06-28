@@ -16,13 +16,15 @@ import CategoryAndBrand from "./InputBrandAndCategory/CategoryAndBrand";
 import CategoryAndBrandForm from "./InputBrandAndCategory/CategoryAndBrandForm";
 import { NumericFormat } from "react-number-format";
 import CreateUnit from "./StockAndWeight/CreateUnit";
+import EditUnit from "./StockAndWeight/EditUnit";
+import UnitsForm from "./StockAndWeight/UnitsForm";
 
 interface AddArticulosFormProps {
   onChangeModal: (p: boolean) => void;
   categorys: categoryType[];
   brands: brandType[];
   subCategorys: subCategoryType[];
-  formatMony: (n: number) => number;
+  formatMony: (n: number | string) => string | number;
 }
 
 const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
@@ -62,10 +64,15 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
     active: false,
   });
 
-  //CREAR UNIDAD COSAS
-  const [createUnitForm, setCreateUnitForm] = useState(false);
-  const [unitsArticleForm, setUnitsArticleForm] = useState<unitType[]>([]);
-
+  const [unitsArticleForm, setUnitsArticleForm] = useState<unitType[]>([
+    { value: "cajas", label: "Cajas", abrevUnit: "Caj" },
+    { value: "paquetes", label: "Paquetes", abrevUnit: "Paq" },
+    { value: "unidades", label: "Unidades", abrevUnit: "Ud" },
+    { value: "litros", label: "Litros", abrevUnit: "L" },
+    { value: "kilogramos", label: "Kilogramos", abrevUnit: "Kg" },
+  ]);
+  //UNIDADES
+  const [unitForm, setUnitForm] = useState(false);
   //CATEGORY
 
   const [newCategory, setNewCategory] = useState<string>("");
@@ -135,6 +142,8 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
       "grossWeight",
       "liquidWeight",
       "percentajeToSale",
+      "paletteOn",
+      "paletteValue",
     ];
     console.log(existingData.includes(data), "esto");
     if (existingData.includes(data)) {
@@ -265,6 +274,34 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
             taxes: [...taxes],
           });
           break;
+        case "paletteOn":
+          if (articuloDataState.palette) {
+            setarticuloData({
+              ...articuloDataState,
+              palette: { ...articuloDataState.palette, active: value },
+            });
+          } else {
+            let articleData = articuloDataState;
+            articleData.palette = {
+              active: value,
+              value: 0,
+            };
+          }
+          break;
+        case "paletteValue":
+          if (articuloDataState.palette) {
+            setarticuloData({
+              ...articuloDataState,
+              palette: { ...articuloDataState.palette, value: value },
+            });
+          } else {
+            let articleData = articuloDataState;
+            articleData.palette = {
+              active: true,
+              value: value,
+            };
+          }
+          break;
 
         default:
           break;
@@ -295,21 +332,27 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
     window.api.enviarEvento("get-unitsArticleForm");
 
     window.api.recibirEvento("response-get-unitsArticleForm", (units) => {
-      setUnitsArticleForm(units);
+      const unitsAll = [...unitsArticleForm, ...units];
+      setUnitsArticleForm(unitsAll);
     });
   }, []);
   useEffect(() => {
-    console.log(articuloDataState);
+    console.log(articuloDataState, unitsArticleForm, "falopacara");
   }, [articuloDataState]);
   const applyPercentaje = (value: string, porcentaje: string) => {
     const aumento = Number(value) * (Number(porcentaje) / 100);
 
-    return formatMony(Number(value) + aumento);
+    const result = Number(value) + aumento;
+
+    return formatMony(`${result}`);
   };
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 text-base bg-slate-950 bg-opacity-30 backdrop-blur-xl">
       {/* CREAR UNIDAD */}
-      {createUnitForm && <CreateUnit setCreateUnitForm={setCreateUnitForm} />}
+
+      {unitForm && (
+        <UnitsForm units={unitsArticleForm} onUnitForm={setUnitForm} />
+      )}
       {/*AÑADIR NUEVA CATEGORIA*/}
       <div
         className={`w-5/6 h-5/6 border border-gray-500 text-teal-200 bg-slate-950 bg-opacity-95 space-y-5 rounded-md relative flex flex-col ${
@@ -319,6 +362,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
         <CategoryAndBrandForm
           setAddBrandInput={setAddBrandInput}
           setAddCategoryInput={setAddCategoryInput}
+          setAddSubCategoryInput={setAddSubCategoryInput}
           addSubCategoryInput={addSubCategoryInput}
           onChangeSubCategory={onChangeSubCategory}
           newSubCategory={newSubCategory}
@@ -331,7 +375,6 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
           saveNewBrand={saveNewBrand}
           saveNewCategory={saveNewCategory}
           saveNewSubCategory={saveNewSubCategory}
-          setAddSubCategoryInput={setAddSubCategoryInput}
         />
         <div className="flex flex-col flex-1 items-center px-5 pt-5 border-b border-slate-800 rounded-b-2xl">
           <div className="flex w-full space-x-5 flex-1">
@@ -381,7 +424,7 @@ const AddArticuloForm: React.FC<AddArticulosFormProps> = ({
             <StockArticleForm
               articuloDataState={articuloDataState}
               inputStyle={inputStyle}
-              setCreateUnitForm={setCreateUnitForm}
+              setUnitForm={setUnitForm}
               setChangeData={setChangeData}
               unitsArticleForm={unitsArticleForm}
             />

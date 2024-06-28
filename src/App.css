@@ -73,3 +73,11 @@ li:last-child {
 .fecha-input:focus {
   outline: none; /* Opcional: elimina el contorno azul predeterminado */
 }
+
+
+/* Agrega esto a tu archivo CSS */
+.custom-title-padding {
+  padding: -6px; /* Ajusta este valor según sea necesario */
+  margin: -2;
+  background-color: #ee0909;
+}

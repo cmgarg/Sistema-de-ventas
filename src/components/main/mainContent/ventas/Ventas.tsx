@@ -28,6 +28,7 @@ const Ventas: React.FC<VentastProps> = (
   });
   const sales = useSelector((state: storeType) => state.saleState);
   const [activeModal, setActiveModal] = useState(false);
+  //DFATOS USUARIO
   const [searchActived, setSearchActived] = useState<{
     actived: boolean;
     results: object[];
@@ -51,11 +52,12 @@ const Ventas: React.FC<VentastProps> = (
   };
 
   /////LISTA DE ARTICULSO
-
+  const formatMony = (n: number | string) => {
+    console.log("FORMATIEANDO", formatterCurrency.format(Number(n)));
+    return formatterCurrency.format(Number(n));
+  };
   ///carga de ventas
-  useEffect(() => {
-    console.log(formatMony(4300));
-  }, []);
+
   //////////////////////////////
 
   return (

@@ -8,7 +8,7 @@ type propsInput = {
   articuloDataState: articleData;
   setChangeData: (data: string, value: any) => void;
   inputStyle: string;
-  setCreateUnitForm: (e: boolean) => void;
+  setUnitForm: (e: boolean) => void;
   unitsArticleForm: unitType[];
 };
 
@@ -17,7 +17,7 @@ const StockArticleForm = ({
   inputStyle,
   unitsArticleForm,
   setChangeData,
-  setCreateUnitForm,
+  setUnitForm,
 }: propsInput) => {
   const [newValue, setNewValue] = useState<string>("");
   const [unitSelect, setUnitSelect] = useState("Kg");
@@ -27,7 +27,6 @@ const StockArticleForm = ({
     { value: "unidades", label: "Unidades", abrevUnit: "Ud" },
     { value: "litros", label: "Litros", abrevUnit: "L" },
     { value: "kilogramos", label: "Kilogramos", abrevUnit: "Kg" },
-    ...unitsArticleForm,
   ]);
 
   function onChangeSelectUnit(unit: string) {
@@ -43,6 +42,20 @@ const StockArticleForm = ({
     setChangeData("stock-unit", unitObject[0]);
     setUnitSelect(abrevUnit);
   }
+  const loadUnits = () => {
+    const allUnits = [...unitsArticleForm];
+
+    setOptionsUnits(allUnits);
+  };
+  useEffect(() => {
+    console.log(unitsArticleForm, "CAGADA");
+
+    loadUnits();
+  }, []);
+
+  useEffect(() => {
+    loadUnits();
+  }, [unitsArticleForm]);
 
   return (
     <div className="flex flex-1 w-full">
@@ -106,7 +119,7 @@ const StockArticleForm = ({
                   backGround2="bg-slate-950"
                   border={false}
                   todos={false}
-                  setCreateUnitForm={setCreateUnitForm}
+                  setUnitForm={setUnitForm}
                 />
               </div>
             </div>
@@ -175,6 +188,45 @@ const StockArticleForm = ({
                   />
                   <p className="text-xs">Aprox</p>
                 </div>
+              </div>
+            </div>
+            <div className="flex flex-col items-center justify-center h-12 pr-1">
+              <p>Establecer palette</p>
+              <div className="flex bg-slate-900 border border-slate-800  h-12 w-full rounded-lg">
+                <input
+                  type="text"
+                  name="palette"
+                  className={"outline-none w-full bg-slate-900 rounded-lg px-2"}
+                  value={
+                    articuloDataState.palette
+                      ? `${articuloDataState.palette.value}`
+                      : "0"
+                  }
+                  onChange={(e) => {
+                    setChangeData("paletteValue", e.target.value);
+                  }}
+                  disabled={!articuloDataState.palette ? true : false}
+                />
+                <ButtonCheck
+                  className={`h-4 w-4 border rounded-full ${
+                    articuloDataState.article.wApp
+                      ? "bg-blue-500"
+                      : "bg-blue-950"
+                  }`}
+                  onClick={() =>
+                    setChangeData(
+                      "paletteOn",
+                      articuloDataState.palette
+                        ? !articuloDataState.palette.active
+                        : true
+                    )
+                  }
+                  checked={
+                    articuloDataState.palette
+                      ? articuloDataState.palette.active
+                      : false
+                  }
+                />
               </div>
             </div>
           </div>

@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from "react";
-import Menu from "../../../assets/asidesvg/Menu.jsx";
-import { TbWorld } from "react-icons/tb";
+import { TbWorld, TbBrandGoogleAnalytics, TbFileDollar } from "react-icons/tb";
 import { useSelector, useDispatch } from "react-redux";
 import Tooltip from "../aside/Tooltip.jsx";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import GoTo from "./GoTo.js";
-import { IoPerson, IoSettingsOutline } from "react-icons/io5";
-import { GiShoppingBag } from "react-icons/gi";
-import { BsCurrencyDollar } from "react-icons/bs";
-import { BsBoxSeamFill } from "react-icons/bs";
-import { BsPcDisplayHorizontal } from "react-icons/bs";
-import { TbBusinessplan } from "react-icons/tb";
+import {
+  IoPerson,
+  IoSettingsOutline,
+  IoSettingsSharp,
+  IoPersonOutline,
+} from "react-icons/io5";
+import { BsBoxSeamFill, BsBoxSeam } from "react-icons/bs";
 import { SiGoogleanalytics } from "react-icons/si";
-import { IoIosMenu } from "react-icons/io";
+import { TfiWorld } from "react-icons/tfi";
+import { FaFileInvoiceDollar } from "react-icons/fa";
+import {
+  PiCashRegisterLight,
+  PiCashRegisterFill,
+  PiCurrencyDollarLight,
+  PiCurrencyDollarBold,
+} from "react-icons/pi";
+import { RiShoppingBag4Line, RiShoppingBag4Fill } from "react-icons/ri";
+import { TiThMenu } from "react-icons/ti";
+import { LuMenu } from "react-icons/lu";
 
-export default function Aside({ setLoginUser }) {
+export default function Aside() {
   const [isActive, setIsActive] = useState(false);
   const location = useLocation();
   ////funciones ventana emergente con nombre.
@@ -27,13 +37,14 @@ export default function Aside({ setLoginUser }) {
 
   const handleClick = () => {
     setIsActive(!isActive);
-    console.log(menuState.value);
+    console.log(menuState.value, "este es el apartado q esta precionado");
   };
   useEffect(() => {
     console.log(location);
     if (location.pathname !== "articulos") {
     }
   }, [menuState]);
+  console.log(location.pathname, "este es el apartado cliqueado..");
 
   return (
     <div
@@ -54,10 +65,10 @@ export default function Aside({ setLoginUser }) {
             >
               <div className={`h-10 w-10 flex justify-center items-center `}>
                 {isActive ? (
-                  <IoIosMenu size={30} color="#fff"></IoIosMenu>
+                  <TiThMenu size={30} color={"#fff"} />
                 ) : (
                   <Tooltip content="Menu">
-                    <IoIosMenu size={30} color="#fff"></IoIosMenu>
+                    <LuMenu size={30} color="#fff" />
                   </Tooltip>
                 )}
               </div>
@@ -76,32 +87,60 @@ export default function Aside({ setLoginUser }) {
               </div>
             </div>
             <GoTo title="Clientes" goTo="/" isActive={isActive}>
-              <IoPerson color="#fff" fill={"#fff"} size={30} />
+              {location.pathname == "/" ? (
+                <IoPerson color={"#fff"} size={30} />
+              ) : (
+                <IoPersonOutline color={"#fff"} size={30} />
+              )}
             </GoTo>
             <GoTo title="Articulos" goTo="/articulos" isActive={isActive}>
-              <GiShoppingBag color="#fff" fill={"#fff"} size={30} />
+              {location.pathname == "/articulos" ? (
+                <RiShoppingBag4Fill color={"#fff"} size={30} />
+              ) : (
+                <RiShoppingBag4Line color={"#fff"} size={30} />
+              )}
             </GoTo>
             <GoTo title="Ventas" goTo="/ventas" isActive={isActive}>
-              <BsCurrencyDollar color="#fff" size={30} fill={"#fff"} />
+              {location.pathname == "/ventas" ? (
+                <PiCurrencyDollarBold color={"#fff"} size={35} />
+              ) : (
+                <PiCurrencyDollarLight color={"#fff"} size={35} />
+              )}
             </GoTo>
             <GoTo title="Stock" goTo="/stock" isActive={isActive}>
-              <BsBoxSeamFill color="#fff" size={30} fill={"#fff"} />
+              {location.pathname == "/stock" ? (
+                <BsBoxSeamFill color={"#fff"} size={30} />
+              ) : (
+                <BsBoxSeam color={"#fff"} size={30} />
+              )}
             </GoTo>
             <GoTo title="Caja" goTo="/caja" isActive={isActive}>
-              <BsPcDisplayHorizontal size={30} color={"#fff"} />
+              {location.pathname == "/caja" ? (
+                <PiCashRegisterFill size={35} color={"#fff"} />
+              ) : (
+                <PiCashRegisterLight size={35} color={"#fff"} />
+              )}
             </GoTo>
             <GoTo title="Cuentas" goTo="/cuentas" isActive={isActive}>
-              <TbBusinessplan size={30} color={"#fff"} />
+              {location.pathname == "/cuentas" ? (
+                <FaFileInvoiceDollar size={30} color={"#fff"} />
+              ) : (
+                <TbFileDollar size={35} color={"#fff"} />
+              )}
             </GoTo>
             <GoTo title="Estadisticas" goTo="/estadisticas" isActive={isActive}>
-              <SiGoogleanalytics size={30} color={"#fff"}>
-                {" "}
-              </SiGoogleanalytics>
+              {location.pathname == "/estadisticas" ? (
+                <SiGoogleanalytics size={30} color={"#fff"} />
+              ) : (
+                <TbBrandGoogleAnalytics size={30} color={"#fff"} />
+              )}
             </GoTo>
             <GoTo title="Navegador" goTo="/navegador" isActive={isActive}>
-              <TbWorld size={30} color={"#fff"}>
-                {" "}
-              </TbWorld>
+              {location.pathname == "/navegador" ? (
+                <TbWorld size={40} color={"#fff"} />
+              ) : (
+                <TfiWorld size={30} color={"#fff"} />
+              )}
             </GoTo>
           </div>
 
@@ -112,9 +151,13 @@ export default function Aside({ setLoginUser }) {
               goTo="/configuracion"
               isActive={isActive}
             >
-              <IoSettingsOutline size={30} color={"#fff"}>
-                {" "}
-              </IoSettingsOutline>
+              {location.pathname == "/configuracion" ? (
+                <IoSettingsSharp size={30} color="white" />
+              ) : (
+                <IoSettingsOutline size={30} color="white">
+                  {" "}
+                </IoSettingsOutline>
+              )}
             </GoTo>
           </div>
         </div>

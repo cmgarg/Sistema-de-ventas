@@ -3,9 +3,24 @@ import React, { useState, useEffect } from "react";
 export default function ModalIntentoDeOpciones({
   mostrarModalEspera,
   setMostrarModalEspera,
+  datosUsuario,
+  setEstadoRecuperacionCuenta,
 }) {
   const [contador, setContador] = useState(30);
   const [botonActivo, setBotonActivo] = useState(false);
+  const [cantidadIntentos, setCantidadIntentos] = useState(datosUsuario.recuperacioncuenta);
+
+  useEffect(() => {
+    const handleActualizacionRecuperacioncuenta = (nuevaCantidadIntentos) => {
+      setCantidadIntentos(nuevaCantidadIntentos);
+    };
+
+    window.api.recibirEvento('actualizacion-recuperacioncuenta', handleActualizacionRecuperacioncuenta);
+
+    return () => {
+      window.api.removeAllListeners('actualizacion-recuperacioncuenta');
+    };
+  }, [cantidadIntentos]);
 
   useEffect(() => {
     if (mostrarModalEspera) {
@@ -37,12 +52,16 @@ export default function ModalIntentoDeOpciones({
           Solo tenes 3 intentos para responder correctamente
         </p>
         <p className=" p-8">Te quedan </p>
-        <h2 className=" text-lg">2 </h2>
+        <h2 className=" text-lg">{cantidadIntentos} </h2>
         <button
           className={` mt-10 ${
             !botonActivo ? "bg-gray-500" : "bg-green-700"
           }  p-2 rounded-md`}
-          onClick={() => setMostrarModalEspera(false)}
+          onClick={() => {
+            setMostrarModalEspera(false);
+            setEstadoRecuperacionCuenta((prevEstado) => !prevEstado);
+          }}
+          
           disabled={!botonActivo}
         >
           Intentar de nuevo

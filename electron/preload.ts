@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
-// --------- Expose some API to the Renderer process ---------
+
+// Expose some API to the Renderer process
 contextBridge.exposeInMainWorld("ipcRenderer", withPrototype(ipcRenderer));
 
 // `exposeInMainWorld` can't detect attributes and methods of `prototype`, manually patching it.
@@ -21,7 +22,7 @@ function withPrototype(obj: Record<string, any>) {
   return obj;
 }
 
-// --------- Preload scripts loading ---------
+// Preload scripts loading
 function domReady(
   condition: DocumentReadyState[] = ["complete", "interactive"]
 ) {
@@ -161,11 +162,28 @@ contextBridge.exposeInMainWorld("api", {
       "obtener-datos-usuario",
       "actualizar-imagen-usuario",
       "obtener-admin",
+      "verificar-codigo-desbloqueo",
+      "cambiar-contrasena",
+      "reiniciar-recuperacioncuenta",
+      "restar-recuperacioncuenta",
+      "guardar-usuario-secundario",
+      "cargar-todos-usuarios",
+      "actualizar-imagen-subusuario",
+      "actualizar-permisos-usuario",
+      "guardar-usuario-editado",
+      "obtener-permisos-usuario",
+      "verificar-admin-existente",
+      "actualizar-imagen-usuario",
+      "obtener-admin",
       //Unidades
       "get-unitsArticleForm",
       "save-unitsArticleForm",
       "update-unitsArticleForm",
       "remove-unitsArticleForm",
+      //proveedores
+      "save-supplier",
+      "delete-supplier",
+      "get-suppliers",
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -198,19 +216,44 @@ contextBridge.exposeInMainWorld("api", {
       "datos-usuario-obtenidos",
       "datos-usuario-obtenidos",
       "respuesta-obtener-admin",
+      "respuesta-verificar-codigo",
+      "actualizacion-recuperacioncuenta",
+      "respuesta-actualizar-imagen-usuario",
+      "respuesta-guardar-usuario",
+      "respuesta-cargar-todos-usuarios",
+      "respuesta-actualizar-imagen-subusuario",
+      "respuesta-actualizar-permisos-usuario",
+      "respuesta-iniciar-sesion",
+      "respuesta-obtener-permisos-usuario",
+      "respuesta-verificar-admin",
+      "respuesta-obtener-admin",
       //UNIT RESPONSE
       "response-get-unitsArticleForm",
       "response-save-unitsArticleForm",
       "response-update-unitsArticleForm",
       "response-remove-unitsArticleForm",
+      //PROVEEDORES RESPONSE ,
+      "response-save-supplier",
+      "response-delete-supplier",
+      "response-get-suppliers",
     ];
 
     if (canalesPermitidos.includes(canal)) {
       console.log(`Escuchando evento: ${canal}`); // Agrega esta línea
-      ipcRenderer.on(canal, (event, ...args) => callback(...args));
+      ipcRenderer.on(canal, (_event, ...args) => callback(...args));
     }
   },
+  removeListener: (canal: string, callback: (...args: any[]) => void) => {
+    if (ipcRenderer.listenerCount(canal) > 0) {
+      console.log(`Removiendo listener del canal: ${canal}`);
+      ipcRenderer.removeListener(canal, callback);
+    } else {
+      console.warn(`No hay listeners para el canal: ${canal}`);
+    }
+  },
+
   removeAllListeners: (canal: string) => {
+    console.log(`Removiendo todos los listeners del canal: ${canal}`);
     ipcRenderer.removeAllListeners(canal);
   },
 });

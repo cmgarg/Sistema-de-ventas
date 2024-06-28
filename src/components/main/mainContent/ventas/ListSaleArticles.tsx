@@ -2,7 +2,7 @@ import { saleData } from "@/types";
 import React, { ReactElement, useEffect, useState } from "react";
 
 type ListSaleArticles = {
-  formatMony: (n: number) => string;
+  formatMony: (n: number | string) => string | number;
   sale: saleData;
 };
 
@@ -25,7 +25,7 @@ const ListSaleArticles: React.FC<ListSaleArticles> = ({ sale, formatMony }) => {
           <p className="text-xs">{article.amount.unit}</p>
         </span>
         <span className="flex justify-center items-center flex-1">
-          {formatMony(Number(article.total))}
+          {formatMony(article.total)}
         </span>
       </li>
     ));
@@ -67,8 +67,13 @@ const ListSaleArticles: React.FC<ListSaleArticles> = ({ sale, formatMony }) => {
       >
         {deploy ? itemOfList : itemOfList[0]}
       </ul>
-      <div className={`flex justify-end items-center flex-1 h-full pr-2`}>
-        <p>{formatMony(sale.sold)}</p>
+      <div className={`flex justify-evenly items-center flex-1 h-full pr-2`}>
+        <div className="flex-1 flex justify-center">
+          <p>{formatMony(sale.sold)}</p>
+        </div>
+        <div className="flex-1 flex justify-end">
+          <p>{sale.seller.username ? sale.seller.username : "PAJA"}</p>
+        </div>
       </div>
     </div>
   );

@@ -54,6 +54,8 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
     },
     sold: 0,
   });
+  const [userData, setUserData] = useState<any>({});
+
   const clients = useSelector((state: storeType) => state.clientState);
   const articles = useSelector((state: storeType) => state.articleState);
   const [showOkSignal, setShowOkSignal] = useState<boolean>(false);
@@ -170,7 +172,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
     setShowOkSignal(b);
   };
   function setChangeData(data: string, value: any) {
-    const existingData = ["articles", "sold", "buyer"];
+    const existingData = ["articles", "sold", "buyer", "seller"];
     if (existingData.includes(data)) {
       switch (data) {
         case "articles":
@@ -262,6 +264,22 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
       }
     });
   }, []);
+  //
+  const getUserData = () => {
+    const userId = localStorage.getItem("userId");
+    window.api.enviarEvento("obtener-datos-usuario", userId);
+  }; //
+  useEffect(() => {
+    getUserData();
+    window.api.recibirEvento("datos-usuario-obtenidos", (e) => {
+      console.log(e, "ESTO ES GONZA");
+
+      if (e.success) {
+        setUserData(e.data);
+        setChangeData("seller", e.data);
+      }
+    });
+  }, []);
 
   //ESTILOS INPUT
   const estilosInput = "outline-none px-2";
@@ -304,6 +322,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
           subirVenta={subirVenta}
           onChangeModal={onChangeModal}
           modalClient={modalClient}
+          userData={userData}
           saleData={saleData}
           showError={showError}
         />

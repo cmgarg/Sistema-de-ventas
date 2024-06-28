@@ -3,15 +3,15 @@ import React from "react";
 interface CategoryAndBrandFormProps {
   addCategoryInput: boolean;
   addSubCategoryInput: boolean;
+  addBrandInput: boolean;
   setAddCategoryInput: (p: boolean) => void;
+  setAddSubCategoryInput: (p: boolean) => void;
+  setAddBrandInput: (p: boolean) => void;
   newCategory: string;
   newSubCategory: string;
   onChangeCategory: (p: string) => void;
   onChangeSubCategory: (p: string) => void;
   saveNewCategory: (p: string) => void;
-  setAddSubCategoryInput: (p: boolean) => void;
-  addBrandInput: boolean;
-  setAddBrandInput: (p: boolean) => void;
   newBrand: string;
   onChangeBrand: (p: string) => void;
   saveNewBrand: (p: string) => void;
@@ -21,14 +21,14 @@ interface CategoryAndBrandFormProps {
 const CategoryAndBrandForm: React.FC<CategoryAndBrandFormProps> = ({
   addCategoryInput,
   addSubCategoryInput,
-  onChangeSubCategory,
-  saveNewBrand,
-  saveNewCategory,
+  addBrandInput,
   setAddCategoryInput,
   setAddSubCategoryInput,
   setAddBrandInput,
+  onChangeSubCategory,
+  saveNewBrand,
+  saveNewCategory,
   saveNewSubCategory,
-  addBrandInput,
   newBrand,
   newCategory,
   newSubCategory,

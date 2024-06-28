@@ -1,15 +1,6 @@
-import {
-  app,
-  BrowserWindow,
-  globalShortcut,
-  ipcMain,
-  ipcRenderer,
-} from "electron";
+import { app, BrowserWindow, globalShortcut, ipcMain } from "electron";
 import path from "node:path";
 import { loadEvents } from "./eventHandlers";
-
-//GUARDAR PETICION CUANDO SE ESTA OFFLINE
-//DATA BASES LOCALES
 
 ///////////////////////////////
 
@@ -38,7 +29,7 @@ function createWindow() {
     icon: path.join(process.env.VITE_PUBLIC, "logo-cmg.png"),
     width: 1100,
     height: 1800,
-    minWidth: 1000,
+    minWidth: 1100,
     minHeight: 600,
     titleBarStyle: "hidden",
     webPreferences: {
@@ -87,14 +78,6 @@ ipcMain.on("minimize-window", () => {
   win?.minimize();
 });
 
-////////////////////////////////
-//////ESCUCHA DE USURARIOS
-////////////////////////////////
-//////////////
-//////////////
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();

@@ -31,7 +31,7 @@ export default function GoTo({ goTo, children, title, isActive }: Props) {
             }`}
           >
             {isActive ? (
-              <div className="text-sm ml-2 text-white cursor-pointer select-none">
+              <div className="text-sm ml-1 text-white cursor-pointer select-none">
                 {title}
               </div>
             ) : null}

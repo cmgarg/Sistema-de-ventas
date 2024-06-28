@@ -11,6 +11,7 @@ import { articleData, storeType } from ".././../../../../types";
 import EditArticleForm from "./EDITARTICLE/EditArticleForm";
 import CheckSvg from "../../../../assets/MAINSVGS/mainAsideSvg/editSVG/CheckSvg";
 import UnCheckSvg from "../../../../assets/MAINSVGS/mainAsideSvg/editSVG/UnCheckSvg";
+import ForAddNewArticle from "./ADDNEWARTICLE/ForAddNewArticleMain";
 
 interface ArticulosProps {}
 
@@ -27,8 +28,10 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
     currency: "USD",
     currencyDisplay: "symbol",
   });
-  const formatMony = (n: number) => {
-    return formatterCurrency.format(n);
+  const formatMony = (n: number | string) => {
+    return typeof n === "string"
+      ? formatterCurrency.format(Number(n))
+      : formatterCurrency.format(n);
   };
   const [activeModal, setActiveModal] = useState(false);
 
@@ -103,7 +106,7 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
       <div className="flex flex-row pb-5 row-start-2 row-end-7">
         <AsideMain isActive={false}></AsideMain>
         <div className="w-full p-5">
-          {activeModal && (
+          {false && (
             <AddArticuloForm
               onChangeModal={onChangeModal}
               categorys={categorys}
@@ -112,6 +115,7 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
               formatMony={formatMony}
             ></AddArticuloForm>
           )}
+          {activeModal && <ForAddNewArticle onChangeModal={onChangeModal} />}
           {articleToEdit.active && (
             <EditArticleForm
               onChangeModal={onChangeModalEdit}

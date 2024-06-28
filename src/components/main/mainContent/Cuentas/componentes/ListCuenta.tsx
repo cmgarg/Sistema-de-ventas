@@ -2,10 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import CalendarioSGV from "../../../../../assets/MAINSVGS/Cuentas SVG/CalendarioSGV";
 import { format, addMonths, subMonths, getMonth, getYear } from "date-fns";
 import { es } from "date-fns/locale";
-import PagadoSVG from "../../../../../assets/MAINSVGS/Cuentas SVG/PagadoSVG";
-import ImpagaSVG from "../../../../../assets/MAINSVGS/Cuentas SVG/ImpagaSVG";
 import EditarCuenta from "./EditarCuenta";
 import Swal from "sweetalert2";
+import { MdCheckCircleOutline } from "react-icons/md";
 
 interface ListCuentaProps {
   cuentas: any[];
@@ -84,6 +83,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
   const filtrarCuentasPorFecha = (fecha: Date) => {
     const mesReferencia = getMonth(fecha) + 1; // Ajustando mes a base 1
     const anioReferencia = getYear(fecha);
+
     console.log(cuentas, "pedaso de pelotudo");
     return cuentas.filter((cuenta) => {
       const [anioCuenta, mesCuenta] = cuenta.date.split("-").map(Number);
@@ -189,7 +189,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
       event.preventDefault();
     };
 
-    // Agregar event listener a cada div
+    // Agregar event listener a cada div 1200   bulto 6 x 200  pelet x30 =  6.66
     const div1 = divRef1.current;
     const div2 = divRef2.current;
     const div3 = divRef3.current;
@@ -381,7 +381,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
 
   // Esta función envía un mensaje al proceso principal para actualizar el estado de "pagado"
   // Definición de togglePagado
-  const togglePagado = (id) => {
+  const togglePagado = (id:any) => {
     setEstadosPagados((prevEstados) => {
       const updatedEstados = { ...prevEstados };
       updatedEstados[id] = !updatedEstados[id];
@@ -631,20 +631,10 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
                         className=" flex justify-center items-center"
                       >
                         <div className=" absolute">
-                          <PagadoSVG
-                            width="25"
-                            height="25"
+                          <MdCheckCircleOutline
+                            size={30}
                             fill={
-                              estadosPagados[cuenta._id] ? "green" : "#616161"
-                            }
-                          />
-                        </div>
-                        <div className=" absolute">
-                          <ImpagaSVG
-                            width="25"
-                            height="25"
-                            fill={
-                              estadosPagados[cuenta._id] ? "#34EB17" : "black"
+                              estadosPagados[cuenta._id] ? "#34EB17" : "#4B5563"
                             }
                           />
                         </div>
@@ -703,20 +693,12 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
                           className=" flex justify-center items-center"
                         >
                           <div className=" absolute">
-                            <PagadoSVG
-                              width="25"
-                              height="25"
+                            <MdCheckCircleOutline
+                              size={30}
                               fill={
-                                estadosPagados[cuenta._id] ? "green" : "#616161"
-                              }
-                            />
-                          </div>
-                          <div className=" absolute">
-                            <ImpagaSVG
-                              width="25"
-                              height="25"
-                              fill={
-                                estadosPagados[cuenta._id] ? "#34EB17" : "black"
+                                estadosPagados[cuenta._id]
+                                  ? "#34EB17"
+                                  : "#4B5563"
                               }
                             />
                           </div>
@@ -778,20 +760,10 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
                         className=" flex justify-center items-center"
                       >
                         <div className=" absolute">
-                          <PagadoSVG
-                            width="25"
-                            height="25"
+                          <MdCheckCircleOutline
+                            size={30}
                             fill={
-                              estadosPagados[cuenta._id] ? "green" : "#616161"
-                            }
-                          />
-                        </div>
-                        <div className=" absolute">
-                          <ImpagaSVG
-                            width="25"
-                            height="25"
-                            fill={
-                              estadosPagados[cuenta._id] ? "#34EB17" : "black"
+                              estadosPagados[cuenta._id] ? "#34EB17" : "#4B5563"
                             }
                           />
                         </div>

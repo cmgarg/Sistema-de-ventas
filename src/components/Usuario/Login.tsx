@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { login } from "../../redux/estados/authSlice.ts";
-import { useDispatch } from "react-redux";
-import PasswordRecovery from "./PasswordRecovery.js";
-//import { storeType } from "@/types.ts";
+import React, { useEffect, useState } from 'react';
+import { login } from '../../redux/estados/authSlice.ts';
+import { useDispatch } from 'react-redux';
+import PasswordRecovery from './PasswordRecovery.js';
 
-type loginProps = {
-  setLoginUser: (p: boolean) => void;
+type LoginProps = {
+  setEstadoRecuperacionCuenta: (estado: boolean) => void;
 };
 
-const Login: React.FC<loginProps> = ({ setLoginUser }) => {
-  const [loginIncorrecto, setLoginIncorrecto] = useState<boolean>();
+const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta }) => {
+  const [loginIncorrecto, setLoginIncorrecto] = useState<boolean>(false);
   const [credentials, setCredentials] = useState({
     username: "",
     password: "",
@@ -20,23 +19,25 @@ const Login: React.FC<loginProps> = ({ setLoginUser }) => {
   });
 
   const dispatch = useDispatch();
-  //const authState = useSelector((state:storeType) => state.auth);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       const userId = localStorage.getItem("userId");
+      console.log("Token encontrado en localStorage:", token);
       dispatch(login({ userId, token }));
-      setLoginUser(true);
+      setEstadoRecuperacionCuenta(true);
     }
-  }, [dispatch, setLoginUser]);
+  }, [dispatch, setEstadoRecuperacionCuenta]);
 
   const handleChange = (e: { target: { name: string; value: string } }) => {
     const { name, value } = e.target;
+    console.log(`Campo ${name} cambiado a:`, value);
     setCredentials({ ...credentials, [name]: value });
   };
 
   const handleSubmit = () => {
+    console.log("Enviando credenciales:", credentials);
     window.api.enviarEvento("iniciar-sesion", credentials);
   };
 
@@ -48,12 +49,15 @@ const Login: React.FC<loginProps> = ({ setLoginUser }) => {
 
   useEffect(() => {
     window.api.recibirEvento("respuesta-iniciar-sesion", (respuesta) => {
+      console.log("Respuesta recibida del backend:", respuesta);
       if (respuesta.exito) {
+        console.log("Inicio de sesión exitoso.");
         localStorage.setItem("token", respuesta.token);
         localStorage.setItem("userId", respuesta.userId);
         dispatch(login({ userId: respuesta.userId, token: respuesta.token }));
-        setLoginUser(true);
+        setEstadoRecuperacionCuenta(true); // Asegúrate de actualizar el estado después del login exitoso
       } else {
+        console.log("Inicio de sesión fallido.");
         setLoginIncorrecto(true);
       }
     });
@@ -61,19 +65,19 @@ const Login: React.FC<loginProps> = ({ setLoginUser }) => {
     return () => {
       window.api.removeAllListeners("respuesta-iniciar-sesion");
     };
-  }, [dispatch, setLoginUser]);
+  }, [dispatch, setEstadoRecuperacionCuenta]);
 
   return (
     <div
       className={`flex flex-1 items-center justify-center text-white ${
-        showRecovery
+        showRecovery.show
           ? "bg-gradient-to-b to-blue-950 from-slate-800 bg-opacity-10"
           : "bg-gradient-to-b to-blue-950 from-slate-800"
       }`}
     >
       <div className="flex flex-col items-center justify-center border border-gray-600 rounded-lg w-96 h-96 ">
         <h1 className=" p-5 text-2xl">Punto De Venta CMG</h1>
-        <p>Iniciar Seccion</p>
+        <p>Iniciar Sección</p>
 
         <div className=" flex flex-col p-5 w-full h-full">
           <label htmlFor="username">Usuario</label>
@@ -129,6 +133,7 @@ const Login: React.FC<loginProps> = ({ setLoginUser }) => {
       </div>
       {showRecovery.show && (
         <PasswordRecovery
+          setEstadoRecuperacionCuenta={setEstadoRecuperacionCuenta} // Ajusta esto según sea necesario
           username={showRecovery.username}
           onClose={() => setShowRecovery({ show: false, username: "" })}
         />

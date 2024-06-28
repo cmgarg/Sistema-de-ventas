@@ -1,34 +1,36 @@
 import React, { useEffect, useState } from "react";
 import ModalIngresarCodigo from "./ModalIngresarCodigo";
 import ModalCambiarContraseña from "./ModalCambiarContaseña";
+import ModalCodigoIncorrecto from "./ModalCodigoIncorrecto";
 
-export default function Programabloqueado() {
+export default function Programabloqueado({setBloqueoPrograma}) {
   const [clickCount, setClickCount] = useState(0);
   const [mostrarModalCodigo, setMostrarModalCodigo] = useState(false);
   const [verificarCodigo, setVerificarCodigo] = useState(false);
   const [autCambioContra, setautCAmbioContra] = useState(false);
+  const [modalCodigoIncorrecto, setModalCodigoIncorrecto] = useState()
+
 
   useEffect(() => {
-    window.api.enviarEvento("obtener-admin");
-
-    const handleDatosAdminObtenidos = (respuesta) => {
-      if (respuesta) {
-        console.log(respuesta.admin.bloqueo, "estos son los datos de ususrio");
-        if (respuesta.admin.bloqueo == verificarCodigo) {
-          setautCAmbioContra(true);
-        }
+    if (verificarCodigo) {
+      window.api.enviarEvento("verificar-codigo-desbloqueo", verificarCodigo);
+    }
+  
+    const handleRespuestaVerificacion = (respuesta) => {
+      if (respuesta.exito) {
+        setautCAmbioContra(true);
+      } else {
+        setModalCodigoIncorrecto(true)
       }
     };
-
-    window.api.recibirEvento(
-      "respuesta-obtener-admin",
-      handleDatosAdminObtenidos
-    );
-
+  
+    window.api.recibirEvento("respuesta-verificar-codigo", handleRespuestaVerificacion);
+  
     return () => {
-      window.api.removeAllListeners("respuesta-obtener-admin");
+      window.api.removeAllListeners("respuesta-verificar-codigo");
     };
   }, [verificarCodigo]);
+  
 
   const handleSVGClick = () => {
     setClickCount((prevCount) => prevCount + 1);
@@ -53,13 +55,16 @@ export default function Programabloqueado() {
       className="flex flex-1 bg-gradient-to-b to-blue-950 from-slate-800 text-white"
       onClick={handleOutsideClick} // Manejador para clics fuera del SVG
     >
+      {modalCodigoIncorrecto && (
+          <ModalCodigoIncorrecto setModalCodigoIncorrecto={setModalCodigoIncorrecto}/>
+      )}
       {mostrarModalCodigo && (
         <ModalIngresarCodigo
           setVerificarCodigo={setVerificarCodigo}
           setMostrarModalCodigo={setMostrarModalCodigo}
         />
       )}
-      {autCambioContra && <ModalCambiarContraseña />}
+      {autCambioContra && <ModalCambiarContraseña setBloqueoPrograma={setBloqueoPrograma} />}
       <div className="flex flex-1 justify-around items-center flex-col">
         <h1 className="text-2xl">
           Por tu seguridad el programa está bloqueado
