@@ -64,11 +64,12 @@ const Ventas: React.FC<VentastProps> = (
   };
 
   /////LISTA DE ARTICULSO
-
+  const formatMony = (n: number | string) => {
+    console.log("FORMATIEANDO", formatterCurrency.format(Number(n)));
+    return formatterCurrency.format(Number(n));
+  };
   ///carga de ventas
-  useEffect(() => {
-    console.log(formatMony(4300));
-  }, []);
+
   //////////////////////////////
   console.log(sales, "estas son las ventas");
 

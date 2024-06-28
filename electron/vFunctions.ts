@@ -1,4 +1,4 @@
-const getDate = (): string => {
+export const getDate = (): string => {
   const currentDate = new Date();
 
   const year = currentDate.getFullYear();
@@ -11,5 +11,12 @@ const getDate = (): string => {
 
   return date;
 };
-
-export { getDate };
+export const verificarToken = (token) => {
+  const jwt = require("jsonwebtoken");
+  const secretKey = "tu_clave_secreta"; // Asegúrate de usar una clave secreta segura y única
+  try {
+    return jwt.verify(token, secretKey);
+  } catch (err) {
+    return null;
+  }
+};

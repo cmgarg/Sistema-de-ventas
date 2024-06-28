@@ -12,6 +12,14 @@ import { IoMdMore } from "react-icons/io";
 import { IoAdd, IoAddCircle, IoCreate, IoCreateSharp } from "react-icons/io5";
 import { BsTrash } from "react-icons/bs";
 import { unitType } from "../../../../../../../types";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "../../../../../../../app/ui/context-menu";
+import { TrashIcon } from "@radix-ui/react-icons";
+
 interface SelectProps {
   options: unitType[];
   onChangeSelection: (value: string) => void;
@@ -25,7 +33,7 @@ interface SelectProps {
   label?: string;
   border?: boolean;
   todos: boolean;
-  setCreateUnitForm: (e: boolean) => void;
+  setUnitForm: (e: boolean) => void;
 
   //PROPS
 }
@@ -37,7 +45,7 @@ const SelectUnitForm: React.FC<SelectProps> = ({
   filter,
   value,
   slice,
-  setCreateUnitForm,
+  setUnitForm,
   todos,
   backGround2,
   functionLastOption,
@@ -48,14 +56,14 @@ const SelectUnitForm: React.FC<SelectProps> = ({
   const [selected, setSelected] = useState(value);
   const [menu, setMenu] = useState(false);
 
-  const onCreateUnitForm = () => {
-    setCreateUnitForm(true);
+  const onUnitForm = () => {
+    setUnitForm(true);
+    setMenu(false);
   };
 
   function onChangeMenu() {
     setMenu(!menu);
   }
-
   const onSelected = (e: string) => {
     let abrevUnit = "";
     options.map((o) => {
@@ -67,6 +75,7 @@ const SelectUnitForm: React.FC<SelectProps> = ({
 
     onChangeSelection(e);
   };
+
   return (
     <div className="text-slate-50 max-w-full min-w-full">
       <Select
@@ -94,16 +103,10 @@ const SelectUnitForm: React.FC<SelectProps> = ({
         >
           <li className="flex-1 z-50 h-5 text-xs rounded-t-lg justify-between  list-none flex mb-2 text-white">
             <button
-              onClick={onCreateUnitForm}
-              className="flex-1 w-5 justify-center hover:bg-slate-900 hover:text-green-500 flex items-center border-r"
+              onClick={onUnitForm}
+              className="flex-1 w-5 justify-center hover:bg-slate-900 hover:text-yellow-500 flex items-center border-r"
             >
-              <IoAdd size={15} />
-            </button>
-            <button className="flex-1 w-5 justify-center hover:bg-slate-900 hover:text-yellow-500 flex items-center border-r">
               <IoCreateSharp size={15} />
-            </button>
-            <button className="flex-1 w-5 justify-center hover:bg-red-950 hover:text-red-500 flex items-center p-1">
-              <BsTrash size={15} />
             </button>
           </li>
           <SelectGroup>
@@ -112,9 +115,9 @@ const SelectUnitForm: React.FC<SelectProps> = ({
               return (
                 <SelectItem
                   value={e.value}
-                  className="flex-1 h-10 font-bold hover:bg-slate-900 "
+                  className="flex-1 w-full h-10 font-bold hover:bg-slate-900"
                 >
-                  <p>{e.label}</p>
+                  <p className="flex-1">{e.label}</p>
                 </SelectItem>
               );
             })}

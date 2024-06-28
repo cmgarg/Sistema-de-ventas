@@ -18,21 +18,30 @@ function App() {
   const [adminExists, setAdminExists] = useState<boolean | null>(null);
   const [bloqueoPrograma, setBloqueoPrograma] = useState(false);
   const [_idUsuario, setIdUsuario] = useState<string | null>(null);
-  const [estadoRecuperacionCuenta, setEstadoRecuperacionCuenta] = useState(false);
+  const [estadoRecuperacionCuenta, setEstadoRecuperacionCuenta] =
+    useState(false);
   const [loading, setLoading] = useState(true);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const userType = useSelector((state: RootState) => state.estadoTipoDeUser.userType);
-  const [_estadoRedux, setestadoRedux] = useState("")
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
+  const userType = useSelector(
+    (state: RootState) => state.estadoTipoDeUser.userType
+  );
+  const [_estadoRedux, setestadoRedux] = useState("");
 
 
   useEffect(() => {
     window.api.enviarEvento("verificar-admin-existente");
-    window.api.recibirEvento("respuesta-verificar-admin", ({ existeAdmin, recuperacioncuenta }) => {
-      setAdminExists(existeAdmin);
-      if (recuperacioncuenta === 0) {
-        setBloqueoPrograma(true);
+    window.api.recibirEvento(
+      "respuesta-verificar-admin",
+      ({ existeAdmin, recuperacioncuenta }) => {
+        setAdminExists(existeAdmin);
+        if (recuperacioncuenta === 0) {
+          setBloqueoPrograma(true);
+        }
+        setLoading(true); // Actualizar el estado de carga después de verificar el administrador existente
       }
       setLoading(false); // Actualizar el estado de carga después de verificar el administrador existente
     });
@@ -53,7 +62,7 @@ function App() {
       dispatch(logout());
       setLoading(false);
     }
-  }, [dispatch]);
+  }, []);
 
 
 
@@ -77,17 +86,26 @@ function App() {
           
         }
       } else {
-        console.error("Permisos del usuario no encontrados o incorrectos", response);
+        console.error(
+          "Permisos del usuario no encontrados o incorrectos",
+          response
+        );
       }
       setLoading(false); // Marca que la carga ha terminado
     };
 
-    window.api.recibirEvento("respuesta-obtener-permisos-usuario", handleObtenerPermisosUsuario);
+    window.api.recibirEvento(
+      "respuesta-obtener-permisos-usuario",
+      handleObtenerPermisosUsuario
+    );
 
     return () => {
-      window.api.removeListener("respuesta-obtener-permisos-usuario", handleObtenerPermisosUsuario);
+      window.api.removeListener(
+        "respuesta-obtener-permisos-usuario",
+        handleObtenerPermisosUsuario
+      );
     };
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {

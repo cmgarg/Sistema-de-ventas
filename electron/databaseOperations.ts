@@ -4,6 +4,7 @@ import {
   clientData,
   dataToEditArticle,
   saleData,
+  supplierType,
   unitType,
 } from "../types";
 import Datastore from "@seald-io/nedb";
@@ -11,15 +12,31 @@ import { getDate } from "./vFunctions";
 import jwt from "jsonwebtoken";
 const db = {
   clients: new Datastore({ filename: "database/clients.db", autoload: true }),
-  articles: new Datastore({ filename: "database/articles.db", autoload: true }),
+  articles: new Datastore({
+    filename: "database/articles.db",
+    autoload: true,
+  }),
   sales: new Datastore({ filename: "database/sales.db", autoload: true }),
-  accounts: new Datastore({ filename: "database/accounts.db", autoload: true }),
+  accounts: new Datastore({
+    filename: "database/accounts.db",
+    autoload: true,
+  }),
   users: new Datastore({ filename: "database/users.db", autoload: true }),
   filters: new Datastore({ filename: "database/filters.db", autoload: true }),
-  usuariosAdmin:new Datastore({ filename: "database/usuarios.db", autoload: true }),
-  usuarios:new Datastore({ filename: "database/sub-usuarios.db", autoload: true }),
+  usuariosAdmin: new Datastore({
+    filename: "database/usuarios.db",
+    autoload: true,
+  }),
+  usuarios: new Datastore({
+    filename: "database/sub-usuarios.db",
+    autoload: true,
+  }),
   unitsArticleForm: new Datastore({
     filename: "database/unitsArticleForm.db",
+    autoload: true,
+  }),
+  suppliers: new Datastore({
+    filename: "database/suppliers.db",
     autoload: true,
   }),
 };
@@ -241,9 +258,9 @@ export async function updateCountSaleArticle(article: {
     );
   });
 }
-//////////////////////////////////////////////////////
-//FUNCIONES DE CLIENTES ARCHIVO ventasFile.js////////
-////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////FUNCIONES DE CLIENTES ARCHIVO ventasFile.js////////
+//////////////////////////////////////////////////////////
 export const saveSale = (a: saleData) => {
   const fechaActual = new Date();
   const año = fechaActual.getFullYear();
@@ -395,31 +412,126 @@ export const getStats = async () => {
 };
 //UNITS Y DEMAS
 //FUNCTIONS UNITS KG, LIT, ETC
+
+const verifUnitExists = async (
+  e: unitType,
+  edit?: boolean
+): Promise<{ value: boolean; abrevUnit: boolean }> => {
+  const { value, abrevUnit } = e;
+  const unitOfDb = await db.unitsArticleForm.findAsync({});
+  const unitDefault = [
+    { value: "cajas", label: "Cajas", abrevUnit: "Caj" },
+    { value: "paquetes", label: "Paquetes", abrevUnit: "Paq" },
+    { value: "unidades", label: "Unidades", abrevUnit: "Ud" },
+    { value: "litros", label: "Litros", abrevUnit: "L" },
+    { value: "kilogramos", label: "Kilogramos", abrevUnit: "Kg" },
+  ];
+
+  const units = [...unitOfDb, ...unitDefault];
+
+  const existUnitValue = [...units].filter((unit) => {
+    return unit.value.toLowerCase() === value.toLowerCase();
+  });
+  const existUnitAbrev = [...units].filter((unit) => {
+    return unit.abrevUnit.toLowerCase() === abrevUnit.toLowerCase();
+  });
+  console.log(existUnitValue, existUnitAbrev, "Chotas en unicornios");
+  if (existUnitValue.length > 0 && existUnitAbrev.length > 0) {
+    return {
+      value: true,
+      abrevUnit: true,
+    };
+  } else if (existUnitValue.length > 0) {
+    return {
+      value: true,
+      abrevUnit: false,
+    };
+  } else if (existUnitAbrev.length > 0) {
+    return {
+      value: false,
+      abrevUnit: true,
+    };
+  } else {
+    return {
+      value: false,
+      abrevUnit: false,
+    };
+  }
+};
+
 export const getUnits = async () => {
   return await db.unitsArticleForm.findAsync({});
 };
-export const saveNewUnits = async (e: unitType) => {
-  return await db.unitsArticleForm
-    .insertAsync({ ...e })
-    .then((res) => {
+export const saveNewUnits = async (
+  e: unitType
+): Promise<{ message: string; value?: any }> => {
+  const { value, abrevUnit }: { value: boolean; abrevUnit: boolean } =
+    await verifUnitExists(e);
 
+  console.log("CHOTAS A CABALLO", value, abrevUnit);
+  if (value && abrevUnit) {
+    return {
+      message: "Ya existe la unidad",
+      value: false,
+    };
+  } else if (value) {
+    return {
+      message: "Ya existe una unidad con ese nombre",
+      value: false,
+    };
+  } else if (abrevUnit) {
+    return {
+      message: "Ya existe una unidad con ese abreviado",
+      value: false,
+    };
+  }
 
-      return {
-        message: "Unidad guardada correctamente",
-        value: res,
-      };
-    })
-    .catch((err) => {
+  if (e.value !== "" || e.label !== "") {
+    return await db.unitsArticleForm
+      .insertAsync(e)
+      .then((res) => {
+        console.log("Unidad guardada correctamente", res);
 
-      return {
-        message: "No se pudo guardar la unidad",
-        value: err,
-      };
-    });
+        return {
+          message: "Unidad guardada correctamente",
+          value: res,
+        };
+      })
+      .catch((err) => {
+        console.log("No se pudo guardar la unidad", err);
+        return {
+          message: "No se pudo guardar la unidad",
+          value: err,
+        };
+      });
+  } else {
+    return {
+      message: "Hay campos incompletos",
+      value: false,
+    };
+  }
 };
 export const updateUnit = async (e: unitType, id: string) => {
+  const { value, abrevUnit }: { value: boolean; abrevUnit: boolean } =
+    await verifUnitExists(e);
+
+  console.log("CHOTAS A CABALLO", value, abrevUnit);
+  if (value && abrevUnit) {
+    return {
+      message: "Ya existe una unidad igual",
+      value: false,
+    };
+  }
   return await db.unitsArticleForm
-    .updateAsync({ _id: id }, e, {})
+    .updateAsync(
+      { _id: id },
+      {
+        $set: {
+          ...e,
+        },
+      },
+      {}
+    )
     .then((res) => {
 
 
@@ -455,14 +567,55 @@ export const deleteUnit = async (e: string) => {
       };
     });
 };
+//PROVEEDORES
+export const saveSupplier = async (e: supplierType) => {
+  return await db.suppliers
+    .insertAsync(e)
+    .then((res) => {
+      console.log("SE GUARDOI CORRECTAMENTE EL PROVEEDOR ", res);
+      return {
+        message: "Proveedor guardado correctamente",
+        value: true,
+      };
+    })
+    .catch((err) => {
+      console.log("NO SE PUDO GUARDAR EL PROVEEDOR", err);
+      return {
+        message: "NO SE PUDO GUARDAR EL PROVEEDOR",
+        value: false,
+      };
+    });
+};
+
+export const deleteSupplier = async (supplierToDelete: supplierType) => {
+  return await db.suppliers
+    .removeAsync({ _id: supplierToDelete._id }, {})
+    .then((res) => {
+      console.log(res);
+      return {
+        message: "Proveedor eliminado correctamente",
+        value: true,
+      };
+    })
+    .catch((err) => {
+      console.log(err);
+      return {
+        message: "NO SE PUDO ELIMINAR EL PROVEEDOR",
+        value: false,
+      };
+    });
+};
+
+export const getSuppliers = async () => {
+  return await db.suppliers.findAsync({});
+};
 ////////////////////////MARTIN
 
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO cuentasFile.js////////
 /////////////////////////////////////////////////////
 
-
-export const obtenerEstadoPagado = (idCuenta) => {
+export const obtenerEstadoPagado = (idCuenta: any) => {
   return new Promise((resolve, reject) => {
     db.accounts.findOne({ _id: idCuenta }, (err, doc) => {
       if (err) {
@@ -531,7 +684,7 @@ export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
 /////////////////////////////////////////////////////
-export const actualizarEstadoPagado = (idCuenta, estadoPagado, pagado2, pagado3) => {
+export const actualizarEstadoPagado = (idCuenta:any, estadoPagado:any, pagado2:any, pagado3:any) => {
   return new Promise((resolve, reject) => {
     db.accounts.update(
       { _id: idCuenta },
@@ -556,16 +709,21 @@ export const obtenerEstadosPagadosInicial = async () => {
         reject(err);
       } else {
         // Transforma los documentos para obtener solo los IDs y los estados de pagado
-        const estados = docs.reduce((acc: { [x: string]: any; }, doc: { _id: string | number; pagado: any; }) => {
-          acc[doc._id] = doc.pagado; // Suponiendo que `pagado` es un campo en tus documentos
-          return acc;
-        }, {});
+        const estados = docs.reduce(
+          (
+            acc: { [x: string]: any },
+            doc: { _id: string | number; pagado: any }
+          ) => {
+            acc[doc._id] = doc.pagado; // Suponiendo que `pagado` es un campo en tus documentos
+            return acc;
+          },
+          {}
+        );
         resolve(estados);
       }
     });
   });
 };
-
 
 export const getUser = (userId: any) => {
   return new Promise((resolve, reject) => {
@@ -609,11 +767,10 @@ export const actualizarImagenUsuario = (userId: any, imageUrl: any) => {
   });
 };
 
-
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-export const guardarUsuarioAdmin = async (usuarioAdmin: { password: any; }) => {
+export const guardarUsuarioAdmin = async (usuarioAdmin: { password: any }) => {
   try {
     // Genera un hash del password del usuario
     const hashedPassword = await bcrypt.hash(usuarioAdmin.password, saltRounds);
@@ -634,8 +791,11 @@ export const guardarUsuarioAdmin = async (usuarioAdmin: { password: any; }) => {
         }
       });
     });
-  } catch (error:any) {
-    console.error("Error al encriptar el password del usuario administrador:", error);
+  } catch (error: any) {
+    console.error(
+      "Error al encriptar el password del usuario administrador:",
+      error
+    );
     throw new Error(error.message);
   }
 };
@@ -667,17 +827,24 @@ export const iniciarSesion = async (credentials: { username: string; password: s
   try {
     // Primero, buscamos en la colección de administradores
     const usuarioAdmin = await new Promise<any>((resolve, reject) => {
-      db.usuariosAdmin.findOne({ username: credentials.username }, (err, doc) => {
-        if (err) reject(err);
-        else resolve(doc);
-      });
+      db.usuariosAdmin.findOne(
+        { username: credentials.username },
+        (err, doc) => {
+          if (err) reject(err);
+          else resolve(doc);
+        }
+      );
     });
 
     if (usuarioAdmin) {
       if (bcrypt.compareSync(credentials.password, usuarioAdmin.password)) {
-        const token = jwt.sign({ userId: usuarioAdmin._id, isAdmin: true }, secretKey, {
-          expiresIn: "4464h",
-        });
+        const token = jwt.sign(
+          { userId: usuarioAdmin._id, isAdmin: true },
+          secretKey,
+          {
+            expiresIn: "4464h",
+          }
+        );
         return {
           exito: true,
           token,
@@ -697,9 +864,13 @@ export const iniciarSesion = async (credentials: { username: string; password: s
 
       if (subUsuario) {
         if (bcrypt.compareSync(credentials.password, subUsuario.password)) {
-          const token = jwt.sign({ userId: subUsuario._id, isAdmin: false }, secretKey, {
-            expiresIn: "4464h",
-          });
+          const token = jwt.sign(
+            { userId: subUsuario._id, isAdmin: false },
+            secretKey,
+            {
+              expiresIn: "4464h",
+            }
+          );
           return {
             exito: true,
             token,
@@ -718,7 +889,6 @@ export const iniciarSesion = async (credentials: { username: string; password: s
   }
 };
 
-
 export const verificarToken = (token: any) => {
   try {
     return jwt.verify(token, secretKey);
@@ -726,10 +896,6 @@ export const verificarToken = (token: any) => {
     return null;
   }
 };
-
-
-
-
 
 export const obtenerAdmin = () => {
   return new Promise((resolve, reject) => {
@@ -749,7 +915,6 @@ export const obtenerAdmin = () => {
   });
 };
 
-
 export const verificarCodigoDesbloqueo = (codigoIngresado: any) => {
   return new Promise((resolve, reject) => {
     db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
@@ -765,7 +930,6 @@ export const verificarCodigoDesbloqueo = (codigoIngresado: any) => {
   });
 };
 
-
 export const cambiarContrasena = async (userId: any, nuevaContrasena: any) => {
   try {
     // Encripta la nueva contraseña
@@ -780,41 +944,50 @@ export const cambiarContrasena = async (userId: any, nuevaContrasena: any) => {
         } else {
           resolve({ exito: true });
         }
-      });
+      );
     });
-  } catch (error:any) {
-    console.error('Error al encriptar la nueva contraseña:', error);
+  } catch (error: any) {
+    console.error("Error al encriptar la nueva contraseña:", error);
     throw new Error(error.message);
   }
 };
 
-
 export const restarRecuperacionCuenta = async (userId: any) => {
   return new Promise((resolve, reject) => {
-    db.usuariosAdmin.update({ _id: userId }, { $inc: { recuperacioncuenta: -1 } }, {}, async (err, _numAffected) => {
-      if (err) {
-        reject(err);
-      } else {
-        const usuarioActualizado = await getUser(userId);
-        resolve(usuarioActualizado);
+    db.usuariosAdmin.update(
+      { _id: userId },
+      { $inc: { recuperacioncuenta: -1 } },
+      {},
+      async (err, _numAffected) => {
+        if (err) {
+          reject(err);
+        } else {
+          const usuarioActualizado = await getUser(userId);
+          resolve(usuarioActualizado);
+        }
       }
-    });
+    );
   });
 };
 
 export const reiniciarRecuperacionCuenta = async (userId: any) => {
   return new Promise<void>((resolve, reject) => {
-    db.usuariosAdmin.update({ _id: userId }, { $set: { recuperacioncuenta: 3 } }, {}, (err, _numAffected) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
+    db.usuariosAdmin.update(
+      { _id: userId },
+      { $set: { recuperacioncuenta: 3 } },
+      {},
+      (err, _numAffected) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
       }
-    });
+    );
   });
 };
 
-export const guardarUsuarioSecundario = async (usuario: { password: any; }) => {
+export const guardarUsuarioSecundario = async (usuario: { password: any }) => {
   const hashedPassword = await bcrypt.hash(usuario.password, saltRounds);
   const usuarioConPasswordEncriptado = {
     ...usuario,
@@ -853,51 +1026,64 @@ export const cargarTodosLosUsuarios = () => {
 
 export const actualizarImagenSubusuario = (userId: any, imageUrl: any) => {
   return new Promise((resolve, reject) => {
-    db.usuarios.update({ _id: userId }, { $set: { imageUrl: imageUrl } }, {}, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(true);
+    db.usuarios.update(
+      { _id: userId },
+      { $set: { imageUrl: imageUrl } },
+      {},
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(true);
+        }
       }
-    });
+    );
   });
 };
 
 export const actualizarPermisosUsuario = (userId: any, nuevosPermisos: any) => {
   return new Promise((resolve, reject) => {
-    db.usuarios.update({ _id: userId }, { $set: { permisos: nuevosPermisos } }, {}, (err, _numReplaced) => {
-      if (err) {
-        reject(err);
-      } else {
-        db.usuarios.findOne({ _id: userId }, (err, usuario) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(usuario);
-          }
-        });
+    db.usuarios.update(
+      { _id: userId },
+      { $set: { permisos: nuevosPermisos } },
+      {},
+      (err, _numReplaced) => {
+        if (err) {
+          reject(err);
+        } else {
+          db.usuarios.findOne({ _id: userId }, (err, usuario) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(usuario);
+            }
+          });
+        }
       }
-    });
+    );
   });
 };
 
 export const actualizarUsuario = (userId: any, updatedUser: any) => {
   return new Promise((resolve, reject) => {
-    db.usuarios.update({ _id: userId }, { $set: updatedUser }, {}, (err, numReplaced) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(numReplaced);
+    db.usuarios.update(
+      { _id: userId },
+      { $set: updatedUser },
+      {},
+      (err, numReplaced) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(numReplaced);
+        }
       }
-    });
+    );
   });
 };
 
 export const obtenerPermisosUsuario = async (userId: any) => {
-
   try {
-
-    let usuario = await db.usuariosAdmin.findOneAsync({ _id: userId })
+    let usuario = await db.usuariosAdmin.findOneAsync({ _id: userId });
     if (usuario) {
       return { success: true, data: usuario.permisos || {}, isAdmin: true };
     } else {
@@ -908,11 +1094,10 @@ export const obtenerPermisosUsuario = async (userId: any) => {
         return { success: false, error: "Usuario no encontrado" };
       }
     }
-  } catch (error:any) {
+  } catch (error: any) {
     throw new Error(error.message);
   }
 };
-
 
 export async function getAccountsToPay() {
   return new Promise((resolve, reject) => {
@@ -926,7 +1111,7 @@ export async function getAccountsToPay() {
   });
 }
 
-export const eliminarCuenta = async (id:any) => {
+export const eliminarCuenta = async (id: any) => {
   return new Promise((resolve, reject) => {
     db.accounts.remove({ _id: id }, {}, (err, numRemoved) => {
       if (err) {

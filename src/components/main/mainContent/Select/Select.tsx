@@ -10,12 +10,14 @@ import {
 } from "../../../../../app/ui/select";
 interface SelectProps {
   options: { value: string; label: string }[];
-  onChangeSelection: (value: string, f: string) => void;
-  abreviationUnit: (v: string, u?: string) => string;
+  onChangeSelection: (value: string, f?: string) => void;
+  abreviationUnit?: (v: string, u?: string) => string;
   placeholder: string;
   slice: number;
   backGround?: string;
   backGround2?: string;
+  className?: string;
+  classNameDeploy?: string;
   value: string;
   filter?: string;
   functionLastOption?: () => void;
@@ -30,12 +32,14 @@ const SelectM: React.FC<SelectProps> = ({
   placeholder,
   options,
   onChangeSelection,
+  classNameDeploy,
   filter,
   value,
   slice,
   abreviationUnit,
   todos,
   backGround2,
+  className,
   functionLastOption,
   border,
   backGround,
@@ -63,14 +67,18 @@ const SelectM: React.FC<SelectProps> = ({
           if (e === "todos") {
             setSelected("");
           } else {
-            setSelected(abreviationUnit(e));
+            setSelected((abreviationUnit && abreviationUnit(e)) || e);
           }
         }}
       >
         <SelectTrigger
-          className={`${backGround || `bg-slate-950`} max-w-full min-w-full ${
-            border ? "border border-red-600" : "border-none"
-          }`}
+          className={
+            className
+              ? className
+              : `${backGround || `bg-slate-950`} max-w-full min-w-full ${
+                  border ? "border border-red-600" : "border-none"
+                }`
+          }
         >
           <div>
             {(slice && selected) || (
@@ -80,8 +88,10 @@ const SelectM: React.FC<SelectProps> = ({
         </SelectTrigger>
         <SelectContent
           className={`${
-            backGround2 || "bg-slate-950"
-          } text-white   max-w-full min-w-full border-l border-r border-b border-slate-800`}
+            classNameDeploy
+              ? classNameDeploy
+              : `${backGround2 || "bg-slate-950"} text-white border-slate-800`
+          } max-w-full min-w-full border-l border-r border-b`}
         >
           <SelectGroup>
             {label && <SelectLabel className="font-bold">Por</SelectLabel>}

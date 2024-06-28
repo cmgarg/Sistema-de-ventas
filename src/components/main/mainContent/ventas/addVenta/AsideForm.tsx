@@ -12,12 +12,14 @@ interface AsideForm {
   subirVenta: () => void;
   saleData: saleData;
   showError: { in: string };
+  userData: any;
 }
 
 const AsideForm: React.FC<AsideForm> = ({
   modalClient,
   onChangeModal,
   subirVenta,
+  userData,
   saleData,
   showError,
 }) => {
@@ -78,8 +80,20 @@ const AsideForm: React.FC<AsideForm> = ({
           <button className="flex flex-col flex-1 w-full text-xl items-center justify-center rounded-md hover:bg-slate-900">
             <div className="flex flex-col items-center space-y-2">
               <p>Vendedor</p>
-              <div className="rounded-full w-32 h-32 border "></div>
-              <p>Administrador</p>
+              <div className="rounded-full w-32 h-32 border-2 ">
+                {userData.imageUrl ? (
+                  <img
+                    src={userData.imageUrl}
+                    alt="usuario"
+                    className="h-full w-full rounded-full object-center object-cover"
+                  />
+                ) : (
+                  ""
+                )}
+              </div>
+              <p>
+                {userData.username ? userData.username : "No hay un usuario"}
+              </p>
             </div>
           </button>
         </div>

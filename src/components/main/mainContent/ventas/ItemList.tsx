@@ -10,7 +10,7 @@ import ListSaleArticles from "./ListSaleArticles";
 type ItemListProps = {
   sales: saleData[];
   searchActived: { actived: boolean; results: object[] };
-  formatMony: (number: number) => string;
+  formatMony: (number: number | string) => number | string;
 };
 
 const ItemList: React.FC<ItemListProps> = ({ sales, formatMony }) => {
@@ -39,7 +39,12 @@ const ItemList: React.FC<ItemListProps> = ({ sales, formatMony }) => {
           <p className="text-center">Total vendido</p>
         </div>
         <div className="flex-1 pl-2 flex items-center justify-end">
-          <p className="text-center">Comprador</p>
+          <div className="flex-1 flex justify-center">
+            <p className="text-center">Comprador</p>
+          </div>
+          <div className="flex-1 flex justify-end">
+            <p className="text-center">Vendedor</p>
+          </div>
         </div>
       </TableHead>
       {sales.map((s) => (
