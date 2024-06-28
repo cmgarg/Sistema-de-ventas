@@ -58,10 +58,6 @@ const Ventas: React.FC<VentastProps> = (
     window.api.enviarEvento("prueba-afipo");
   };
 
-  const formatMony = (n: number | string) => {
-    console.log("FORMATIEANDO", formatterCurrency.format(Number(n)));
-    return formatterCurrency.format(Number(n));
-  };
 
   /////LISTA DE ARTICULSO
   const formatMony = (n: number | string) => {

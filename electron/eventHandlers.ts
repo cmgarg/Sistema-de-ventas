@@ -301,13 +301,12 @@ export const loadEvents = () => {
   });
 
   ipcMain.on("guardar-usuario-admin", async (event, usuarioAdmin) => {
-    try {
       const usuarioConPasswordEncriptado = await guardarUsuarioAdmin(
         usuarioAdmin
       );
       event.reply("respuesta-guardar-usuario-admin", {
         exito: true,
-        usuarioAdmin: usuarioConPasswordEncriptado,
+        usuarioAdmin: usuarioConPasswordEncriptado,});
       });
  
 
@@ -320,8 +319,7 @@ export const loadEvents = () => {
           event.reply("respuesta-verificar-admin", { existeAdmin: false });
         }
       });
-    }
-  });
+
 
   ipcMain.on("verificar-admin-existente", async (event) => {
     try {

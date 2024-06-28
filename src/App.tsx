@@ -31,7 +31,6 @@ function App() {
   );
   const [_estadoRedux, setestadoRedux] = useState("");
 
-
   useEffect(() => {
     window.api.enviarEvento("verificar-admin-existente");
     window.api.recibirEvento(
@@ -41,10 +40,9 @@ function App() {
         if (recuperacioncuenta === 0) {
           setBloqueoPrograma(true);
         }
-        setLoading(true); // Actualizar el estado de carga después de verificar el administrador existente
+        setLoading(false); // Actualizar el estado de carga después de verificar el administrador existente
       }
-      setLoading(false); // Actualizar el estado de carga después de verificar el administrador existente
-    });
+    );
 
     return () => {
       window.api.removeAllListeners("respuesta-verificar-admin");
@@ -64,11 +62,8 @@ function App() {
     }
   }, []);
 
-
-
   useEffect(() => {
-    const handleObtenerPermisosUsuario = (response:any) => {
-      
+    const handleObtenerPermisosUsuario = (response: any) => {
       if (response.success) {
         const permisos = response.data || {};
         if (response.isAdmin) {
@@ -83,7 +78,6 @@ function App() {
           } else if (permisos.stock) {
             dispatch(cambiar({ userType: "stock" }));
           }
-          
         }
       } else {
         console.error(
@@ -112,9 +106,7 @@ function App() {
       const userId = localStorage.getItem("userId");
       if (userId) {
         window.api.enviarEvento("obtener-permisos-usuario", userId);
-        
       }
-      
     }
   }, [isAuthenticated]);
 
@@ -128,7 +120,6 @@ function App() {
   }, [showLoadingScreen]);
 
   function renderContent() {
-    
     if (loading) {
       return <div>Cargando... no se obtuvieron los permisos</div>; // Muestra un mensaje de carga mientras se obtienen los permisos
     }
@@ -139,16 +130,14 @@ function App() {
     } else if (adminExists) {
       return isAuthenticated ? (
         <>
-        {showLoadingScreen ? <PantallaDeCarga/> : null }
-        <div className={`${showLoadingScreen ? "hidden": "flex w-full h-full"}`}>
-        <Aside />
-        <Main />
-          
-        </div>
-          
+          {showLoadingScreen ? <PantallaDeCarga /> : null}
+          <div className={`${showLoadingScreen ? "hidden" : "flex w-full h-full"}`}>
+            <Aside />
+            <Main />
+          </div>
         </>
       ) : (
-        <Login 
+        <Login
           setEstadoRecuperacionCuenta={setEstadoRecuperacionCuenta}
           setShowLoadingScreen={setShowLoadingScreen}
         />
@@ -176,4 +165,3 @@ function App() {
 }
 
 export default App;
-
