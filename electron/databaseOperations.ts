@@ -335,13 +335,7 @@ export const findSales = () => {
 };
 export const deleteSales = (data: any) => {
 
-  db.sales.remove({ _id: data }, (err, _newDoc) => {
-    if (err) {
-      // Manejar el error
-      console.error("Error al guardar el objeto:", err);
-    } else {
-      // Objeto guardado con éxito
-    }
+  db.sales.remove({ _id: data }, (_err, _newDoc) => {
   });
 };
 //////////////////////////////////////////////////////
@@ -435,7 +429,7 @@ const verifUnitExists = async (
   const existUnitAbrev = [...units].filter((unit) => {
     return unit.abrevUnit.toLowerCase() === abrevUnit.toLowerCase();
   });
-  console.log(existUnitValue, existUnitAbrev, "Chotas en unicornios");
+
   if (existUnitValue.length > 0 && existUnitAbrev.length > 0) {
     return {
       value: true,
@@ -468,7 +462,6 @@ export const saveNewUnits = async (
   const { value, abrevUnit }: { value: boolean; abrevUnit: boolean } =
     await verifUnitExists(e);
 
-  console.log("CHOTAS A CABALLO", value, abrevUnit);
   if (value && abrevUnit) {
     return {
       message: "Ya existe la unidad",
@@ -490,7 +483,7 @@ export const saveNewUnits = async (
     return await db.unitsArticleForm
       .insertAsync(e)
       .then((res) => {
-        console.log("Unidad guardada correctamente", res);
+
 
         return {
           message: "Unidad guardada correctamente",
@@ -498,7 +491,6 @@ export const saveNewUnits = async (
         };
       })
       .catch((err) => {
-        console.log("No se pudo guardar la unidad", err);
         return {
           message: "No se pudo guardar la unidad",
           value: err,
@@ -515,7 +507,6 @@ export const updateUnit = async (e: unitType, id: string) => {
   const { value, abrevUnit }: { value: boolean; abrevUnit: boolean } =
     await verifUnitExists(e);
 
-  console.log("CHOTAS A CABALLO", value, abrevUnit);
   if (value && abrevUnit) {
     return {
       message: "Ya existe una unidad igual",
@@ -572,14 +563,14 @@ export const saveSupplier = async (e: supplierType) => {
   return await db.suppliers
     .insertAsync(e)
     .then((res) => {
-      console.log("SE GUARDOI CORRECTAMENTE EL PROVEEDOR ", res);
+
       return {
         message: "Proveedor guardado correctamente",
         value: true,
       };
     })
     .catch((err) => {
-      console.log("NO SE PUDO GUARDAR EL PROVEEDOR", err);
+
       return {
         message: "NO SE PUDO GUARDAR EL PROVEEDOR",
         value: false,
@@ -591,14 +582,12 @@ export const deleteSupplier = async (supplierToDelete: supplierType) => {
   return await db.suppliers
     .removeAsync({ _id: supplierToDelete._id }, {})
     .then((res) => {
-      console.log(res);
       return {
         message: "Proveedor eliminado correctamente",
         value: true,
       };
     })
     .catch((err) => {
-      console.log(err);
       return {
         message: "NO SE PUDO ELIMINAR EL PROVEEDOR",
         value: false,
@@ -619,7 +608,6 @@ export const obtenerEstadoPagado = (idCuenta: any) => {
   return new Promise((resolve, reject) => {
     db.accounts.findOne({ _id: idCuenta }, (err, doc) => {
       if (err) {
-        console.error("Error al obtener el estado de pagado:", err);
         reject(err);
       } else {
         resolve({ 
@@ -636,7 +624,6 @@ export const accountToPay = (account: object) => {
   db.accounts.insert(account, (err, _newDoc) => {
     if (err) {
       // Manejar el error
-      console.error("Error al guardar el objeto:", err);
     } else {
       // Objeto guardado con éxito
 
@@ -646,9 +633,6 @@ export const accountToPay = (account: object) => {
 
 export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
   if (idCuenta == null || datosActualizados == null) {
-    console.error(
-      "Error: El ID de la cuenta y los datos actualizados no pueden ser nulos o indefinidos."
-    );
     return Promise.reject("ID de la cuenta o datos actualizados no válidos");
   }
 
@@ -665,14 +649,11 @@ export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
       { multi: false },
       (err: any, numUpdated: number) => {
         if (err) {
-          console.error("Error al actualizar la cuenta:", err);
+
           reject(err);
         } else {
 
           if (numUpdated === 0) {
-            console.warn(
-              "Advertencia: No se actualizó ningún documento. Verifique que el ID de la cuenta sea correcto."
-            );
           }
           resolve(numUpdated);
         }
@@ -729,14 +710,13 @@ export const getUser = (userId: any) => {
   return new Promise((resolve, reject) => {
     db.usuariosAdmin.findOne({ _id: userId }, (err, admin) => {
       if (err) {
-        console.error("Error al obtener el usuario:", err);
+
         reject(err);
       } else if (admin) {
         resolve(admin);
       } else {
         db.usuarios.findOne({ _id: userId }, (err, subUsuario) => {
           if (err) {
-            console.error("Error al obtener el subusuario:", err);
             reject(err);
           } else {
             resolve(subUsuario);
@@ -756,7 +736,6 @@ export const actualizarImagenUsuario = (userId: any, imageUrl: any) => {
       {},
       (err) => {
         if (err) {
-          console.error("Error al actualizar la imagen del usuario:", err);
           reject(err);
         } else {
 
@@ -792,10 +771,7 @@ export const guardarUsuarioAdmin = async (usuarioAdmin: { password: any }) => {
       });
     });
   } catch (error: any) {
-    console.error(
-      "Error al encriptar el password del usuario administrador:",
-      error
-    );
+
     throw new Error(error.message);
   }
 };
@@ -804,7 +780,6 @@ export const verificarAdminExistente = () => {
   return new Promise((resolve, reject) => {
     db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
       if (err) {
-        console.error("Error al buscar el administrador:", err); // Log de error
         reject(err);
       } else if (admin) {
         resolve({
@@ -884,7 +859,6 @@ export const iniciarSesion = async (credentials: { username: string; password: s
       }
     }
   } catch (error) {
-    console.error("Error al buscar el usuario:", error);
     return { exito: false, mensaje: "Error al buscar el usuario" };
   }
 };
@@ -901,7 +875,6 @@ export const obtenerAdmin = () => {
   return new Promise((resolve, reject) => {
     db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
       if (err) {
-        console.error("Error al buscar el administrador:", err);
         reject({ exito: false, error: err.message });
       } else if (admin) {
         resolve({ exito: true, admin });
@@ -919,7 +892,6 @@ export const verificarCodigoDesbloqueo = (codigoIngresado: any) => {
   return new Promise((resolve, reject) => {
     db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
       if (err) {
-        console.error("Error al buscar el administrador:", err);
         reject(err);
       } else if (admin && admin.bloqueo === codigoIngresado) {
         resolve({ exito: true });
@@ -939,15 +911,13 @@ export const cambiarContrasena = async (userId: any, nuevaContrasena: any) => {
     return new Promise((resolve, reject) => {
       db.usuariosAdmin.update({ _id: userId }, { $set: { password: hashedPassword } }, {}, (err) => {
         if (err) {
-          console.error('Error al actualizar la contraseña:', err);
           reject({ exito: false, error: err.message });
         } else {
           resolve({ exito: true });
         }
-      );
+    });
     });
   } catch (error: any) {
-    console.error("Error al encriptar la nueva contraseña:", error);
     throw new Error(error.message);
   }
 };
