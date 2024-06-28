@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, useNavigate } from "react-router-dom";
 import Header from "./components/nav/header";
 import Aside from "./components/nav/aside/Aside";
 import Main from "./components/main/Main";
@@ -12,6 +12,7 @@ import Programabloqueado from "./components/Usuario/Programabloqueado";
 import { login, logout } from "./redux/estados/authSlice";
 import { cambiar } from "./redux/estados/estadoTipoDeUser";
 import { RootState } from "./redux/store";
+import PantallaDeCarga from "./components/main/PantallaDeCarga";
 
 function App() {
   const [adminExists, setAdminExists] = useState<boolean | null>(null);
@@ -19,10 +20,12 @@ function App() {
   const [_idUsuario, setIdUsuario] = useState<string | null>(null);
   const [estadoRecuperacionCuenta, setEstadoRecuperacionCuenta] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const userType = useSelector((state: RootState) => state.estadoTipoDeUser.userType);
   const [_estadoRedux, setestadoRedux] = useState("")
+
 
   useEffect(() => {
     window.api.enviarEvento("verificar-admin-existente");
@@ -31,7 +34,7 @@ function App() {
       if (recuperacioncuenta === 0) {
         setBloqueoPrograma(true);
       }
-      setLoading(true); // Actualizar el estado de carga después de verificar el administrador existente
+      setLoading(false); // Actualizar el estado de carga después de verificar el administrador existente
     });
 
     return () => {
@@ -42,7 +45,6 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
-    console.log(token, userId,"estos son los datos q le paso al backend")
     setIdUsuario(userId);
     if (token && userId) {
       dispatch(login({ userId, token }));
@@ -53,9 +55,11 @@ function App() {
     }
   }, [dispatch]);
 
+
+
   useEffect(() => {
     const handleObtenerPermisosUsuario = (response:any) => {
-      console.log(response,"Escuchando evento: respuesta-obtener-permisos-usuario");
+      
       if (response.success) {
         const permisos = response.data || {};
         if (response.isAdmin) {
@@ -70,6 +74,7 @@ function App() {
           } else if (permisos.stock) {
             dispatch(cambiar({ userType: "stock" }));
           }
+          
         }
       } else {
         console.error("Permisos del usuario no encontrados o incorrectos", response);
@@ -89,15 +94,26 @@ function App() {
       const userId = localStorage.getItem("userId");
       if (userId) {
         window.api.enviarEvento("obtener-permisos-usuario", userId);
+        
       }
+      
     }
   }, [isAuthenticated]);
 
+  // Mostrar la pantalla de carga por 5 segundos
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoadingScreen(false);
+    }, 150); // Tiempo mínimo de carga de 5 segundos
+
+    return () => clearTimeout(timer);
+  }, [showLoadingScreen]);
+
   function renderContent() {
+    
     if (loading) {
       return <div>Cargando... no se obtuvieron los permisos</div>; // Muestra un mensaje de carga mientras se obtienen los permisos
     }
-
     if (adminExists === null) {
       return <div>Cargando... el admin no existe</div>;
     } else if (bloqueoPrograma) {
@@ -105,12 +121,18 @@ function App() {
     } else if (adminExists) {
       return isAuthenticated ? (
         <>
-          <Aside />
-          <Main />
+        {showLoadingScreen ? <PantallaDeCarga/> : null }
+        <div className={`${showLoadingScreen ? "hidden": "flex w-full h-full"}`}>
+        <Aside />
+        <Main />
+          
+        </div>
+          
         </>
       ) : (
         <Login 
           setEstadoRecuperacionCuenta={setEstadoRecuperacionCuenta}
+          setShowLoadingScreen={setShowLoadingScreen}
         />
       );
     } else {
@@ -120,14 +142,13 @@ function App() {
 
   // Estado redux saber qué tipo de usuario se inició y aplicar las restricciones
   useEffect(() => {
-    console.log("User Type:", userType);
     setestadoRedux(userType);
   }, [userType]);
 
   return (
     <div className="w-full h-screen grid grid-cmg-program bg-gray-800 font-medium overflow-hidden box-border">
       <Header />
-      <div className="flex flex-row row-start-2 row-end-7">
+      <div className="flex flex-row row-start-2 row-end-7 relative">
         <Router>
           {renderContent()}
         </Router>
@@ -137,3 +158,4 @@ function App() {
 }
 
 export default App;
+

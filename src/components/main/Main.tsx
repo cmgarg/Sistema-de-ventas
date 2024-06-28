@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import ClientesContent from "./mainContent/clientes/Clientes";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import Articulos from "./mainContent/Articulos/Articulos";
 import Caja from "./mainContent/Caja/Caja";
 import ClienteInfo from "./mainContent/ApartadoCliente/ClienteInfo";
@@ -21,7 +26,32 @@ import { loadSubCategorys } from "../../redux/estados/subCategoryState";
 interface MainContentProps {}
 
 const MainContent: React.FC<MainContentProps> = ({}) => {
+  const userType = useSelector(
+    (state: RootState) => state.estadoTipoDeUser.userType
+  );
   const dispatch = useDispatch();
+  const [inicioPrograma, setInicioPrograma] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  //////// configuracion de apartado q inician los usuarios segun el rango de usuario
+  useEffect(() => {
+    if (inicioPrograma) {
+      navigate(inicioPrograma);
+    }
+  }, [inicioPrograma]);
+
+  useEffect(() => {
+    if (userType === "stock") {
+      setInicioPrograma("/stock");
+    } else if (
+      userType === "gerente" ||
+      userType === "logistica" ||
+      userType === "ventas" ||
+      userType === "admin"
+    ) {
+      setInicioPrograma("/");
+    }
+  }, [userType]);
 
   function loadCategoryAndBrands(data: {
     categorys: {}[];

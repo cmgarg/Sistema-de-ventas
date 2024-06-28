@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../../redux/estados/authSlice.ts";
 import { MdAddPhotoAlternate } from "react-icons/md";
+import { cambiar } from "../../../../src/redux/estados/estadoTipoDeUser.ts";
 
 export default function UsuarioIniciado({ setLoginUser }) {
   const images = [
@@ -24,6 +25,8 @@ export default function UsuarioIniciado({ setLoginUser }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.auth);
+ const userType = useSelector((state: RootState) => state.estadoTipoDeUser.userType);
+ 
 
   useEffect(() => {
     console.log("Componente UsuarioIniciado montado");
@@ -93,6 +96,7 @@ export default function UsuarioIniciado({ setLoginUser }) {
 
   const handleLogout = () => {
     console.log("Ejecutando handleLogout");
+    dispatch(cambiar({ userType: "" }));
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     dispatch(logout());

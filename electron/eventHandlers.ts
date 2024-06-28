@@ -1,5 +1,3 @@
-console.log("arranco")
-
 import { ipcMain } from "electron";
 import {
   accountToPay,
@@ -54,13 +52,13 @@ import {
 
 
 export const loadEvents = () => {
-  console.log("asdasdasdasd")
+  console.log("eventHandlers Se esta Ejecutando...");
 
   //
   //ESCUCHAS DE EvENTOS DE GUARDADO DE CLIENTE
   //
  
-console.log("asdasdasdasd")
+
 
     ipcMain.on("save-client", async (event, clientToSave) => {
       saveClient(clientToSave);
@@ -69,10 +67,11 @@ console.log("asdasdasdasd")
 
       event.reply("response-get-clients", clients);
     });
+
     ipcMain.on("get-clients", async (event) => {
       const clients = await findClients();
 
-      console.log("Se enviaron los clientes ", clients);
+      
       event.reply("response-get-clients", clients); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
     });
 
@@ -82,7 +81,6 @@ console.log("asdasdasdasd")
       event.reply("response-delete-client", result);
     });
     ipcMain.on("get-client-byId", async (event, clientId) => {
-      console.log("AGUANTEEEEE BOCAA LOCOOO");
       const cliente = await getClientById(clientId);
 
       event.reply("response-get-client-byId", cliente);
@@ -97,7 +95,6 @@ console.log("asdasdasdasd")
     });
 
     ipcMain.on("register-buy-client", async (event, clienteData) => {
-      console.log("ESTO LLEGO", clienteData);
       const mensajeAResponder = await registerBuyClient(clienteData);
 
       event.reply("response-register-buy-client", mensajeAResponder);
@@ -114,9 +111,6 @@ console.log("asdasdasdasd")
       const categorys = categoryAndBrands.categorys; //SEGUIR CONLAS VERIFICIA
       const brands = categoryAndBrands.brands;
 
-      console.log("VERIFICANDO CATEGORIA", categorys);
-      console.log("VERIFICANDO MARCA", brands);
-
       const categoryString = categorys.map((cat) => {
         return cat.value;
       });
@@ -128,17 +122,12 @@ console.log("asdasdasdasd")
       const categoryExist = categoryString.includes(
         category.value.toLowerCase()
       );
-      console.log("categoria", categoryString, categoryExist);
 
       const brandExist = brandString.includes(brand.value.toLowerCase());
-
-      console.log("marca", brandString, brandExist);
 
       if (categoryExist && brandExist) {
         saveArticle(articuloAGuardar);
         const articles = await findArticles();
-
-        console.log("Se enviaron los ARTICULOS desde save articles ", articles);
         event.reply("response-get-articles", articles);
         event.reply("error-save-article", {
           message: "",
@@ -168,9 +157,7 @@ console.log("asdasdasdasd")
 
     
     ipcMain.on("get-articleByCode", async (event, articleCode) => {
-      console.log("AGUANTEEEEE BOCAA LOCOOO");
       const article = await getArticleByCode(articleCode);
-      console.log("SE RESPONDE CON , ", article);
       event.reply("response-get-articleByCode", article);
     });
     // ipcMain.on("get-articleByName", async (event, articleName) => {
@@ -182,7 +169,7 @@ console.log("asdasdasdasd")
     ipcMain.on("get-articles", async (event) => {
       const articulos = await findArticles();
 
-      console.log("Se enviaron los ARTICULOS", articulos);
+ 
       event.reply("response-get-articles", articulos); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
     });
 
@@ -203,7 +190,6 @@ console.log("asdasdasdasd")
 
     ipcMain.on("get-sales-stats", async (event) => {
       const statsSales = await getStats();
-      console.log(statsSales, "FALOPERO");
       event.reply("response-get-sales-stats", statsSales);
     });
 
@@ -216,7 +202,7 @@ console.log("asdasdasdasd")
     ipcMain.on("get-sales", async (event) => {
       const ventas = await findSales();
 
-      console.log("Se enviaron las ventas", ventas);
+
       event.reply("response-get-sales", ventas); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
     });
 
@@ -294,9 +280,7 @@ console.log("asdasdasdasd")
 
       ipcMain.on("verificar-admin-existente", async (event) => {
         try {
-          console.log("Verificando admin existente..."); // Log para depuración
           const adminInfo = await verificarAdminExistente();
-          console.log("Información del admin:", adminInfo); // Log para depuración
           event.reply("respuesta-verificar-admin", adminInfo);
         } catch (error) {
           console.error("Error al verificar admin existente:", error); // Log para depuración
@@ -364,11 +348,6 @@ console.log("asdasdasdasd")
     ipcMain.on(
       "actualizar-imagen-usuario",
       async (event, { userId, imageUrl }) => {
-        console.log(
-          "Evento actualizar-imagen-usuario recibido:",
-          userId,
-          imageUrl
-        );
         try {
           await actualizarImagenUsuario(userId, imageUrl);
           event.reply("respuesta-actualizar-imagen-usuario", {
@@ -405,28 +384,28 @@ console.log("asdasdasdasd")
     //ESCUCHAS DE EVENTOS DE CUENTAS
     //
 
-    ipcMain.on("actualizar-estado-pagado",async (event, { idCuenta, estadoPagado }) => {
-        try {
-          // Actualiza el estado de 'pagado' en la base de datos
-          await actualizarEstadoPagado(idCuenta, estadoPagado);
-          // Aquí deberías añadir lógica para recuperar el estado actualizado de 'pagado' de la base de datos para 'idCuenta'
-          // Por ejemplo, supongamos que tienes una función 'obtenerEstadoPagado' que hace exactamente eso:
-          const estadoPagadoActualizado = await obtenerEstadoPagado(idCuenta);
-          // Envía el estado actualizado de vuelta al frontend
-          event.reply("estado-pagado-actualizado", {
-            exitoso: true,
-            idCuenta,
-            estadoPagado: estadoPagadoActualizado,
-          });
-        } catch (error:any) {
-          console.error(error);
-          event.reply("estado-pagado-actualizado", {
-            exitoso: false,
-            error: error.message,
-            idCuenta,
-          });
-        }
-      });
+    ipcMain.on("actualizar-estado-pagado", async (event, { idCuenta, estadoPagado, pagado2, pagado3 }) => {
+      try {
+        // Actualiza el estado de 'pagado', 'pagado2', y 'pagado3' en la base de datos
+        await actualizarEstadoPagado(idCuenta, estadoPagado, pagado2, pagado3);
+        // Recupera el estado actualizado de 'pagado', 'pagado2', y 'pagado3' de la base de datos para 'idCuenta'
+        const estadoPagadoActualizado = await obtenerEstadoPagado(idCuenta);
+        // Envía el estado actualizado de vuelta al frontend
+        event.reply("estado-pagado-actualizado", {
+          exitoso: true,
+          idCuenta,
+          estadoPagado: estadoPagadoActualizado,
+        });
+      } catch (error) {
+        console.error(error);
+        event.reply("estado-pagado-actualizado", {
+          exitoso: false,
+          error: error.message,
+          idCuenta,
+        });
+      }
+    });
+    
 
     
 
@@ -485,7 +464,6 @@ console.log("asdasdasdasd")
       event.reply("response-get-accountToPay", accountsToPay);
     });
 
-    ///////////////////
     ipcMain.on("actualizar-cuenta", async (event, { id, updatedAccount }) => {
       try {
         const resultado = await actualizarCuenta(id, updatedAccount);
@@ -562,7 +540,6 @@ ipcMain.on("obtener-datos-usuario", async (event, userId) => {
   ipcMain.on('reiniciar-recuperacioncuenta', async (_event, userId) => {
     try {
       await reiniciarRecuperacionCuenta(userId);
-      console.log('recuperacioncuenta reiniciada con éxito');
     } catch (error) {
       console.error('Error al reiniciar recuperacioncuenta:', error);
     }
@@ -619,7 +596,6 @@ ipcMain.on("obtener-datos-usuario", async (event, userId) => {
     
     try {
       const permisos = await obtenerPermisosUsuario(userId);
-      console.log(permisos,"estos son los permisos")
       event.reply("respuesta-obtener-permisos-usuario", permisos);
     } catch (error:any) {
       event.reply("respuesta-obtener-permisos-usuario", { success: false, error: error.message });

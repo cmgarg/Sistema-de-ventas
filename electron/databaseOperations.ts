@@ -1,5 +1,4 @@
 import crypto from "crypto";
-
 import {
   articleData,
   clientData,
@@ -24,16 +23,12 @@ const db = {
     autoload: true,
   }),
 };
+console.log("databaseOperations Se esta ejecutanado...");
+
 //funciones para manejar clientes y demas
 export const saveClient = async (data: object) => {
   await db.clients
     .insertAsync(data)
-    .then((res) => {
-      console.log("Cliente guardado con exito", res);
-    })
-    .catch((err) => {
-      console.log("Error al guardar el cliente", err);
-    });
 };
 
 export const registerBuyClient = async (sale: saleData) => {
@@ -54,16 +49,13 @@ export const getClientById = async (clientId: string): Promise<clientData> => {
   return client;
 };
 export const deleteClient = async (data: clientData) => {
-  console.log("ACA ERSTAMOS");
   await db.clients
     .removeAsync({ _id: data._id }, {})
     .then((data) => {
-      console.log("Cliente eliminado", data);
 
       return { clientDelete: data };
     })
-    .catch((err) => {
-      console.log("No se ha podido eliminar el cliente", err);
+    .catch((_err) => {
 
       return false;
     });
@@ -72,11 +64,9 @@ export const findClients = async () => {
   const clients = await db.clients
     .findAsync({})
     .then((clients: any) => {
-      console.log("clientes encontrados", clients);
       return clients;
     })
-    .catch((err: any) => {
-      console.log("Error al tratar de encontrar clientes", err);
+    .catch((_err: any) => {
     });
   return clients;
 };
@@ -89,10 +79,8 @@ export function updateClient(clientId: string, updateData: any) {
       { multi: false },
       (err: any, docs: any) => {
         if (err) {
-          console.log("hubo un error ", err);
           reject(err);
         } else {
-          console.log("todo salio bien se actualizo el cliente", updateData);
           resolve(docs);
         }
       }
@@ -130,34 +118,28 @@ export const saveArticle = async (a: articleData) => {
 
   db.articles
     .insertAsync(articleToSave)
-    .then((res) => {
-      console.log("Articulo guardado correctamente", res);
+    .then((_res) => {
     })
-    .catch((err) => {
-      console.log("No se pudo guardar el articulo", err);
+    .catch((_err) => {
     });
 };
 export const getArticleByCode = async (
   articleCode: string
 ): Promise<articleData> => {
-  console.log("SE RESPONDE a la peticion de ", articleCode);
   return await db.articles.findOneAsync({ code: articleCode });
 };
 // function getArticleByName(articleName: string) {
 //   return new Promise((resolve, reject) => {
 //     db.articles.find({ articulo: articleName }, (err: any, doc: any) => {
 //       if (err) {
-//         console.log("error al buscar el Articulo", err);
 //         reject(err);
 //       } else {
-//         console.log("Artciulo encontrado", doc);
 //         resolve(doc);
 //       }
 //     });
 //   });
 // }
 export const editArticle = async (articleEdit: dataToEditArticle) => {
-  console.log(articleEdit);
   const { numAffected } = await db.articles.updateAsync(
     {
       code: articleEdit.code,
@@ -180,10 +162,8 @@ export const editArticle = async (articleEdit: dataToEditArticle) => {
     {}
   );
   if (numAffected) {
-    console.log("ARTICULO ACTUALIZADO CORRECTAMENTE", numAffected);
     return true;
   } else {
-    console.log("NO SE PUDO ACTUALIZAR EL ARTICULO", numAffected);
     return false;
   }
 };
@@ -191,22 +171,17 @@ export const findArticles = async (): Promise<articleData[]> => {
   return await db.articles
     .findAsync({})
     .then((doc: any) => {
-      console.log("OBJETOS ENCONTRADOS ", doc);
       return doc;
     })
-    .catch((err: any) => {
-      console.log("ERROR AL BUSCAR OBJETOS ", err);
+    .catch((_err: any) => {
     });
 };
 export const deleteArticle = async (code: string) => {
-  console.log("ACA ERSTAMOS");
   const numRemoved = await db.articles.removeAsync({ code: code }, {});
 
   if (numRemoved) {
-    console.log("ARTICULO ACTUALIZADO CORRECTAMENTE", numRemoved);
     return true;
   } else {
-    console.log("NO SE PUDO ACTUALIZAR EL ARTICULO", numRemoved);
     return false;
   }
 };
@@ -218,9 +193,7 @@ export async function updatedStockArticle(article: {
 }) {
   const { idArticle, quantity } = article;
   const articleUpdate: articleData = await getArticleByCode(idArticle);
-  console.log(articleUpdate, "ARTICULO A ACTUALIZAR STOCK");
   const stock = articleUpdate.article.stock.amount;
-  console.log(articleUpdate.article.stock.amount, "STOCK");
   const restSold = stock - parseInt(quantity);
 
   return new Promise((resolve, reject) => {
@@ -234,10 +207,8 @@ export async function updatedStockArticle(article: {
       (err: any, docs: any) => {
         if (err) {
           reject(err);
-          console.log("HUBO UN ERROR DE LA CAJETA", err);
         } else {
           resolve(docs);
-          console.log("TODO BIEN SALIO GIL DE MIERDA", docs);
         }
       }
     );
@@ -263,10 +234,8 @@ export async function updateCountSaleArticle(article: {
       (err: any, docs: any) => {
         if (err) {
           reject(err);
-          console.log("HUBO UN ERROR DE LA CAJETA", err);
         } else {
           resolve(docs);
-          console.log("TODO BIEN SALIO GIL DE MIERDA", docs);
         }
       }
     );
@@ -282,11 +251,9 @@ export const saveSale = (a: saleData) => {
   const dia = fechaActual.getDate();
 
   const articlesTotalSold = a.articles.map((ar) => ar.total);
-  console.log("TOTAL VENDIDO", articlesTotalSold);
   const soldTotal = articlesTotalSold.reduce((acc, ad) => {
     return Number(acc) + Number(ad);
   });
-  console.log("TOTAL VENDIDO 2", soldTotal);
 
   const saleToSave = {
     ...a,
@@ -298,11 +265,9 @@ export const saveSale = (a: saleData) => {
   const resultSave = db.sales
     .insertAsync(saleToSave)
     .then((saleResult) => {
-      console.log(saleResult, "SE GUARDO CORRECTAMENTE");
       return { save: true, res: saleResult };
     })
     .catch((err) => {
-      console.log(err, "error al guardar la venta");
       return { save: false, res: err };
     });
 
@@ -344,12 +309,7 @@ export const registBuyInArticle = async (saleInfo: saleData) => {
           },
           { multi: false }
         )
-        .catch((error) => {
-          console.log(
-            error,
-            "OCURRIO UN ERROR AL REGISTRAR LA COMPRA EN EL ARTICULO"
-          );
-        });
+        
     }
   });
 };
@@ -357,14 +317,13 @@ export const findSales = () => {
   return db.sales.findAsync({});
 };
 export const deleteSales = (data: any) => {
-  console.log("ACA ERSTAMOS");
-  db.sales.remove({ _id: data }, (err, newDoc) => {
+
+  db.sales.remove({ _id: data }, (err, _newDoc) => {
     if (err) {
       // Manejar el error
       console.error("Error al guardar el objeto:", err);
     } else {
       // Objeto guardado con éxito
-      console.log("Cliente eliminado:", newDoc);
     }
   });
 };
@@ -382,12 +341,6 @@ export const addCategory = async (newCategory: string) => {
   };
   return await db.filters
     .insertAsync(category)
-    .then((res) => {
-      console.log("Se guardo la cateogria correctamente :", res);
-    })
-    .catch((err) => {
-      console.log("No se pudo guardar la categoria", err);
-    });
 };
 export const addSubCategory = async (newSubCategory: string) => {
   const newSubCategoryLabel =
@@ -401,12 +354,6 @@ export const addSubCategory = async (newSubCategory: string) => {
   };
   return await db.filters
     .insertAsync(subCategory)
-    .then((res) => {
-      console.log("Se guardo la sub cateogria correctamente :", res);
-    })
-    .catch((err) => {
-      console.log("No se pudo guardar la sub categoria", err);
-    });
 };
 export const addBrand = async (newBrand: string) => {
   const newBrandLabel =
@@ -420,12 +367,6 @@ export const addBrand = async (newBrand: string) => {
   };
   return await db.filters
     .insertAsync(brand)
-    .then((res) => {
-      console.log("Se guardo la cateogria correctamente :", res);
-    })
-    .catch((err) => {
-      console.log("No se pudo guardar la categoria", err);
-    });
 };
 
 export const getCategoryAndBrand = async () => {
@@ -461,7 +402,7 @@ export const saveNewUnits = async (e: unitType) => {
   return await db.unitsArticleForm
     .insertAsync({ ...e })
     .then((res) => {
-      console.log("Unidad guardada correctamente", res);
+
 
       return {
         message: "Unidad guardada correctamente",
@@ -469,7 +410,7 @@ export const saveNewUnits = async (e: unitType) => {
       };
     })
     .catch((err) => {
-      console.log("No se pudo guardar la unidad", err);
+
       return {
         message: "No se pudo guardar la unidad",
         value: err,
@@ -480,7 +421,7 @@ export const updateUnit = async (e: unitType, id: string) => {
   return await db.unitsArticleForm
     .updateAsync({ _id: id }, e, {})
     .then((res) => {
-      console.log("Unidad editada correctamente", res);
+
 
       return {
         message: "Unidad editada correctamente",
@@ -488,7 +429,7 @@ export const updateUnit = async (e: unitType, id: string) => {
       };
     })
     .catch((err) => {
-      console.log("No se pudo editar la unidad", err);
+
       return {
         message: "No se pudo editar la unidad",
         value: err,
@@ -499,7 +440,7 @@ export const deleteUnit = async (e: string) => {
   return await db.unitsArticleForm
     .removeAsync({ _id: e }, {})
     .then((res) => {
-      console.log("Unidad eliminada correctamente", res);
+
 
       return {
         message: "Unidad eliminada correctamente",
@@ -507,7 +448,7 @@ export const deleteUnit = async (e: string) => {
       };
     })
     .catch((err) => {
-      console.log("No se pudo eliminar la unidad", err);
+
       return {
         message: "No se pudo eliminar la unidad",
         value: err,
@@ -521,28 +462,31 @@ export const deleteUnit = async (e: string) => {
 /////////////////////////////////////////////////////
 
 
-export const obtenerEstadoPagado = (idCuenta:any) => {
+export const obtenerEstadoPagado = (idCuenta) => {
   return new Promise((resolve, reject) => {
     db.accounts.findOne({ _id: idCuenta }, (err, doc) => {
       if (err) {
         console.error("Error al obtener el estado de pagado:", err);
         reject(err);
       } else {
-        console.log("Estado de pagado obtenido:", doc.pagado);
-        resolve(doc.pagado); // Suponiendo que 'doc.pagado' es el campo que contiene el estado de pagado
+        resolve({ 
+          pagado: doc.pagado,
+          pagado2: doc.pagado2,
+          pagado3: doc.pagado3 
+        }); // Incluye los campos 'pagado', 'pagado2', y 'pagado3' en la respuesta
       }
     });
   });
 };
 
 export const accountToPay = (account: object) => {
-  db.accounts.insert(account, (err, newDoc) => {
+  db.accounts.insert(account, (err, _newDoc) => {
     if (err) {
       // Manejar el error
       console.error("Error al guardar el objeto:", err);
     } else {
       // Objeto guardado con éxito
-      console.log("Objeto guardado:", newDoc);
+
     }
   });
 };
@@ -559,8 +503,7 @@ export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
   delete datosActualizados._id;
 
   // Mostrar los datos que se van a actualizar
-  console.log(`Actualizando cuenta con ID: ${idCuenta}`);
-  console.log("Datos actualizados:", datosActualizados);
+
 
   return new Promise((resolve, reject) => {
     db.accounts.update(
@@ -572,9 +515,7 @@ export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
           console.error("Error al actualizar la cuenta:", err);
           reject(err);
         } else {
-          console.log(
-            `Cuenta actualizada con éxito. Número de documentos actualizados: ${numUpdated}`
-          );
+
           if (numUpdated === 0) {
             console.warn(
               "Advertencia: No se actualizó ningún documento. Verifique que el ID de la cuenta sea correcto."
@@ -590,11 +531,11 @@ export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
 /////////////////////////////////////////////////////
-export const actualizarEstadoPagado = (idCuenta:any, estadoPagado:any) => {
+export const actualizarEstadoPagado = (idCuenta, estadoPagado, pagado2, pagado3) => {
   return new Promise((resolve, reject) => {
     db.accounts.update(
       { _id: idCuenta },
-      { $set: { pagado: estadoPagado } },
+      { $set: { pagado: estadoPagado, pagado2: pagado2, pagado3: pagado3 } },
       {},
       (err, numReplaced) => {
         if (err) {
@@ -650,7 +591,6 @@ export const getUser = (userId: any) => {
 
 // Función para actualizar la imagen del usuario
 export const actualizarImagenUsuario = (userId: any, imageUrl: any) => {
-  console.log(`Actualizando imagen del usuario ${userId} con URL: ${imageUrl}`);
   return new Promise((resolve, reject) => {
     db.usuariosAdmin.update(
       { _id: userId },
@@ -661,7 +601,7 @@ export const actualizarImagenUsuario = (userId: any, imageUrl: any) => {
           console.error("Error al actualizar la imagen del usuario:", err);
           reject(err);
         } else {
-          console.log("Imagen del usuario actualizada con éxito");
+
           resolve(true);
         }
       }
@@ -702,19 +642,16 @@ export const guardarUsuarioAdmin = async (usuarioAdmin: { password: any; }) => {
 
 export const verificarAdminExistente = () => {
   return new Promise((resolve, reject) => {
-    console.log("Iniciando verificación de admin existente..."); // Log para iniciar la verificación
     db.usuariosAdmin.findOne({ esAdmin: true }, (err, admin) => {
       if (err) {
         console.error("Error al buscar el administrador:", err); // Log de error
         reject(err);
       } else if (admin) {
-        console.log("Administrador encontrado:", admin); // Log del admin encontrado
         resolve({
           existeAdmin: true,
           recuperacioncuenta: admin.recuperacioncuenta,
         });
       } else {
-        console.log("No se encontró un administrador."); // Log de admin no encontrado
         resolve({ existeAdmin: false });
       }
     });
@@ -723,16 +660,9 @@ export const verificarAdminExistente = () => {
 
 
 
-
-
-
-
-
-
 const secretKey = "tu_clave_secreta"; // Asegúrate de usar una clave secreta segura y única
 
 export const iniciarSesion = async (credentials: { username: string; password: string }) => {
-  console.log("Iniciar sesión con credenciales:", credentials);
 
   try {
     // Primero, buscamos en la colección de administradores
@@ -744,7 +674,6 @@ export const iniciarSesion = async (credentials: { username: string; password: s
     });
 
     if (usuarioAdmin) {
-      console.log("Usuario administrador encontrado:", usuarioAdmin);
       if (bcrypt.compareSync(credentials.password, usuarioAdmin.password)) {
         const token = jwt.sign({ userId: usuarioAdmin._id, isAdmin: true }, secretKey, {
           expiresIn: "4464h",
@@ -755,21 +684,18 @@ export const iniciarSesion = async (credentials: { username: string; password: s
           userId: usuarioAdmin._id,
         };
       } else {
-        console.log("Contraseña incorrecta para el usuario administrador.");
         return { exito: false, mensaje: "Contraseña incorrecta" };
       }
     } else {
       // Si no encontramos un usuario administrador, buscamos en la colección de subusuarios
-      console.log("No se encontró un usuario administrador, buscando subusuario...");
       const subUsuario = await new Promise<any>((resolve, reject) => {
-        db.usuarios.findOne({ username: credentials.username }, (err, doc) => {
+        db.usuarios.findOne({ nombre: credentials.username }, (err, doc) => {
           if (err) reject(err);
           else resolve(doc);
         });
       });
 
       if (subUsuario) {
-        console.log("Subusuario encontrado:", subUsuario);
         if (bcrypt.compareSync(credentials.password, subUsuario.password)) {
           const token = jwt.sign({ userId: subUsuario._id, isAdmin: false }, secretKey, {
             expiresIn: "4464h",
@@ -780,11 +706,9 @@ export const iniciarSesion = async (credentials: { username: string; password: s
             userId: subUsuario._id,
           };
         } else {
-          console.log("Contraseña incorrecta para el subusuario.");
           return { exito: false, mensaje: "Contraseña incorrecta" };
         }
       } else {
-        console.log("No se encontró un subusuario con ese nombre de usuario.");
         return { exito: false, mensaje: "Usuario no encontrado" };
       }
     }
@@ -854,7 +778,6 @@ export const cambiarContrasena = async (userId: any, nuevaContrasena: any) => {
           console.error('Error al actualizar la contraseña:', err);
           reject({ exito: false, error: err.message });
         } else {
-          console.log('Contraseña actualizada con éxito');
           resolve({ exito: true });
         }
       });

@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { login } from '../../redux/estados/authSlice.ts';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PasswordRecovery from './PasswordRecovery.js';
 
 type LoginProps = {
   setEstadoRecuperacionCuenta: (estado: boolean) => void;
+  setShowLoadingScreen: (estado: boolean) => void;
 };
 
-const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta }) => {
+const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta, setShowLoadingScreen }) => {
   const [loginIncorrecto, setLoginIncorrecto] = useState<boolean>(false);
   const [credentials, setCredentials] = useState({
     username: "",
@@ -37,8 +38,10 @@ const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta }) => {
   };
 
   const handleSubmit = () => {
+    setShowLoadingScreen(true);
     console.log("Enviando credenciales:", credentials);
     window.api.enviarEvento("iniciar-sesion", credentials);
+    
   };
 
   const handleKeyPress = (e: { key: string }) => {
@@ -66,6 +69,8 @@ const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta }) => {
       window.api.removeAllListeners("respuesta-iniciar-sesion");
     };
   }, [dispatch, setEstadoRecuperacionCuenta]);
+  const userType = useSelector((state: RootState) => state.estadoTipoDeUser.userType);
+  console.log(userType,"--este ees le estado reduxxxxxx")
 
   return (
     <div

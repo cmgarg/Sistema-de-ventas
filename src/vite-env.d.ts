@@ -2,6 +2,7 @@
 declare global {
   interface Window {
     api: {
+      [x: string]: any;
       removerEvento(arg0: string): unknown;
       removeAllListeners(arg0: string): unknown;
       enviarEvento: (canal: string, data?: any) => void;

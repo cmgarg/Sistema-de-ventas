@@ -10,6 +10,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { saleData, storeType } from "../../../../../types";
 import { addSale } from "../../../../../src/redux/estados/salesState";
 import Afip from "../../../../../node_modules/@afipsdk/afip.js";
+import AddAccountToPay2 from "./AgregarCuenta/AddAccountToPay2.js";
+import { TfiPencilAlt } from "react-icons/tfi";
+import Biñeta from "../Biñeta/Biñieta.js";
 
 interface VentastProps {
   //PROPS
@@ -28,6 +31,8 @@ const Ventas: React.FC<VentastProps> = (
   });
   const sales = useSelector((state: storeType) => state.saleState);
   const [activeModal, setActiveModal] = useState(false);
+  const [estadoAgregarCuenta, setEstadoAgregarCuenta] = useState(false);
+  const [cerrarModal, setCerrarModal] = useState(false); // Nuevo estado para controlar el cierre del modal
   const [searchActived, setSearchActived] = useState<{
     actived: boolean;
     results: object[];
@@ -35,12 +40,15 @@ const Ventas: React.FC<VentastProps> = (
     actived: false,
     results: [],
   });
+
   function addNewSale(e: saleData) {
     dispatch(addSale(e));
   }
+
   function onChangeModal(p: boolean) {
     setActiveModal(p);
   }
+
   function getResultsSales(p: object[], e: boolean) {
     setSearchActived({ actived: e, results: p });
     console.log(p);
@@ -50,6 +58,11 @@ const Ventas: React.FC<VentastProps> = (
     window.api.enviarEvento("prueba-afipo");
   };
 
+  const formatMony = (n: number | string) => {
+    console.log("FORMATIEANDO", formatterCurrency.format(Number(n)));
+    return formatterCurrency.format(Number(n));
+  };
+
   /////LISTA DE ARTICULSO
 
   ///carga de ventas
@@ -57,12 +70,24 @@ const Ventas: React.FC<VentastProps> = (
     console.log(formatMony(4300));
   }, []);
   //////////////////////////////
+  console.log(sales, "estas son las ventas");
+
+  useEffect(() => {
+   console.log(estadoAgregarCuenta,"este es el estado del use efect")
+  }, [estadoAgregarCuenta]);
 
   return (
     <div className="h-full w-full grid-cmg-program">
       <div className="flex-2">
         <NavMain title="Ventas">
           <Export></Export>
+          <Biñeta title={`Agregar Cuenta`}>
+          <div
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600"
+            onClick={() => {
+              setEstadoAgregarCuenta(true);
+            }}
+          ><TfiPencilAlt size={19} color={"#fff"} /></div></Biñeta>
           <Buscador
             searchIn={sales}
             functionReturn={getResultsSales}
@@ -72,6 +97,13 @@ const Ventas: React.FC<VentastProps> = (
       </div>
       <div className="flex flex-row pb-5 row-start-2 row-end-7">
         <AsideMain isActive={false}></AsideMain>
+        {estadoAgregarCuenta ? (
+              <AddAccountToPay2
+                setEstadoAgregarCuenta={setEstadoAgregarCuenta}
+                estadoAgregarCuenta={estadoAgregarCuenta}
+                setCerrarModal={setCerrarModal}
+              />
+            ) : null}
         <div className="flex-1 p-5">
           {activeModal && (
             <AddVentaForm

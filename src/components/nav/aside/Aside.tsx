@@ -27,6 +27,10 @@ import { LuMenu } from "react-icons/lu";
 export default function Aside() {
   const [isActive, setIsActive] = useState(false);
   const location = useLocation();
+
+  const userType = useSelector(
+    (state: RootState) => state.estadoTipoDeUser.userType
+  );
   ////funciones ventana emergente con nombre.
 
   ///Redux
@@ -37,15 +41,16 @@ export default function Aside() {
 
   const handleClick = () => {
     setIsActive(!isActive);
-    console.log(menuState.value, "este es el apartado q esta precionado");
   };
   useEffect(() => {
-    console.log(location);
     if (location.pathname !== "articulos") {
     }
   }, [menuState]);
-  console.log(location.pathname, "este es el apartado cliqueado..");
 
+  console.log(
+    userType,
+    "---este es el estado reduxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  );
   return (
     <div
       className={`flex flex-row h-full bg-gradient-to-b to-blue-950 from-slate-800 ${
@@ -86,6 +91,8 @@ export default function Aside() {
                 ) : null}
               </div>
             </div>
+            {userType === "stock" ? null :(
+              <div>
             <GoTo title="Clientes" goTo="/" isActive={isActive}>
               {location.pathname == "/" ? (
                 <IoPerson color={"#fff"} size={30} />
@@ -93,6 +100,9 @@ export default function Aside() {
                 <IoPersonOutline color={"#fff"} size={30} />
               )}
             </GoTo>
+            </div>)}
+            {userType === "stock" ? null :(
+              <div>
             <GoTo title="Articulos" goTo="/articulos" isActive={isActive}>
               {location.pathname == "/articulos" ? (
                 <RiShoppingBag4Fill color={"#fff"} size={30} />
@@ -100,13 +110,17 @@ export default function Aside() {
                 <RiShoppingBag4Line color={"#fff"} size={30} />
               )}
             </GoTo>
+            </div>)}
+            {userType === "stock" ? null :(
+              <div>
             <GoTo title="Ventas" goTo="/ventas" isActive={isActive}>
               {location.pathname == "/ventas" ? (
                 <PiCurrencyDollarBold color={"#fff"} size={35} />
               ) : (
                 <PiCurrencyDollarLight color={"#fff"} size={35} />
               )}
-            </GoTo>
+            </GoTo></div>)}
+
             <GoTo title="Stock" goTo="/stock" isActive={isActive}>
               {location.pathname == "/stock" ? (
                 <BsBoxSeamFill color={"#fff"} size={30} />
@@ -114,6 +128,8 @@ export default function Aside() {
                 <BsBoxSeam color={"#fff"} size={30} />
               )}
             </GoTo>
+
+             {userType === "ventas "  || userType === "admin"? (<div>
             <GoTo title="Caja" goTo="/caja" isActive={isActive}>
               {location.pathname == "/caja" ? (
                 <PiCashRegisterFill size={35} color={"#fff"} />
@@ -121,45 +137,56 @@ export default function Aside() {
                 <PiCashRegisterLight size={35} color={"#fff"} />
               )}
             </GoTo>
+            </div>): null}
+            {userType === "ventas " || userType === "admin" ? (
+            <div>
             <GoTo title="Cuentas" goTo="/cuentas" isActive={isActive}>
               {location.pathname == "/cuentas" ? (
                 <FaFileInvoiceDollar size={30} color={"#fff"} />
               ) : (
                 <TbFileDollar size={35} color={"#fff"} />
               )}
-            </GoTo>
+            </GoTo></div>
+          ) : null}
+            
+            {userType === "ventas " || userType === "admin" || userType === "gerente"? (
+            <div>
             <GoTo title="Estadisticas" goTo="/estadisticas" isActive={isActive}>
               {location.pathname == "/estadisticas" ? (
                 <SiGoogleanalytics size={30} color={"#fff"} />
               ) : (
                 <TbBrandGoogleAnalytics size={30} color={"#fff"} />
               )}
-            </GoTo>
+            </GoTo> </div>
+          ) : null}
+
+            {userType === "ventas " || userType === "admin"  ? (
+            <div>
             <GoTo title="Navegador" goTo="/navegador" isActive={isActive}>
               {location.pathname == "/navegador" ? (
                 <TbWorld size={40} color={"#fff"} />
               ) : (
                 <TfiWorld size={30} color={"#fff"} />
               )}
-            </GoTo>
+            </GoTo> </div>
+          ) : null}
           </div>
-
-          <div>
-            {" "}
-            <GoTo
-              title="Configuracion"
-              goTo="/configuracion"
-              isActive={isActive}
-            >
-              {location.pathname == "/configuracion" ? (
-                <IoSettingsSharp size={30} color="white" />
-              ) : (
-                <IoSettingsOutline size={30} color="white">
-                  {" "}
-                </IoSettingsOutline>
-              )}
-            </GoTo>
-          </div>
+            <div>
+              {" "}
+              <GoTo
+                title="Configuracion"
+                goTo="/configuracion"
+                isActive={isActive}
+              >
+                {location.pathname == "/configuracion" ? (
+                  <IoSettingsSharp size={30} color="white" />
+                ) : (
+                  <IoSettingsOutline size={30} color="white">
+                    {" "}
+                  </IoSettingsOutline>
+                )}
+              </GoTo>
+            </div>
         </div>
       </div>
     </div>
