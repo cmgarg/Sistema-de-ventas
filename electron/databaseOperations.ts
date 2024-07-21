@@ -49,8 +49,7 @@ console.log("databaseOperations Se esta ejecutanado...");
 
 //funciones para manejar clientes y demas
 export const saveClient = async (data: object) => {
-  await db.clients
-    .insertAsync(data)
+  await db.clients.insertAsync(data);
 };
 
 export const registerBuyClient = async (sale: saleData) => {
@@ -74,11 +73,9 @@ export const deleteClient = async (data: clientData) => {
   await db.clients
     .removeAsync({ _id: data._id }, {})
     .then((data) => {
-
       return { clientDelete: data };
     })
     .catch((_err) => {
-
       return false;
     });
 };
@@ -88,8 +85,7 @@ export const findClients = async () => {
     .then((clients: any) => {
       return clients;
     })
-    .catch((_err: any) => {
-    });
+    .catch((_err: any) => {});
   return clients;
 };
 export function updateClient(clientId: string, updateData: any) {
@@ -140,10 +136,8 @@ export const saveArticle = async (a: articleData) => {
 
   db.articles
     .insertAsync(articleToSave)
-    .then((_res) => {
-    })
-    .catch((_err) => {
-    });
+    .then((_res) => {})
+    .catch((_err) => {});
 };
 export const getArticleByCode = async (
   articleCode: string
@@ -195,8 +189,7 @@ export const findArticles = async (): Promise<articleData[]> => {
     .then((doc: any) => {
       return doc;
     })
-    .catch((_err: any) => {
-    });
+    .catch((_err: any) => {});
 };
 export const deleteArticle = async (code: string) => {
   const numRemoved = await db.articles.removeAsync({ code: code }, {});
@@ -234,6 +227,8 @@ export async function updatedStockArticle(article: {
         }
       }
     );
+  });
+}
 export async function updatedStockArticles(
   articles: {
     name: string;
@@ -453,24 +448,22 @@ export const registBuyInArticle = async (saleInfo: saleData) => {
       ? await getArticleByCode(article.code)
       : false;
     if (articleOfDb) {
-      await db.articles
-        .updateAsync(
-          { code: article.code },
-          {
-            $set: {
-              sales: [
-                ...articleOfDb.sales,
-                {
-                  buyer: saleInfo.buyer,
-                  amount: article.amount,
-                  sold: article.total,
-                },
-              ],
-            },
+      await db.articles.updateAsync(
+        { code: article.code },
+        {
+          $set: {
+            sales: [
+              ...articleOfDb.sales,
+              {
+                buyer: saleInfo.buyer,
+                amount: article.amount,
+                sold: article.total,
+              },
+            ],
           },
-          { multi: false }
-        )
-        
+        },
+        { multi: false }
+      );
     }
   });
 };
@@ -478,9 +471,7 @@ export const findSales = () => {
   return db.sales.findAsync({});
 };
 export const deleteSales = (data: any) => {
-
-  db.sales.remove({ _id: data }, (_err, _newDoc) => {
-  });
+  db.sales.remove({ _id: data }, (_err, _newDoc) => {});
 };
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
@@ -494,8 +485,7 @@ export const addCategory = async (newCategory: string) => {
     label: newCategoryLabel,
     typeFilter: "category",
   };
-  return await db.filters
-    .insertAsync(category)
+  return await db.filters.insertAsync(category);
 };
 export const addSubCategory = async (newSubCategory: string) => {
   const newSubCategoryLabel =
@@ -507,8 +497,7 @@ export const addSubCategory = async (newSubCategory: string) => {
     label: newSubCategoryLabel,
     typeFilter: "subCategory",
   };
-  return await db.filters
-    .insertAsync(subCategory)
+  return await db.filters.insertAsync(subCategory);
 };
 export const addBrand = async (newBrand: string) => {
   const newBrandLabel =
@@ -520,8 +509,7 @@ export const addBrand = async (newBrand: string) => {
     label: newBrandLabel,
     typeFilter: "brand",
   };
-  return await db.filters
-    .insertAsync(brand)
+  return await db.filters.insertAsync(brand);
 };
 
 export const getCategoryAndBrand = async () => {
@@ -627,8 +615,6 @@ export const saveNewUnits = async (
     return await db.unitsArticleForm
       .insertAsync(e)
       .then((res) => {
-
-
         return {
           message: "Unidad guardada correctamente",
           value: res,
@@ -668,15 +654,12 @@ export const updateUnit = async (e: unitType, id: string) => {
       {}
     )
     .then((res) => {
-
-
       return {
         message: "Unidad editada correctamente",
         value: res,
       };
     })
     .catch((err) => {
-
       return {
         message: "No se pudo editar la unidad",
         value: err,
@@ -687,15 +670,12 @@ export const deleteUnit = async (e: string) => {
   return await db.unitsArticleForm
     .removeAsync({ _id: e }, {})
     .then((res) => {
-
-
       return {
         message: "Unidad eliminada correctamente",
         value: res,
       };
     })
     .catch((err) => {
-
       return {
         message: "No se pudo eliminar la unidad",
         value: err,
@@ -707,14 +687,12 @@ export const saveSupplier = async (e: supplierType) => {
   return await db.suppliers
     .insertAsync(e)
     .then((res) => {
-
       return {
         message: "Proveedor guardado correctamente",
         value: true,
       };
     })
     .catch((err) => {
-
       return {
         message: "NO SE PUDO GUARDAR EL PROVEEDOR",
         value: false,
@@ -937,10 +915,10 @@ export const obtenerEstadoPagado = (idCuenta: any) => {
       if (err) {
         reject(err);
       } else {
-        resolve({ 
+        resolve({
           pagado: doc.pagado,
           pagado2: doc.pagado2,
-          pagado3: doc.pagado3 
+          pagado3: doc.pagado3,
         }); // Incluye los campos 'pagado', 'pagado2', y 'pagado3' en la respuesta
       }
     });
@@ -953,7 +931,6 @@ export const accountToPay = (account: object) => {
       // Manejar el error
     } else {
       // Objeto guardado con éxito
-
     }
   });
 };
@@ -968,7 +945,6 @@ export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
 
   // Mostrar los datos que se van a actualizar
 
-
   return new Promise((resolve, reject) => {
     db.accounts.update(
       { _id: idCuenta },
@@ -976,10 +952,8 @@ export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
       { multi: false },
       (err: any, numUpdated: number) => {
         if (err) {
-
           reject(err);
         } else {
-
           if (numUpdated === 0) {
           }
           resolve(numUpdated);
@@ -992,7 +966,12 @@ export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
 /////////////////////////////////////////////////////
-export const actualizarEstadoPagado = (idCuenta:any, estadoPagado:any, pagado2:any, pagado3:any) => {
+export const actualizarEstadoPagado = (
+  idCuenta: any,
+  estadoPagado: any,
+  pagado2: any,
+  pagado3: any
+) => {
   return new Promise((resolve, reject) => {
     db.accounts.update(
       { _id: idCuenta },
@@ -1037,7 +1016,6 @@ export const getUser = (userId: any) => {
   return new Promise((resolve, reject) => {
     db.usuariosAdmin.findOne({ _id: userId }, (err, admin) => {
       if (err) {
-
         reject(err);
       } else if (admin) {
         resolve(admin);
@@ -1065,7 +1043,6 @@ export const actualizarImagenUsuario = (userId: any, imageUrl: any) => {
         if (err) {
           reject(err);
         } else {
-
           resolve(true);
         }
       }
@@ -1098,7 +1075,6 @@ export const guardarUsuarioAdmin = async (usuarioAdmin: { password: any }) => {
       });
     });
   } catch (error: any) {
-
     throw new Error(error.message);
   }
 };
@@ -1120,12 +1096,12 @@ export const verificarAdminExistente = () => {
   });
 };
 
-
-
 const secretKey = "tu_clave_secreta"; // Asegúrate de usar una clave secreta segura y única
 
-export const iniciarSesion = async (credentials: { username: string; password: string }) => {
-
+export const iniciarSesion = async (credentials: {
+  username: string;
+  password: string;
+}) => {
   try {
     // Primero, buscamos en la colección de administradores
     const usuarioAdmin = await new Promise<any>((resolve, reject) => {
@@ -1236,13 +1212,18 @@ export const cambiarContrasena = async (userId: any, nuevaContrasena: any) => {
 
     // Actualiza la contraseña del usuario en la base de datos
     return new Promise((resolve, reject) => {
-      db.usuariosAdmin.update({ _id: userId }, { $set: { password: hashedPassword } }, {}, (err) => {
-        if (err) {
-          reject({ exito: false, error: err.message });
-        } else {
-          resolve({ exito: true });
+      db.usuariosAdmin.update(
+        { _id: userId },
+        { $set: { password: hashedPassword } },
+        {},
+        (err) => {
+          if (err) {
+            reject({ exito: false, error: err.message });
+          } else {
+            resolve({ exito: true });
+          }
         }
-    });
+      );
     });
   } catch (error: any) {
     throw new Error(error.message);
