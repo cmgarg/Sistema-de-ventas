@@ -77,12 +77,13 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
     getAccountsToPay();
   }
 
-
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 w-full h-full">
       <div className="absolute top-0 right-0 bottom-0 left-0 bg-black opacity-60"></div>
-      <div className="w-1/4 h-2/2 bg-gray-600 space-y-5 rounded-3xl relative justify-start text-white  border-gray-50 border"
-       style={{ backgroundColor: 'rgba(30, 41, 59, 0.9)' }}>
+      <div
+        className="w-1/4 h-2/2 bg-gray-600 space-y-5 rounded-3xl relative justify-start text-white  border-gray-50 border"
+        style={{ backgroundColor: "rgba(30, 41, 59, 0.9)" }}
+      >
         <div className="flex-1 flex flex-row h-8 mt-6 text-white text-2xl items-center justify-center">
           <div>Modificar Cuenta</div>
         </div>
@@ -130,7 +131,7 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
             <input
               type="date"
               name="date"
-             className="outline-none h-9 w-56 px-2 rounded-md bg-slate-700 fecha-input fecha-input:focus"
+              className="outline-none h-9 w-56 px-2 rounded-md bg-slate-700 fecha-input fecha-input:focus"
               value={accountData.date}
               onChange={(e) => {
                 setChangeData("date", e.target.value);

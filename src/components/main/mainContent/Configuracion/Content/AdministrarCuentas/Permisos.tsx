@@ -9,7 +9,7 @@ export default function Permisos({ usuarios, usuarioSeleccionado, setUsuarios })
 
   const cargos = [
     { key: "gerente", permisos: ["Ventas", "Artículos", "Stock", "Clientes", "Estadísticas"] },
-    { key: "logistica", permisos: ["Ventas", "Artículos", "Stock", "Clientes", "Facturación"] },
+    { key: "logistica", permisos: ["Ventas", "Artículos", "Stock", "Clientes"] },
     { key: "ventas", permisos: ["Ventas", "Artículos", "Stock", "Clientes"] },
     { key: "stock", permisos: ["Stock"] },
   ];

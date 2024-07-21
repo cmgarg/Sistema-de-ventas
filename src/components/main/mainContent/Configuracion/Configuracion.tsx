@@ -9,8 +9,9 @@ import { cambiar } from "@/src/redux/estados/estadoTipoDeUser";
   
 export default function Configuracion() {
   const dispatch = useDispatch(); 
-  const userType = useSelector((state: RootState) => state.estadoTipoDeUser);
   const [estado, setEstado] = useState("general-1");
+  const userType = useSelector((state: RootState) => state.estadoTipoDeUser.userType);
+
   const contenido = () => {
     if (estado === "general-1") {
       return <General />;
@@ -27,9 +28,8 @@ export default function Configuracion() {
 
  ///estado redux saber q tipo de usuario se inicio y aplicar las restricciones
   useEffect(() => {
-    console.log("User Type:", userType);
+    console.log("User Type: de configuracion", userType);
   }, [userType]);
-
 
 
 

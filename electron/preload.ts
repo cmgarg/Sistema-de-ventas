@@ -151,6 +151,9 @@ contextBridge.exposeInMainWorld("api", {
       //EVENTOS CUENTAS
       "save-accountToPay",
       "get-accountToPay",
+      "actualizar-estado-pagado",
+      "solicitar-estado-pagado-inicial",
+      "eliminar-cuenta",
       //EVENTOS FILTROS
       "save-category",
       "save-subcategory",
@@ -236,6 +239,9 @@ contextBridge.exposeInMainWorld("api", {
       "respuesta-obtener-permisos-usuario",
       "respuesta-verificar-admin",
       "respuesta-obtener-admin",
+      "estado-pagado-inicial",
+      "cuenta-eliminada",
+      "estado-pagado-actualizado",
       //UNIT RESPONSE
       "response-get-unitsArticleForm",
       "response-save-unitsArticleForm",
@@ -268,7 +274,7 @@ contextBridge.exposeInMainWorld("api", {
     }
   },
 
-  removeAllListeners: (canal: string) => {
+  removeAllListeners: (canal: string, _callback: (...args: any[]) => void) => {
     console.log(`Removiendo todos los listeners del canal: ${canal}`);
     ipcRenderer.removeAllListeners(canal);
   },

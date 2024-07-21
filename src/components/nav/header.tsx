@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import CerrarIcon from "../../assets/headersvg/cerraricon.jsx";
-import Minimize from "../../assets/headersvg/Minimize.jsx";
-import Maximize from "../../assets/headersvg/Maximize.jsx";
-import Guion from "../../assets/headersvg/Guion.jsx";
+import { VscChromeClose, VscChromeMaximize, VscChromeMinimize, VscChromeRestore } from "react-icons/vsc";
+
 function Header() {
   const closeWindow = () => {
     window.api.enviarEvento("close-window");
@@ -36,11 +34,11 @@ function Header() {
     <div className="bg-slate-800 border-gray-700 row-start-1 row-end-2 h-10 app-region-drag flex justify-end  items-center">
       <div className="flex-1 justify-between items-baseline">
         <div className="h-10 flex justify-start items-center ">
-          <div className=" flex justify-center items-center w-4 h-4 ml-3 mr-3">
+          <div className=" flex justify-center items-center w-5 h-5 ml-3 mr-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 139.4 156.4"
-              className=" w-4"
+              className=" w-5"
             >
               <defs></defs>
               <title>Recurso 2</title>
@@ -79,7 +77,7 @@ function Header() {
           minimizeWindow();
         }}
       >
-        <Guion color={"#fff"} size={20} />
+        <VscChromeMinimize color={"#fff"} size={20} />
       </button>
       <button
         className="app-region-no-drag flex items-center hover:bg-gray-700 h-full w-8 justify-center"
@@ -92,9 +90,9 @@ function Header() {
         }}
       >
         {isMaximized ? (
-          <Minimize color={"#fff"} size={16} />
+          <VscChromeRestore size={20} color="white"/>
         ) : (
-          <Maximize color={"#fff"} size={10} />
+          <VscChromeMaximize color={"#fff"} size={20} />
         )}
       </button>
       <button
@@ -103,7 +101,7 @@ function Header() {
           closeWindow();
         }}
       >
-        <CerrarIcon color={"#fff"} size={16} />
+        <VscChromeClose color={"#fff"} size={20} />
       </button>
     </div>
   );

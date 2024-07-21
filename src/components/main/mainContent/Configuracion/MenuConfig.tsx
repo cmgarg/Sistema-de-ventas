@@ -1,9 +1,17 @@
 import UsuarioSecSVG from "../../../../assets/MAINSVGS/Configuracion SVG/UsuarioSecSVG";
 import GeneralSVG from "../../../../assets/MAINSVGS/Configuracion SVG/GeneralSVG";
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function MenuConfig({ estado, setEstado }) {
-  console.log(estado);
+  const userType = useSelector(
+    (state: RootState) => state.estadoTipoDeUser.userType
+  );
+const dispatch = useDispatch();
+  console.log(
+    userType,
+    "---este es el estado reduxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  );
 
   return (
     <div className="flex flex-1 flex-col bg-gray-900 rounded-lg shadow-xl shadow-black">
@@ -22,6 +30,7 @@ export default function MenuConfig({ estado, setEstado }) {
             <div className=" select-none">General</div>
           </div>
         </div>
+        {userType === "ventas " || userType === "admin" || userType === "gerente"? (
         <div
           className={`flex w-full h-16 text-white relative hover:bg-black hover:bg-opacity-20 ${
             estado === "general-2"
@@ -36,7 +45,7 @@ export default function MenuConfig({ estado, setEstado }) {
           <div className="flex items-center text-base">
             <div className=" select-none">Administrar Cuentas</div>
           </div>
-        </div>
+        </div>) : null}
         <div
           className={`flex w-full h-16 text-white relative hover:bg-black hover:bg-opacity-20 ${
             estado == "general-3" &&
