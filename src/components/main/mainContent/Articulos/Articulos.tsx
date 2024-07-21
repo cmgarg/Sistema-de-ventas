@@ -3,11 +3,10 @@ import NavMain from "../../navmain/NavMain";
 import Agregar from "../buttons/Agregar";
 import Buscador from "../../../buscador/Buscador";
 import AsideMain from "../../asidemain/AsideMain";
-import AddArticuloForm from "./ADDARTICULO/AddArticuloForm";
 import Export from "../buttons/Export";
 import ArticleList from "./ArticleList";
 import { useDispatch, useSelector } from "react-redux";
-import { articleData, storeType } from ".././../../../../types";
+import { articleData, storeType } from "../../../../../types/types";
 import EditArticleForm from "./EDITARTICLE/EditArticleForm";
 import CheckSvg from "../../../../assets/MAINSVGS/mainAsideSvg/editSVG/CheckSvg";
 import UnCheckSvg from "../../../../assets/MAINSVGS/mainAsideSvg/editSVG/UnCheckSvg";
@@ -44,10 +43,18 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
   });
   const [articleToEdit, setArticleToEdit] = useState<{
     active: boolean;
-    code: string;
+    articleToEdit: {
+      idArticle: string;
+      code: string;
+      barcode: string;
+    };
   }>({
     active: false,
-    code: "",
+    articleToEdit: {
+      idArticle: "",
+      code: "",
+      barcode: "",
+    },
   });
   const [resDeleteArticle, setResDeleteArticle] = useState({
     delete: false,
@@ -106,15 +113,6 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
       <div className="flex flex-row pb-5 row-start-2 row-end-7">
         <AsideMain isActive={false}></AsideMain>
         <div className="w-full p-5">
-          {false && (
-            <AddArticuloForm
-              onChangeModal={onChangeModal}
-              categorys={categorys}
-              brands={brands}
-              subCategorys={subCategorys}
-              formatMony={formatMony}
-            ></AddArticuloForm>
-          )}
           {activeModal && <ForAddNewArticle onChangeModal={onChangeModal} />}
           {articleToEdit.active && (
             <EditArticleForm

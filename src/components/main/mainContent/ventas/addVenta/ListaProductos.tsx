@@ -1,7 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import MenuClientsForm from "../MenusInputs/MenuClientsForm";
 import MenuArticlesForm from "../MenusInputs/MenuArticlesForm";
-import { articleData, saleData, storeType } from "../../../../../../types";
+import {
+  articleData,
+  saleData,
+  storeType,
+  unitType,
+} from "../../../../../../types/types";
 import { useSelector } from "react-redux";
 import ClientSvg from "../../../../../../src/assets/MAINSVGS/articlesSVG/ClientSvg";
 import FinalConsumer from "../../../../../../src/assets/MAINSVGS/articlesSVG/FinalConsumer";
@@ -18,9 +23,12 @@ interface ListaProductos {
   articles: articleData[];
   addProduct: (e: {
     name: string;
-    code?: string;
+    code: string;
     total: string;
-    amount: string;
+    amount: {
+      value: string;
+      unit: string;
+    };
   }) => void;
   showError: { in: string };
 
@@ -100,7 +108,7 @@ const ListaProductos: React.FC<ListaProductos> = ({
               <div className="flex">
                 <p>{e.amount.value}</p>
                 <div className="text-sm flex items-end">
-                  <p>{abreviationUnit(e.amount.unit)}</p>
+                  <p>{e.amount.unit}</p>
                 </div>
               </div>
             </div>

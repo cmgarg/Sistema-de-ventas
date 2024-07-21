@@ -1,11 +1,12 @@
 import React from "react";
 import InputBrand from "./Inputs/InputBrand";
 import {
+  Action,
   articleData,
   brandType,
   categoryType,
   storeType,
-} from "../../../../../../../../types";
+} from "../../../../../../../../types/types";
 import InputCategory from "./Inputs/InputCategory";
 import InputSubCategory from "./Inputs/InputSubCategory";
 import { useSelector } from "react-redux";
@@ -14,19 +15,21 @@ interface CategoryAndBrandProps {
   errorToSave: { active: boolean; type: string; message: string };
   setAddBrandInput: (e: boolean) => void;
   inputStyle: string;
-  articuloDataState: articleData;
-  setChangeData: (e: string, f: any) => void;
+  stateArticle: articleData;
   setAddCategoryInput: (e: boolean) => void;
   setAddSubCategoryInput: (e: boolean) => void;
+  dispatch: React.Dispatch<Action>;
+  errorIn: string[];
 }
 const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
   errorToSave,
   setAddSubCategoryInput,
+  errorIn,
   setAddCategoryInput,
   setAddBrandInput,
   inputStyle,
-  articuloDataState,
-  setChangeData,
+  stateArticle,
+  dispatch,
 }) => {
   const brands = useSelector((state: storeType) => state.brandState);
   const categorys = useSelector((state: storeType) => state.categoryState);
@@ -53,11 +56,13 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
           </button>
         </div>
         <InputBrand
+          errorIn={errorIn}
+          stateArticle={stateArticle}
           style={inputStyle}
-          articuloData={articuloDataState}
-          setChangeData={setChangeData}
+          dispatch={dispatch}
           brands={brands}
           brandError={errorToSave}
+          value={stateArticle.brand.label}
         />
       </div>
       <div className="flex-1 relative w-full">
@@ -77,9 +82,11 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
           </button>
         </div>
         <InputCategory
+          errorIn={errorIn}
+          stateArticle={stateArticle}
           style={inputStyle}
-          articuloData={articuloDataState}
-          setChangeData={setChangeData}
+          value={stateArticle.category.label}
+          dispatch={dispatch}
           categorys={categorys}
           categoryError={errorToSave}
         />
@@ -101,10 +108,12 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
           </button>
         </div>
         <InputSubCategory
+          errorIn={errorIn}
+          stateArticle={stateArticle}
           style={inputStyle}
-          articuloData={articuloDataState}
-          setChangeData={setChangeData}
+          dispatch={dispatch}
           subCategorys={subCategorys}
+          value={stateArticle.subCategory.label}
           categoryError={errorToSave}
         />
       </div>

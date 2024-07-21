@@ -65,7 +65,17 @@ const MainContent: React.FC<MainContentProps> = ({}) => {
     dispatch(loadCategorys(categorys));
     dispatch(loadSubCategorys(subCategorys));
   }
-
+  const imprimirPrueba = () => {
+    const data = [
+      {
+        type: "text",
+        value: "MARTIN CHUPA PIJA",
+        style: `text-align:center;`,
+        css: { "font-weight": "700", "font-size": "18px" },
+      },
+    ];
+    window.ipcRenderer.invoke("print");
+  };
   useEffect(() => {
     window.api.enviarEvento("get-articles");
     window.api.enviarEvento("get-clients");

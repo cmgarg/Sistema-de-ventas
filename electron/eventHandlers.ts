@@ -48,6 +48,15 @@ import {
   saveSupplier,
   deleteSupplier,
   getSuppliers,
+  updateSuppliers,
+  createDeposit,
+  updateDeposit,
+  addSectorInDeposit,
+  addProductInDeposit,
+  deleteSector,
+  editSectorInDeposit,
+  getDeposits,
+  createSectorInDeposit,
   saveNotification,
   getNotifications, 
   deleteNotification,
@@ -59,6 +68,7 @@ import {
 
 } from "./databaseOperations";
 import { verificarToken } from "./vFunctions";
+import { articleData } from "../types/types";
 
 export const loadEvents = () => {
   console.log("eventHandlers Se esta Ejecutando...");
@@ -101,14 +111,21 @@ export const loadEvents = () => {
     event.reply("response-save-supplier", res);
   });
 
-  ipcMain.on("delete-supplier", async (event, supplierToSave) => {
-    const res = await deleteSupplier(supplierToSave);
+  ipcMain.on("delete-supplier", async (event, supplierToDelete) => {
+    console.log("ACA SI LLEGA");
+    const res = await deleteSupplier(supplierToDelete);
+
     event.reply("response-delete-supplier", res);
   });
 
   ipcMain.on("get-suppliers", async (event) => {
     const res = await getSuppliers();
     event.reply("response-get-suppliers", res);
+  });
+  ipcMain.on("update-supplier", async (event, supplierToUpdate) => {
+    console.log("ACAAA SI LLEGAAA");
+    const res = await updateSuppliers(supplierToUpdate._id, supplierToUpdate);
+    event.reply("response-update-supplier", res);
   });
 
   // Artículos
@@ -126,13 +143,29 @@ export const loadEvents = () => {
       await saveArticle(articuloAGuardar);
       const articles = await findArticles();
       event.reply("response-get-articles", articles);
-      event.reply("error-save-article", { message: "", type: "", active: false });
+      event.reply("error-save-article", {
+        message: "",
+        type: "",
+        active: false,
+      });
     } else if (!brandExist && !categoryExist) {
-      event.reply("error-save-article", { message: "no registrada", type: "all", active: true });
+      event.reply("error-save-article", {
+        message: "no registrada",
+        type: "all",
+        active: true,
+      });
     } else if (!categoryExist) {
-      event.reply("error-save-article", { message: "no registrada", type: "category", active: true });
+      event.reply("error-save-article", {
+        message: "no registrada",
+        type: "category",
+        active: true,
+      });
     } else if (!brandExist) {
-      event.reply("error-save-article", { message: "no registrada", type: "brand", active: true });
+      event.reply("error-save-article", {
+        message: "no registrada",
+        type: "brand",
+        active: true,
+      });
     }
   });
 
@@ -169,7 +202,96 @@ export const loadEvents = () => {
 
   ipcMain.on("get-sales", async (event) => {
     const ventas = await findSales();
-    event.reply("response-get-sales", ventas);
+
+    console.log("Se enviaron las ventas", ventas);
+    event.reply("response-get-sales", ventas); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
+  });
+
+  ipcMain.on("delete-sale", (_e, ventaAEliminar) => {
+    deleteSales(ventaAEliminar);
+  });
+  ipcMain.on("guardar-usuario-admin", async (event, usuarioAdmin) => {
+    try {
+      const usuarioConPasswordEncriptado = await guardarUsuarioAdmin(
+        usuarioAdmin
+      );
+      event.reply("respuesta-guardar-usuario-admin", {
+        exito: true,
+        usuarioAdmin: usuarioConPasswordEncriptado,
+      });
+    } catch (error: any) {
+      event.reply("respuesta-guardar-usuario-admin", {
+        exito: false,
+        error: error.message,
+      });
+    }
+  });
+
+  ipcMain.on("verificar-admin-existente", async (event) => {
+    try {
+      console.log("Verificando admin existente..."); // Log para depuración
+      const adminInfo = await verificarAdminExistente();
+      console.log("Información del admin:", adminInfo); // Log para depuración
+      event.reply("respuesta-verificar-admin", adminInfo);
+    } catch (error) {
+      console.error("Error al verificar admin existente:", error); // Log para depuración
+      event.reply("respuesta-verificar-admin", { existeAdmin: false });
+    }
+  });
+
+  ipcMain.on("iniciar-sesion", async (event, credentials) => {
+    try {
+      const response = await iniciarSesion(credentials);
+      event.reply("respuesta-iniciar-sesion", response);
+    } catch (error: any) {
+      event.reply("respuesta-iniciar-sesion", {
+        exito: false,
+        mensaje: error.message,
+      });
+    }
+  });
+
+  //   event.reply("article-foundByName", article);
+  // });
+  ipcMain.on("get-articles", async (event) => {
+    const articulos = await findArticles();
+
+    console.log("Se enviaron los ARTICULOS", articulos);
+    event.reply("response-get-articles", articulos); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
+  });
+
+  ipcMain.on("edit-article", async (e, articleEdit) => {
+    const articleEditResult = await editArticle(articleEdit);
+
+    e.reply("response-edit-article", articleEditResult);
+  });
+
+  ipcMain.on("delete-article", async (e, articuloAEliminar) => {
+    const result = await deleteArticle(articuloAEliminar);
+
+    e.reply("response-delete-article", result);
+  });
+  ///
+  //ESCUCHAS DE EVENTOS DE GUARDADO DE VENTAS
+  //
+
+  ipcMain.on("get-sales-stats", async (event) => {
+    const statsSales = await getStats();
+    console.log(statsSales, "FALOPERO");
+    event.reply("response-get-sales-stats", statsSales);
+  });
+
+  ipcMain.on("sale-process", async (event, venta) => {
+    const res = await saleProcess(venta);
+
+    event.reply("response-sale-process", res);
+  });
+
+  ipcMain.on("get-sales", async (event) => {
+    const ventas = await findSales();
+
+    console.log("Se enviaron las ventas", ventas);
+    event.reply("response-get-sales", ventas); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
   });
 
   ipcMain.on("delete-sale", (_e, ventaAEliminar) => {
@@ -221,10 +343,103 @@ export const loadEvents = () => {
     event.reply("response-remove-unitsArticleForm", response);
   });
 
+  //ALMACENES
+  //CREAR DEPOSITO
+  ipcMain.on("create-deposit", async (event, newDeposit) => {
+    const response = await createDeposit(newDeposit);
+
+    event.reply("response-create-deposit", response);
+  });
+  //AACTUALIZAR DEPOSITO
+  ipcMain.on("update-deposit", async (event, depositToUpdate) => {
+    console.log("QUE PASA ", depositToUpdate);
+    const response = await updateDeposit(depositToUpdate);
+
+    event.reply("response-update-deposit", response);
+  });
+  //AÑADIR PRODUCTO A DEPOSITO
+  ipcMain.on(
+    "add-product-in-Deposit",
+    async (
+      event,
+      {
+        deposit_id,
+        sector,
+        productToAdd,
+      }: { deposit_id: string; sector: number; productToAdd: articleData }
+    ) => {
+      console.log("QUE PASA ", productToAdd);
+      const response = await addProductInDeposit(
+        deposit_id,
+        sector,
+        productToAdd
+      );
+
+      event.reply("response-add-product-in-Deposit", response);
+    }
+  );
+  //ELIMINAR SECTOR DE DEPOSITO
+  ipcMain.on(
+    "deposit-delete-sector",
+    async (
+      event,
+      { deposit_id, sectorId }: { deposit_id: string; sectorId: string }
+    ) => {
+      const response = await deleteSector(deposit_id, sectorId);
+
+      event.reply("response-deposit-delete-sector", response);
+    }
+  );
+  //AÑADIR UN SECTOR EN DEPOSITO
+  ipcMain.on(
+    "create-sector-in-deposit",
+    async (
+      event,
+      { deposit_id, sector }: { deposit_id: string; sector: any }
+    ) => {
+      const response = await createSectorInDeposit(deposit_id, sector);
+
+      event.reply("response-create-sector-in-deposit", response);
+    }
+  );
+  //EDITAR UN SECTOR EN DEPOSITO
+  ipcMain.on(
+    "edit-sector-in-deposit",
+    async (
+      event,
+      {
+        deposit_id,
+        sectorToEdit,
+        sectorUpdate,
+      }: { deposit_id: string; sectorToEdit: string; sectorUpdate: any }
+    ) => {
+      const response = await editSectorInDeposit(
+        deposit_id,
+        sectorToEdit,
+        sectorUpdate
+      );
+
+      event.reply("response-edit-sector-in-deposit", response);
+    }
+  );
+  //OBTENER DEPOSITOS
+  ipcMain.on("get-deposits", async (event) => {
+    console.log("QUE PASA ");
+    const response = await getDeposits();
+    console.log("RESPUESTA A FRONT", response);
+
+    event.reply("response-get-deposits", response);
+  });
+
   // Usuario
   ipcMain.on("guardar-usuario-admin", async (event, usuarioAdmin) => {
-    const usuarioConPasswordEncriptado = await guardarUsuarioAdmin(usuarioAdmin);
-    event.reply("respuesta-guardar-usuario-admin", { exito: true, usuarioAdmin: usuarioConPasswordEncriptado });
+    const usuarioConPasswordEncriptado = await guardarUsuarioAdmin(
+      usuarioAdmin
+    );
+    event.reply("respuesta-guardar-usuario-admin", {
+      exito: true,
+      usuarioAdmin: usuarioConPasswordEncriptado,
+    });
   });
 
   ipcMain.on("verificar-admin-existente", async (event) => {
@@ -240,8 +455,11 @@ export const loadEvents = () => {
     try {
       const response = await iniciarSesion(credentials);
       event.reply("respuesta-iniciar-sesion", response);
-    } catch (error) {
-      event.reply("respuesta-iniciar-sesion", { exito: false, mensaje: error.message });
+    } catch (error: any) {
+      event.reply("respuesta-iniciar-sesion", {
+        exito: false,
+        mensaje: error.message,
+      });
     }
   });
 
@@ -251,7 +469,10 @@ export const loadEvents = () => {
       // Token válido, maneja la solicitud
     } else {
       // Token inválido o expirado, envía un mensaje de error
-      event.reply("respuesta-ruta-protegida", { exito: false, mensaje: "Token inválido o expirado" });
+      event.reply("respuesta-ruta-protegida", {
+        exito: false,
+        mensaje: "Token inválido o expirado",
+      });
     }
   });
 
@@ -271,10 +492,16 @@ export const loadEvents = () => {
         };
         event.reply("datos-usuario-obtenidos", { success: true, data: userData });
       } else {
-        event.reply("datos-usuario-obtenidos", { success: false, error: "Usuario no encontrado" });
+        event.reply("datos-usuario-obtenidos", {
+          success: false,
+          error: "Usuario no encontrado",
+        });
       }
-    } catch (error) {
-      event.reply("datos-usuario-obtenidos", { success: false, error: error.message });
+    } catch (error: any) {
+      event.reply("datos-usuario-obtenidos", {
+        success: false,
+        error: error.message,
+      });
     }
   });
   
@@ -287,36 +514,46 @@ export const loadEvents = () => {
     }
   });
 
-  ipcMain.on("cambiar-contrasena", async (event, { userId, nuevaContrasena }) => {
-    try {
-      const resultado = await cambiarContrasena(userId, nuevaContrasena);
-      event.reply("respuesta-cambiar-contrasena", resultado);
-    } catch (error:any) {
-      event.reply("respuesta-cambiar-contrasena", { exito: false, error: error.message });
+  ipcMain.on(
+    "cambiar-contrasena",
+    async (event, { userId, nuevaContrasena }) => {
+      try {
+        const resultado = await cambiarContrasena(userId, nuevaContrasena);
+        event.reply("respuesta-cambiar-contrasena", resultado);
+      } catch (error: any) {
+        event.reply("respuesta-cambiar-contrasena", {
+          exito: false,
+          error: error.message,
+        });
+      }
     }
-  });
+  );
 
   ipcMain.on("restar-recuperacioncuenta", async (event, userId) => {
     try {
       const usuarioActualizado: any = await restarRecuperacionCuenta(userId);
-      event.reply("actualizacion-recuperacioncuenta", usuarioActualizado.recuperacioncuenta);
-    } catch (error) {
-    }
+      event.reply(
+        "actualizacion-recuperacioncuenta",
+        usuarioActualizado.recuperacioncuenta
+      );
+    } catch (error) {}
   });
 
   ipcMain.on("reiniciar-recuperacioncuenta", async (_event, userId) => {
     try {
       await reiniciarRecuperacionCuenta(userId);
-    } catch (error) {
-    }
+    } catch (error) {}
   });
 
   ipcMain.on("guardar-usuario-secundario", async (event, usuario) => {
     try {
       const usuarios = await guardarUsuarioSecundario(usuario);
       event.reply("respuesta-cargar-todos-usuarios", { exito: true, usuarios });
-    } catch (error) {
-      event.reply("respuesta-guardar-usuario", { exito: false, error: error.message });
+    } catch (error: any) {
+      event.reply("respuesta-guardar-usuario", {
+        exito: false,
+        error: error.message,
+      });
     }
   });
 
@@ -324,28 +561,53 @@ export const loadEvents = () => {
     try {
       const usuarios = await cargarTodosLosUsuarios();
       event.reply("respuesta-cargar-todos-usuarios", { exito: true, usuarios });
-    } catch (error) {
-      event.reply("respuesta-cargar-todos-usuarios", { exito: false, error: error.message });
+    } catch (error: any) {
+      event.reply("respuesta-cargar-todos-usuarios", {
+        exito: false,
+        error: error.message,
+      });
     }
   });
 
-  ipcMain.on("actualizar-imagen-subusuario", async (event, { userId, imageUrl }) => {
-    try {
-      await actualizarImagenSubusuario(userId, imageUrl);
-      event.reply("respuesta-actualizar-imagen-subusuario", { exito: true, userId, imageUrl });
-    } catch (error) {
-      event.reply("respuesta-actualizar-imagen-subusuario", { exito: false, mensaje: error.message });
+  ipcMain.on(
+    "actualizar-imagen-subusuario",
+    async (event, { userId, imageUrl }) => {
+      try {
+        await actualizarImagenSubusuario(userId, imageUrl);
+        event.reply("respuesta-actualizar-imagen-subusuario", {
+          exito: true,
+          userId,
+          imageUrl,
+        });
+      } catch (error: any) {
+        event.reply("respuesta-actualizar-imagen-subusuario", {
+          exito: false,
+          mensaje: error.message,
+        });
+      }
     }
-  });
+  );
 
-  ipcMain.on("actualizar-permisos-usuario", async (event, { userId, nuevosPermisos }) => {
-    try {
-      const usuarioActualizado = await actualizarPermisosUsuario(userId, nuevosPermisos);
-      event.reply("respuesta-actualizar-permisos-usuario", { exito: true, usuario: usuarioActualizado });
-    } catch (error) {
-      event.reply("respuesta-actualizar-permisos-usuario", { exito: false, mensaje: error.message });
+  ipcMain.on(
+    "actualizar-permisos-usuario",
+    async (event, { userId, nuevosPermisos }) => {
+      try {
+        const usuarioActualizado = await actualizarPermisosUsuario(
+          userId,
+          nuevosPermisos
+        );
+        event.reply("respuesta-actualizar-permisos-usuario", {
+          exito: true,
+          usuario: usuarioActualizado,
+        });
+      } catch (error: any) {
+        event.reply("respuesta-actualizar-permisos-usuario", {
+          exito: false,
+          mensaje: error.message,
+        });
+      }
     }
-  });
+  );
 
   ipcMain.on("guardar-usuario-editado", async (event, updatedUser) => {
     try {
@@ -353,6 +615,11 @@ export const loadEvents = () => {
       delete updatedUser._id;
       await actualizarUsuario(userId, updatedUser);
       event.reply("respuesta-guardar-usuario-editado", { exito: true });
+    } catch (error: any) {
+      event.reply("respuesta-guardar-usuario-editado", {
+        exito: false,
+        mensaje: error.message,
+      });
     } catch (error) {
       event.reply("respuesta-guardar-usuario-editado", { exito: false, mensaje: error.message });
     }
@@ -362,12 +629,37 @@ export const loadEvents = () => {
     try {
       const permisos = await obtenerPermisosUsuario(userId);
       event.reply("respuesta-obtener-permisos-usuario", permisos);
+    } catch (error: any) {
+      event.reply("respuesta-obtener-permisos-usuario", {
+        success: false,
+        error: error.message,
+      });
     } catch (error) {
       event.reply("respuesta-obtener-permisos-usuario", { success: false, error: error.message });
     }
   });
 
   // Cuentas a pagar
+  ipcMain.on(
+    "actualizar-estado-pagado",
+    async (event, { idCuenta, estadoPagado, pagado2, pagado3 }) => {
+      try {
+        await actualizarEstadoPagado(idCuenta, estadoPagado, pagado2, pagado3);
+        const estadoPagadoActualizado = await obtenerEstadoPagado(idCuenta);
+        event.reply("estado-pagado-actualizado", {
+          exitoso: true,
+          idCuenta,
+          estadoPagado: estadoPagadoActualizado,
+        });
+      } catch (error: any) {
+        event.reply("estado-pagado-actualizado", {
+          exitoso: false,
+          error: error.message,
+          idCuenta,
+        });
+      }
+    }
+  );
   ipcMain.on("actualizar-estado-pagado", async (event, { idCuenta, estadoPagado, pagado2, pagado3 }) => {
     try {
       await actualizarEstadoPagado(idCuenta, estadoPagado, pagado2, pagado3);
@@ -382,6 +674,11 @@ export const loadEvents = () => {
     try {
       const estados = await obtenerEstadosPagadosInicial();
       event.reply("estado-pagado-inicial", { exitoso: true, estados });
+    } catch (error: any) {
+      event.reply("estado-pagado-inicial", {
+        exitoso: false,
+        error: error.message,
+      });
     } catch (error) {
       event.reply("estado-pagado-inicial", { exitoso: false, error: error.message });
     }
@@ -413,6 +710,12 @@ export const loadEvents = () => {
     try {
       const resultado = await actualizarCuenta(id, updatedAccount);
       event.reply("cuenta-actualizada", { exitoso: true, id, resultado });
+    } catch (error: any) {
+      event.reply("cuenta-actualizada", {
+        exitoso: false,
+        error: error.message,
+        id,
+      });
     } catch (error) {
       event.reply("cuenta-actualizada", { exitoso: false, error: error.message, id });
     }
@@ -422,8 +725,11 @@ export const loadEvents = () => {
     try {
       const adminData = await obtenerAdmin();
       event.reply("respuesta-obtener-admin", adminData);
-    } catch (error) {
-      event.reply("respuesta-obtener-admin", { exito: false, error: error.message });
+    } catch (error: any) {
+      event.reply("respuesta-obtener-admin", {
+        exito: false,
+        error: error.message,
+      });
     }
   });
 };

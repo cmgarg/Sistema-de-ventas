@@ -3,7 +3,7 @@ import TableMain from "../../tablaMain/TableMain";
 import TableHead from "../../tablaMain/TableHead";
 import TableRow from "../../tablaMain/TableRow";
 import { Link } from "react-router-dom";
-import { articleData, storeType } from "../../../../../types";
+import { articleData, storeType } from "../../../../../types/types";
 import { useSelector } from "react-redux";
 
 interface StockListProps {

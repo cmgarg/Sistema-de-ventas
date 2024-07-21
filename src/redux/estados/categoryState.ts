@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { brandType, categoryType } from "../../../types";
+import { brandType, categoryType } from "../../../types/types";
 
 const initialState: categoryType[] = [];
 export const categorySlice = createSlice({

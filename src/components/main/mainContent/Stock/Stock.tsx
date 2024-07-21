@@ -8,7 +8,7 @@ import AddCategory from "./forms/AddCategory";
 import Addbrand from "./forms/AddBrand";
 import Buscador from "../../../buscador/Buscador";
 import SelectM from "../Select/Select";
-import { articleData, storeType } from "../../../../../types";
+import { articleData, storeType } from "../../../../../types/types";
 
 import { useSelector } from "react-redux";
 

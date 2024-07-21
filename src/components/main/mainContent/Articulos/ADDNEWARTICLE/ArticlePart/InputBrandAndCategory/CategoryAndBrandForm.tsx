@@ -34,7 +34,7 @@ const CategoryAndBrandForm: React.FC<CategoryAndBrandFormProps> = ({
   //GUARDAN LO NUEVO EN BASE DE DATOS
   const saveNewCategory = (newCategory: string) => {
     window.api.enviarEvento("save-category", newCategory);
-
+    console.log("GUARDANDO NUEVA CATEGORIA");
     setAddCategoryInput(false);
   };
   const saveNewSubCategory = (newSubCategory: string) => {

@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import UsuarioIniciado from "./UsuarioIniciado";
 import Notificaciones from "./Notificaciones";
 import { AiFillAlert } from "react-icons/ai";
@@ -26,7 +26,7 @@ const NavMain: React.FC<MainContentProps> = ({
           <p className="text-4xl">{title}</p>
         </div>
       </div>
-      <div className=" flex-1 flex justify-center">
+      <div className="flex justify-center">
         <div className="flex flex-row space-x-5">{children}</div>
       </div>
       <div className=" flex-1 flex">

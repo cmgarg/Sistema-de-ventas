@@ -1,18 +1,33 @@
-import { supplierType } from "@/types";
+import { supplierType } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import { BiEdit } from "react-icons/bi";
 import { FaRoad } from "react-icons/fa";
 import { TbTrash, TbTruck } from "react-icons/tb";
-import CreateSupplier from "./Supplier/CreateSupplier";
+import CreateSupplier from "./CreateSupplier";
 import { IoAdd, IoClose } from "react-icons/io5";
+import EditSupplier from "./EditSupplier";
+import { Action } from "../../../../../../../../../types/types";
 
 type SupplierProps = {
   setSupplierForm: (e: boolean) => void;
   suppliers: supplierType[];
+  dispatch: React.Dispatch<Action>;
 };
 
-const Supplier: React.FC<SupplierProps> = ({ setSupplierForm, suppliers }) => {
+const Supplier: React.FC<SupplierProps> = ({
+  setSupplierForm,
+  suppliers,
+  dispatch,
+}) => {
   const [supplierFormCreate, setSupplierCreate] = useState<boolean>(false);
+  const [editSupplierForm, setEditSupplierForm] = useState(false);
+  const [supplierToEdit, setSupplierToEdit] = useState<supplierType>({
+    name: "",
+    phoneNumber: "",
+    email: "",
+    address: "",
+    _id: "",
+  });
   const [supplierData, setSupplierData] = useState<supplierType>({
     name: "",
     phoneNumber: "",
@@ -62,19 +77,24 @@ const Supplier: React.FC<SupplierProps> = ({ setSupplierForm, suppliers }) => {
     }
   };
 
-  const loadSuppliers = () => {
-    window.api.enviarEvento("get-suppliers");
+  const onEditSupplier = (supplierToEdit: supplierType) => {
+    setSupplierToEdit(supplierToEdit);
+    setEditSupplierForm(true);
   };
 
   const deleteSupplier = (supplierToDelete: supplierType) => {
-    window.api.enviarEvento(
-      "delete-supplier",
+    window.api.enviarEvento("delete-supplier", supplierToDelete);
+  };
+  useEffect(() => {
+    window.api.recibirEvento(
+      "response-delete-supplier",
       (res: { message: string; value: boolean }) => {
         if (res.value) {
           setShowError({
             message: res.message,
             active: true,
           });
+          window.api.enviarEvento("get-suppliers");
         } else {
           setShowError({
             message: res.message,
@@ -83,11 +103,14 @@ const Supplier: React.FC<SupplierProps> = ({ setSupplierForm, suppliers }) => {
         }
       }
     );
-  };
+  }, []);
+  useEffect(() => {
+    dispatch({ type: "SET_SUPPLIER", payload: supplierData });
+  }, [supplierData]);
 
   return (
-    <div className="absolute top-0 bottom-0 right-0 left-0 flex justify-center items-center">
-      <div className="flex pb-2 space-y-5 h-5/6 w-5/6 flex-col relative rounded-lg bg-slate-900 rounde-lg border-2 border-slate-800">
+    <div className="absolute text-white top-0 bottom-0 right-0 left-0 z-50 flex justify-center items-center backdrop-blur-xl">
+      <div className="flex pb-2 space-y-5 h-5/6 w-5/6 flex-col relative rounded-lg bg-slate-900 rounde-lg border-2 border-slate-800 p-2">
         <div className="h-14 flex w-full">
           <div className="w-full justify-between flex items-center p-1">
             <div className="font-bold text-3xl">
@@ -112,14 +135,19 @@ const Supplier: React.FC<SupplierProps> = ({ setSupplierForm, suppliers }) => {
           </div>
         </div>
         {showError.active && (
-          <div className="absolute top-0 right-0 left-0 bottom-0 z-50 bg-slate-950 rounded-lg flex flex-col">
-            <div className="text-rose-600 text-2xl font-bold flex-1 flex justify-center items-center">
-              <p>{showError.message}</p>
-            </div>
-            <div className="flex w-full">
-              <button className="flex-1 bg-cyan-700 rounded-b-lg">
-                Aceptar
-              </button>
+          <div className="absolute justify-center items-center top-0 bottom-0 left-0 right-0 z-50 rounded-lg flex flex-col">
+            <div className="flex flex-col justify-center w-96 h-52 rounded-lg  bg-slate-700">
+              <div className="text-cyan-600 text-2xl font-bold flex-1 flex justify-center items-center">
+                <p className="text-center">{showError.message}</p>
+              </div>
+              <div className="flex w-full">
+                <button
+                  onClick={() => setShowError({ message: "", active: false })}
+                  className="flex-1 bg-cyan-700 rounded-b-lg"
+                >
+                  Aceptar
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -156,10 +184,16 @@ const Supplier: React.FC<SupplierProps> = ({ setSupplierForm, suppliers }) => {
                   <p>{supplier.address}</p>
                 </div>
                 <div className="flex flex-col items-center w-7 h-full">
-                  <button className="bg-rose-900 rounded-l-full flex-1 w-full flex items-center justify-center hover:bg-rose-600">
+                  <button
+                    onClick={() => deleteSupplier(supplier)}
+                    className="bg-rose-900 rounded-l-full flex-1 w-full flex items-center justify-center hover:bg-rose-600"
+                  >
                     <TbTrash size={15} />
                   </button>
-                  <button className="bg-cyan-900 rounded-l-full flex-1 w-full flex items-center justify-center hover:bg-cyan-600">
+                  <button
+                    onClick={() => onEditSupplier(supplier)}
+                    className="bg-cyan-900 rounded-l-full flex-1 w-full flex items-center justify-center hover:bg-cyan-600"
+                  >
                     <BiEdit size={15} />
                   </button>
                 </div>
@@ -173,6 +207,12 @@ const Supplier: React.FC<SupplierProps> = ({ setSupplierForm, suppliers }) => {
           setChangeData={setChangeData}
           setSupplierCreate={setSupplierCreate}
           supplierData={supplierData}
+        />
+      )}
+      {editSupplierForm && (
+        <EditSupplier
+          editSupplierForm={setEditSupplierForm}
+          supplierToEdit={supplierToEdit}
         />
       )}
     </div>

@@ -1,4 +1,4 @@
-import { authType } from "../../../types";
+import { authType } from "../../../types/types";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: authType = {

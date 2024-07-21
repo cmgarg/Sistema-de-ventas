@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { TbWorld, TbBrandGoogleAnalytics, TbFileDollar } from "react-icons/tb";
 import { useSelector, useDispatch } from "react-redux";
-import Tooltip from "../aside/Tooltip.jsx";
+import Tooltip from "./Tooltip.jsx";
 import { useLocation } from "react-router-dom";
 import GoTo from "./GoTo.js";
 import {

@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { NumericFormat } from "react-number-format";
-import { articleData } from "../../../../../../../types";
+import { Action, articleData } from "../../../../../../../types/types";
 
 type saleAndCost = {
-  articleState: articleData;
-  setChangeData: (e: string, data: any) => void;
   inputStyle: string;
+  stateArticle: articleData;
+  dispatch: React.Dispatch<Action>;
+  errorIn: string[];
 };
 
 const SaleAndCost: React.FC<saleAndCost> = ({
-  setChangeData,
-  articleState,
+  stateArticle,
+  dispatch,
+  errorIn,
   inputStyle,
 }) => {
-  const [finalPrice, setFinalPrice] = useState("0");
+  const [finalPrice, setFinalPrice] = useState(0);
   useEffect(() => {
     console.log(finalPrice, "PRECIO FINAL");
+    dispatch({ type: "SET_FINAL_PRICE", payload: finalPrice });
   }, [finalPrice]);
   return (
     <div className="flex flex-col space-x-2 border-t border-slate-700 p-2">
@@ -31,12 +34,17 @@ const SaleAndCost: React.FC<saleAndCost> = ({
             fixedDecimalScale={true}
             allowNegative={false}
             valueIsNumericString={true}
+            value={stateArticle.article.costo}
             onValueChange={(values) => {
               const { formattedValue, value } = values;
               console.log(formattedValue);
-              setChangeData("costo", value);
+              dispatch({ type: "SET_COST", payload: value });
             }}
-            className={`${inputStyle} h-14 rounded-l-lg bg-slate-900`}
+            className={`${inputStyle} h-14 rounded-l-lg bg-slate-900 ${
+              errorIn.includes("COST")
+                ? "overline outline-red-500 outline-2"
+                : ""
+            }`}
           />
         </div>
         <div className="flex flex-col">
@@ -51,11 +59,11 @@ const SaleAndCost: React.FC<saleAndCost> = ({
             valueIsNumericString={true}
             onValueChange={(values) => {
               const { formattedValue, value } = values;
-              setChangeData("percentajeToSale", value);
+              dispatch({ type: "SET_PROFIT", payload: value });
               console.log(formattedValue);
             }}
             className={`${inputStyle} "h-14 bg-slate-900 border border-slate-800"`}
-            value={articleState.article.percentajeToSale}
+            value={stateArticle.article.profit}
           />
         </div>
         <div className="flex flex-1 flex-col">
@@ -67,16 +75,17 @@ const SaleAndCost: React.FC<saleAndCost> = ({
             name="venta"
             className={`${inputStyle} "h-14 bg-slate-900 border border-slate-800"`}
             value={finalPrice}
+            disabled
           />
         </div>
       </div>
       <PriceOfArticle
-        percentajeToSale={articleState.article.percentajeToSale}
-        value={articleState.article.costo}
-        articleState={articleState}
+        percentajeToSale={stateArticle.article.profit}
+        value={stateArticle.article.costo}
+        articleState={stateArticle}
         finalPrice={finalPrice}
         setFinalPrice={setFinalPrice}
-        costo={articleState.article.costo}
+        costo={stateArticle.article.costo}
       />
     </div>
   );
@@ -87,7 +96,7 @@ type priceOfArticle = {
   costo: number;
   articleState: articleData;
   value: number;
-  finalPrice: number;
+  finalPrice: string;
   setFinalPrice: (e: string) => void;
 };
 
@@ -162,11 +171,11 @@ const PriceOfArticle: React.FC<priceOfArticle> = ({
       priceWithTaxCost,
       taxFinalPriceSuma,
       priceWithTaxCostAndFinalPrice,
-      percentaje,
+      percentaje: percentaje.toString(),
       priceWithTaxsAndProfit,
     });
 
-    return formatMony(`${priceWithTaxsAndProfit}`);
+    return priceWithTaxsAndProfit;
   };
   useEffect(() => {
     const finalPrice = applyTaxes(costo, percentajeToSale);

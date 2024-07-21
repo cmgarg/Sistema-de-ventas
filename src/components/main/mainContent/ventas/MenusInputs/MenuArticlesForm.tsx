@@ -1,4 +1,8 @@
-import { articleData, brandType, categoryType } from "../../../../../../types";
+import {
+  articleData,
+  brandType,
+  categoryType,
+} from "../../../../../../types/types";
 import React, { useEffect, useState } from "react";
 import Downshift from "downshift";
 
@@ -9,7 +13,10 @@ type propsInput = {
     name: string;
     code?: string;
     total: string;
-    amount: string;
+    amount: {
+      value: string;
+      unit: string;
+    };
   }) => void;
   value?: string;
 };
@@ -60,7 +67,7 @@ const MenuArticlesForm = ({
         total: `${totalAmount}`,
         amount: {
           value: `${amountArticle}`,
-          unit: `${articleToSend.article.stock.unit}`,
+          unit: `${articleToSend.article.stock.unit.abrevUnit}`,
         },
       };
 
@@ -190,11 +197,6 @@ const MenuArticlesForm = ({
       return true;
     }
   };
-  useEffect(() => {
-    if (articleSelect) {
-      abreviationUnit(articleSelect.article.stock.unit);
-    }
-  }, [articleSelect]);
 
   return (
     <Downshift
@@ -240,8 +242,8 @@ const MenuArticlesForm = ({
                   errorShowAmount && " shadow-inset-cmg"
                 }`}
               />
-              <p className="absolute bottom-1 right-1 text-slate-500 text-xs select-none">
-                {unitShow}
+              <p className="absolute bottom-1 right-1 text-slate-400 text-xs select-none">
+                {articleSelect?.article.stock.unit.abrevUnit}
               </p>
             </div>
             <button

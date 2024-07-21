@@ -29,6 +29,7 @@ export default function UsuarioIniciado({ setLoginUser }:any) {
 
   useEffect(() => {
     console.log("Componente UsuarioIniciado montado");
+  
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -132,6 +133,11 @@ export default function UsuarioIniciado({ setLoginUser }:any) {
       window.api.removeAllListeners("datos-usuario-obtenidos");
     };
   }, []);
+  useEffect(() => {
+    console.log(datosUsuario, "GONZAAAAAAAAAAAAAAA");
+  }, [datosUsuario]);
+
+  const navigate2 = useNavigate();
 
   const abrirConfiguracion = () => {
     navigate("/configuracion");

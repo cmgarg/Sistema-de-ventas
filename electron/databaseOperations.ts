@@ -3,10 +3,11 @@ import {
   articleData,
   clientData,
   dataToEditArticle,
+  depositType,
   saleData,
   supplierType,
   unitType,
-} from "../types";
+} from "../types/types";
 import Datastore from "@seald-io/nedb";
 import { getDate } from "./vFunctions";
 import jwt from "jsonwebtoken";
@@ -47,13 +48,16 @@ const db = {
     filename: "database/notifiDesactivada.db",
     autoload: true,
   }),
+  deposits: new Datastore({
+    filename: "database/deposits.db",
+    autoload: true,
+  }),
 };
 console.log("databaseOperations Se esta ejecutanado...");
 
 //funciones para manejar clientes y demas
 export const saveClient = async (data: object) => {
-  await db.clients
-    .insertAsync(data)
+  await db.clients.insertAsync(data);
 };
 
 export const registerBuyClient = async (sale: saleData) => {
@@ -77,11 +81,9 @@ export const deleteClient = async (data: clientData) => {
   await db.clients
     .removeAsync({ _id: data._id }, {})
     .then((data) => {
-
       return { clientDelete: data };
     })
     .catch((_err) => {
-
       return false;
     });
 };
@@ -91,8 +93,7 @@ export const findClients = async () => {
     .then((clients: any) => {
       return clients;
     })
-    .catch((_err: any) => {
-    });
+    .catch((_err: any) => {});
   return clients;
 };
 export function updateClient(clientId: string, updateData: any) {
@@ -143,10 +144,8 @@ export const saveArticle = async (a: articleData) => {
 
   db.articles
     .insertAsync(articleToSave)
-    .then((_res) => {
-    })
-    .catch((_err) => {
-    });
+    .then((_res) => {})
+    .catch((_err) => {});
 };
 export const getArticleByCode = async (
   articleCode: string
@@ -198,8 +197,7 @@ export const findArticles = async (): Promise<articleData[]> => {
     .then((doc: any) => {
       return doc;
     })
-    .catch((_err: any) => {
-    });
+    .catch((_err: any) => {});
 };
 export const deleteArticle = async (code: string) => {
   const numRemoved = await db.articles.removeAsync({ code: code }, {});
@@ -237,6 +235,51 @@ export async function updatedStockArticle(article: {
         }
       }
     );
+  });
+}
+export async function updatedStockArticles(
+  articles: {
+    name: string;
+    code: string;
+    total: number | string;
+    amount: {
+      value: string;
+      unit: string;
+    };
+  }[]
+) {
+  const articlesDB = await findArticles();
+
+  articles.forEach((article) => {
+    const articleDBCurrent = articlesDB.find(
+      (aDB) => aDB.code === article.code
+    );
+    if (articleDBCurrent) {
+      let newAmount =
+        Number(articleDBCurrent.article.stock.amount) - Number(article.amount);
+      //EMITIR NOTI SI EL MONTO RESTANTE ES CERCANO AL MINIMO
+      db.articles
+        .updateAsync(
+          { code: articleDBCurrent.code },
+          {
+            $set: {
+              article: {
+                stock: {
+                  amount: newAmount,
+                },
+              },
+            },
+          }
+        )
+        .then((res) => {
+          console.log("ARTICULO ACTUALZIADO", res);
+        })
+        .catch((err) => {
+          console.log("NO SE PUDO ACTUALIZAR", err);
+        });
+    } else {
+      console.log("No se encontró el artículo en la base de datos", article);
+    }
   });
 }
 export async function updateCountSaleArticle(article: {
@@ -307,16 +350,107 @@ export const saveSale = (a: saleData) => {
 
   return resultSave;
 };
+export const verifStockOfArticles = async (
+  articlesOfSale: {
+    name: string;
+    code?: string;
+    total: number | string;
+    amount: {
+      value: string;
+      unit: string;
+    };
+  }[]
+) => {
+  const articles = await findArticles();
+
+  const insufficientItems: {
+    articleCode: string;
+    amount: string;
+    name: string;
+  }[] = [];
+  articlesOfSale.forEach((article) => {
+    const articleToSee = articles.find(
+      (articleDB) => articleDB.code === article.code
+    );
+
+    if (articleToSee) {
+      insufficientItems.push({
+        articleCode: article.code ? article.code : article.name,
+        amount: article.amount.value ? article.amount.value : "no",
+        name: article.name,
+      });
+    }
+  });
+  if (insufficientItems.length > 0) {
+    return { value: true, insufficientItems };
+  } else {
+    return { value: false, insufficientItems: [] };
+  }
+};
+const clientConfirmData = async (e: {
+  name: string;
+  email: string;
+  address: string;
+  phone: string;
+  dni: string;
+  _id: string;
+}): Promise<boolean> => {
+  const clientDB = await getClientById(e._id);
+
+  if (!clientDB) {
+    console.log("EL CLIENTE NO EXISTE");
+    return false;
+  }
+  return true;
+};
+const payMethod = (e: string) => {
+  return "PROXIMAMENTE";
+};
+
 export const saleProcess = async (venta: saleData) => {
+  //VERIFICAR STOCK DE ARTICULOS
+  const verifStock = await verifStockOfArticles(venta.articles);
+  console.log("VERIFICANDO STOCK", verifStock);
+  if (verifStock.value) {
+    return {
+      type: "stock",
+      success: false,
+      message: "Stock insuficiente de",
+      adjunt: verifStock.insufficientItems,
+    };
+  }
+  //verificar cliente
+  let clientVerif = false;
+  if (venta.buyer.client.active) {
+    clientVerif = await clientConfirmData(venta.buyer.client.clientData);
+  }
+  if (!clientVerif) {
+    return {
+      type: "client",
+      success: false,
+      message: "El cliente no existe",
+      adjunt: venta.buyer.client.clientData,
+    };
+  }
+  //verificar metodo de pago
+  const payMethodVerif = payMethod("PROXIMAMENTE");
+  console.log("VERIFICACION EMTODO DE PAGO,", payMethodVerif);
+  //ACTUALIZAR STOCK
+  await updatedStockArticles(venta.articles);
   //registrar venta
   await registBuyInArticle(venta);
   //registrar compra en cliente
   await registerBuyClient(venta);
   //GUARDAR VENTA
 
-  const resultToProcess = saveSale(venta);
+  const resultToProcess = await saveSale(venta);
 
-  return resultToProcess;
+  return {
+    type: "success save sale",
+    success: resultToProcess.save,
+    message: "Stock insuficiente de",
+    adjunt: verifStock.insufficientItems,
+  };
 };
 export const registBuyInArticle = async (saleInfo: saleData) => {
   const articlesOfSale = [...saleInfo.articles];
@@ -326,24 +460,22 @@ export const registBuyInArticle = async (saleInfo: saleData) => {
       ? await getArticleByCode(article.code)
       : false;
     if (articleOfDb) {
-      await db.articles
-        .updateAsync(
-          { code: article.code },
-          {
-            $set: {
-              sales: [
-                ...articleOfDb.sales,
-                {
-                  buyer: saleInfo.buyer,
-                  amount: article.amount,
-                  sold: article.total,
-                },
-              ],
-            },
+      await db.articles.updateAsync(
+        { code: article.code },
+        {
+          $set: {
+            sales: [
+              ...articleOfDb.sales,
+              {
+                buyer: saleInfo.buyer,
+                amount: article.amount,
+                sold: article.total,
+              },
+            ],
           },
-          { multi: false }
-        )
-        
+        },
+        { multi: false }
+      );
     }
   });
 };
@@ -351,9 +483,7 @@ export const findSales = () => {
   return db.sales.findAsync({});
 };
 export const deleteSales = (data: any) => {
-
-  db.sales.remove({ _id: data }, (_err, _newDoc) => {
-  });
+  db.sales.remove({ _id: data }, (_err, _newDoc) => {});
 };
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
@@ -367,8 +497,7 @@ export const addCategory = async (newCategory: string) => {
     label: newCategoryLabel,
     typeFilter: "category",
   };
-  return await db.filters
-    .insertAsync(category)
+  return await db.filters.insertAsync(category);
 };
 export const addSubCategory = async (newSubCategory: string) => {
   const newSubCategoryLabel =
@@ -380,8 +509,7 @@ export const addSubCategory = async (newSubCategory: string) => {
     label: newSubCategoryLabel,
     typeFilter: "subCategory",
   };
-  return await db.filters
-    .insertAsync(subCategory)
+  return await db.filters.insertAsync(subCategory);
 };
 export const addBrand = async (newBrand: string) => {
   const newBrandLabel =
@@ -393,8 +521,7 @@ export const addBrand = async (newBrand: string) => {
     label: newBrandLabel,
     typeFilter: "brand",
   };
-  return await db.filters
-    .insertAsync(brand)
+  return await db.filters.insertAsync(brand);
 };
 
 export const getCategoryAndBrand = async () => {
@@ -500,8 +627,6 @@ export const saveNewUnits = async (
     return await db.unitsArticleForm
       .insertAsync(e)
       .then((res) => {
-
-
         return {
           message: "Unidad guardada correctamente",
           value: res,
@@ -541,15 +666,12 @@ export const updateUnit = async (e: unitType, id: string) => {
       {}
     )
     .then((res) => {
-
-
       return {
         message: "Unidad editada correctamente",
         value: res,
       };
     })
     .catch((err) => {
-
       return {
         message: "No se pudo editar la unidad",
         value: err,
@@ -560,15 +682,12 @@ export const deleteUnit = async (e: string) => {
   return await db.unitsArticleForm
     .removeAsync({ _id: e }, {})
     .then((res) => {
-
-
       return {
         message: "Unidad eliminada correctamente",
         value: res,
       };
     })
     .catch((err) => {
-
       return {
         message: "No se pudo eliminar la unidad",
         value: err,
@@ -579,15 +698,13 @@ export const deleteUnit = async (e: string) => {
 export const saveSupplier = async (e: supplierType) => {
   return await db.suppliers
     .insertAsync(e)
-    .then((_res) => {
-
+    .then((res) => {
       return {
         message: "Proveedor guardado correctamente",
         value: true,
       };
     })
-    .catch((_err) => {
-
+    .catch((err) => {
       return {
         message: "NO SE PUDO GUARDAR EL PROVEEDOR",
         value: false,
@@ -596,8 +713,9 @@ export const saveSupplier = async (e: supplierType) => {
 };
 
 export const deleteSupplier = async (supplierToDelete: supplierType) => {
+  console.log("buenas tardes");
   return await db.suppliers
-    .removeAsync({ _id: supplierToDelete._id }, {})
+    .removeAsync({ _id: supplierToDelete._id }, { multi: false })
     .then((_res) => {
       return {
         message: "Proveedor eliminado correctamente",
@@ -615,6 +733,188 @@ export const deleteSupplier = async (supplierToDelete: supplierType) => {
 export const getSuppliers = async () => {
   return await db.suppliers.findAsync({});
 };
+export const updateSuppliers = async (
+  id: string,
+  newSupplier: supplierType
+) => {
+  return await db.suppliers
+    .updateAsync(
+      { _id: id },
+      {
+        $set: {
+          ...newSupplier,
+        },
+      }
+    )
+    .then((res) => {
+      console.log("Proveedor actualizado correctamente", res);
+      return {
+        message: "Proveedor actualizado correctamente",
+        value: true,
+      };
+    })
+    .catch((err) => {
+      console.log("Error al actualizar el proveedor", err);
+      return {
+        message: "Error al actualizar el proveedor",
+        value: false,
+      };
+    });
+};
+//DEPOSITOS
+
+export const getDeposits = async () => {
+  return await db.deposits
+    .findAsync({})
+    .then((deposits) => {
+      console.log("Depositos encontrados", deposits);
+      return deposits;
+    })
+    .catch((err) => {
+      console.log("Error al encotrar los depositos", err);
+      return {
+        message: "Error al encotrar los depositos",
+        value: false,
+      };
+    });
+};
+
+export const getDepositById = async (id: string): Promise<depositType> => {
+  return await db.deposits.findOneAsync({ _id: id });
+};
+
+export const createDeposit = async (newDeposit: depositType) => {
+  return await db.deposits
+    .insertAsync(newDeposit)
+    .then((res) => {
+      console.log("DEPOSITO CREADO CORRECTAMENTE");
+      return {
+        message: "Deposito creado correctamente",
+        value: true,
+      };
+    })
+    .catch((err) => {
+      console.log("Error al crear el deposito");
+      return {
+        message: "Error al crear el deposito",
+        value: false,
+      };
+    });
+};
+
+export const updateDeposit = async (depositToUpdate: depositType) => {
+  return await db.deposits.updateAsync(
+    { _id: depositToUpdate._id },
+    { $set: { ...depositToUpdate } }
+  );
+};
+export const addProductInDeposit = async (
+  depositId: string,
+  sectorId: any,
+  productToAdd: articleData
+) => {
+  const depositToAddProduct = await getDepositById(depositId);
+  console.log(depositToAddProduct);
+
+  if (!depositToAddProduct) {
+    console.log("No se encontro el deposito");
+    return {
+      message: "No se encontro el deposito",
+      value: false,
+    };
+  } else {
+    const res = depositToAddProduct.sectors.map((e) => {
+      if (e.sectorId === sectorId) {
+        e.products.push(productToAdd);
+        return `"Producto añadido al sector" ${e.number}`;
+      } else {
+        return `"Sector no encontrado"`;
+      }
+    });
+    console.log(
+      res,
+      "RESPUESTA AL AÑADIR EL PRODUCTO AL SECTOR CORRESPONDIENTE"
+    );
+  }
+};
+
+export const createSectorInDeposit = async (
+  depositId: string,
+  sectorinfo: {
+    name: string;
+    sectorId: string;
+    products: articleData[];
+  }
+) => {
+  const sectorToAdd = {
+    ...sectorinfo,
+    sectorId: crypto.randomBytes(4).toString("hex"),
+  };
+  const depositToAddProduct = await getDepositById(depositId);
+
+  if (!depositToAddProduct) {
+    console.log("No se encontro el deposito");
+    return {
+      message: "No se encontro el deposito",
+      value: false,
+    };
+  } else {
+    depositToAddProduct.sectors.push(sectorToAdd);
+    console.log("SE AGREGO EL SECTOR AL DEPOSITO?", depositToAddProduct);
+    updateDeposit(depositToAddProduct);
+    return { ...sectorToAdd };
+  }
+};
+
+export const deleteSector = async (depositId: string, sectorId: string) => {
+  const depositToDeleteSector = await getDepositById(depositId);
+
+  const sectorDelete = depositToDeleteSector.sectors.filter(
+    (e) => e.sectorId !== sectorId
+  );
+
+  const depositWithDeleteSector = {
+    ...depositToDeleteSector,
+    sectors: sectorDelete,
+  };
+
+  return await updateDeposit(depositWithDeleteSector);
+};
+
+export const editSectorInDeposit = async (
+  depositId: string,
+  sectorId: string,
+  newSector: {
+    number: number;
+    sectorId: string;
+    products: articleData[];
+  }
+) => {
+  const deposit = await getDepositById(depositId);
+  const [sectorToEdit] = deposit.sectors.filter((s) => {
+    return s.sectorId === sectorId;
+  });
+
+  if (sectorToEdit) {
+    const depositWithEditSector = {
+      ...deposit,
+      sectors: deposit.sectors.map((s) => {
+        if (s.sectorId === sectorToEdit.sectorId) {
+          return newSector;
+        }
+        return s;
+      }),
+    };
+    return await updateDeposit(depositWithEditSector);
+  } else {
+    console.error(`No se encontró el sector con id ${sectorId}`);
+    return {
+      message: `No se encontró el sector con id ${sectorId}`,
+      value: false,
+    };
+  }
+};
+//SEGUR CON TODO LO DEMAS
 ////////////////////////MARTIN
 
 //////////////////////////////////////////////////////
@@ -627,10 +927,10 @@ export const obtenerEstadoPagado = (idCuenta: any) => {
       if (err) {
         reject(err);
       } else {
-        resolve({ 
+        resolve({
           pagado: doc.pagado,
           pagado2: doc.pagado2,
-          pagado3: doc.pagado3 
+          pagado3: doc.pagado3,
         }); // Incluye los campos 'pagado', 'pagado2', y 'pagado3' en la respuesta
       }
     });
@@ -643,7 +943,6 @@ export const accountToPay = (account: object) => {
       // Manejar el error
     } else {
       // Objeto guardado con éxito
-
     }
   });
 };
@@ -658,7 +957,6 @@ export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
 
   // Mostrar los datos que se van a actualizar
 
-
   return new Promise((resolve, reject) => {
     db.accounts.update(
       { _id: idCuenta },
@@ -666,10 +964,8 @@ export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
       { multi: false },
       (err: any, numUpdated: number) => {
         if (err) {
-
           reject(err);
         } else {
-
           if (numUpdated === 0) {
           }
           resolve(numUpdated);
@@ -682,7 +978,12 @@ export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
 //////////////////////////////////////////////////////
 //FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
 /////////////////////////////////////////////////////
-export const actualizarEstadoPagado = (idCuenta:any, estadoPagado:any, pagado2:any, pagado3:any) => {
+export const actualizarEstadoPagado = (
+  idCuenta: any,
+  estadoPagado: any,
+  pagado2: any,
+  pagado3: any
+) => {
   return new Promise((resolve, reject) => {
     db.accounts.update(
       { _id: idCuenta },
@@ -727,7 +1028,6 @@ export const getUser = (userId: any) => {
   return new Promise((resolve, reject) => {
     db.usuariosAdmin.findOne({ _id: userId }, (err, admin) => {
       if (err) {
-
         reject(err);
       } else if (admin) {
         resolve(admin);
@@ -755,7 +1055,6 @@ export const actualizarImagenUsuario = (userId: any, imageUrl: any) => {
         if (err) {
           reject(err);
         } else {
-
           resolve(true);
         }
       }
@@ -788,7 +1087,6 @@ export const guardarUsuarioAdmin = async (usuarioAdmin: { password: any }) => {
       });
     });
   } catch (error: any) {
-
     throw new Error(error.message);
   }
 };
@@ -810,12 +1108,12 @@ export const verificarAdminExistente = () => {
   });
 };
 
-
-
 const secretKey = "tu_clave_secreta"; // Asegúrate de usar una clave secreta segura y única
 
-export const iniciarSesion = async (credentials: { username: string; password: string }) => {
-
+export const iniciarSesion = async (credentials: {
+  username: string;
+  password: string;
+}) => {
   try {
     // Primero, buscamos en la colección de administradores
     const usuarioAdmin = await new Promise<any>((resolve, reject) => {
@@ -926,13 +1224,18 @@ export const cambiarContrasena = async (userId: any, nuevaContrasena: any) => {
 
     // Actualiza la contraseña del usuario en la base de datos
     return new Promise((resolve, reject) => {
-      db.usuariosAdmin.update({ _id: userId }, { $set: { password: hashedPassword } }, {}, (err) => {
-        if (err) {
-          reject({ exito: false, error: err.message });
-        } else {
-          resolve({ exito: true });
+      db.usuariosAdmin.update(
+        { _id: userId },
+        { $set: { password: hashedPassword } },
+        {},
+        (err) => {
+          if (err) {
+            reject({ exito: false, error: err.message });
+          } else {
+            resolve({ exito: true });
+          }
         }
-    });
+      );
     });
   } catch (error: any) {
     throw new Error(error.message);

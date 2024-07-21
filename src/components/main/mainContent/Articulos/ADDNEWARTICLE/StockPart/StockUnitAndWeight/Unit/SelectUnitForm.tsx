@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "../../../../../../../../../app/ui/select";
 import { IoCreateSharp } from "react-icons/io5";
-import { unitType } from "../../../../../../../../../types";
+import { unitType } from "../../../../../../../../../types/types";
 import UnitsForm from "./UnitsForm";
 
 interface SelectProps {

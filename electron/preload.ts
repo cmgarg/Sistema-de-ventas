@@ -196,6 +196,15 @@ contextBridge.exposeInMainWorld("api", {
       'disable-notification-type',
       'get-disabled-notification-types',
       'delete-old-notifications',
+      "update-supplier",
+      //DEPOSITOS
+      "get-deposits",
+      "edit-sector-in-deposit",
+      "create-sector-in-deposit",
+      "response-get-deposits",
+      "create-deposit",
+      //IMPRESORA PRUEBA
+      "imprimir-pa",
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -251,6 +260,13 @@ contextBridge.exposeInMainWorld("api", {
       "response-save-supplier",
       "response-delete-supplier",
       "response-get-suppliers",
+      "response-update-supplier",
+      //DEPOSITOS RESPONSE
+      "response-get-deposits",
+      "response-create-deposit",
+      "response-create-sector-in-deposit",
+      //IMPRESORA
+      "response-imprimir-pa",
       //NOTIFICACIONES
       "notification",
       'response-get-notifications',
