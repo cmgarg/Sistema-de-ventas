@@ -195,7 +195,7 @@ export default function AdministrarCuentas() {
             onClose={() => setShowModal(false)}
           />
         </div>
-        <div className="h-[55rem] overflow-auto">
+        <div className="h-[53.6rem] overflow-auto">
           {usuarios.map((usuario) => {
             const ref = React.createRef();
             return (
@@ -208,7 +208,7 @@ export default function AdministrarCuentas() {
                     : "bg-gray-950"
                 }`}
               >
-                <div className="text-xl">{usuario.nombre}</div>
+                <div className="text-2xl">{usuario.nombre}</div>
                 <div
                   className="relative hover:bg-gray-700 p-2 rounded-full cursor-pointer menu-container"
                   ref={ref}

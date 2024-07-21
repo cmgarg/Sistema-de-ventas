@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from 'react-router-dom';
 import NavMain from "../../navmain/NavMain";
 import MenuConfig from "./MenuConfig";
 import General from "./Content/General";
@@ -6,11 +7,21 @@ import AdministrarCuentas from "./Content/AdministrarCuentas";
 import InfoCmg from "./Content/InfoCmg";
 import { useDispatch, useSelector } from "react-redux";
 import { cambiar } from "@/src/redux/estados/estadoTipoDeUser";
-  
+import Notificaciones from "./Content/Notificaciones";
+
 export default function Configuracion() {
   const dispatch = useDispatch(); 
+  const location = useLocation();
   const [estado, setEstado] = useState("general-1");
   const userType = useSelector((state: RootState) => state.estadoTipoDeUser.userType);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const apartado = queryParams.get('apartado');
+    if (apartado) {
+      setEstado(apartado);
+    }
+  }, [location.search]);
 
   const contenido = () => {
     if (estado === "general-1") {
@@ -19,20 +30,17 @@ export default function Configuracion() {
     if (estado === "general-2") {
       return <AdministrarCuentas />;
     }
+    if (estado === "general-3") {
+      return <Notificaciones />;
+    }
     if (estado === "general-6") {
       return <InfoCmg />;
     }
   }
 
-
-
- ///estado redux saber q tipo de usuario se inicio y aplicar las restricciones
   useEffect(() => {
     console.log("User Type: de configuracion", userType);
   }, [userType]);
-
-
-
 
   return (
     <div className="flex flex-1 flex-col">

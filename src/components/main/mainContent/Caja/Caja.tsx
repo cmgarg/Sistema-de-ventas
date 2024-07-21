@@ -28,7 +28,9 @@ const Caja: React.FC<VentastProps> = (
 
   function obtenerVentas() {
     window.api.enviarEvento("get-sales");
-    console.log("obtener ventas se llamó");
+    window.api.recibirEvento("response-get-sales", (ventasRecividas) => {
+      setVentas(ventasRecividas);
+    });
   }
 
   const [fecha, setFecha] = useState(() => {
@@ -37,6 +39,16 @@ const Caja: React.FC<VentastProps> = (
     const fechaLocal = new Date(fechaActual.getTime() - offset);
     return fechaLocal.toISOString().split("T")[0];
   });
+
+  const handleFechaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newFecha = e.target.value;
+    const parsedFecha = new Date(newFecha);
+    if (newFecha && !isNaN(parsedFecha.getTime())) {
+      setFecha(newFecha);
+    } else {
+      console.error("Fecha inválida ingresada:", newFecha);
+    }
+  };
 
   function sumaTotal() {
     return totalCantidad - totalCuentas;
@@ -47,10 +59,11 @@ const Caja: React.FC<VentastProps> = (
       <div className="flex-2 pt-3">
         <NavMain title="Caja">
           <input
-            className="text-2xl text-white bg-inherit border border-gray-600 rounded-lg p-1 fecha-input fecha-input:focus mr-10 text-center"
+            className="text-2xl text-white bg-inherit border border-gray-600 rounded-lg p-1 fecha-input fecha-input:focus mr-10 text-center hover:bg-gray-600"
             type="date"
             value={fecha}
-            onChange={(e) => setFecha(e.target.value)}
+            onChange={handleFechaChange}
+            required
           />
         </NavMain>
       </div>
@@ -70,7 +83,6 @@ const Caja: React.FC<VentastProps> = (
             </div>
             <div className="flex flex-1 flex-col items-center">
               <div className="w-full space-y-6 flex flex-col">
-
                 <div className="flex flex-1 flex-row h-12 items-center  border-b-1 border-gray-600 pt-2 pb-2">
                   <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
                     <FaMoneyBillWave size={30}/>
@@ -80,7 +92,6 @@ const Caja: React.FC<VentastProps> = (
                     $<p className="pl-2">1,200,300</p>
                   </div>
                 </div>
-
                 <div className="flex flex-1 flex-row h-12 items-center  border-b-1 border-gray-600 pb-2">
                   <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
                     <IoCard size={30} />
@@ -90,7 +101,6 @@ const Caja: React.FC<VentastProps> = (
                     $<p className="pl-2">1,200,300</p>
                   </div>
                 </div>
-
                 <div className="flex flex-1 flex-row h-12 items-center  border-b-1 border-gray-600 pb-2">
                   <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
                     <FaCreditCard size={30} />
@@ -100,7 +110,6 @@ const Caja: React.FC<VentastProps> = (
                     $<p className="pl-2">1,200,300</p>
                   </div>
                 </div>
-
                 <div className="flex flex-1 flex-row h-12 items-center  border-b-1 border-gray-600 pb-2">
                   <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
                     <FaMoneyCheckDollar size={30} />
@@ -110,7 +119,6 @@ const Caja: React.FC<VentastProps> = (
                     $<p className="pl-2">1,200,300</p>
                   </div>
                 </div>
-
                 <div className="flex flex-1 flex-row h-12 items-center  border-b-1 border-gray-600 pb-2">
                   <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
                     <FaMoneyBillTransfer size={30} />
@@ -120,11 +128,9 @@ const Caja: React.FC<VentastProps> = (
                     $<p className="pl-2">1,200,300</p>
                   </div>
                 </div>
-
                 <div className="flex flex-1 flex-row h-12 items-center  border-b-1 border-gray-600 pb-2">
                   <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                    
-                      <BsQrCodeScan size={30} />
+                    <BsQrCodeScan size={30} />
                     <p className="pl-2">QR</p>
                   </div>
                   <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
@@ -159,7 +165,6 @@ const Caja: React.FC<VentastProps> = (
             </div>
           </div>
         </div>
-
         <div className="flex flex-1 flex-col">
           <div className="flex flex-1 flex-col rounded-lg border border-gray-600">
             <div className="flex flex-2 border-b-1 border-gray-600 items-center justify-center h-16">

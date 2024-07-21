@@ -6,6 +6,7 @@ import Agregar from "../buttons/Agregar";
 import AddAccountToPay from "./componentes/AddAccountToPay/AddAccountToPay";
 import ListCuenta from "./componentes/ListCuenta";
 import { format } from "date-fns";
+import { useSelector } from "react-redux";
 
 interface CuentasProps {
   //PROPS
@@ -89,14 +90,19 @@ const Cuentas: React.FC<CuentasProps> = (
     }
   };
 
+  const datosUsuarioRedux = useSelector(
+    (state: RootState) => state.estadoTipoDeUser.datosUsuario
+  );
+
+  console.log(datosUsuarioRedux,"estos son los datos del usuario iniciaado --------------ppppppppppppppp")
   return (
     <div className="flex flex-col flex-1">
-      <div className="flex-2">
-        <NavMain>
+      
+        <NavMain title="Cuentas" >
           <Export></Export>
           <Agregar onChangeModal={onChangeModal} title="Cuenta" />
         </NavMain>
-      </div>
+      
       <div className="flex flex-1 flex-row">
         {activeModalForm && (
           <AddAccountToPay
@@ -106,18 +112,18 @@ const Cuentas: React.FC<CuentasProps> = (
         )}
         <div className="flex flex-1 flex-col m-2">
           <div className="flex flex-row space-x-2 mb-2">
-            <div className="flex h-12 w-44 text-white justify-center items-center border rounded-lg border-gray-600">
+            <div className="flex h-[3rem] w-[11rem] text-white justify-center items-center border rounded-lg border-gray-600">
               Mes
             </div>
             <div
-              className="flex-1 flex relative h-12 text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
+              className="flex-1 flex relative h-[3rem] text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
               onClick={() => cambiarFiltro("tipodegasto")}
             >
               Tipo De Gasto
               <div className="flex absolute right-3"></div>
             </div>
             <div
-              className="flex-1 flex relative h-12 text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
+              className="flex-1 flex relative h-[3rem] text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
               onClick={() => cambiarFiltro("descripcion")}
             >
               Descripcion
@@ -125,21 +131,21 @@ const Cuentas: React.FC<CuentasProps> = (
             </div>
             <div
               onClick={() => cambiarFiltro("fechafiltrada")}
-              className="flex-1 flex relative h-12 text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
+              className="flex-1 flex relative h-[3rem] text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
             >
               Fecha y Hora
               <div className="flex absolute right-3"></div>
             </div>
             <div
               onClick={() => cambiarFiltro("monto")}
-              className="flex-1 flex relative h-12 text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
+              className="flex-1 flex relative h-[3rem] text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
             >
               Monto
               <div className="flex absolute right-3"></div>
             </div>
             <div
               onClick={() => cambiarFiltro("pagado")}
-              className="flex-1 flex relative h-12 text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
+              className="flex-1 flex relative h-[3rem] text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
             >
               Pagado
               <div className="flex absolute right-3"></div>
@@ -154,20 +160,20 @@ const Cuentas: React.FC<CuentasProps> = (
           />
         </div>
 
-        <div className="flex text-white justify-start flex-col mt-2 mr-3 rounded-lg">
-          <div className="w-[22rem] h-[21rem] px-5 mb-6">
+        <div className="flex h-[90vh] text-white justify-start flex-col mt-2 mr-3 rounded-lg  ">
+          <div className="flex h-[21rem] mb-3">
             <Calendar
               diaSeleccionado={diaSeleccionado}
               setDiaSeleccionado={setDiaSeleccionado}
             />
           </div>
-          <div className="medidas-1 flex flex-col">
-            <div className="medidas-2">
+          <div className="flex flex-col h-[58vh] ">
+            <div className="pb-3">
               <div className="flex border-gray-600 border mb-2 rounded-lg p-2 items-center justify-center">
                 <p className="pl-3">Vencimiento Mensual</p>
               </div>
-              <div className="mb-10 border border-gray-600 rounded-lg medidas-3 overflow-auto">
-                <div>
+              <div className="flex pb-10 border border-gray-600 rounded-lg h-[23.5vh] overflow-y-scroll">
+                <div className="w-full">
                   {accountToPay
                     .filter(
                       (cuenta) =>
@@ -188,11 +194,11 @@ const Cuentas: React.FC<CuentasProps> = (
                 </div>
               </div>
             </div>
-            <div className="medidas-2">
+            <div className="">
               <div className="flex p-2 items-center mb-2 border border-gray-600 rounded-lg justify-center">
                 <p className="pl-3">Gastos Diario</p>
               </div>
-              <div className="border border-gray-600 rounded-lg medidas-3 overflow-auto">
+              <div className="border border-gray-600 rounded-lg h-[23.5vh] overflow-y-scroll">
                 <div>
                   {accountToPay
                     .filter(

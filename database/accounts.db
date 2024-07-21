@@ -11,12 +11,15 @@
 {"tipodegasto":"Gasto Diario","date":"2025-01-04","time":"22:48:57","pay":"1234","descripcion":"asdasdasd","pagado":true,"meses":1,"_id":"89cDoPycEohoUuVK"}
 {"tipodegasto":"Gasto Diario","date":"2024-06-04","time":"09:30:00","pay":"1300","descripcion":"asasdasd","pagado":false,"meses":1,"_id":"89i0KMqiOQ0XWCpk","pagado2":"","pagado3":""}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-06-01","time":"10:45:00","pay":"34853","descripcion":"ropa","pagado":false,"meses":"5","_id":"8IizeEKki9KImt0C"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-09-14","pay":"55,512.00","descripcion":"cama","pagado":true,"meses":"12","time":"07:12:05","pagado2":"2024-07-14","pagado3":"07:12:05","_id":"97Xjhi7umM1rrG2o"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-06-01","time":"11:00:00","pay":"26889","descripcion":"comida","pagado":false,"meses":"5","_id":"9ZA8feFcXQLQ0j5y"}
 {"tipodegasto":"Vencimiento Mensual","date":"2025-01-18","time":"11:15:00","pay":"50000","descripcion":"asdasd","pagado":true,"meses":"10","_id":"9y6v9i8DYV9uwjS9"}
 {"tipodegasto":"Gasto Diario","date":"2024-05-15","pay":"5000","descripcion":"asdasd-2","pagado":true,"meses":1,"time":"00:56:18","pagado2":"2024-06-27","pagado3":"00:56:18","_id":"A1PePXWuqFiFLPCu"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-06-01","time":"11:30:00","pay":"8783","descripcion":"auto","pagado":false,"meses":"7","_id":"AclURcBzns3Jjgnm"}
 {"tipodegasto":"Gasto Diario","date":"2024-09-27","time":"12:45:00","pay":"60000","descripcion":"martinestadopagado","pagado":true,"meses":1,"_id":"BTb5cBHSODRyftct","pagado2":"2024-06-28","pagado3":"01:03:24"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-02-14","pay":"55,512.00","descripcion":"cama","pagado":true,"meses":"12","time":"07:12:05","pagado2":"2024-07-14","pagado3":"07:12:05","_id":"CUexM0EN5oR2EeAG"}
 {"tipodegasto":"Gasto Diario","date":"2025-01-01","time":"22:41:14","pay":"3000","descripcion":"probando hora","pagado":true,"meses":1,"_id":"DGFlOw9oaOVAjVul"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-07-14","pay":"55,512.00","descripcion":"cama","pagado":false,"meses":"12","time":"07:12:05","pagado2":"","pagado3":"","_id":"Eteq7DMLKnn2X1ke"}
 {"tipodegasto":"Vencimiento Mensual","date":"2025-03-15","time":"13:00:00","pay":"50000","descripcion":"auto","pagado":false,"meses":"12","_id":"Evu5OqmKHKcF6Rt1"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-06-01","time":"13:15:00","pay":"6008","descripcion":"ropa","pagado":true,"meses":"4","_id":"FCHeE67X8R00uJPu"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-06-20","time":"14:30:00","pay":"5000000","descripcion":"32321321321","pagado":true,"meses":"11","_id":"GOwQyKmShVTJPvC3"}
@@ -34,19 +37,24 @@
 {"tipodegasto":"Gasto Diario","date":"2024-06-07","time":"09:15:00","pay":"5000","descripcion":"aaaaaaaaaaaaaaa","pagado":true,"meses":1,"_id":"M9VsFp7faBLBJeRF"}
 {"tipodegasto":"Gasto Diario","date":"2024-06-01","time":"09:30:00","pay":"9504","descripcion":"luz","pagado":true,"meses":"1","_id":"MVT34yNGuGjZeCJi"}
 {"tipodegasto":"Gasto Diario","date":"2025-05-02","pay":"1500","descripcion":"asdasdad","pagado":true,"meses":1,"time":"00:01:08","pagado2":"2024-06-27","pagado3":"00:45:00","_id":"NOp47QgqrMypH7Xw"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-12-14","pay":"55,512.00","descripcion":"cama","pagado":false,"meses":"12","time":"07:12:05","pagado2":"","pagado3":"","_id":"NPcWEZGBXF7jq7Yl"}
 {"tipodegasto":"Gasto Diario","date":"2024-06-07","time":"09:45:00","pay":"44444444444444","descripcion":"rrrrrrrrrrrrrr","pagado":true,"meses":1,"_id":"NQX6F588dCVTKiYr"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-04-14","pay":"55,512.00","descripcion":"cama","pagado":false,"meses":"12","time":"07:12:05","pagado2":"","pagado3":"","_id":"Nz1y7vcHRw3UnHqS"}
 {"tipodegasto":"Gasto Diario","date":"2024-06-01","time":"10:00:00","pay":"7399","descripcion":"auto","pagado":false,"meses":"1","_id":"OyfWCddhv9CylNug"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-12-20","time":"10:15:00","pay":"5000000","descripcion":"32321321321","pagado":false,"meses":"11","_id":"QgyzPkI7W4p48KRj"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-09-15","time":"10:30:00","pay":"50000","descripcion":"auto","pagado":true,"meses":"12","_id":"R0m0g4iCSZkWGzb9","pagado2":"2024-06-28","pagado3":"01:03:26"}
 {"tipodegasto":"Gasto Diario","date":"2024-05-16","time":"10:45:00","pay":"50000","descripcion":"sasdas","pagado":true,"meses":1,"_id":"R43hGVs6kSG05ETw","pagado2":"2024-06-27","pagado3":"17:53:29"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-01-14","pay":"55,512.00","descripcion":"cama","pagado":true,"meses":"12","time":"07:12:05","pagado2":"2024-07-14","pagado3":"07:12:05","_id":"RPaYmLkWjx89fHDp"}
 {"tipodegasto":"Vencimiento Mensual","date":"2025-02-20","time":"11:00:00","pay":"5000000","descripcion":"32321321321","pagado":false,"meses":"11","_id":"RkAYhns3XBwZiece"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-03-14","pay":"55,512.00","descripcion":"cama","pagado":true,"meses":"12","time":"07:12:05","pagado2":"2024-07-14","pagado3":"07:12:05","_id":"SD03ekpqxbqDTLrZ"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-08-14","pay":"55,512.00","descripcion":"cama","pagado":false,"meses":"12","time":"07:12:05","pagado2":"","pagado3":"","_id":"Siso7t3GcJhsbcnz"}
 {"tipodegasto":"Gasto Diario","date":"2025-05-01","pay":"1500","descripcion":"asdasd","pagado":true,"meses":1,"time":"00:00:41","pagado2":"2024-06-27","pagado3":"00:44:45","_id":"Sy0FiFLl8FuxMytz"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-06-07","time":"11:15:00","pay":"5000","descripcion":"Mueble","pagado":true,"meses":"6","_id":"TYdPgoqlZUxANHJH","pagado2":"2024-06-28","pagado3":"01:02:58"}
 {"tipodegasto":"Gasto Diario","date":"2024-06-20","time":"11:30:00","pay":"30000","descripcion":"Gonzalo Pucto","pagado":true,"meses":1,"_id":"U6TJBqR36ArzOmDV","pagado2":"2024-06-28","pagado3":"01:02:57"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-11-07","time":"11:45:00","pay":"5000","descripcion":"Mueble","pagado":true,"meses":"6","_id":"UWZtATDSpYWEGbOH"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-07-15","time":"12:00:00","pay":"50000","descripcion":"auto","pagado":true,"meses":"12","_id":"Ui9fUI5Y44HzHv54","pagado2":"2024-06-27","pagado3":"00:45:25"}
-{"tipodegasto":"Vencimiento Mensual","date":"2024-07-20","time":"12:15:00","pay":"5000000","descripcion":"32321321321","pagado":true,"meses":"11","_id":"W68KWGu8vEvXX3Dq","pagado2":"2024-06-27","pagado3":"00:47:54"}
-{"tipodegasto":"Vencimiento Mensual","date":"2024-07-18","time":"12:30:00","pay":"50000","descripcion":"martin","pagado":true,"meses":"10","_id":"X7OmkaajX2B60DKG","pagado2":"2024-06-27","pagado3":"00:47:56"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-07-20","time":"12:15:00","pay":"5000000","descripcion":"32321321321","pagado":false,"meses":"11","_id":"W68KWGu8vEvXX3Dq","pagado2":"","pagado3":""}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-07-18","time":"12:30:00","pay":"50000","descripcion":"martin","pagado":false,"meses":"10","_id":"X7OmkaajX2B60DKG","pagado2":"","pagado3":""}
 {"tipodegasto":"Gasto Diario","date":"2024-06-01","time":"12:45:00","pay":"6328","descripcion":"alquiler","pagado":false,"meses":"1","_id":"XO0H0Str4Pk2TssG"}
 {"tipodegasto":"Gasto Diario","date":"2024-06-01","time":"13:00:00","pay":"305","descripcion":"agua","pagado":true,"meses":"1","_id":"XiuZhOjaUavFAvhp","pagado2":"2024-06-28","pagado3":"01:03:01"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-11-15","time":"13:15:00","pay":"50000","descripcion":"auto","pagado":false,"meses":"12","_id":"Y0gioKxnFjdCF0aE"}
@@ -54,12 +62,13 @@
 {"tipodegasto":"Gasto Diario","date":"2024-08-20","time":"13:45:00","pay":"5000","descripcion":"martin","pagado":false,"meses":1,"_id":"YK3Ktax8QBiPvqVF","pagado2":"","pagado3":""}
 {"tipodegasto":"Gasto Diario","date":"2024-06-01","time":"14:00:00","pay":"8244","descripcion":"internet","pagado":false,"meses":"1","_id":"YVdQzBtTkjsH1oYa"}
 {"tipodegasto":"Gasto Diario","date":"2025-07-01","pay":"5000","descripcion":"agregado de venta","pagado":true,"meses":1,"_id":"ZGVjKsEyhWpYSOL6"}
-{"tipodegasto":"Gasto Diario","date":"2024-07-20","time":"14:15:00","pay":"1355","descripcion":"asd","pagado":true,"meses":1,"_id":"ZH5cF5OJ9gDvbNNc","pagado2":"2024-06-27","pagado3":"00:47:57"}
+{"tipodegasto":"Gasto Diario","date":"2024-07-20","time":"14:15:00","pay":"1355","descripcion":"asd","pagado":false,"meses":1,"_id":"ZH5cF5OJ9gDvbNNc","pagado2":"","pagado3":""}
 {"tipodegasto":"Gasto Diario","date":"2024-06-18","time":"14:30:00","pay":"1500","descripcion":"nafta","pagado":true,"meses":1,"_id":"ZdjMFj5TfaSszgtU","pagado2":"2024-06-28","pagado3":"01:03:03"}
 {"tipodegasto":"Gasto Diario","date":"2024-06-07","time":"14:45:00","pay":"1500","descripcion":"sssssssssss","pagado":true,"meses":1,"_id":"biPzY6WS3FHXzvWR","pagado2":"2024-06-28","pagado3":"01:03:04"}
 {"tipodegasto":"Gasto Diario","date":"2024-12-20","time":"15:00:00","pay":"1500","descripcion":"xxxxxx","pagado":false,"meses":1,"_id":"cBfAWzUgy4nkvGzI"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-08-15","time":"15:15:00","pay":"50000","descripcion":"auto","pagado":false,"meses":"12","_id":"cWktpCr15Zencbxt"}
 {"tipodegasto":"Gasto Diario","date":"2024-06-01","time":"15:30:00","pay":"3622","descripcion":"gas","pagado":true,"meses":"1","_id":"d84O18BPxw9koJhK","pagado2":"2024-06-28","pagado3":"01:03:05"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-05-14","pay":"55,512.00","descripcion":"cama","pagado":false,"meses":"12","time":"07:12:05","pagado2":"","pagado3":"","_id":"dRDT90GniNwoN88c"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-08-07","time":"15:45:00","pay":"5000","descripcion":"Mueble","pagado":true,"meses":"6","_id":"da5kh4FL7cJuaVLt","pagado2":"2024-06-27","pagado3":"00:45:08"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-06-01","time":"16:00:00","pay":"2407","descripcion":"luz","pagado":false,"meses":"6","_id":"eDq1FxQLAH7cbFPJ"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-12-18","time":"16:15:00","pay":"50000","descripcion":"asdasd","pagado":false,"meses":"10","_id":"eRR5wI36cVD3sJd0"}
@@ -74,6 +83,7 @@
 {"tipodegasto":"Vencimiento Mensual","date":"2025-02-15","time":"18:15:00","pay":"50000","descripcion":"auto","pagado":true,"meses":"12","_id":"ip6EPIlMpMtIK4na"}
 {"tipodegasto":"Gasto Diario","date":"2024-06-19","time":"18:30:00","pay":"50000","descripcion":"gasto q no cierra ","pagado":true,"meses":1,"_id":"iwbzGHgjd3QJL4An","pagado2":"2024-06-28","pagado3":"01:03:07"}
 {"tipodegasto":"Gasto Diario","date":"2024-06-07","time":"18:45:00","pay":"3000","descripcion":"ddddddddddd","pagado":true,"meses":1,"_id":"k7r8j3iPbHjuGjL1","pagado2":"2024-06-28","pagado3":"01:03:08"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-10-14","pay":"55,512.00","descripcion":"cama","pagado":true,"meses":"12","time":"07:12:05","pagado2":"2024-07-14","pagado3":"07:12:05","_id":"mo6fQtpjZAtuc2Pj"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-09-20","time":"19:00:00","pay":"5000000","descripcion":"32321321321","pagado":true,"meses":"11","_id":"nRM3FKU0sqXyZ3qM","pagado2":"2024-06-28","pagado3":"01:03:27"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-06-01","time":"19:15:00","pay":"26335","descripcion":"agua","pagado":true,"meses":"7","_id":"nnjq2YRy3pMUZZ6n","pagado2":"2024-06-28","pagado3":"01:03:09"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-07-07","time":"19:30:00","pay":"5000","descripcion":"Mueble","pagado":true,"meses":"6","_id":"oNcNQJbMXXGW7u2z","pagado2":"2024-06-27","pagado3":"00:47:57"}
@@ -84,3 +94,5 @@
 {"tipodegasto":"Vencimiento Mensual","date":"2024-08-18","time":"20:30:00","pay":"50000","descripcion":"asdasd","pagado":false,"meses":"10","_id":"tHvPmoZvw4GiSDYK"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-05-20","time":"20:45:00","pay":"5000000","descripcion":"32321321321","pagado":false,"meses":"11","_id":"tZ4aWuaoNAJuqRwm"}
 {"tipodegasto":"Vencimiento Mensual","date":"2024-11-20","time":"21:00:00","pay":"5000000","descripcion":"32321321321","pagado":false,"meses":"11","_id":"tZVWBGPBiXGumnts"}
+{"tipodegasto":"Vencimiento Mensual","date":"2025-06-14","pay":"55,512.00","descripcion":"cama","pagado":true,"meses":"12","time":"07:12:05","pagado2":"2024-07-14","pagado3":"07:12:05","_id":"vXU1dgkKln3HhFlA"}
+{"tipodegasto":"Vencimiento Mensual","date":"2024-11-14","pay":"55,512.00","descripcion":"cama","pagado":false,"meses":"12","time":"07:12:05","pagado2":"","pagado3":"","_id":"zqmf2y4jq3HaCblp"}

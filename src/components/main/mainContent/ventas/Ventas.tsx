@@ -58,7 +58,6 @@ const Ventas: React.FC<VentastProps> = (
     window.api.enviarEvento("prueba-afipo");
   };
 
-
   /////LISTA DE ARTICULSO
   const formatMony = (n: number | string) => {
     console.log("FORMATIEANDO", formatterCurrency.format(Number(n)));
@@ -70,7 +69,7 @@ const Ventas: React.FC<VentastProps> = (
   console.log(sales, "estas son las ventas");
 
   useEffect(() => {
-   console.log(estadoAgregarCuenta,"este es el estado del use efect")
+    console.log(estadoAgregarCuenta, "este es el estado del use efect");
   }, [estadoAgregarCuenta]);
 
   return (
@@ -79,12 +78,15 @@ const Ventas: React.FC<VentastProps> = (
         <NavMain title="Ventas">
           <Export></Export>
           <Biñeta title={`Agregar Cuenta`}>
-          <div
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600"
-            onClick={() => {
-              setEstadoAgregarCuenta(true);
-            }}
-          ><TfiPencilAlt size={19} color={"#fff"} /></div></Biñeta>
+            <div
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600"
+              onClick={() => {
+                setEstadoAgregarCuenta(true);
+              }}
+            >
+              <TfiPencilAlt size={19} color={"#fff"} />
+            </div>
+          </Biñeta>
           <Buscador
             searchIn={sales}
             functionReturn={getResultsSales}
@@ -95,12 +97,12 @@ const Ventas: React.FC<VentastProps> = (
       <div className="flex flex-row pb-5 row-start-2 row-end-7">
         <AsideMain isActive={false}></AsideMain>
         {estadoAgregarCuenta ? (
-              <AddAccountToPay2
-                setEstadoAgregarCuenta={setEstadoAgregarCuenta}
-                estadoAgregarCuenta={estadoAgregarCuenta}
-                setCerrarModal={setCerrarModal}
-              />
-            ) : null}
+          <AddAccountToPay2
+            setEstadoAgregarCuenta={setEstadoAgregarCuenta}
+            estadoAgregarCuenta={estadoAgregarCuenta}
+            setCerrarModal={setCerrarModal}
+          />
+        ) : null}
         <div className="flex-1 p-5">
           {activeModal && (
             <AddVentaForm

@@ -22,6 +22,7 @@ import Configuracion from "./mainContent/Configuracion/Configuracion";
 import { loadBrands } from "../../redux/estados/brandState";
 import { loadCategorys } from "../../redux/estados/categoryState";
 import { loadSubCategorys } from "../../redux/estados/subCategoryState";
+import PanelUsuario from "./PanelUsuario";
 
 interface MainContentProps {}
 
@@ -96,9 +97,12 @@ const MainContent: React.FC<MainContentProps> = ({}) => {
     });
   });
 
+
+
   // SEGUIR CON LOS ESTADOS.
   return (
-    <div className="bg-gradient-to-b to-blue-950 from-slate-800 h-full w-full flex">
+    <div className="bg-gradient-to-b to-blue-950 from-slate-800 h-full w-full flex flex-col ">
+      <PanelUsuario/>
       <Routes>
         <Route path="/" element={<ClientesContent />} />
         <Route path="/articulos" element={<Articulos />} />
@@ -116,3 +120,18 @@ const MainContent: React.FC<MainContentProps> = ({}) => {
 };
 
 export default MainContent;
+
+  /////////notifiaciones
+      // Función para enviar la notificación
+      export const sendNotification = (titulo:string, nota:string, icono:number, tipo:string) => {
+        const notificationData = {
+          titulo: titulo,
+          nota: nota,
+          icono: icono, // Aquí puedes usar el nombre del icono que deseas
+          tipo:tipo,            //////// stock, actualizacion, caja, 
+          fechaHora: new Date().toISOString(),
+          visto: false,
+          ocualta: false,
+        };
+        window.api.enviarEvento('send-notification', notificationData);
+      };

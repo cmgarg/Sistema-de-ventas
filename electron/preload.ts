@@ -187,6 +187,15 @@ contextBridge.exposeInMainWorld("api", {
       "save-supplier",
       "delete-supplier",
       "get-suppliers",
+      //NOTIFICACIONES  
+      "send-notification",
+      "get-notifications",
+      'delete-notification',
+      "mark-notification-as-read",
+      'hide-notification',
+      'disable-notification-type',
+      'get-disabled-notification-types',
+      'delete-old-notifications',
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -242,6 +251,15 @@ contextBridge.exposeInMainWorld("api", {
       "response-save-supplier",
       "response-delete-supplier",
       "response-get-suppliers",
+      //NOTIFICACIONES
+      "notification",
+      'response-get-notifications',
+      'hide-notification',
+      'disable-notification-type',
+      'response-get-disabled-notification-types'
+
+
+
     ];
 
     if (canalesPermitidos.includes(canal)) {

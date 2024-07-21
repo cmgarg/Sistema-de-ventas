@@ -20,7 +20,7 @@ const Biñeta: React.FC<BiñetaProps> = ({ title, children }) => {
       {showTooltip && (
         <div
           style={{ left: `${position.X - 25}px`, top: `${position.Y + 20}px` }}
-          className="fixed px-2 py-1 bg-gray-700 text-white text-sm rounded-md z-50 shadow-sm shadow-black"
+          className="fixed px-2 py-1 bg-gray-700 text-white text-sm rounded-md z-50 shadow-sm shadow-black select-none"
         >
           {title}
         </div>

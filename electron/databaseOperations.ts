@@ -39,6 +39,14 @@ const db = {
     filename: "database/suppliers.db",
     autoload: true,
   }),
+  notifications: new Datastore({
+    filename: "database/notifications.db",
+    autoload: true,
+  }),
+  notifiDesactivada: new Datastore({
+    filename: "database/notifiDesactivada.db",
+    autoload: true,
+  }),
 };
 console.log("databaseOperations Se esta ejecutanado...");
 
@@ -266,25 +274,34 @@ export const saveSale = (a: saleData) => {
   const año = fechaActual.getFullYear();
   const mes = fechaActual.getMonth() + 1;
   const dia = fechaActual.getDate();
+  const hour = fechaActual.getHours();
+  const minutes = fechaActual.getMinutes();
+  const seconds = fechaActual.getSeconds();
 
   const articlesTotalSold = a.articles.map((ar) => ar.total);
+  console.log("TOTAL VENDIDO", articlesTotalSold);
   const soldTotal = articlesTotalSold.reduce((acc, ad) => {
     return Number(acc) + Number(ad);
   });
+  console.log("TOTAL VENDIDO 2", soldTotal);
 
   const saleToSave = {
     ...a,
-    dateOfRegister: `${dia.toString().padStart(2, "0")}-${mes
+    dateOfRegister: `${año}-${mes.toString().padStart(2, "0")}-${dia
       .toString()
-      .padStart(2, "0")}-${año}`,
+      .padStart(2, "0")}T${hour}:${minutes}:${seconds
+      .toString()
+      .padStart(2, "0")}Z`,
     sold: soldTotal,
   };
   const resultSave = db.sales
     .insertAsync(saleToSave)
     .then((saleResult) => {
+      console.log(saleResult, "SE GUARDO CORRECTAMENTE");
       return { save: true, res: saleResult };
     })
     .catch((err) => {
+      console.log(err, "error al guardar la venta");
       return { save: false, res: err };
     });
 
@@ -409,7 +426,7 @@ export const getStats = async () => {
 
 const verifUnitExists = async (
   e: unitType,
-  edit?: boolean
+  _edit?: boolean
 ): Promise<{ value: boolean; abrevUnit: boolean }> => {
   const { value, abrevUnit } = e;
   const unitOfDb = await db.unitsArticleForm.findAsync({});
@@ -562,14 +579,14 @@ export const deleteUnit = async (e: string) => {
 export const saveSupplier = async (e: supplierType) => {
   return await db.suppliers
     .insertAsync(e)
-    .then((res) => {
+    .then((_res) => {
 
       return {
         message: "Proveedor guardado correctamente",
         value: true,
       };
     })
-    .catch((err) => {
+    .catch((_err) => {
 
       return {
         message: "NO SE PUDO GUARDAR EL PROVEEDOR",
@@ -581,13 +598,13 @@ export const saveSupplier = async (e: supplierType) => {
 export const deleteSupplier = async (supplierToDelete: supplierType) => {
   return await db.suppliers
     .removeAsync({ _id: supplierToDelete._id }, {})
-    .then((res) => {
+    .then((_res) => {
       return {
         message: "Proveedor eliminado correctamente",
         value: true,
       };
     })
-    .catch((err) => {
+    .catch((_err) => {
       return {
         message: "NO SE PUDO ELIMINAR EL PROVEEDOR",
         value: false,
@@ -1091,4 +1108,79 @@ export const eliminarCuenta = async (id: any) => {
       }
     });
   });
+};
+
+// Guardar una nueva notificación
+export const saveNotification = async (data:any) => {
+  try {
+    const newNotification = await db.notifications.insertAsync(data);
+    return newNotification;
+  } catch (error) {
+    console.error('Error al guardar la notificación:', error);
+    throw error;
+  }
+};
+
+// Obtener todas las notificaciones
+export const getNotifications = async () => {
+  const notif = db.notifications.findAsync({});
+  return await notif
+};
+
+// Eliminar una notificación por ID
+export const deleteNotification = async (notificationId:any) => {
+  return await db.notifications.removeAsync({ _id: notificationId }, {});
+};
+
+// Marcar una notificación como vista
+export const markNotificationAsRead = async (notificationId:any) => {
+  try {
+    await db.notifications.updateAsync({ _id: notificationId }, { $set: { visto: true } });
+  } catch (error) {
+    console.error('Error al marcar la notificación como vista:', error);
+    throw error;
+  }
+};
+
+export const hideNotification = async (notificationId:any) => {
+  try {
+    await db.notifications.updateAsync({ _id: notificationId }, { $set: { oculta: true } });
+  } catch (error) {
+    console.error('Error al ocultar la notificación:', error);
+    throw error;
+  }
+};
+
+export const disableNotificationType = async (tipo:any) => {
+  try {
+    await db.notifiDesactivada.insertAsync({ tipo });
+  } catch (error) {
+    console.error('Error al desactivar el tipo de notificación:', error);
+    throw error;
+  }
+};
+
+
+// Función para obtener los tipos de notificación desactivados
+export const getDisabledNotificationTypes = async () => {
+  try {
+    const disabledTypes = await db.notifiDesactivada.findAsync({});
+    return disabledTypes.map((item) => item.tipo);
+  } catch (error) {
+    console.error('Error al obtener los tipos de notificación desactivados:', error);
+    return [];
+  }
+};
+
+
+// Función para eliminar notificaciones antiguas mas de 30 dias
+export const deleteOldNotifications = async (thresholdDate:any) => {
+  try {
+    const thresholdISOString = thresholdDate.toISOString();
+    await db.notifications.removeAsync({ fechaHora: { $lt: thresholdISOString } }, { multi: true });
+    console.log(`Notificaciones anteriores a ${thresholdISOString} eliminadas.`);
+  } catch (error) {
+    console.error('Error al eliminar notificaciones antiguas:', error);
+    throw error;
+  }
 };

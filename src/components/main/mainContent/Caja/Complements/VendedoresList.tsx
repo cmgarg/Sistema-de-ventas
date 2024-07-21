@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../../../types"; // Ajusta la ruta según sea necesario
-import { parse, format } from "date-fns";
+import { parseISO, format, isValid } from "date-fns";
 import { FaUserTie } from "react-icons/fa";
 
 interface VendedoresListProps {
@@ -16,15 +16,19 @@ const VendedoresList: React.FC<VendedoresListProps> = ({ fecha }) => {
 
   useEffect(() => {
     const vendedoresMap: { [key: string]: number } = {};
-    const parsedFecha = parse(fecha, "yyyy-MM-dd", new Date());
+    const parsedFecha = parseISO(fecha);
+
+    // Verificar que la fecha ingresada es válida
+    if (!isValid(parsedFecha)) {
+      console.error("Fecha inválida:", fecha);
+      return;
+    }
 
     // Agrupar ventas por vendedor y sumar el total vendido en la fecha seleccionada
     sales.forEach((venta) => {
-      const ventaFecha = parse(venta.dateOfRegister, "dd-MM-yyyy", new Date());
-      if (
-        format(ventaFecha, "yyyy-MM-dd") === format(parsedFecha, "yyyy-MM-dd")
-      ) {
-        const vendedor = venta.seller.name;
+      const ventaFecha = parseISO(venta.dateOfRegister);
+      if (isValid(ventaFecha) && format(ventaFecha, "yyyy-MM-dd") === format(parsedFecha, "yyyy-MM-dd")) {
+        const vendedor = venta.seller.username || venta.seller.nombre; // Aseguramos que accedemos a la propiedad correcta
         const totalVendido = Number(venta.sold); // Aseguramos que totalVendido es un número
 
         if (vendedoresMap[vendedor]) {
@@ -42,6 +46,7 @@ const VendedoresList: React.FC<VendedoresListProps> = ({ fecha }) => {
     }));
 
     setVendedores(vendedoresArray);
+    console.log(vendedoresArray, "Vendedores agrupados");
   }, [sales, fecha]);
 
   return (

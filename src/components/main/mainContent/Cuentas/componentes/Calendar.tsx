@@ -12,6 +12,7 @@ import {
   isToday,
 } from "date-fns";
 import { es } from "date-fns/locale";
+import { VscArrowLeft, VscArrowRight } from "react-icons/vsc";
 
 interface CalendarProps {
   diaSeleccionado: string | null;
@@ -34,44 +35,22 @@ const Calendar: React.FC<CalendarProps> = ({ diaSeleccionado, setDiaSeleccionado
     const capitalizedMonthYear = capitalizeFirstLetter(monthYearFormatted);
 
     return (
-      <div className="flex justify-between items-center p-4 text-white">
+      <div className="flex justify-between items-center p-2 text-white">
         <button
           onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-          className="font-bold"
+          className="font-bold outline-none hover:bg-gray-600 rounded-full p-2"
         >
           {
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="40"
-              height="40"
-              fill="currentColor"
-              viewBox="0 0 16 16"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5"
-              />
-            </svg>
+            <VscArrowLeft size={20} />
           }
         </button>
         <span className="text-xl">{capitalizedMonthYear}</span>
         <button
           onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-          className="font-bold"
+          className="font-bold outline-none hover:bg-gray-600 rounded-full p-2"
         >
           {
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="40"
-              height="40"
-              fill="currentColor"
-              viewBox="0 0 16 16"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"
-              />
-            </svg>
+            <VscArrowRight size={20} />
           }
         </button>
       </div>

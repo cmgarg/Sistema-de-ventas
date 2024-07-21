@@ -358,7 +358,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
     format(fecha, "MMMM yyyy", { locale: es }).slice(1);
 
   return (
-    <div onWheel={handleWheel} className="flex flex-col h-full">
+    <div onWheel={handleWheel} className="flex flex-col h-[60.5rem]">
       {editar && cuentaSeleccionada && (
         <EditarCuenta
           onChangeModal={setEditar}
@@ -409,10 +409,10 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
             }`}
           >
             <div
-              className="flex w-44 text-white justify-center items-center flex-col border-r-1 border-gray-600 rounded-lg hover:bg-gray-900"
+              className="flex w-[11rem] text-white justify-center items-center flex-col border-r-1 border-gray-600 rounded-lg hover:bg-gray-900"
               onClick={() => expandirDiv(`div${index + 1}`)}
             >
-              <LuCalendarDays size={100} color="white" />
+              <LuCalendarDays className="w-[8rem] h-[8rem]" color="white" />
               <div className="pt-3">
                 {getMes(addMonths(fechaActual, index))}
               </div>
@@ -434,19 +434,19 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
                     : "flex flex-col-reverse justify-start"
                 }
               >
-                {cuentasMes.map((cuenta, id) => (
+                {cuentasMes.map((cuenta, _id) => (
                   <div
                     key={cuenta._id}
-                    className={`flex h-12 flex-row`}
+                    className={`flex h-[3rem] flex-row`}
                     onContextMenu={(event) => manejarClicDerecho(cuenta, event)}
                   >
-                    <div className="flex-1 flex h-12 text-white justify-center items-center border-b-1 border-gray-600">
+                    <div className="flex-1 flex h-[3rem] w-[14rem] text-white justify-center items-center border-b-1 border-gray-600">
                       {cuenta.tipodegasto}
                     </div>
-                    <div className="flex-1 flex h-12 text-white justify-center items-center border-b-1 border-gray-600">
+                    <div className="flex-1 flex h-[3rem] w-[14rem] text-white justify-center items-center border-b-1 border-gray-600">
                       {cuenta.descripcion}
                     </div>
-                    <div className="flex-1 flex h-12 text-white justify-center items-center border-b-1 border-gray-600">
+                    <div className="flex-1 flex h-[3rem] w-[14rem] text-white justify-center items-center border-b-1 border-gray-600">
                       <div className="flex justify-center pr-3">
                         {formatDate(cuenta.date)}
                       </div>
@@ -454,10 +454,10 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
                         {cuenta.time}
                       </div>
                     </div>
-                    <div className="flex-1 flex h-12 text-white justify-center items-center border-b-1 border-gray-600">
+                    <div className="flex-1 flex h-[3rem] w-[14rem] text-white justify-center items-center border-b-1 border-gray-600">
                       $ {formatNumber(cuenta.pay)}
                     </div>
-                    <div className="flex-1 relative flex h-12 text-white justify-center items-center border-b-1 border-gray-600">
+                    <div className="flex-1 relative flex h-[3rem] w-[14rem] text-white justify-center items-center border-b-1 border-gray-600">
                       <div className="flex flex-1 flex-col">
                         <div className="flex flex-1 pl-5">
                           <div className="pr-3 border-r-2 border-gray-600">
@@ -472,7 +472,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
                       >
                         <div className="">
                           <MdCheckCircleOutline
-                            size={40}
+                            size={30}
                             fill={
                               estadosPagados[cuenta._id] ? "#34EB17" : "#4B5563"
                             }

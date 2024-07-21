@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import CustomAlert from './CustomAlert'; // Importa tu componente de alerta personalizado
+import CustomAlert from "./CustomAlert"; // Importa tu componente de alerta personalizado
 
 interface AddAccountToPayProps {
   onChangeModal: (p: boolean) => void;
@@ -40,7 +40,8 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
   });
 
   const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
+  const [alertMessage, setAlertMessage] = useState("");
+  const [estadoPagado, setEstadoPagado] = useState(false);
 
   function setChangeData(data: string, value: string | number | boolean) {
     let newAccountData = { ...accountData };
@@ -109,13 +110,42 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
   function validateAndSubmit() {
     const { tipodegasto, date, pay, descripcion } = accountData;
     if (!tipodegasto || !date || !pay || !descripcion) {
-      setAlertMessage('Por favor, completa todos los campos antes de continuar.');
+      setAlertMessage(
+        "Por favor, completa todos los campos antes de continuar."
+      );
       setShowAlert(true);
       return;
     }
 
     subirArticulo();
   }
+
+  const formatNumber = (value: string) => {
+    if (!value) return '';
+    const [integerPart, decimalPart] = value.split('.');
+    const formattedIntegerPart = parseInt(integerPart).toLocaleString('en-US');
+    return decimalPart !== undefined ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
+  };
+
+  const handlePayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/,/g, "");
+    if (!isNaN(Number(value)) || value === "") {
+      setChangeData("pay", value);
+    }
+  };
+
+  const handlePayBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value.replace(/,/g, ""));
+    if (!isNaN(value)) {
+      setChangeData(
+        "pay",
+        value.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    }
+  };
 
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 w-full h-full">
@@ -165,7 +195,7 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="descripcion" className="text-xl p-2">
+            <label htmlFor="descripcion" className="text-xl pl-4 p-2">
               Descripcion
             </label>
             <input
@@ -181,7 +211,7 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
           </div>
 
           <div className="flex-1 flex flex-col">
-            <label htmlFor="date" className="text-xl p-2">
+            <label htmlFor="date" className="text-xl p-2 pl-4">
               Dia De Vencimiento
             </label>
             <input
@@ -196,43 +226,45 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="pay" className="text-xl p-2">
+            <label htmlFor="pay" className="text-xl p-2 pl-4">
               Monto
             </label>
             <input
               type="text"
               name="pay"
               className="outline-none h-14 px-2 rounded-md bg-slate-900 border-slate-900 mr-3 ml-3"
-              value={accountData.pay}
-              onChange={(e) => {
-                const value = e.target.value.replace(/,/g, '');
-                if (value.length <= 18) {
-                  setChangeData("pay", parseFloat(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-                }
-              }}
+              value={formatNumber(accountData.pay)}
+              onChange={handlePayChange}
+              onBlur={handlePayBlur}
             />
           </div>
 
-          <div className="w-56 text-xl pl-2 mt-2">Estado de cuenta</div>
+          <div className="w-56 text-xl pl-4 mt-2">Estado de cuenta</div>
 
           <div className="flex h-14 rounded-md bg-slate-900 items-center justify-around border-slate-900 mb-4 m-3 ">
-            <label htmlFor="pagado" className="text-xl p-2">
+            <label
+              htmlFor="pagado"
+              className={`text-2xl p-2 pl-4 ${
+                estadoPagado && "text-green-500"
+              }`}
+            >
               Pagado
             </label>
             <input
               type="checkbox"
               name="pagado"
-              className="h-6 w-6 bg-slate-900"
+              className="h-6 w-6 checked:bg-green-500"
               checked={accountData.pagado}
               onChange={(e) => {
                 setChangeData("pagado", e.target.checked);
+                setEstadoPagado(e.target.checked);
               }}
             />
           </div>
 
           <div className="flex flex-1 w-full bg-slate-100">
             <button
-              className="flex flex-1 p-2 bg-rose-700 justify-center hover:bg-rose-800"
+              className="flex flex-1 p-2 bg-rose-700 justify-center hover:bg-rose-800 outline-none"
               onClick={() => {
                 onChangeModal(false);
               }}
@@ -240,7 +272,7 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
               Cancelar
             </button>
             <button
-              className="flex flex-1 h-10 p-2 bg-cyan-700 justify-center hover:bg-cyan-800"
+              className="flex flex-1 h-10 p-2 bg-cyan-700 justify-center hover:bg-cyan-800 outline-none"
               onClick={validateAndSubmit}
             >
               Agregar

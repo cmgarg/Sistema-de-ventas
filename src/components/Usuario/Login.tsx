@@ -80,14 +80,14 @@ const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta, setShowLoadi
           : "bg-gradient-to-b to-blue-950 from-slate-800"
       }`}
     >
-      <div className="flex flex-col items-center justify-center border border-gray-600 rounded-lg w-96 h-96 ">
+      <div className="flex flex-col items-center justify-center border border-slate-900 rounded-lg w-1/5 h-1/2 pt-5 bg-black bg-opacity-20">
         <h1 className=" p-5 text-2xl">Punto De Venta CMG</h1>
         <p>Iniciar Sección</p>
 
         <div className=" flex flex-col p-5 w-full h-full">
-          <label htmlFor="username">Usuario</label>
+          <label htmlFor="username" className='text-xl'>Usuario</label>
           <input
-            className="border border-gray-600 bg-slate-800 focus:outline-none m-3 p-1"
+            className="outline-none h-14 px-2 rounded-md bg-slate-900 border-slate-900 m-3 p-1"
             id="username"
             placeholder="Usuario"
             type="text"
@@ -97,9 +97,9 @@ const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta, setShowLoadi
             onKeyUp={handleKeyPress}
             required
           />
-          <label htmlFor="password">Contraseña</label>
+          <label htmlFor="password" className='text-xl'>Contraseña</label>
           <input
-            className="border border-gray-600 bg-slate-800 focus:outline-none m-3 p-1"
+            className="outline-none h-14 px-2 rounded-md bg-slate-900 border-slate-900 m-3 p-1"
             type="password"
             id="password"
             placeholder="*********"
@@ -128,7 +128,7 @@ const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta, setShowLoadi
             </>
           )}
           <button
-            className="bg-green-600 p-1 hover:bg-green-700 active:bg-green-800 rounded-md mt-5"
+            className=" h-10 p-2 bg-cyan-700 justify-center hover:bg-cyan-800 outline-none rounded-lg mt-6"
             type="button"
             onClick={handleSubmit}
           >

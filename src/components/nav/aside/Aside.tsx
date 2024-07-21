@@ -68,7 +68,7 @@ export default function Aside() {
                 isActive && "bg-cyan-800"
               } hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none `}
             >
-              <div className={`h-10 w-10 flex justify-center items-center `}>
+              <div className={`h-10 w-10 flex justify-center items-center select-none`}>
                 {isActive ? (
                   <TiThMenu size={30} color={"#fff"} />
                 ) : (
@@ -85,14 +85,14 @@ export default function Aside() {
                 }`}
               >
                 {isActive ? (
-                  <div className="  text-white flex justify-center items-center ">
+                  <div className="  text-white flex justify-center items-center select-none">
                     <p>Menu</p>
                   </div>
                 ) : null}
               </div>
             </div>
             {userType === "stock" ? null :(
-              <div>
+              <div className="select-none">
             <GoTo title="Clientes" goTo="/" isActive={isActive}>
               {location.pathname == "/" ? (
                 <IoPerson color={"#fff"} size={30} />

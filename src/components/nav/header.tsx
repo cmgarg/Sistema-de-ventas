@@ -72,7 +72,7 @@ function Header() {
         </div>
       </div>
       <button
-        className="app-region-no-drag flex items-center hover:bg-gray-700 h-full w-8 justify-center"
+        className="app-region-no-drag flex items-center hover:bg-gray-700 h-full w-8 justify-center outline-none"
         onClick={() => {
           minimizeWindow();
         }}
@@ -80,7 +80,7 @@ function Header() {
         <VscChromeMinimize color={"#fff"} size={20} />
       </button>
       <button
-        className="app-region-no-drag flex items-center hover:bg-gray-700 h-full w-8 justify-center"
+        className="app-region-no-drag flex items-center hover:bg-gray-700 h-full w-8 justify-center outline-none"
         onClick={() => {
           if (!isMaximized) {
             maximizeWindow();
@@ -96,7 +96,7 @@ function Header() {
         )}
       </button>
       <button
-        className="app-region-no-drag items-center flex hover:bg-red-700 h-full w-8 justify-center"
+        className="app-region-no-drag items-center flex hover:bg-red-700 h-full w-8 justify-center outline-none"
         onClick={() => {
           closeWindow();
         }}

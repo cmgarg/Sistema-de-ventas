@@ -4,8 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../../../redux/estados/authSlice.ts";
 import { MdAddPhotoAlternate } from "react-icons/md";
 import { cambiar } from "../../../../src/redux/estados/estadoTipoDeUser.ts";
+import "../../.../../../App.css";
 
-export default function UsuarioIniciado({ setLoginUser }) {
+export default function UsuarioIniciado({ setLoginUser }:any) {
   const images = [
     "/imagen-usuario/user-1.jpg",
     "/imagen-usuario/user-2.jpg",
@@ -25,12 +26,9 @@ export default function UsuarioIniciado({ setLoginUser }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.auth);
- const userType = useSelector((state: RootState) => state.estadoTipoDeUser.userType);
- 
 
   useEffect(() => {
     console.log("Componente UsuarioIniciado montado");
-  
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -100,7 +98,7 @@ export default function UsuarioIniciado({ setLoginUser }) {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     dispatch(logout());
-    setLoginUser(false); // Aquí ocurre el error
+    setLoginUser(true);
     navigate("/login");
   };
 
@@ -119,18 +117,21 @@ export default function UsuarioIniciado({ setLoginUser }) {
           console.error(respuesta.error);
         }
       } else {
-        console.error("La respuesta del evento datos-usuario-obtenidos es undefined");
+        console.error(
+          "La respuesta del evento datos-usuario-obtenidos es undefined"
+        );
       }
     };
 
-    window.api.recibirEvento("datos-usuario-obtenidos", handleDatosUsuarioObtenidos);
+    window.api.recibirEvento(
+      "datos-usuario-obtenidos",
+      handleDatosUsuarioObtenidos
+    );
 
     return () => {
       window.api.removeAllListeners("datos-usuario-obtenidos");
     };
   }, []);
-
-  const navigate2 = useNavigate();
 
   const abrirConfiguracion = () => {
     navigate("/configuracion");
@@ -138,26 +139,37 @@ export default function UsuarioIniciado({ setLoginUser }) {
 
   return (
     <>
-      <div className="flex text-white text-lg mr-4 items-center justify-center">
+      <div className="flex text-white text-lg items-center justify-center martin">
         <div></div>
       </div>
-      <div className="relative">
+      <div className="relative cursor-pointer">
         <div
-          className="flex flex-row border-4 border-gray-600 rounded-lg p-1 menu-container "
+          className="flex flex-row rounded-lg menu-container group relative pt-1 pb-1 p"
           onClick={toggleMenu}
         >
-          <div className="flex items-center justify-center text-2xl text-white mr-3">
-            {datosUsuario ? datosUsuario.username || datosUsuario.nombre : "Cargando..."}
+          <div className="flex items-center justify-center text-2xl text-white pr-3 pl-3 select-none">
+            {datosUsuario ? datosUsuario.username || datosUsuario.nombre : ""}
           </div>
 
           <div
-            className="w-11 h-11 bg-cover bg-center rounded-full cursor-pointer border "
+            className="w-11 h-11 bg-cover bg-center rounded-full cursor-pointer border mr-2"
             style={{ backgroundImage: `url(${selectedImage})` }}
           />
+          {/* TOP */}
+          <span className="absolute left-0 top-0 h-[2px] w-0 bg-sky-700 transition-all duration-100 group-hover:w-full rounded-t-lg" />
+
+          {/* RIGHT */}
+          <span className="absolute right-0 top-0 h-0 w-[2px] bg-sky-700 transition-all delay-100 duration-100 group-hover:h-full rounded-r-lg" />
+
+          {/* BOTTOM */}
+          <span className="absolute bottom-0 right-0 h-[2px] w-0 bg-sky-700 transition-all delay-200 duration-100 group-hover:w-full rounded-b-lg" />
+
+          {/* LEFT */}
+          <span className="absolute bottom-0 left-0 h-0 w-[2px] bg-sky-700 transition-all delay-300 duration-100 group-hover:h-full rounded-l-lg" />
         </div>
 
         {menuVisible && (
-          <div className="absolute right-0 top-full w-48 bg-gray-800 shadow-lg border border-gray-600 rounded-lg text-white py-2 z-50 menu-container">
+          <div className="absolute right-0 top-full w-48 bg-gray-800 shadow-lg border border-gray-600 rounded-lg text-white py-2 z-50 menu-container select-none">
             <div
               className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
               onClick={toggleChangeImage}
@@ -180,9 +192,7 @@ export default function UsuarioIniciado({ setLoginUser }) {
         )}
 
         {changeImageVisible && (
-          <div
-            className="absolute right-0 w-48 bg-gray-800 border border-gray-600 shadow-lg rounded-lg py-4 z-50 image-menu-container"
-          >
+          <div className="absolute right-0 w-48 bg-gray-800 border border-gray-600 shadow-lg rounded-lg py-4 z-50 image-menu-container">
             <div className="flex flex-wrap justify-between px-2 py-2">
               {images.map((image, index) => (
                 <div
@@ -205,7 +215,7 @@ export default function UsuarioIniciado({ setLoginUser }) {
                   onChange={handleFileChange}
                   className="hidden text-5xl"
                 />
-                <MdAddPhotoAlternate size={35} color="black"/>
+                <MdAddPhotoAlternate size={35} color="black" />
               </label>
             </div>
           </div>

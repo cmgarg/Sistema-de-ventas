@@ -1,7 +1,8 @@
-import UsuarioSecSVG from "/src/assets/MAINSVGS/Configuracion SVG/UsuarioSecSVG";
-import GeneralSVG from "/src/assets/MAINSVGS/Configuracion SVG/GeneralSVG";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { MdNotificationsActive } from "react-icons/md";
+import { FaUsers } from "react-icons/fa";
+import { FaUserGear } from "react-icons/fa6";
 
 export default function MenuConfig({ estado, setEstado }) {
   const userType = useSelector(
@@ -24,7 +25,7 @@ const dispatch = useDispatch();
           onClick={() => setEstado("general-1")}
         >
           <div className="flex h-full w-20 items-center justify-center">
-            <GeneralSVG width="25" height="25" />
+          <FaUserGear size={25} />
           </div>
           <div className={`flex items-center text-base `}>
             <div className=" select-none">General</div>
@@ -40,7 +41,7 @@ const dispatch = useDispatch();
           onClick={() => setEstado("general-2")}
         >
           <div className="flex h-full w-20 items-center justify-center">
-            <UsuarioSecSVG width="25" height="25" />
+          <FaUsers size={25} />
           </div>
           <div className="flex items-center text-base">
             <div className=" select-none">Administrar Cuentas</div>
@@ -54,40 +55,14 @@ const dispatch = useDispatch();
           onClick={() => setEstado("general-3")}
         >
           <div className="flex h-full w-20 items-center justify-center">
-            <GeneralSVG width="25" height="25" />
+          <MdNotificationsActive size={25}/>
           </div>
           <div className="flex items-center text-base">
-            <div className=" select-none">General</div>
+            <div className=" select-none">Notificaciones</div>
           </div>
         </div>
-        <div
-          className={`flex w-full h-16 text-white relative hover:bg-black hover:bg-opacity-20 ${
-            estado == "general-4" &&
-            "border-b-2 border-l-4 border-white bg-black bg-opacity-25 rounded-tl-2xl rounded-bl-2xl"
-          }`}
-          onClick={() => setEstado("general-4")}
-        >
-          <div className="flex h-full w-20 items-center justify-center">
-            <GeneralSVG width="25" height="25" />
-          </div>
-          <div className="flex items-center text-base">
-            <div className=" select-none">General</div>
-          </div>
-        </div>
-        <div
-          className={`flex w-full h-16 text-white relative hover:bg-black hover:bg-opacity-20 ${
-            estado == "general-5" &&
-            "border-b-2 border-l-4 border-white bg-black bg-opacity-25 rounded-tl-2xl rounded-bl-2xl"
-          }`}
-          onClick={() => setEstado("general-5")}
-        >
-          <div className="flex h-full w-20 items-center justify-center">
-            <GeneralSVG width="25" height="25" />
-          </div>
-          <div className="flex items-center text-base">
-            <div className=" select-none">General</div>
-          </div>
-        </div>
+
+
       </div>
 
       <div

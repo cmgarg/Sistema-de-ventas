@@ -9,7 +9,7 @@ interface ArrowMenuContentProps {
 
 const ArrowMenu: React.FC<ArrowMenuContentProps> = ({ isActive }) => {
   return (
-    <div className="flex items-center">
+    <div className="flex items-center select-none">
       {(isActive && (
         <div className="flex items-center">
           <ArrowDown size={15} color={"#fff"}></ArrowDown>
