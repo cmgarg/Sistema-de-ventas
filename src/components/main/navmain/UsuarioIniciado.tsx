@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../../../redux/estados/authSlice.ts";
 import { MdAddPhotoAlternate } from "react-icons/md";
 import { cambiar } from "../../../../src/redux/estados/estadoTipoDeUser.ts";
-import "../../.../../../App.css";
+import "../.././../App.css";
 
-export default function UsuarioIniciado({ setLoginUser }:any) {
+export default function UsuarioIniciado({ setLoginUser }: any) {
   const images = [
     "/imagen-usuario/user-1.jpg",
     "/imagen-usuario/user-2.jpg",
@@ -29,7 +29,6 @@ export default function UsuarioIniciado({ setLoginUser }:any) {
 
   useEffect(() => {
     console.log("Componente UsuarioIniciado montado");
-  
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {

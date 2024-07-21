@@ -620,8 +620,6 @@ export const loadEvents = () => {
         exito: false,
         mensaje: error.message,
       });
-    } catch (error) {
-      event.reply("respuesta-guardar-usuario-editado", { exito: false, mensaje: error.message });
     }
   });
 
@@ -634,9 +632,7 @@ export const loadEvents = () => {
         success: false,
         error: error.message,
       });
-    } catch (error) {
-      event.reply("respuesta-obtener-permisos-usuario", { success: false, error: error.message });
-    }
+    } 
   });
 
   // Cuentas a pagar
@@ -679,9 +675,7 @@ export const loadEvents = () => {
         exitoso: false,
         error: error.message,
       });
-    } catch (error) {
-      event.reply("estado-pagado-inicial", { exitoso: false, error: error.message });
-    }
+    } 
   });
 
   ipcMain.on("eliminar-cuenta", async (event, { id }) => {
@@ -716,9 +710,7 @@ export const loadEvents = () => {
         error: error.message,
         id,
       });
-    } catch (error) {
-      event.reply("cuenta-actualizada", { exitoso: false, error: error.message, id });
-    }
+    } 
   });
 
   ipcMain.on("obtener-admin", async (event) => {
