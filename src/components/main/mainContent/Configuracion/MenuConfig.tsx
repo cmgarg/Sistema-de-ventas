@@ -1,5 +1,5 @@
-import UsuarioSecSVG from "/src/assets/MAINSVGS/Configuracion SVG/UsuarioSecSVG";
-import GeneralSVG from "/src/assets/MAINSVGS/Configuracion SVG/GeneralSVG";
+import UsuarioSecSVG from "../../../../assets/MAINSVGS/Configuracion SVG/UsuarioSecSVG";
+import GeneralSVG from "../../../../assets/MAINSVGS/Configuracion SVG/GeneralSVG";
 import React, { useState } from "react";
 
 export default function MenuConfig({ estado, setEstado }) {

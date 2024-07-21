@@ -1,57 +1,67 @@
-import { brandType, categoryType } from "../../../../../../../../../types";
+import {
+  Action,
+  articleData,
+  brandType,
+  categoryType,
+} from "../../../../../../../../../types/types";
 import React, { useEffect, useState } from "react";
 import Downshift from "downshift";
 
 type propsInput = {
   style: string;
-  setChangeData: (e: string, value: string) => void;
-  articuloData: object;
   brands: brandType[];
   brandError: { message: string; type: string; active: boolean };
+  dispatch: React.Dispatch<Action>;
+  errorIn: string[];
+  stateArticle: articleData;
   value?: string;
 };
 
 const InputBrand = ({
   style,
-  setChangeData,
-  articuloData,
+  dispatch,
+  errorIn,
   brands,
-  brandError,
+  stateArticle,
   value,
 }: propsInput) => {
-  const [newValue, setNewValue] = useState<string>("");
-
   const onChangeNewValue = (newValue: string) => {
     if (/^[a-zA-Z]*$/.test(newValue)) {
-      setNewValue(newValue);
+      dispatch({
+        type: "SET_BRAND",
+        payload: {
+          label:
+            newValue.charAt(0).toUpperCase() + newValue.slice(1).toLowerCase(),
+          value: newValue.toLowerCase(),
+        },
+      });
     }
   };
 
   const compareSelectItemWithInputValue = (i: string): string => {
-    const inputLength = newValue.length;
+    const inputLength = stateArticle.brand.label.length;
     const itemValue = i;
 
-    if (newValue) {
+    if (stateArticle.brand.label) {
       return itemValue.toLowerCase().slice(0, inputLength) ===
-        newValue.toLowerCase()
+        stateArticle.brand.label.toLowerCase()
         ? itemValue
-        : newValue;
+        : stateArticle.brand.label;
     } else {
       return itemValue;
     }
   };
-  useEffect(() => {
-    setChangeData("brand", newValue);
-  }, [newValue]);
 
   return (
     <Downshift
       onChange={(selection) => {
         onChangeNewValue(selection || "teta");
       }}
-      inputValue={value || newValue}
+      inputValue={value}
       itemToString={(item) =>
-        item ? compareSelectItemWithInputValue(item.label) : newValue
+        item
+          ? compareSelectItemWithInputValue(item.label)
+          : stateArticle.brand.label
       }
       onInputValueChange={(e, stateAndHelpers) => {
         onChangeNewValue(e);
@@ -81,7 +91,11 @@ const InputBrand = ({
           >
             <input
               {...getInputProps()}
-              className={`${style} ${isOpen ? "rounded-b-none" : ""} w-full`}
+              className={`${style} ${isOpen ? "rounded-b-none" : ""} w-full ${
+                errorIn.includes("BRAND")
+                  ? "overline outline-red-500 outline-2"
+                  : ""
+              }`}
             />
           </div>
           <ul

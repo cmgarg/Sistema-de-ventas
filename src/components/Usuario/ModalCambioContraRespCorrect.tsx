@@ -1,8 +1,8 @@
-import ContraVisibleSVG from "/src/assets/SvgUsuario/ContraVisibleSVG";
-import ContraNoVisibleSVG from "/src/assets/SvgUsuario/ContraNoVisibleSVG";
+import ContraVisibleSVG from "../../assets/SvgUsuario/ContraVisibleSVG";
+import ContraNoVisibleSVG from "../../assets/SvgUsuario/ContraNoVisibleSVG";
 import React, { useEffect, useState } from "react";
 
-const ModalCambioContraRespCorrect = ({setCambiarContraseña, onClose}) => {
+const ModalCambioContraRespCorrect = ({ setCambiarContraseña, onClose }) => {
   const [nuevaContraseña, setNuevaContraseña] = useState("");
   const [mostrarContraseña, setMostrarContraseña] = useState(false);
   const [datosUsuario, setDatosUsuario] = useState();
@@ -24,13 +24,12 @@ const ModalCambioContraRespCorrect = ({setCambiarContraseña, onClose}) => {
         nuevaContrasena: nuevaContraseña,
       });
       window.api.enviarEvento("reiniciar-recuperacioncuenta", datosUsuario._id);
-      setCambiarContraseña(false)
+      setCambiarContraseña(false);
       onClose();
     } else {
       console.error("No se han obtenido los datos del usuario");
     }
   };
-  
 
   useEffect(() => {
     window.api.enviarEvento("obtener-admin");
@@ -56,8 +55,6 @@ const ModalCambioContraRespCorrect = ({setCambiarContraseña, onClose}) => {
     };
   }, []);
 
-
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-gradient-to-b to-blue-950 from-slate-800 p-6 rounded-lg shadow-lg">
@@ -76,7 +73,11 @@ const ModalCambioContraRespCorrect = ({setCambiarContraseña, onClose}) => {
               onClick={toggleMostrarContraseña}
               className="absolute right-2 top-1 text-sm text-white"
             >
-              {mostrarContraseña ? <ContraVisibleSVG /> : <ContraNoVisibleSVG />}
+              {mostrarContraseña ? (
+                <ContraVisibleSVG />
+              ) : (
+                <ContraNoVisibleSVG />
+              )}
             </button>
             <button
               type="submit"
@@ -91,7 +92,6 @@ const ModalCambioContraRespCorrect = ({setCambiarContraseña, onClose}) => {
       </div>
     </div>
   );
-  
 };
 
 export default ModalCambioContraRespCorrect;

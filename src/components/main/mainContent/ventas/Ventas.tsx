@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import AsideMain from "../../asidemain/AsideMain";
-import NavMain from "../../navmain/NavMain";
-import Buscador from "../../../buscador/Buscador";
-import Export from "../buttons/Export";
-import Agregar from "../buttons/Agregar";
-import AddVentaForm from "./addVenta/AddVentaForm";
-import ItemList from "./ItemList";
+import AsideMain from "../../asidemain/AsideMain.js";
+import NavMain from "../../navmain/NavMain.js";
+import Buscador from "../../../buscador/Buscador.js";
+import Export from "../buttons/Export.js";
+import Agregar from "../buttons/Agregar.js";
+import AddVentaForm from "./addVenta/AddVentaForm.js";
+import ItemList from "./ItemList.js";
 import { useDispatch, useSelector } from "react-redux";
-import { saleData, storeType } from "../../../../../types";
+import { saleData, storeType } from "../../../../../types/types.js";
 import { addSale } from "../../../../../src/redux/estados/salesState";
 import Afip from "../../../../../node_modules/@afipsdk/afip.js";
 

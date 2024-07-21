@@ -10,12 +10,13 @@ import {
   ContextMenuTrigger,
 } from "../../../../../app/ui/context-menu";
 import { useDispatch } from "react-redux";
-import { articleData } from "../../../../../types";
+import { articleData } from "../../../../../types/types";
+import { NumberFormatBase, NumericFormat } from "react-number-format";
 
 interface ArticleListProps {
   articles: articleData[];
   searchActived: { actived: boolean; results: articleData[] };
-  editArticleOn: (e: { active: boolean; code: string }) => void;
+  editArticleOn: (e: { active: boolean; articleToEdit: articleData }) => void;
 }
 
 const ArticleList: React.FC<ArticleListProps> = ({
@@ -33,12 +34,12 @@ const ArticleList: React.FC<ArticleListProps> = ({
     console.log(articles, "|||||||||||||||||||||");
   }, [articles]);
 
-  const editClient = (code: string) => {
-    editArticleOn({ active: true, code: code });
+  const editArticle = (article: articleData) => {
+    editArticleOn({ active: true, articleToEdit: article });
   };
 
-  const deleteClient = (code: string) => {
-    window.api.enviarEvento("delete-article", code);
+  const deleteArticle = (article: articleData) => {
+    window.api.enviarEvento("delete-article", article.code);
   };
 
   const renderRows = (articleObject: articleData): any => {
@@ -58,10 +59,20 @@ const ArticleList: React.FC<ArticleListProps> = ({
                 <p>{articleObject.brand.label || "falopeado"}</p>
               </div>
               <div className="flex justify-center items-center flex-1">
-                <p>${articleObject.article.costo || "falopeado"}</p>
+                <NumericFormat
+                  value={articleObject.article.costo}
+                  displayType={"text"}
+                  prefix={"$"}
+                  renderText={(formattedValue) => <div>{formattedValue}</div>}
+                />
               </div>
-              <div className="flex justify-center items-center flex-1">
-                <p>${articleObject.article.venta || "falopeado"}</p>
+              <div className="flex justify-center items-center flex-1 pl-2">
+                <NumericFormat
+                  value={articleObject.article.venta}
+                  displayType={"text"}
+                  prefix={"$"}
+                  renderText={(formattedValue) => <div>{formattedValue}</div>}
+                />
               </div>
               <div className="flex justify-end items-center flex-1">
                 <p>{articleObject.sales.length}</p>
@@ -72,14 +83,14 @@ const ArticleList: React.FC<ArticleListProps> = ({
             <ContextMenuItem
               onClick={() => {
                 // edit(fila._id);
-                editClient(articleObject.code);
+                editArticle(articleObject);
               }}
             >
               Editar
             </ContextMenuItem>
             <ContextMenuItem
               onClick={() => {
-                deleteClient(articleObject.code);
+                deleteArticle(articleObject);
               }}
             >
               Borrar
@@ -128,10 +139,17 @@ const ArticleList: React.FC<ArticleListProps> = ({
                     <p>{articleObject.brand.label || "falopeado"}</p>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>${articleObject.article.costo || "falopeado"}</p>
+                    <p>{articleObject.article.costo || "falopeado"}</p>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>${articleObject.article.venta || "falopeado"}</p>
+                    <NumericFormat
+                      value={articleObject.article.venta}
+                      displayType={"text"}
+                      prefix={"$"}
+                      renderText={(formattedValue) => (
+                        <div>{formattedValue}</div>
+                      )}
+                    />
                   </div>
                   <div className="flex justify-end items-center flex-1 pl-2">
                     <p>{articleObject.sales.length}</p>
@@ -141,14 +159,14 @@ const ArticleList: React.FC<ArticleListProps> = ({
               <ContextMenuContent>
                 <ContextMenuItem
                   onClick={() => {
-                    editClient(articleObject.code);
+                    editArticle(articleObject);
                   }}
                 >
                   Editar
                 </ContextMenuItem>
                 <ContextMenuItem
                   onClick={() => {
-                    deleteClient(articleObject.code);
+                    deleteArticle(articleObject);
                   }}
                 >
                   Borrar

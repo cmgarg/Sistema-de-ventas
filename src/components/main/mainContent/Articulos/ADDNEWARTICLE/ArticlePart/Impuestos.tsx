@@ -2,29 +2,35 @@ import React, { useEffect, useState } from "react";
 import Downshift from "downshift";
 import { TrashIcon } from "@radix-ui/react-icons";
 import {
+  Action,
   articleData,
   brandType,
   categoryType,
-} from "../../../../../../../types";
+} from "../../../../../../../types/types";
 import AddTax from "./AddTax";
 
 type propsInput = {
-  articleState: articleData;
-  setChangeData: (e: string, data: any) => void;
+  stateArticle: articleData;
+  errorIn: string[];
+  dispatch: React.Dispatch<Action>;
 };
 
-const Impuestos = ({ articleState, setChangeData }: propsInput) => {
+const Impuestos = ({ stateArticle, dispatch }: propsInput) => {
   const [addImpuesto, setAddImpuesto] = useState(false);
 
   const deleteTax = (id: number) => {
-    setChangeData("deleteTax", id);
+    dispatch({ type: "DELETE_TAX", payload: id });
   };
   useEffect(() => {}, []);
 
   return (
-    <div className="flex-1 h-full flex flex-col">
+    <div className="flex-1 h-80 flex flex-col">
       {addImpuesto && (
-        <AddTax setAddImpuesto={setAddImpuesto} setChangeData={setChangeData} />
+        <AddTax
+          setAddImpuesto={setAddImpuesto}
+          dispatch={dispatch}
+          stateArticle={stateArticle}
+        />
       )}
       <div className="flex-1 flex flex-col h-full relative p-2">
         <div>
@@ -55,11 +61,11 @@ const Impuestos = ({ articleState, setChangeData }: propsInput) => {
                 <p>%</p>
               </div>
             </li>
-            {articleState.taxes.map((tax, index) => {
+            {stateArticle.taxes.map((tax, index) => {
               return (
                 <li
                   className={`flex relative justify-between text-xs bg-blue-950 px-2 border-slate-700 h-7 items-center ${
-                    index > -1 && index !== articleState.taxes.length - 1
+                    index > -1 && index !== stateArticle.taxes.length - 1
                       ? "border-b"
                       : null
                   }`}

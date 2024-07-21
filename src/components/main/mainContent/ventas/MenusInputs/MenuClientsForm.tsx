@@ -1,4 +1,4 @@
-import { clientData } from "../../../../../../types";
+import { clientData } from "../../../../../../types/types";
 import Downshift from "downshift";
 import React, { useEffect, useRef, useState } from "react";
 import AutoSuggest from "react-autosuggest";

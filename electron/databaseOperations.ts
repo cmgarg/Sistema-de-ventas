@@ -3,10 +3,11 @@ import {
   articleData,
   clientData,
   dataToEditArticle,
+  depositType,
   saleData,
   supplierType,
   unitType,
-} from "../types";
+} from "../types/types";
 import Datastore from "@seald-io/nedb";
 import { getDate } from "./vFunctions";
 import jwt from "jsonwebtoken";
@@ -37,6 +38,10 @@ const db = {
   }),
   suppliers: new Datastore({
     filename: "database/suppliers.db",
+    autoload: true,
+  }),
+  deposits: new Datastore({
+    filename: "database/deposits.db",
     autoload: true,
   }),
 };
@@ -226,37 +231,49 @@ export const deleteArticle = async (code: string) => {
     return false;
   }
 };
-export async function updatedStockArticle(article: {
-  idArticle: string;
-  quantity: string;
-  nameArticle: string;
-  totalCost: string;
-}) {
-  const { idArticle, quantity } = article;
-  const articleUpdate: articleData = await getArticleByCode(idArticle);
-  console.log(articleUpdate, "ARTICULO A ACTUALIZAR STOCK");
-  const stock = articleUpdate.article.stock.amount;
-  console.log(articleUpdate.article.stock.amount, "STOCK");
-  const restSold = stock - parseInt(quantity);
+export async function updatedStockArticles(
+  articles: {
+    name: string;
+    code: string;
+    total: number | string;
+    amount: {
+      value: string;
+      unit: string;
+    };
+  }[]
+) {
+  const articlesDB = await findArticles();
 
-  return new Promise((resolve, reject) => {
-    db.articles.update(
-      { _id: idArticle },
-      {
-        ...articleUpdate,
-        stock: { ...articleUpdate.article.stock, amount: restSold },
-      },
-      { multi: false },
-      (err: any, docs: any) => {
-        if (err) {
-          reject(err);
-          console.log("HUBO UN ERROR DE LA CAJETA", err);
-        } else {
-          resolve(docs);
-          console.log("TODO BIEN SALIO GIL DE MIERDA", docs);
-        }
-      }
+  articles.forEach((article) => {
+    const articleDBCurrent = articlesDB.find(
+      (aDB) => aDB.code === article.code
     );
+    if (articleDBCurrent) {
+      let newAmount =
+        Number(articleDBCurrent.article.stock.amount) - Number(article.amount);
+      //EMITIR NOTI SI EL MONTO RESTANTE ES CERCANO AL MINIMO
+      db.articles
+        .updateAsync(
+          { code: articleDBCurrent.code },
+          {
+            $set: {
+              article: {
+                stock: {
+                  amount: newAmount,
+                },
+              },
+            },
+          }
+        )
+        .then((res) => {
+          console.log("ARTICULO ACTUALZIADO", res);
+        })
+        .catch((err) => {
+          console.log("NO SE PUDO ACTUALIZAR", err);
+        });
+    } else {
+      console.log("No se encontró el artículo en la base de datos", article);
+    }
   });
 }
 export async function updateCountSaleArticle(article: {
@@ -296,6 +313,9 @@ export const saveSale = (a: saleData) => {
   const año = fechaActual.getFullYear();
   const mes = fechaActual.getMonth() + 1;
   const dia = fechaActual.getDate();
+  const hour = fechaActual.getHours();
+  const minutes = fechaActual.getMinutes();
+  const seconds = fechaActual.getSeconds();
 
   const articlesTotalSold = a.articles.map((ar) => ar.total);
   console.log("TOTAL VENDIDO", articlesTotalSold);
@@ -306,9 +326,11 @@ export const saveSale = (a: saleData) => {
 
   const saleToSave = {
     ...a,
-    dateOfRegister: `${dia.toString().padStart(2, "0")}-${mes
+    dateOfRegister: `${año}-${mes.toString().padStart(2, "0")}-${dia
       .toString()
-      .padStart(2, "0")}-${año}`,
+      .padStart(2, "0")}T${hour}:${minutes}:${seconds
+      .toString()
+      .padStart(2, "0")}Z`,
     sold: soldTotal,
   };
   const resultSave = db.sales
@@ -324,16 +346,107 @@ export const saveSale = (a: saleData) => {
 
   return resultSave;
 };
+export const verifStockOfArticles = async (
+  articlesOfSale: {
+    name: string;
+    code?: string;
+    total: number | string;
+    amount: {
+      value: string;
+      unit: string;
+    };
+  }[]
+) => {
+  const articles = await findArticles();
+
+  const insufficientItems: {
+    articleCode: string;
+    amount: string;
+    name: string;
+  }[] = [];
+  articlesOfSale.forEach((article) => {
+    const articleToSee = articles.find(
+      (articleDB) => articleDB.code === article.code
+    );
+
+    if (articleToSee) {
+      insufficientItems.push({
+        articleCode: article.code ? article.code : article.name,
+        amount: article.amount.value ? article.amount.value : "no",
+        name: article.name,
+      });
+    }
+  });
+  if (insufficientItems.length > 0) {
+    return { value: true, insufficientItems };
+  } else {
+    return { value: false, insufficientItems: [] };
+  }
+};
+const clientConfirmData = async (e: {
+  name: string;
+  email: string;
+  address: string;
+  phone: string;
+  dni: string;
+  _id: string;
+}): Promise<boolean> => {
+  const clientDB = await getClientById(e._id);
+
+  if (!clientDB) {
+    console.log("EL CLIENTE NO EXISTE");
+    return false;
+  }
+  return true;
+};
+const payMethod = (e: string) => {
+  return "PROXIMAMENTE";
+};
+
 export const saleProcess = async (venta: saleData) => {
+  //VERIFICAR STOCK DE ARTICULOS
+  const verifStock = await verifStockOfArticles(venta.articles);
+  console.log("VERIFICANDO STOCK", verifStock);
+  if (verifStock.value) {
+    return {
+      type: "stock",
+      success: false,
+      message: "Stock insuficiente de",
+      adjunt: verifStock.insufficientItems,
+    };
+  }
+  //verificar cliente
+  let clientVerif = false;
+  if (venta.buyer.client.active) {
+    clientVerif = await clientConfirmData(venta.buyer.client.clientData);
+  }
+  if (!clientVerif) {
+    return {
+      type: "client",
+      success: false,
+      message: "El cliente no existe",
+      adjunt: venta.buyer.client.clientData,
+    };
+  }
+  //verificar metodo de pago
+  const payMethodVerif = payMethod("PROXIMAMENTE");
+  console.log("VERIFICACION EMTODO DE PAGO,", payMethodVerif);
+  //ACTUALIZAR STOCK
+  await updatedStockArticles(venta.articles);
   //registrar venta
   await registBuyInArticle(venta);
   //registrar compra en cliente
   await registerBuyClient(venta);
   //GUARDAR VENTA
 
-  const resultToProcess = saveSale(venta);
+  const resultToProcess = await saveSale(venta);
 
-  return resultToProcess;
+  return {
+    type: "success save sale",
+    success: resultToProcess.save,
+    message: "Stock insuficiente de",
+    adjunt: verifStock.insufficientItems,
+  };
 };
 export const registBuyInArticle = async (saleInfo: saleData) => {
   const articlesOfSale = [...saleInfo.articles];
@@ -646,8 +759,9 @@ export const saveSupplier = async (e: supplierType) => {
 };
 
 export const deleteSupplier = async (supplierToDelete: supplierType) => {
+  console.log("buenas tardes");
   return await db.suppliers
-    .removeAsync({ _id: supplierToDelete._id }, {})
+    .removeAsync({ _id: supplierToDelete._id }, { multi: false })
     .then((res) => {
       console.log(res);
       return {
@@ -667,6 +781,188 @@ export const deleteSupplier = async (supplierToDelete: supplierType) => {
 export const getSuppliers = async () => {
   return await db.suppliers.findAsync({});
 };
+export const updateSuppliers = async (
+  id: string,
+  newSupplier: supplierType
+) => {
+  return await db.suppliers
+    .updateAsync(
+      { _id: id },
+      {
+        $set: {
+          ...newSupplier,
+        },
+      }
+    )
+    .then((res) => {
+      console.log("Proveedor actualizado correctamente", res);
+      return {
+        message: "Proveedor actualizado correctamente",
+        value: true,
+      };
+    })
+    .catch((err) => {
+      console.log("Error al actualizar el proveedor", err);
+      return {
+        message: "Error al actualizar el proveedor",
+        value: false,
+      };
+    });
+};
+//DEPOSITOS
+
+export const getDeposits = async () => {
+  return await db.deposits
+    .findAsync({})
+    .then((deposits) => {
+      console.log("Depositos encontrados", deposits);
+      return deposits;
+    })
+    .catch((err) => {
+      console.log("Error al encotrar los depositos", err);
+      return {
+        message: "Error al encotrar los depositos",
+        value: false,
+      };
+    });
+};
+
+export const getDepositById = async (id: string): Promise<depositType> => {
+  return await db.deposits.findOneAsync({ _id: id });
+};
+
+export const createDeposit = async (newDeposit: depositType) => {
+  return await db.deposits
+    .insertAsync(newDeposit)
+    .then((res) => {
+      console.log("DEPOSITO CREADO CORRECTAMENTE");
+      return {
+        message: "Deposito creado correctamente",
+        value: true,
+      };
+    })
+    .catch((err) => {
+      console.log("Error al crear el deposito");
+      return {
+        message: "Error al crear el deposito",
+        value: false,
+      };
+    });
+};
+
+export const updateDeposit = async (depositToUpdate: depositType) => {
+  return await db.deposits.updateAsync(
+    { _id: depositToUpdate._id },
+    { $set: { ...depositToUpdate } }
+  );
+};
+export const addProductInDeposit = async (
+  depositId: string,
+  sectorId: any,
+  productToAdd: articleData
+) => {
+  const depositToAddProduct = await getDepositById(depositId);
+  console.log(depositToAddProduct);
+
+  if (!depositToAddProduct) {
+    console.log("No se encontro el deposito");
+    return {
+      message: "No se encontro el deposito",
+      value: false,
+    };
+  } else {
+    const res = depositToAddProduct.sectors.map((e) => {
+      if (e.sectorId === sectorId) {
+        e.products.push(productToAdd);
+        return `"Producto añadido al sector" ${e.number}`;
+      } else {
+        return `"Sector no encontrado"`;
+      }
+    });
+    console.log(
+      res,
+      "RESPUESTA AL AÑADIR EL PRODUCTO AL SECTOR CORRESPONDIENTE"
+    );
+  }
+};
+
+export const createSectorInDeposit = async (
+  depositId: string,
+  sectorinfo: {
+    name: string;
+    sectorId: string;
+    products: articleData[];
+  }
+) => {
+  const sectorToAdd = {
+    ...sectorinfo,
+    sectorId: crypto.randomBytes(4).toString("hex"),
+  };
+  const depositToAddProduct = await getDepositById(depositId);
+
+  if (!depositToAddProduct) {
+    console.log("No se encontro el deposito");
+    return {
+      message: "No se encontro el deposito",
+      value: false,
+    };
+  } else {
+    depositToAddProduct.sectors.push(sectorToAdd);
+    console.log("SE AGREGO EL SECTOR AL DEPOSITO?", depositToAddProduct);
+    updateDeposit(depositToAddProduct);
+    return { ...sectorToAdd };
+  }
+};
+
+export const deleteSector = async (depositId: string, sectorId: string) => {
+  const depositToDeleteSector = await getDepositById(depositId);
+
+  const sectorDelete = depositToDeleteSector.sectors.filter(
+    (e) => e.sectorId !== sectorId
+  );
+
+  const depositWithDeleteSector = {
+    ...depositToDeleteSector,
+    sectors: sectorDelete,
+  };
+
+  return await updateDeposit(depositWithDeleteSector);
+};
+
+export const editSectorInDeposit = async (
+  depositId: string,
+  sectorId: string,
+  newSector: {
+    number: number;
+    sectorId: string;
+    products: articleData[];
+  }
+) => {
+  const deposit = await getDepositById(depositId);
+  const [sectorToEdit] = deposit.sectors.filter((s) => {
+    return s.sectorId === sectorId;
+  });
+
+  if (sectorToEdit) {
+    const depositWithEditSector = {
+      ...deposit,
+      sectors: deposit.sectors.map((s) => {
+        if (s.sectorId === sectorToEdit.sectorId) {
+          return newSector;
+        }
+        return s;
+      }),
+    };
+    return await updateDeposit(depositWithEditSector);
+  } else {
+    console.error(`No se encontró el sector con id ${sectorId}`);
+    return {
+      message: `No se encontró el sector con id ${sectorId}`,
+      value: false,
+    };
+  }
+};
+//SEGUR CON TODO LO DEMAS
 ////////////////////////MARTIN
 
 //////////////////////////////////////////////////////

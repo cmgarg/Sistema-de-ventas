@@ -114,7 +114,7 @@ function App() {
   }, [isAuthenticated]);
 
   function renderContent() {
-    if (loading) {
+    if (false) {
       return <div>Cargando... no se obtuvieron los permisos</div>; // Muestra un mensaje de carga mientras se obtienen los permisos
     }
 

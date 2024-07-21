@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import ButtonCheck from "../StockPart/ButtonCheck";
+import { Action, articleData } from "../../../../../../../types/types";
 
 type AddTaxProps = {
-  setChangeData: (e: string, data: any) => void;
+  stateArticle: articleData;
+  dispatch: React.Dispatch<Action>;
   setAddImpuesto: (e: boolean) => void;
 };
 
-const AddTax: React.FC<AddTaxProps> = ({ setChangeData, setAddImpuesto }) => {
+const AddTax: React.FC<AddTaxProps> = ({ dispatch, setAddImpuesto }) => {
   const [taxData, setTaxData] = useState<{
     name: string;
     percentage: number;
@@ -84,7 +86,7 @@ const AddTax: React.FC<AddTaxProps> = ({ setChangeData, setAddImpuesto }) => {
   const addNewTax = () => {
     console.log("EJECUITEASDASDASDASD", taxData);
     if (taxData.name && taxData.percentage && taxData.type) {
-      setChangeData("newTax", taxData);
+      dispatch({ type: "SET_NEW_TAX", payload: taxData });
 
       setTaxData({
         name: "",

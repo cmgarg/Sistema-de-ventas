@@ -3,7 +3,7 @@ import TableMain from "../../tablaMain/TableMain";
 import TableHead from "../../tablaMain/TableHead";
 import TableRow from "../../tablaMain/TableRow";
 import { Link } from "react-router-dom";
-import { saleData, storeType } from "../../../../../types";
+import { saleData, storeType } from "../../../../../types/types";
 import { useSelector } from "react-redux";
 import ListSaleArticles from "./ListSaleArticles";
 

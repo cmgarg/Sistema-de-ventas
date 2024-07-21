@@ -1,20 +1,21 @@
 import React, { useState } from "react";
 import ButtonCheck from "../../ButtonCheck";
-import { articleData, unitType } from "../../../../../../../../../types";
+import {
+  Action,
+  articleData,
+  unitType,
+} from "../../../../../../../../../types/types";
 
 type CantidadPorProps = {
-  articuloDataState: articleData;
-  setChangeData: (data: string, value: any) => void;
+  stateArticle: articleData;
+  dispatch: React.Dispatch<Action>;
+  errorIn: string[];
 };
 
 const CantidadPor: React.FC<CantidadPorProps> = ({
-  articuloDataState,
-  setChangeData,
+  stateArticle,
+  dispatch,
 }) => {
-  const [paletteOn, setPaletteOn] = useState(false);
-  const [bultoOn, setBultoOn] = useState(false);
-  const [unidadOn, setUnidadOn] = useState(false);
-
   return (
     <div className="flex flex-col flex-1">
       <div className="flex justify-start font-bold text-2xl pl-2">
@@ -28,24 +29,29 @@ const CantidadPor: React.FC<CantidadPorProps> = ({
                 x PALETTE
               </label>
             </div>
-            {paletteOn ? (
+            {stateArticle.article.palette.active ? (
               <div className="flex bg-slate-900 border border-slate-700 rounded-lg h-14 w-full">
                 <input
                   type="text"
                   name="palette"
                   className={"outline-none w-full bg-slate-900 rounded-lg px-2"}
                   value={
-                    articuloDataState.palette
-                      ? `${articuloDataState.palette.value}`
+                    stateArticle.article.palette.active
+                      ? `${stateArticle.article.palette.value}`
                       : "0"
                   }
                   onChange={(e) => {
-                    setChangeData("paletteValue", e.target.value);
+                    dispatch({
+                      type: "SET_PALETTEVALUE",
+                      payload: e.target.value,
+                    });
                   }}
-                  disabled={!articuloDataState.palette ? true : false}
+                  disabled={!stateArticle.article.palette ? true : false}
                 />
                 <button
-                  onClick={() => setPaletteOn(false)}
+                  onClick={() =>
+                    dispatch({ type: "SET_PALETTEACTIVE", payload: false })
+                  }
                   className="bg-red-600 rounded-lg p-2 text-xs"
                 >
                   No establecer
@@ -53,7 +59,9 @@ const CantidadPor: React.FC<CantidadPorProps> = ({
               </div>
             ) : (
               <button
-                onClick={() => setPaletteOn(true)}
+                onClick={() =>
+                  dispatch({ type: "SET_PALETTEACTIVE", payload: true })
+                }
                 className="w-full bg-green-900 h-14 rounded-lg px-2"
               >
                 Establecer
@@ -63,28 +71,30 @@ const CantidadPor: React.FC<CantidadPorProps> = ({
         </div>
         <div className="flex-1 relative space-y-1">
           <div className="flex h-5">
-            <label htmlFor="costo" className="select-none">
+            <label htmlFor="bulk" className="select-none">
               x BULTO
             </label>
           </div>
-          {bultoOn ? (
+          {stateArticle.article.forBulk.active ? (
             <div className="flex bg-slate-900 border border-slate-700 rounded-lg h-14 w-full">
               <input
                 type="text"
-                name="palette"
+                name="bulk"
                 className={"outline-none w-full bg-slate-900 rounded-lg px-2"}
                 value={
-                  articuloDataState.palette
-                    ? `${articuloDataState.palette.value}`
+                  stateArticle.article.forBulk.active
+                    ? `${stateArticle.article.forBulk.value}`
                     : "0"
                 }
                 onChange={(e) => {
-                  setChangeData("paletteValue", e.target.value);
+                  dispatch({ type: "SET_BULKVALUE", payload: e.target.value });
                 }}
-                disabled={!articuloDataState.palette ? true : false}
+                disabled={!stateArticle.article.forBulk.active ? true : false}
               />
               <button
-                onClick={() => setBultoOn(false)}
+                onClick={() =>
+                  dispatch({ type: "SET_BULKACTIVE", payload: false })
+                }
                 className="bg-red-600 rounded-lg p-2 text-xs"
               >
                 No establecer
@@ -92,7 +102,9 @@ const CantidadPor: React.FC<CantidadPorProps> = ({
             </div>
           ) : (
             <button
-              onClick={() => setBultoOn(true)}
+              onClick={() =>
+                dispatch({ type: "SET_BULKACTIVE", payload: true })
+              }
               className="w-full bg-green-900 h-14 rounded-lg px-2"
             >
               Establecer
@@ -102,27 +114,37 @@ const CantidadPor: React.FC<CantidadPorProps> = ({
         <div className="flex-1 relative space-y-1">
           <div className="flex h-5">
             <label htmlFor="costo" className="select-none">
-              x {articuloDataState.article.stock.unit.label}
+              x {stateArticle.article.stock.unit.label}
             </label>
           </div>
-          {unidadOn ? (
+          {stateArticle.article.quantityperunit.active ? (
             <div className="flex bg-slate-900 border border-slate-700 rounded-lg h-14 w-full">
               <input
                 type="text"
                 name="palette"
                 className={"outline-none w-full bg-slate-900 rounded-lg px-2"}
                 value={
-                  articuloDataState.palette
-                    ? `${articuloDataState.palette.value}`
+                  stateArticle.article.quantityperunit.active
+                    ? `${stateArticle.article.quantityperunit.value}`
                     : "0"
                 }
                 onChange={(e) => {
-                  setChangeData("paletteValue", e.target.value);
+                  dispatch({
+                    type: "SET_QUANTITYPERUNITVALUE",
+                    payload: e.target.value,
+                  });
                 }}
-                disabled={!articuloDataState.palette ? true : false}
+                disabled={
+                  !stateArticle.article.quantityperunit.active ? true : false
+                }
               />
               <button
-                onClick={() => setUnidadOn(false)}
+                onClick={() =>
+                  dispatch({
+                    type: "SET_QUANTITYPERUNITACTIVE",
+                    payload: false,
+                  })
+                }
                 className="bg-red-600 rounded-lg p-2 text-xs"
               >
                 No establecer
@@ -130,7 +152,9 @@ const CantidadPor: React.FC<CantidadPorProps> = ({
             </div>
           ) : (
             <button
-              onClick={() => setUnidadOn(true)}
+              onClick={() =>
+                dispatch({ type: "SET_QUANTITYPERUNITACTIVE", payload: true })
+              }
               className="w-full bg-green-900 h-14 rounded-lg px-2"
             >
               Establecer

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { clientData, dataToDeleteClient } from "../../../types";
+import { clientData, dataToDeleteClient } from "../../../types/types";
 
 const initialState: clientData[] = [];
 export const clientSlice = createSlice({

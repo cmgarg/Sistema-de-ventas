@@ -27,7 +27,6 @@ export default function UsuarioIniciado({ setLoginUser }) {
 
   useEffect(() => {
     console.log("Componente UsuarioIniciado montado");
-  
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -115,16 +114,24 @@ export default function UsuarioIniciado({ setLoginUser }) {
           console.error(respuesta.error);
         }
       } else {
-        console.error("La respuesta del evento datos-usuario-obtenidos es undefined");
+        console.error(
+          "La respuesta del evento datos-usuario-obtenidos es undefined"
+        );
       }
     };
 
-    window.api.recibirEvento("datos-usuario-obtenidos", handleDatosUsuarioObtenidos);
+    window.api.recibirEvento(
+      "datos-usuario-obtenidos",
+      handleDatosUsuarioObtenidos
+    );
 
     return () => {
       window.api.removeAllListeners("datos-usuario-obtenidos");
     };
   }, []);
+  useEffect(() => {
+    console.log(datosUsuario, "GONZAAAAAAAAAAAAAAA");
+  }, [datosUsuario]);
 
   const navigate2 = useNavigate();
 
@@ -143,7 +150,9 @@ export default function UsuarioIniciado({ setLoginUser }) {
           onClick={toggleMenu}
         >
           <div className="flex items-center justify-center text-2xl text-white mr-3">
-            {datosUsuario ? datosUsuario.username || datosUsuario.nombre : "Cargando..."}
+            {datosUsuario
+              ? datosUsuario.username || datosUsuario.nombre
+              : "Cargando..."}
           </div>
 
           <div
@@ -176,9 +185,7 @@ export default function UsuarioIniciado({ setLoginUser }) {
         )}
 
         {changeImageVisible && (
-          <div
-            className="absolute right-0 w-48 bg-gray-800 border border-gray-600 shadow-lg rounded-lg py-4 z-50 image-menu-container"
-          >
+          <div className="absolute right-0 w-48 bg-gray-800 border border-gray-600 shadow-lg rounded-lg py-4 z-50 image-menu-container">
             <div className="flex flex-wrap justify-between px-2 py-2">
               {images.map((image, index) => (
                 <div
@@ -201,7 +208,7 @@ export default function UsuarioIniciado({ setLoginUser }) {
                   onChange={handleFileChange}
                   className="hidden text-5xl"
                 />
-                <MdAddPhotoAlternate size={35} color="black"/>
+                <MdAddPhotoAlternate size={35} color="black" />
               </label>
             </div>
           </div>

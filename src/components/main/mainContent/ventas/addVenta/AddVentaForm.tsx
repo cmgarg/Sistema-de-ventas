@@ -1,13 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import MenuClientsForm from "../MenusInputs/MenuClientsForm";
 import MenuArticlesForm from "../MenusInputs/MenuArticlesForm";
-import { articleData, saleData, storeType } from "../../../../../../types";
+import {
+  articleData,
+  saleData,
+  storeType,
+} from "../../../../../../types/types";
 import { useSelector } from "react-redux";
 import ListaProductos from "./ListaProductos";
 import ClientSvg from "../../../../../../src/assets/MAINSVGS/articlesSVG/ClientSvg";
 import FinalConsumer from "../../../../../../src/assets/MAINSVGS/articlesSVG/FinalConsumer";
 import AsideForm from "./AsideForm";
 import { CheckCircledIcon } from "@radix-ui/react-icons";
+import Factura from "./Factura";
 
 interface AddVentaForm {
   onChangeModal: (p: boolean) => void;
@@ -36,6 +41,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
           name: "",
           email: "",
           address: "",
+          _id: "",
           phone: "",
           dni: "",
         },
@@ -58,7 +64,11 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
 
   const clients = useSelector((state: storeType) => state.clientState);
   const articles = useSelector((state: storeType) => state.articleState);
-  const [showOkSignal, setShowOkSignal] = useState<boolean>(false);
+  const [showOkSignal, setShowOkSignal] = useState<{
+    show: boolean;
+    save: boolean;
+    message: string;
+  }>({ show: false, save: false, message: "" });
   const [showError, setShowError] = useState<{ in: string }>({ in: "" });
   const [listProduct, setListProduct] = useState<
     {
@@ -153,7 +163,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
     const arr = saleData.articles.map((product) => product.total);
     let suma = 0;
     arr.map((a) => {
-      suma += parseInt(a);
+      suma += typeof a === "string" ? parseInt(a) : a;
     });
     setChangeData("sold", suma);
     setCost(suma);
@@ -168,7 +178,11 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
     setListProduct(arr);
   };
 
-  const showOkSaveSignal = (b: boolean) => {
+  const showOkSaveSignal = (b: {
+    save: boolean;
+    show: boolean;
+    message: string;
+  }) => {
     setShowOkSignal(b);
   };
   function setChangeData(data: string, value: any) {
@@ -228,8 +242,12 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
   useEffect(() => {
     window.api.recibirEvento("response-sale-process", (response) => {
       console.log("SE GUARDO SARPADAMENTE", response);
-      if (response.save) {
-        showOkSaveSignal(true);
+      if (response.success) {
+        showOkSaveSignal({
+          show: true,
+          save: true,
+          message: "Venta realizada con éxito",
+        });
 
         setSaleData({
           articles: [],
@@ -260,7 +278,11 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
           sold: 0,
         });
       } else {
-        console.log("ERROREEES");
+        showOkSaveSignal({
+          show: true,
+          save: false,
+          message: response.message,
+        });
       }
     });
   }, []);
@@ -286,36 +308,12 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
 
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 app-region-no-drag">
-      {showOkSignal && (
-        <div className="absolute bottom-0 top-0 right-0 left-0 flex flex-col borde items-center justify-center text-slate-50 text-lg border-slate-800 rounded-md z-50 backdrop-blur-xl">
-          <div className="h-1/2 w-1/2 bg-slate-950 flex flex-col justify-center items-center">
-            <div className="flex flex-col items-center w-full flex-1 justify-center ">
-              <CheckCircledIcon
-                width={200}
-                height={200}
-                color="rgb(134 239 172)"
-              ></CheckCircledIcon>
-              <p>Se creo la venta correctamente</p>
-            </div>
-
-            <div className="flex w-full">
-              <button
-                className="flex-1 bg-red-800 h-12 rounded-bl-md"
-                onClick={() => {
-                  onChangeModal(false);
-                }}
-              >
-                Salir
-              </button>
-              <button
-                onClick={() => showOkSaveSignal(false)}
-                className="flex-1 bg-green-800 h-12 rounded-br-md"
-              >
-                Crear otra
-              </button>
-            </div>
-          </div>
-        </div>
+      {showOkSignal.show && (
+        <Factura
+          onChangeModal={onChangeModal}
+          showOkSaveSignal={showOkSaveSignal}
+          subirVenta={subirVenta}
+        />
       )}
       <div className="w-full h-full bg-slate-900  text-slate-50 rounded-md flex relative">
         <AsideForm

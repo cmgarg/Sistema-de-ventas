@@ -1,53 +1,67 @@
-import { categoryType } from "../../../../../../../../../types";
+import {
+  Action,
+  articleData,
+  categoryType,
+} from "../../../../../../../../../types/types";
 import React, { useEffect, useState } from "react";
 import Downshift from "downshift";
 
 type propsInput = {
   style: string;
-  setChangeData: (e: string, value: string) => void;
-  articuloData: object;
   subCategorys: categoryType[];
   categoryError: { message: string; type: string; active: boolean };
+  dispatch: React.Dispatch<Action>;
+  errorIn: string[];
+  stateArticle: articleData;
+
   value?: string;
 };
 
 const InputSubCategory = ({
   style,
-  setChangeData,
   subCategorys,
+  stateArticle,
+  errorIn,
+  dispatch,
   value,
 }: propsInput) => {
-  const [newValue, setNewValue] = useState("");
+  const onChangeNewValue = (newValue: string) => {
+    if (/^[a-zA-Z]*$/.test(newValue)) {
+      dispatch({
+        type: "SET_SUBCATEGORY",
+        payload: {
+          label:
+            newValue.charAt(0).toUpperCase() + newValue.slice(1).toLowerCase(),
+          value: newValue.toLowerCase(),
+        },
+      });
+    }
+  };
 
   const compareSelectItemWithInputValue = (i: string): string => {
-    const inputLength = newValue.length;
+    const inputLength = stateArticle.subCategory.label.length;
     const itemValue = i;
 
-    if (newValue) {
+    if (stateArticle.subCategory.label) {
       return itemValue.toLowerCase().slice(0, inputLength) ===
-        newValue.toLowerCase()
+        stateArticle.subCategory.label.toLowerCase()
         ? itemValue
-        : newValue;
+        : stateArticle.subCategory.label;
     } else {
       return itemValue;
     }
   };
-  const onChangeNewValue = (newValue: string) => {
-    if (/^[a-zA-Z]*$/.test(newValue)) {
-      setNewValue(newValue);
-    }
-  };
-  useEffect(() => {
-    setChangeData("subcategory", newValue);
-  }, [newValue]);
+
   return (
     <Downshift
       onChange={(selection) => {
         onChangeNewValue(selection || "teta");
       }}
-      inputValue={value || newValue}
+      inputValue={value}
       itemToString={(item) =>
-        item ? compareSelectItemWithInputValue(item.label) : newValue
+        item
+          ? compareSelectItemWithInputValue(item.label)
+          : stateArticle.subCategory.label
       }
       onInputValueChange={(e, stateAndHelpers) => {
         onChangeNewValue(e);
@@ -77,7 +91,11 @@ const InputSubCategory = ({
           >
             <input
               {...getInputProps()}
-              className={`${style} ${isOpen ? "rounded-b-none" : ""} w-full`}
+              className={`${style} ${isOpen ? "rounded-b-none" : ""} w-full ${
+                errorIn.includes("SUBCATEGORY")
+                  ? "overline outline-red-500 outline-2"
+                  : ""
+              }`}
             />
           </div>
           <ul

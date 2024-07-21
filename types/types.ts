@@ -4,16 +4,27 @@ export type articleData = {
     name: string;
     costo: number;
     venta: number;
-    percentajeToSale: number;
+    profit: number;
     stock: { amount: number; unit: unitType; minStock: number };
-    grossWeight: number;
-    liquidWeight: number;
-    wApp: boolean;
-    wlApp: boolean;
+    grossWeight: { value: number; approx: boolean };
+    liquidWeight: { value: number; approx: boolean };
+    palette: {
+      active: boolean;
+      value: number;
+    };
+    quantityperunit: {
+      active: boolean;
+      value: number;
+    };
+    forBulk: {
+      active: boolean;
+      value: number;
+    };
     description: string;
   };
   brand: { value: string; label: string };
   code: string;
+  barcode: string;
   category: { value: string; label: string };
   subCategory: { value: string; label: string };
   dateToRegister: string;
@@ -39,10 +50,13 @@ export type articleData = {
     percentage: number;
     type: { costPrice: boolean; finalPrice: boolean };
   }[];
-  palette?: {
-    active: boolean;
-    value: number;
-  };
+  deposits: {
+    idObject: string;
+    name: string;
+    depositId: string;
+    address: string;
+    sector: { name: string; sectorId: string };
+  }[];
 };
 
 export type dataToDeleteArticle = {
@@ -69,7 +83,7 @@ export type dataToEditArticle = {
 export type saleData = {
   articles: {
     name: string;
-    code?: string;
+    code: string;
     total: number | string;
     amount: {
       value: string;
@@ -177,4 +191,21 @@ export type supplierType = {
   email: string;
   address: string;
   _id?: string;
+};
+
+//ALMACEN
+export type depositType = {
+  name: string;
+  address: string;
+  sectors: {
+    name: string;
+    sectorId: string;
+    products: articleData[];
+  }[];
+  _id?: string;
+};
+
+export type Action = {
+  type: string;
+  payload: any;
 };

@@ -4,6 +4,7 @@ import EditUnit from "./EditUnit";
 import CreateUnit from "./CreateUnit";
 import { MdMore, MdOutlineCreate } from "react-icons/md";
 import { IoAdd, IoAddCircle, IoClose, IoCreate } from "react-icons/io5";
+import { BiEdit, BiTrash } from "react-icons/bi";
 
 type UnitsFormProps = {
   units: unitType[];
@@ -38,15 +39,14 @@ const UnitsForm: React.FC<UnitsFormProps> = ({ units, onUnitForm }) => {
     });
   }, []);
   return (
-    <div className="absolute bg-red-500 backdrop-brightness-50 top-0 bottom-0 left-0 right-0 flex justify-center items-center z-50">
-      <div className="flex flex-col h-full w-full bg-slate-950 border text-white border-slate-500 rounded-lg ">
+    <div className="absolute backdrop-brightness-50 top-0 bottom-0 left-0 right-0 flex justify-center items-center z-50">
+      <div className="flex flex-col h-2/3 w-3/4 bg-slate-950 border text-white border-slate-500 rounded-lg ">
         {editUnitForm && (
           <EditUnit setEditUnitForm={setEditUnitForm} unitToEdit={unitToEdit} />
         )}
         {createUnitForm && <CreateUnit setCreateUnitForm={setCreateUnitForm} />}
         <div className="text-3xl flex justify-between rounded-lg h-10 pl-2 font-bold">
-          <p>UNIDADES</p>
-
+          <p>UNIDADES DE USUARIO</p>
           <div className="flex space-x-5">
             <button
               onClick={() => {
@@ -96,18 +96,18 @@ const UnitsForm: React.FC<UnitsFormProps> = ({ units, onUnitForm }) => {
                       onClick={() => {
                         onEditUnit(unit);
                       }}
-                      className="text-teal-950 bg-teal-500 w-32 h-full"
+                      className="text-teal-50 bg-teal-600 p-1 h-full rounded-l-lg"
                     >
-                      Editar
+                      <BiEdit size={20} />
                     </button>
 
                     <button
                       onClick={() => {
                         onUnitDelete(unit);
                       }}
-                      className="text-teal-950 bg-red-500 w-32 h-full"
+                      className="text-teal-950 border-l border-slate-800 bg-rose-500 p-1 h-full"
                     >
-                      Borrar
+                      <BiTrash size={20} className="text-teal-50" />
                     </button>
                   </div>
                 )

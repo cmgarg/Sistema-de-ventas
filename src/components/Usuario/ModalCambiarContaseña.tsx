@@ -1,8 +1,8 @@
-import ContraVisibleSVG from "/src/assets/SvgUsuario/ContraVisibleSVG";
-import ContraNoVisibleSVG from "/src/assets/SvgUsuario/ContraNoVisibleSVG";
+import ContraVisibleSVG from "../../assets/SvgUsuario/ContraVisibleSVG";
+import ContraNoVisibleSVG from "../../assets/SvgUsuario/ContraNoVisibleSVG";
 import React, { useEffect, useState } from "react";
 
-const ModalCambiarContraseña = ({setBloqueoPrograma}) => {
+const ModalCambiarContraseña = ({ setBloqueoPrograma }) => {
   const [nuevaContraseña, setNuevaContraseña] = useState("");
   const [mostrarContraseña, setMostrarContraseña] = useState(false);
   const [datosUsuario, setDatosUsuario] = useState();
@@ -24,12 +24,11 @@ const ModalCambiarContraseña = ({setBloqueoPrograma}) => {
         nuevaContrasena: nuevaContraseña,
       });
       window.api.enviarEvento("reiniciar-recuperacioncuenta", datosUsuario._id);
-      setBloqueoPrograma(false)
+      setBloqueoPrograma(false);
     } else {
       console.error("No se han obtenido los datos del usuario");
     }
   };
-  
 
   useEffect(() => {
     window.api.enviarEvento("obtener-admin");
@@ -55,8 +54,6 @@ const ModalCambiarContraseña = ({setBloqueoPrograma}) => {
     };
   }, []);
 
-
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-gradient-to-b to-blue-950 from-slate-800 p-6 rounded-lg shadow-lg">
@@ -75,7 +72,11 @@ const ModalCambiarContraseña = ({setBloqueoPrograma}) => {
               onClick={toggleMostrarContraseña}
               className="absolute right-2 top-1 text-sm text-white"
             >
-              {mostrarContraseña ? <ContraVisibleSVG /> : <ContraNoVisibleSVG />}
+              {mostrarContraseña ? (
+                <ContraVisibleSVG />
+              ) : (
+                <ContraNoVisibleSVG />
+              )}
             </button>
             <button
               type="submit"
@@ -90,7 +91,6 @@ const ModalCambiarContraseña = ({setBloqueoPrograma}) => {
       </div>
     </div>
   );
-  
 };
 
 export default ModalCambiarContraseña;

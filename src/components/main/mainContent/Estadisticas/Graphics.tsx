@@ -14,7 +14,7 @@ import {
 } from "recharts";
 import { VictoryPie } from "victory";
 import { addDays, format } from "date-fns";
-import { saleData } from "../../../../../types";
+import { saleData } from "../../../../../types/types";
 
 const generarDatos = (startDate, endDate) => {
   const data = [];

@@ -51,8 +51,18 @@ import {
   saveSupplier,
   deleteSupplier,
   getSuppliers,
+  updateSuppliers,
+  createDeposit,
+  updateDeposit,
+  addSectorInDeposit,
+  addProductInDeposit,
+  deleteSector,
+  editSectorInDeposit,
+  getDeposits,
+  createSectorInDeposit,
 } from "./databaseOperations";
 import { verificarToken } from "./vFunctions";
+import { articleData } from "../types/types";
 
 export const loadEvents = () => {
   //
@@ -104,8 +114,9 @@ export const loadEvents = () => {
     event.reply("response-save-supplier", res);
   });
 
-  ipcMain.on("delete-supplier", async (event, supplierToSave) => {
-    const res = await deleteSupplier(supplierToSave);
+  ipcMain.on("delete-supplier", async (event, supplierToDelete) => {
+    console.log("ACA SI LLEGA");
+    const res = await deleteSupplier(supplierToDelete);
 
     event.reply("response-delete-supplier", res);
   });
@@ -114,6 +125,11 @@ export const loadEvents = () => {
     const res = await getSuppliers();
 
     event.reply("response-get-suppliers", res);
+  });
+  ipcMain.on("update-supplier", async (event, supplierToUpdate) => {
+    console.log("ACAAA SI LLEGAAA");
+    const res = await updateSuppliers(supplierToUpdate._id, supplierToUpdate);
+    event.reply("response-update-supplier", res);
   });
 
   ///
@@ -274,35 +290,6 @@ export const loadEvents = () => {
   ipcMain.on("delete-sale", (_e, ventaAEliminar) => {
     deleteSales(ventaAEliminar);
   });
-  //CATEGORIA MARCA Y DEMAS
-
-  ipcMain.on("save-category", async (event, category) => {
-    // GUARDAR CATEGORIA EN FILTROS
-    await addCategory(category);
-
-    const categorysAndBrands = await getCategoryAndBrand();
-    event.reply("response-get-categoryAndBrand", categorysAndBrands);
-  });
-
-  ipcMain.on("save-subcategory", async (event, subCategory) => {
-    // GUARDAR CATEGORIA EN FILTROS
-    await addSubCategory(subCategory);
-
-    const categorysAndBrands = await getCategoryAndBrand();
-    event.reply("response-get-categoryAndBrand", categorysAndBrands);
-  });
-  ipcMain.on("save-brand", async (event, brand) => {
-    await addBrand(brand);
-
-    const categorysAndBrands = await getCategoryAndBrand();
-    event.reply("response-get-categoryAndBrand", categorysAndBrands);
-  });
-  ipcMain.on("get-categoryAndBrand", async (event) => {
-    const categorysAndBrands = await getCategoryAndBrand();
-
-    event.reply("response-get-categoryAndBrand", categorysAndBrands);
-  });
-
   ipcMain.on("guardar-usuario-admin", async (event, usuarioAdmin) => {
     try {
       const usuarioConPasswordEncriptado = await guardarUsuarioAdmin(
@@ -445,6 +432,94 @@ export const loadEvents = () => {
     const response = await deleteUnit(unitToDelete);
 
     event.reply("response-remove-unitsArticleForm", response);
+  });
+
+  //ALMACENES
+  //CREAR DEPOSITO
+  ipcMain.on("create-deposit", async (event, newDeposit) => {
+    const response = await createDeposit(newDeposit);
+
+    event.reply("response-create-deposit", response);
+  });
+  //AACTUALIZAR DEPOSITO
+  ipcMain.on("update-deposit", async (event, depositToUpdate) => {
+    console.log("QUE PASA ", depositToUpdate);
+    const response = await updateDeposit(depositToUpdate);
+
+    event.reply("response-update-deposit", response);
+  });
+  //AÑADIR PRODUCTO A DEPOSITO
+  ipcMain.on(
+    "add-product-in-Deposit",
+    async (
+      event,
+      {
+        deposit_id,
+        sector,
+        productToAdd,
+      }: { deposit_id: string; sector: number; productToAdd: articleData }
+    ) => {
+      console.log("QUE PASA ", productToAdd);
+      const response = await addProductInDeposit(
+        deposit_id,
+        sector,
+        productToAdd
+      );
+
+      event.reply("response-add-product-in-Deposit", response);
+    }
+  );
+  //ELIMINAR SECTOR DE DEPOSITO
+  ipcMain.on(
+    "deposit-delete-sector",
+    async (
+      event,
+      { deposit_id, sectorId }: { deposit_id: string; sectorId: string }
+    ) => {
+      const response = await deleteSector(deposit_id, sectorId);
+
+      event.reply("response-deposit-delete-sector", response);
+    }
+  );
+  //AÑADIR UN SECTOR EN DEPOSITO
+  ipcMain.on(
+    "create-sector-in-deposit",
+    async (
+      event,
+      { deposit_id, sector }: { deposit_id: string; sector: any }
+    ) => {
+      const response = await createSectorInDeposit(deposit_id, sector);
+
+      event.reply("response-create-sector-in-deposit", response);
+    }
+  );
+  //EDITAR UN SECTOR EN DEPOSITO
+  ipcMain.on(
+    "edit-sector-in-deposit",
+    async (
+      event,
+      {
+        deposit_id,
+        sectorToEdit,
+        sectorUpdate,
+      }: { deposit_id: string; sectorToEdit: string; sectorUpdate: any }
+    ) => {
+      const response = await editSectorInDeposit(
+        deposit_id,
+        sectorToEdit,
+        sectorUpdate
+      );
+
+      event.reply("response-edit-sector-in-deposit", response);
+    }
+  );
+  //OBTENER DEPOSITOS
+  ipcMain.on("get-deposits", async (event) => {
+    console.log("QUE PASA ");
+    const response = await getDeposits();
+    console.log("RESPUESTA A FRONT", response);
+
+    event.reply("response-get-deposits", response);
   });
 
   //martin////////////////////////////////////

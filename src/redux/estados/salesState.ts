@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { saleData, saleToDelete } from "../../../types";
+import { saleData, saleToDelete } from "../../../types/types";
 
 const initialState: saleData[] = [];
 export const saleSlice = createSlice({

@@ -1,53 +1,66 @@
-import { categoryType } from "../../../../../../../types";
+import {
+  Action,
+  articleData,
+  brandType,
+  categoryType,
+  supplierType,
+} from "../../../../../../../../../types/types";
 import React, { useEffect, useState } from "react";
 import Downshift from "downshift";
+import { TbTruckDelivery } from "react-icons/tb";
 
 type propsInput = {
   style: string;
-  setChangeData: (e: string, value: string) => void;
-  articuloData: object;
-  categorys: categoryType[];
-  categoryError: { message: string; type: string; active: boolean };
+  dispatch: React.Dispatch<Action>;
+  inputValueSupplierInput: string;
+  suppliers: supplierType[];
+  stateArticle: articleData;
+  setSupplierForm: (e: boolean) => void;
+  setInputValueSupplierInput: (e: string) => void;
+  errorIn: string[];
   value?: string;
 };
 
-const InputCategory = ({
+const InputSupplier = ({
   style,
-  setChangeData,
-  categorys,
+  dispatch,
+  setSupplierForm,
+  inputValueSupplierInput,
+  setInputValueSupplierInput,
+  suppliers,
   value,
 }: propsInput) => {
-  const [newValue, setNewValue] = useState("");
+  const onChangeNewValue = (newValue: string) => {
+    if (/^[a-zA-Z]*$/.test(newValue)) {
+      setInputValueSupplierInput(newValue);
+      dispatch({ type: "SET_SUPPLIER", payload: newValue });
+    }
+  };
 
   const compareSelectItemWithInputValue = (i: string): string => {
-    const inputLength = newValue.length;
+    const inputLength = inputValueSupplierInput.length;
     const itemValue = i;
 
-    if (newValue) {
+    if (inputValueSupplierInput) {
       return itemValue.toLowerCase().slice(0, inputLength) ===
-        newValue.toLowerCase()
+        inputValueSupplierInput.toLowerCase()
         ? itemValue
-        : newValue;
+        : inputValueSupplierInput;
     } else {
       return itemValue;
     }
   };
-  const onChangeNewValue = (newValue: string) => {
-    if (/^[a-zA-Z]*$/.test(newValue)) {
-      setNewValue(newValue);
-    }
-  };
-  useEffect(() => {
-    setChangeData("category", newValue);
-  }, [newValue]);
+
   return (
     <Downshift
       onChange={(selection) => {
         onChangeNewValue(selection || "teta");
       }}
-      inputValue={value || newValue}
+      inputValue={inputValueSupplierInput}
       itemToString={(item) =>
-        item ? compareSelectItemWithInputValue(item.label) : newValue
+        item
+          ? compareSelectItemWithInputValue(item.name)
+          : inputValueSupplierInput
       }
       onInputValueChange={(e, stateAndHelpers) => {
         onChangeNewValue(e);
@@ -67,17 +80,26 @@ const InputCategory = ({
         getLabelProps,
         getRootProps,
       }) => (
-        <div className="w-full flex flex-col">
-          <label {...getLabelProps()} className="select-none">
-            Categoria
-          </label>
+        <div className="flex-1 flex flex-col relative">
+          <div className="flex space-x-5 w-full justify-between">
+            <label {...getLabelProps()} className="select-none">
+              Proveedor
+            </label>
+            <button
+              onClick={() => setSupplierForm(true)}
+              className="flex items-center space-x-2 bg-cyan-700 rounded-lg px-2 mb-1"
+            >
+              <p className="text-sm font-bold">PROVEEDORES</p>
+              <TbTruckDelivery size={20} />
+            </button>
+          </div>
           <div
             style={{ display: "inline-block" }}
             {...getRootProps({}, { suppressRefError: true })}
           >
             <input
               {...getInputProps()}
-              className={`${style} ${isOpen ? "rounded-b-none" : ""} 'w-full'`}
+              className={`${style} ${isOpen ? "rounded-b-none" : ""} w-full`}
             />
           </div>
           <ul
@@ -85,18 +107,16 @@ const InputCategory = ({
             className="w-full absolute top-full rounded-b-sm"
           >
             {isOpen
-              ? categorys
+              ? suppliers
                   .filter(
                     (item) =>
                       !inputValue ||
-                      item.label
-                        .toLowerCase()
-                        .includes(inputValue.toLowerCase())
+                      item.name.toLowerCase().includes(inputValue.toLowerCase())
                   )
                   .map((item, index) => (
                     <li
                       {...getItemProps({
-                        key: item.label,
+                        key: item.name,
                         index,
                         item,
                         style: {
@@ -118,7 +138,7 @@ const InputCategory = ({
                           : "font-normal"
                       }`}
                     >
-                      {item.label}
+                      {item.name}
                     </li>
                   ))
               : null}
@@ -129,4 +149,4 @@ const InputCategory = ({
   );
 };
 
-export default InputCategory;
+export default InputSupplier;
