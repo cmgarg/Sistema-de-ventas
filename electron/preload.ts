@@ -176,7 +176,6 @@ contextBridge.exposeInMainWorld("api", {
       "guardar-usuario-editado",
       "obtener-permisos-usuario",
       "verificar-admin-existente",
-      "actualizar-imagen-usuario",
       "obtener-admin",
       //Unidades
       "get-unitsArticleForm",
@@ -205,6 +204,7 @@ contextBridge.exposeInMainWorld("api", {
       "create-deposit",
       //IMPRESORA PRUEBA
       "imprimir-pa",
+      "clear-cache",
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -272,10 +272,8 @@ contextBridge.exposeInMainWorld("api", {
       'response-get-notifications',
       'hide-notification',
       'disable-notification-type',
-      'response-get-disabled-notification-types'
-
-
-
+      'response-get-disabled-notification-types',
+      "cache-cleared"
     ];
 
     if (canalesPermitidos.includes(canal)) {
