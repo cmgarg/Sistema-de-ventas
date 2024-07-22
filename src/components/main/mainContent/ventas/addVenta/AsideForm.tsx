@@ -1,9 +1,5 @@
-import Usuario from "../../../../../../src/assets/asidesvg/Usuario";
-import ClientSvg from "../../../../../../src/assets/MAINSVGS/articlesSVG/ClientSvg";
 import React, { useEffect, useRef, useState } from "react";
-import FinalConsumer from "../../../../../../src/assets/MAINSVGS/articlesSVG/FinalConsumer";
 import { saleData } from "../../../../../../types/types";
-import BackArrowSvg from "../../../../../../src/assets/MAINSVGS/articlesSVG/BackArrowSvg";
 import { FaQuestion } from "react-icons/fa";
 
 interface AsideForm {
@@ -36,7 +32,7 @@ const AsideForm: React.FC<AsideForm> = ({
         onClick={() => onChangeModal(false)}
         className="h-10 w-10 text-2xl font-normal flex justify-center items-center mb-5 pl-2 hover:bg-slate-800"
       >
-        <BackArrowSvg size={30} color="#fff" />
+        "icono"
       </button>
       <div className="flex flex-1 w-full">
         <div className="flex flex-1 flex-col w-full px-2 font-bold">
@@ -55,7 +51,7 @@ const AsideForm: React.FC<AsideForm> = ({
 
               {saleData.buyer.client.active ? (
                 <div className="flex flex-col space-y-2">
-                  <ClientSvg size={180}></ClientSvg>
+                  "icono"
                   <p className="text-teal-500">
                     {saleData.buyer.client.active
                       ? saleData.buyer.client.clientData.name
@@ -64,7 +60,7 @@ const AsideForm: React.FC<AsideForm> = ({
                 </div>
               ) : saleData.buyer.finalConsumer.active ? (
                 <div className="flex flex-col space-y-2">
-                  <FinalConsumer size={180} />
+                  "icono"
 
                   <p className="text-teal-500">Consumidor final</p>
                 </div>

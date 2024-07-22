@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import ExportIcon from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/ExportIcon.js";
 import Biñeta from "../Biñeta/Biñieta.js";
 interface ExportProps {}
+import { CgExport } from "react-icons/cg";
 
 const Export: React.FC<ExportProps> = ({}) => {
   const [tooltipActive, setTooltipActive] = useState(false);
@@ -20,7 +20,7 @@ const Export: React.FC<ExportProps> = ({}) => {
       }}
     >
       <Biñeta title="Exportar">
-        <ExportIcon size={24} color="#fff"></ExportIcon>
+      <CgExport size={25} color="white" />
       </Biñeta>
     </div>
   );

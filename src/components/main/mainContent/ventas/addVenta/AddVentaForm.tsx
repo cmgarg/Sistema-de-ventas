@@ -8,8 +8,6 @@ import {
 } from "../../../../../../types/types";
 import { useSelector } from "react-redux";
 import ListaProductos from "./ListaProductos";
-import ClientSvg from "../../../../../../src/assets/MAINSVGS/articlesSVG/ClientSvg";
-import FinalConsumer from "../../../../../../src/assets/MAINSVGS/articlesSVG/FinalConsumer";
 import AsideForm from "./AsideForm";
 import { CheckCircledIcon } from "@radix-ui/react-icons";
 import Factura from "./Factura";
@@ -350,7 +348,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
                   <div className="flex flex-1">
                     <div className="flex flex-col border-r border-slate-800">
                       <div className="flex-1 flex justify-center items-center">
-                        <ClientSvg color="#fff" size={200}></ClientSvg>
+                        "clientesvg"
                       </div>
                       <div className="flex w-full justify-start">
                         <button
@@ -415,7 +413,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
                 onClick={() => loadBuyer("finalConsumer")}
                 className="h-full flex flex-col items-center justify-center space-y-5 w-1/2 shadow-inner shadow-slate-950 hover:shadow-transparent bg-gradient-to-t from-slate-950 to-blue-800 rounded-md hover:to-blue-600"
               >
-                <FinalConsumer size={300}></FinalConsumer>
+                "te borre iconoconsumidor final"
                 <p className="text-3xl">CONSUMIDOR FINAL</p>
               </button>
               <button
@@ -424,7 +422,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
                 }}
                 className="h-full flex flex-col items-center justify-center space-y-5 w-1/2 shadow-inner shadow-slate-950 hover:shadow-transparent bg-gradient-to-t from-slate-950 to-blue-800 rounded-md hover:to-blue-600"
               >
-                <ClientSvg color="#fff" size={300}></ClientSvg>
+                "borre icono cliente"
                 <p className="text-3xl">CLIENTE</p>
               </button>
             </div>

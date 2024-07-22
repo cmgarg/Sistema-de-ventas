@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import BuscadorIcon from "../../assets/MAINSVGS/mainAsideSvg/buscadorIcon/BuscadorIcon";
 import Biñeta from "../main/mainContent/Biñeta/Biñieta";
+import { FaMagnifyingGlass } from "react-icons/fa6";
+import { GiMagnifyingGlass } from "react-icons/gi";
 
 interface MainContentProps {
   searchIn: object[];
@@ -95,7 +96,7 @@ const Buscador: React.FC<MainContentProps> = ({ searchIn, functionReturn }) => {
       )}
       <div className="w-10 flex justify-center items-center">
         <Biñeta title="Buscador">
-          <BuscadorIcon color={"#fff"} size={20}></BuscadorIcon>
+        <GiMagnifyingGlass size={20} color="white" />
         </Biñeta>
       </div>
     </div>

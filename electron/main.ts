@@ -18,6 +18,8 @@ function createWindow() {
     width: 1100,
     height: 1800,
     minWidth: 1100,
+    icon: path.join(__dirname, '../src/assets/icon.ico'), // Ruta al ícono
+    title: "Punto de Ventas",
     minHeight: 600,
     titleBarStyle: "hidden",
     webPreferences: {
