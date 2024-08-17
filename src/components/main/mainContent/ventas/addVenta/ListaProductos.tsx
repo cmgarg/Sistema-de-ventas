@@ -1,5 +1,13 @@
 import React from "react";
 import MenuArticlesForm from "../MenusInputs/MenuArticlesForm";
+import {
+  articleData,
+  saleData,
+  storeType,
+  unitType,
+} from "../../../../../../types/types";
+import { NumericFormat } from "react-number-format";
+import { TrashIcon } from "@radix-ui/react-icons";
 
 
 interface Article {
@@ -15,12 +23,22 @@ interface Article {
 interface articleData {
   article: {
     name: string;
-    venta: number;
-    stock: {
-      unit: {
-        abrevUnit: string;
-      };
-      amount: number;
+    code?: string;
+    total: string | number;
+    amount: {
+      value: string | number;
+      unit: { label: string; palette: boolean; bulk: boolean };
+    };
+  }[];
+  estilosInput: string;
+  articles: articleData[];
+  addProduct: (article: {
+    name: string;
+    code?: string;
+    total: string;
+    amount: {
+      value: string;
+      unit: { label: string; palette: boolean; bulk: boolean };
     };
   };
   brand: {
@@ -118,23 +136,37 @@ const ListaProductos: React.FC<ListaProductosProps> = ({
           </div>
         </li>
         {listProduct.map((e, i) => (
-          <li key={i} className="w-full flex h-12 text-2xl bg-teal-950 items-center relative">
-            <div className="flex-1 flex justify-center items-center">
+          <li className="w-full flex h-12 text-2xl bg-teal-950 items-center relative">
+            <div className="flex-1  flex justify-start pl-2 items-center">
               <p>{e.name}</p>
             </div>
             <div className="flex-1 flex justify-center">
               <div className="flex">
                 <p>{e.amount.value}</p>
                 <div className="text-sm flex items-end">
-                  <p>{abreviationUnit(e.amount.unit)}</p>
+                  <p>{e.amount.unit.label}</p>
                 </div>
               </div>
             </div>
-            <div className="flex-1 text-cyan-300 flex justify-center">
-              <p>{formatMony(Number(e.total))}</p>
+
+            <div className="flex-1  text-cyan-300 flex justify-center ">
+              <NumericFormat
+                allowLeadingZeros
+                allowedDecimalSeparators={[".", "."]}
+                value={e.total}
+                decimalScale={2}
+                thousandSeparator=","
+                displayType={"text"}
+                className="text-2xl text-green-400 font-bold"
+                prefix={"$"}
+                renderText={(formattedValue) => <div>{formattedValue}</div>}
+              />
             </div>
-            <div className="absolute right-0" onClick={() => deleteOfList(i)}>
-              <p>Borrar</p>
+            <div
+              className="absolute right-2 cursor-pointer"
+              onClick={() => deleteOfList(i)}
+            >
+              <TrashIcon className="h-7 w-7 bg-slate-950 border border-red-500 text-red-500 hover:text-red-200 hover:bg-red-500 rounded-full p-[2px]" />
             </div>
           </li>
         ))}

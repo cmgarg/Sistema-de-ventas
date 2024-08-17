@@ -2,7 +2,7 @@ import crypto from "crypto";
 import Datastore from "@seald-io/nedb";
 import jwt from "jsonwebtoken";
 import { getDate } from "./vFunctions";
-import { dataToEditArticle } from "../types/types";
+import { dataToEditArticle, saleData } from "../types/types";
 
 // Definición de tipos
 interface ArticleStock {
@@ -229,6 +229,10 @@ const db = {
     filename: "database/deposits.db",
     autoload: true,
   }),
+  payMethod: new Datastore({
+    filename: "database/payMethod.db",
+    autoload: true,
+  }),
 };
 
 console.log("databaseOperations Se esta ejecutanado...");
@@ -244,7 +248,7 @@ export const registerBuyClient = async (sale: SaleData) => {
     const sales = [...buyer.shopping, sale];
 
     await db.clients.updateAsync(
-      { _id: (await buyer)._id },
+      { _id: buyer._id },
       { $set: { shopping: sales } }
     );
   }
@@ -411,7 +415,7 @@ export async function updatedStockArticles(
     total: number | string;
     amount: {
       value: string;
-      unit: string;
+      unit: { label: string; palette: boolean; bulk: boolean };
     };
   }[]
 ) {
@@ -422,6 +426,18 @@ export async function updatedStockArticles(
       (aDB) => aDB.code === article.code
     );
     if (articleDBCurrent) {
+      let amountReal;
+      if (article.amount.unit.bulk) {
+        amountReal =
+          Number(articleDBCurrent.article.forBulk.value) *
+          Number(article.amount.value);
+      } else if (article.amount.unit.palette) {
+        amountReal =
+          Number(articleDBCurrent.article.palette.value) *
+          Number(article.amount.value);
+      } else {
+        amountReal = Number(article.amount.value);
+      }
       let newAmount =
         Number(articleDBCurrent.article.stock.amount) - Number(article.amount);
       db.articles
@@ -429,11 +445,7 @@ export async function updatedStockArticles(
           { code: articleDBCurrent.code },
           {
             $set: {
-              article: {
-                stock: {
-                  amount: newAmount,
-                },
-              },
+              "article.stock.amount": newAmount,
             },
           }
         )
@@ -468,9 +480,51 @@ export async function updateCountSaleArticle(article: {
     );
   });
 }
+////////////////////////////////////////////////////////////
+////////FUNCIONES DE METODOS DE PAGO payMethod.db////////
+//////////////////////////////////////////////////////////
 
-// Funciones de ventas
-export const saveSale = async (a: SaleData) => {
+export const getPayMethods = async () => {
+  return await db.payMethod.findAsync({});
+};
+
+export const addPayMethod = async (pm: string) => {
+  const newMethod = {
+    name: pm,
+    salesWithThisMethod: 0,
+    totalSoldWithThisMethod: 0,
+  };
+  return await db.payMethod
+    .insertAsync(newMethod)
+    .then((res) => {
+      return { save: true, res: res };
+    })
+    .catch((err) => {
+      return { save: false, error: err };
+    });
+};
+export const removePayMethod = async (pmToDelete: string) => {
+  return await db.payMethod
+    .removeAsync(
+      {
+        _id: pmToDelete,
+      },
+      {}
+    )
+    .then((res) => {
+      return { delete: true, res: res };
+    })
+    .catch((err) => {
+      return { delete: false, error: err };
+    });
+};
+export const updatePayMethod = async (id: string, pmUpdate: pmType) => {
+  return await db.payMethod.updateAsync({ _id: id }, { $set: pmUpdate });
+};
+////////////////////////////////////////////////////////////
+////////FUNCIONES DE CLIENTES ARCHIVO ventasFile.js////////
+//////////////////////////////////////////////////////////
+export const saveSale = (a: saleData) => {
   const fechaActual = new Date();
   const año = fechaActual.getFullYear();
   const mes = fechaActual.getMonth() + 1;
@@ -526,8 +580,12 @@ export const verifStockOfArticles = async (
     const articleToSee = articles.find(
       (articleDB) => articleDB.code === article.code
     );
-
+    let insufficcient = false;
     if (articleToSee) {
+      insufficcient =
+        Number(articleToSee.article.stock.amount) < Number(article.amount);
+    }
+    if (insufficcient) {
       insufficientItems.push({
         articleCode: article.code ? article.code : article.name,
         amount: article.amount.value ? article.amount.value : "no",
@@ -579,7 +637,8 @@ export const saleProcess = async (venta: SaleData) => {
   if (venta.buyer.client.active) {
     clientVerif = await clientConfirmData(venta.buyer.client.clientData);
   }
-  if (!clientVerif) {
+  console.log("VERIFICANDO CLIENTE", clientVerif);
+  if (clientVerif === false) {
     return {
       type: "client",
       success: false,
@@ -596,7 +655,7 @@ export const saleProcess = async (venta: SaleData) => {
   // Registrar compra en cliente
   await registerBuyClient(venta);
   // Guardar venta
-  const resultToProcess = await saveSale(venta);
+  const resultToProcess = saveSale(venta);
 
   return {
     type: "success save sale",
@@ -973,7 +1032,7 @@ export const addProductInDeposit = async (
     depositToAddProduct.sectors.map((e) => {
       if (e.sectorId === sectorId) {
         e.products.push(productToAdd);
-        return `"Producto añadido al sector"`;
+        return `"Producto añadido al sector" ${e.name}`;
       } else {
         return `"Sector no encontrado"`;
       }
@@ -993,17 +1052,29 @@ export const createSectorInDeposit = async (
     ...sectorinfo,
     sectorId: newSectorId,
   };
-  const depositToAddProduct = await getDepositById(depositId);
+  const depositToAddSector = await getDepositById(depositId);
 
-  if (!depositToAddProduct) {
+  if (!depositToAddSector) {
+    console.log("No se encontro el deposito");
     return {
       message: "No se encontró el depósito",
       value: false,
+      content: [],
     };
   } else {
-    depositToAddProduct.sectors.push(sectorToAdd);
-    updateDeposit(depositToAddProduct);
-    return { ...sectorToAdd };
+    let sectors = depositToAddSector.sectors;
+    sectors.push(sectorToAdd);
+    let newDepositWithNewSector = {
+      ...depositToAddSector,
+      sectors: [...sectors],
+    };
+    console.log("SE AGREGO EL SECTOR AL DEPOSITO?", newDepositWithNewSector);
+    updateDeposit(newDepositWithNewSector);
+    return {
+      content: sectors,
+      value: true,
+      message: "Se creo el sector correctamente.",
+    };
   }
 };
 
@@ -1026,7 +1097,7 @@ export const editSectorInDeposit = async (
   depositId: string,
   sectorId: string,
   newSector: {
-    number: number;
+    name: string;
     sectorId: string;
     products: ArticleData[];
   }
@@ -1545,12 +1616,12 @@ export const eliminarCuenta = async (id: any) => {
 };
 
 // Guardar una nueva notificación
-export const saveNotification = async (data:any) => {
+export const saveNotification = async (data: any) => {
   try {
     const newNotification = await db.notifications.insertAsync(data);
     return newNotification;
   } catch (error) {
-    console.error('Error al guardar la notificación:', error);
+    console.error("Error al guardar la notificación:", error);
     throw error;
   }
 };
@@ -1558,38 +1629,44 @@ export const saveNotification = async (data:any) => {
 // Obtener todas las notificaciones
 export const getNotifications = async () => {
   const notif = db.notifications.findAsync({});
-  return await notif
+  return await notif;
 };
 
 // Eliminar una notificación por ID
-export const deleteNotification = async (notificationId:any) => {
+export const deleteNotification = async (notificationId: any) => {
   return await db.notifications.removeAsync({ _id: notificationId }, {});
 };
 
 // Marcar una notificación como vista
-export const markNotificationAsRead = async (notificationId:any) => {
+export const markNotificationAsRead = async (notificationId: any) => {
   try {
-    await db.notifications.updateAsync({ _id: notificationId }, { $set: { visto: true } });
+    await db.notifications.updateAsync(
+      { _id: notificationId },
+      { $set: { visto: true } }
+    );
   } catch (error) {
-    console.error('Error al marcar la notificación como vista:', error);
+    console.error("Error al marcar la notificación como vista:", error);
     throw error;
   }
 };
 
-export const hideNotification = async (notificationId:any) => {
+export const hideNotification = async (notificationId: any) => {
   try {
-    await db.notifications.updateAsync({ _id: notificationId }, { $set: { oculta: true } });
+    await db.notifications.updateAsync(
+      { _id: notificationId },
+      { $set: { oculta: true } }
+    );
   } catch (error) {
-    console.error('Error al ocultar la notificación:', error);
+    console.error("Error al ocultar la notificación:", error);
     throw error;
   }
 };
 
-export const disableNotificationType = async (tipo:any) => {
+export const disableNotificationType = async (tipo: any) => {
   try {
     await db.notifiDesactivada.insertAsync({ tipo });
   } catch (error) {
-    console.error('Error al desactivar el tipo de notificación:', error);
+    console.error("Error al desactivar el tipo de notificación:", error);
     throw error;
   }
 };
@@ -1600,19 +1677,27 @@ export const getDisabledNotificationTypes = async () => {
     const disabledTypes = await db.notifiDesactivada.findAsync({});
     return disabledTypes.map((item) => item.tipo);
   } catch (error) {
-    console.error('Error al obtener los tipos de notificación desactivados:', error);
+    console.error(
+      "Error al obtener los tipos de notificación desactivados:",
+      error
+    );
     return [];
   }
 };
 
 // Función para eliminar notificaciones antiguas mas de 30 dias
-export const deleteOldNotifications = async (thresholdDate:any) => {
+export const deleteOldNotifications = async (thresholdDate: any) => {
   try {
     const thresholdISOString = thresholdDate.toISOString();
-    await db.notifications.removeAsync({ fechaHora: { $lt: thresholdISOString } }, { multi: true });
-    console.log(`Notificaciones anteriores a ${thresholdISOString} eliminadas.`);
+    await db.notifications.removeAsync(
+      { fechaHora: { $lt: thresholdISOString } },
+      { multi: true }
+    );
+    console.log(
+      `Notificaciones anteriores a ${thresholdISOString} eliminadas.`
+    );
   } catch (error) {
-    console.error('Error al eliminar notificaciones antiguas:', error);
+    console.error("Error al eliminar notificaciones antiguas:", error);
     throw error;
   }
 };

@@ -116,9 +116,6 @@ const Ventas: React.FC<VentastProps> = (
             searchActived={searchActived}
             formatMony={formatMony}
           />
-          <button onClick={pruenaAfipo} className="w-52 h-96 bg-teal-500">
-            PRUEBA AFIPO
-          </button>
         </div>
       </div>
     </div>

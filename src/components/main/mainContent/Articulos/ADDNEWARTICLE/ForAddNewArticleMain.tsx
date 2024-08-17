@@ -9,8 +9,6 @@ import {
   supplierType,
   unitType,
 } from "../../../../../../types/types";
-import { Route, Routes } from "react-router-dom";
-import Scanner from "./Scanner";
 
 type ForAddNewArticleProps = {
   onChangeModal: (e: boolean) => void;
@@ -48,7 +46,7 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
         active: false,
         value: 0,
       },
-      palette: {
+      pallet: {
         active: false,
         value: 0,
       },
@@ -201,7 +199,7 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
           article: {
             ...state.article,
             palette: {
-              ...state.article.palette,
+              ...state.article.pallet,
               value: action.payload,
             },
           },
@@ -211,7 +209,7 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
           ...state,
           article: {
             ...state.article,
-            palette: {
+            pallet: {
               value: 0,
               active: action.payload,
             },
@@ -285,14 +283,11 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
   const [stateArticle, dispatch] = useReducer(articleReducer, initialState);
   //ESTADO DE DEPOSITOS
   type initialStateType = {
-    deposit: {
-      idObject: string;
-      name: string;
-      depositId: string;
-      address: string;
-      sector: { name: string; sectorId: string };
-    };
-    element: React.ReactNode;
+    idObject: string;
+    name: string;
+    depositId: string;
+    address: string;
+    sector: { name: string; sectorId: string };
   }[];
   const initialStateDeposit: initialStateType = [];
   const depositReducer = (
@@ -303,15 +298,37 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
       case "SET_DEPOSITS":
         return [...action.payload];
       case "ADD_DEPOSIT":
-        return [...state, action.payload];
+        const newValue = [...state, action.payload];
+
+        return newValue;
+      case "EDIT_DEPOSIT":
+        console.log("EDITANDO", action.payload);
+        const newStateWithUpdatedDeposit = state.map((d) => {
+          console.log();
+          if (d.idObject === action.payload.idObject) {
+            d = action.payload;
+          }
+          console.log(d, "OBJETO ACUALIZADO");
+          return d;
+        });
+        return newStateWithUpdatedDeposit;
       case "DELETE_DEPOSIT":
-        const newState = state.filter(
-          (d) => d.deposit.idObject !== action.payload
+        const newState = state.filter((d) => {
+          return d.idObject !== action.payload;
+        });
+        console.log(
+          state,
+          "ESTADO ANTESD DE ELIMINAR el deposito",
+          action.payload
         );
-        return [...newState];
+        console.log(
+          "NUEVO ESTADOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO AL ELIMINAR",
+          newState
+        );
+        return newState;
       case "SET_DEPOSIT":
         const newStateWithUpdatedName = state.map((d) => {
-          if (d.deposit.idObject === action.payload.idObject) {
+          if (d.idObject === action.payload.idObject) {
             return { ...d, deposit: { ...action.payload.deposit } };
           }
           return d;
@@ -320,11 +337,11 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
         return [...newStateWithUpdatedName];
       case "SET_DEPOSIT_SECTOR":
         const newStateWithUpdatedSector = state.map((d) => {
-          if (d.deposit.idObject === action.payload.idObject) {
+          if (d.idObject === action.payload.idObject) {
             return {
               ...d,
               deposit: {
-                ...d.deposit,
+                ...d,
                 sector: {
                   name: action.payload.sector.name,
                   sectorId: action.payload.sector.sectorId,
@@ -398,7 +415,50 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
   }, [stateArticle]);
   useEffect(() => {
     console.log(depositState, "DEPOSITSSELECTS");
+    dispatch({ type: "SET_DEPOSITS", payload: depositState });
   }, [depositState]);
+  const [barcode, setBarcode] = useState("");
+  const [inputValue, setInputValue] = useState("");
+
+  useEffect(() => {
+    let buffer = "";
+    let timeout: string | number | NodeJS.Timeout | undefined;
+
+    const handleKeyPress = (e: { key: string }) => {
+      if (timeout) clearTimeout(timeout);
+      // Append the pressed key to the buffer
+      buffer += e.key;
+
+      // Set a timeout to reset the buffer after 50ms
+      timeout = setTimeout(() => {
+        buffer = "";
+      }, 50);
+
+      // Detect Enter + Tab combination
+      console.log(buffer, "BUFFER");
+      if (buffer.endsWith("Enter")) {
+        console.log("ajajajajaj");
+
+        setBarcode(buffer.slice(0, -5)); // Remove 'Enter' and 'Tab' from the buffer
+        buffer = "";
+      }
+    };
+
+    window.addEventListener("keypress", handleKeyPress);
+
+    return () => {
+      window.removeEventListener("keypress", handleKeyPress);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (barcode) {
+      setInputValue(barcode); // Set the barcode value to the input
+      setBarcode(""); // Reset the barcode state
+      dispatch({ type: "SET_BARCODE", payload: barcode });
+    }
+    console.log("CODIGO DE BARRAS ESCANEADO", barcode);
+  }, [barcode]);
   return (
     <div className="absolute right-0 top-0 bottom-0 left-0 overflow-hidden bg-blue-950 flex flex-col z-40 hover:bg-slate-600">
       <div className="flex h-full w-full flex-col relative z-40">

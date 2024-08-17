@@ -8,6 +8,7 @@ type CreateDepositProps = {
 const CreateDeposit: React.FC<CreateDepositProps> = ({
   onChangeCreateDeposit,
 }) => {
+  const [errorShow, setErrorShow] = useState<string[]>([]);
   const [depositData, setDepositData] = useState<depositType>({
     name: "",
     address: "",
@@ -38,7 +39,18 @@ const CreateDeposit: React.FC<CreateDepositProps> = ({
   };
 
   const CreateDeposit = () => {
-    window.api.enviarEvento("create-deposit", depositData);
+    let errors = [];
+    if (!depositData.name) {
+      errors.push("DEPOSITNAME");
+    }
+    if (!depositData.address) {
+      errors.push("DEPOSITADDRESS");
+    }
+    if (errors.length > 0) {
+      setErrorShow(errors);
+    } else {
+      window.api.enviarEvento("create-deposit", depositData);
+    }
   };
 
   useEffect(() => {
@@ -55,12 +67,12 @@ const CreateDeposit: React.FC<CreateDepositProps> = ({
 
   return (
     <div className="absolute top-0 bottom-0 right-0 left-0 flex justify-center items-center z-50">
-      <div className="w-96 h-4/5 bg-slate-600 flex flex-col bg-gradient-to-t from-slate-800 rounded-lg to-red-950 border border-slate-800">
-        <div className="font-bold text-3xl pl-2 w-full flex justify-center">
-          <p>Creando deposito</p>
-        </div>
+      <div className="w-2/6 h-3/4 bg-slate-600 flex flex-col bg-gradient-to-t from-blue-950 to-blue-900 rounded-lg border border-slate-800">
         <div className="flex flex-col flex-1">
-          <div className="flex flex-col w-full flex-1 justify-evenly px-2">
+          <div className="flex flex-col w-full flex-1 justify-evenly px-2 relative">
+            <div className="absolute right-3 top-3 h-5 text-sm text-red-300 font-bold">
+              {errorShow.includes("DEPOSITNAME") && "Introduzca el nombre"}
+            </div>
             <label htmlFor="nameDeposit" className="font-semibold">
               Nombre deposito
             </label>
@@ -72,7 +84,12 @@ const CreateDeposit: React.FC<CreateDepositProps> = ({
               className="h-12   rounded-lg bg-slate-900 border border-slate-800 outline-none pl-2"
             />
           </div>
-          <div className="flex flex-col w-full flex-1 justify-evenly px-2">
+          <div className="flex flex-col w-full flex-1 justify-evenly px-2 relative">
+            <div className="absolute right-3 top-3 h-5 text-sm text-red-300 font-bold">
+              {errorShow.includes("DEPOSITADDRESS") &&
+                "Introduzca la direccion."}
+            </div>
+
             <label htmlFor="nameDeposit" className="font-semibold">
               Direccion
             </label>
@@ -85,14 +102,17 @@ const CreateDeposit: React.FC<CreateDepositProps> = ({
             />
           </div>
         </div>
-        <div className="w-full flex h-7 overflow-hidden rounded-b-lg">
+        <div className="w-full flex p-2 h-12 space-x-2 overflow-hidden rounded-b-lg">
           <button
-            className="h-full flex-1 bg-red-700"
+            className="flex-1 h-8 rounded-lg bg-red-600"
             onClick={() => onChangeCreateDeposit(false)}
           >
             Cerrar
           </button>
-          <button className="h-full flex-1 bg-cyan-700" onClick={CreateDeposit}>
+          <button
+            className="h-8 rounded-lg flex-1 bg-green-600"
+            onClick={CreateDeposit}
+          >
             Crear
           </button>
         </div>

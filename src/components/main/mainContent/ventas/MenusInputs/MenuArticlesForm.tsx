@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import { articleData } from "../../../../../../types/types";
+import React, { useEffect, useState } from "react";
 import Downshift from "downshift";
+import { NumericFormat } from "react-number-format";
+import SelectM from "../../Select/Select";
 
 interface Article {
   name: string;
@@ -46,7 +49,15 @@ interface articleData {
 type propsInput = {
   style: string;
   articles: articleData[];
-  addProduct: (article: Article) => void;
+  addProduct: (article: {
+    name: string;
+    code?: string;
+    total: string;
+    amount: {
+      value: string;
+      unit: { label: string; palette: boolean; bulk: boolean };
+    };
+  }) => void;
   value?: string;
 };
 
@@ -58,37 +69,61 @@ const MenuArticlesForm: React.FC<propsInput> = ({
 }) => {
   const [newValue, setNewValue] = useState<string>("");
   const [amountArticle, setAmountArticle] = useState<string>("");
-  const [articleSelect, setArticleSelect] = useState<articleData | null>(null);
-  const [unitShow, setUnitShow] = useState<string>("Ud");
+  const [articleSelect, setarticleSelect] = useState<articleData>();
+  const [optionXSelect, setOptionX] = useState<string>("unit");
+  const [optionsAmountSelect, setOptionsAmountSelect] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [amountOptions, setAmountOptions] = useState<{
+    palette: {
+      active: boolean;
+      amount: number;
+    };
+    forBulk: {
+      active: boolean;
+      amount: number;
+    };
+  }>({
+    palette: {
+      active: false,
+      amount: 0,
+    },
+    forBulk: {
+      active: false,
+      amount: 0,
+    },
+  });
   const [errorShowAmount, setErrorShowAmount] = useState(false);
   const [errorShowArticle, setErrorShowArticle] = useState(false);
 
   const onChangeNewValue = (newValue: string) => {
-    if (/^[a-zA-Z0-9\s]*$/.test(newValue)) {
+    if (/^[a-zA-Z0-9\sñÑ]*$/.test(newValue)) {
       setNewValue(newValue);
-      sendArticle("", false, true);
+      sendArticle(false, true);
     }
   };
 
-  const sendArticle = (
-    code: String,
-    send?: boolean,
-    showCurrentArticle?: boolean
-  ) => {
+  const sendArticle = (send: boolean, showCurrentArticle: boolean) => {
     const [articleToSend] = articles.filter((article) => {
-      if (code) {
-        return article.code === code;
-      } else {
-        return (
-          article.article.name.slice(0, newValue.length).toLowerCase() ===
-          newValue.toLowerCase()
-        );
-      }
+      return (
+        article.article.name.slice(0, newValue.length).toLowerCase() ===
+        newValue.toLowerCase()
+      );
     });
     if (articleToSend) {
       const price = articleToSend.article.venta;
+      console.log(optionXSelect, "OPCION SELECCIONADA", amountOptions);
+      let totalAmount;
+      totalAmount = Number(amountArticle) * Number(price);
 
-      const totalAmount = Number(amountArticle) * Number(price);
+      if (optionXSelect === "palette") {
+        totalAmount =
+          Number(amountArticle) * amountOptions.palette.amount * Number(price);
+      }
+      if (optionXSelect === "bulk") {
+        totalAmount =
+          Number(amountArticle) * amountOptions.forBulk.amount * Number(price);
+      }
 
       const articleForList: Article = {
         name: articleToSend.article.name,
@@ -96,7 +131,19 @@ const MenuArticlesForm: React.FC<propsInput> = ({
         total: `${totalAmount}`,
         amount: {
           value: `${amountArticle}`,
-          unit: `${articleToSend.article.stock.unit.abrevUnit}`,
+          unit: {
+            label: `${
+              optionXSelect === "palette"
+                ? "Palette"
+                : optionXSelect === "unit"
+                ? "Ud"
+                : optionXSelect === "bulk"
+                ? "Bulto"
+                : articleToSend.article.stock.unit.label
+            }`,
+            palette: optionXSelect === "palette" ? true : false,
+            bulk: optionXSelect === "bulk" ? true : false,
+          },
         },
       };
 
@@ -132,60 +179,85 @@ const MenuArticlesForm: React.FC<propsInput> = ({
       setArticleSelect(articleToSend);
     }
   };
-  const abreviationUnit = (unit: string) => {
-    let abreviation = "";
-    const units = ["kilogramos", "unidades", "litros", "paquetes", "cajas"];
-    if (units.includes(unit.toLowerCase())) {
-      switch (unit.toLowerCase()) {
-        case "kilogramos":
-          abreviation = "Kg";
-          break;
-        case "unidades":
-          abreviation = "Ud";
-          break;
-        case "litros":
-          abreviation = "L";
-          break;
-        case "paquetes":
-          abreviation = "Paq";
-          break;
-        case "cajas":
-          abreviation = "Caj";
-          break;
-        default:
-          break;
+  const amountSelect = () => {
+    let amountOptions = {
+      palette: {
+        active: false,
+        amount: 0,
+      },
+      forBulk: {
+        active: false,
+        amount: 0,
+      },
+    };
+    let articleS;
+    if (articleSelect) {
+      articleS = articleSelect;
+      if (articleS.article.palette.active) {
+        console.log("Se cumple PALETTE");
+        amountOptions = {
+          ...amountOptions,
+          palette: {
+            active: true,
+            amount: Number(articleS.article.palette.value),
+          },
+        };
       }
+      if (articleS.article.forBulk.active) {
+        console.log("Se cumple BULTO");
+
+        amountOptions = {
+          ...amountOptions,
+          forBulk: {
+            active: true,
+            amount: Number(articleS.article.forBulk.value),
+          },
+        };
+      }
+    } else {
+      return;
     }
-    if (abreviation !== "") {
-      setUnitShow(abreviation);
+    setAmountOptions({ ...amountOptions });
+    setOptionsAmount(amountOptions);
+    console.log(articleS.article.palette, "ARTICULOS COCO5");
+  };
+  const setOptionsAmount = (amountOptions: {
+    palette: {
+      active: boolean;
+      amount: number;
+    };
+    forBulk: {
+      active: boolean;
+      amount: number;
+    };
+  }) => {
+    let optionsToEstablish = [];
+    if (amountOptions.palette.active) {
+      optionsToEstablish.push({
+        label: "xPalette",
+        value: "palette",
+      });
+    }
+    if (amountOptions.forBulk.active) {
+      optionsToEstablish.push({
+        label: "xBulto",
+        value: "bulk",
+      });
+    }
+    if (optionsToEstablish) {
+      setOptionsAmountSelect([
+        ...optionsToEstablish,
+        {
+          label: `x${articleSelect?.article.stock.unit.label}`,
+          value: `${articleSelect?.article.stock.unit.value}`,
+        },
+      ]);
     }
   };
-  const compareSelectItemWithInputValue = (i: articleData): any => {
-    const toSearch = i;
-    const inputLength = newValue.length;
-
-    const result = Object.values(toSearch).some((val) => {
-      if (typeof val === "string") {
-        return val
-          .toLowerCase()
-          .slice(0, inputLength)
-          .includes(newValue.toLowerCase());
-      } else if (typeof val === "object") {
-        return Object.values(val).some((u) => {
-          if (typeof u === "string") {
-            return u
-              .toLowerCase()
-              .slice(0, inputLength)
-              .includes(newValue.toLowerCase());
-          }
-        });
-      }
-    });
-
-    if (result) {
-      return toSearch.article.name;
-    }
+  const selectionXAmount = (e: string) => {
+    setOptionX(e);
   };
+
   const searchInArticles = (e: articleData) => {
     const toSearch = e;
     const inputLength = newValue.length;
@@ -222,6 +294,29 @@ const MenuArticlesForm: React.FC<propsInput> = ({
       return true;
     }
   };
+  const getTotalUnit = () => {
+    let option = optionXSelect;
+    let amount = amountArticle;
+    let amountX;
+
+    if (option === "palette") {
+      amountX = amountOptions.palette.amount;
+    }
+    if (option === "bulk") {
+      amountX = amountOptions.forBulk.amount;
+    }
+
+    return amountX ? Number(amount) * amountX : Number(amount) * 1;
+  };
+  useEffect(() => {
+    amountSelect();
+  }, [articleSelect]);
+  useEffect(() => {
+    console.log(amountOptions, "OPCIONES DE CANTIDADES ");
+  }, [amountOptions]);
+  useEffect(() => {
+    console.log(optionsAmountSelect, "Opciones a sloeccionar x cantidad");
+  }, [optionsAmountSelect]);
 
   return (
     <Downshift
@@ -249,30 +344,50 @@ const MenuArticlesForm: React.FC<propsInput> = ({
         getLabelProps,
         getRootProps,
       }) => (
-        <div className="relative flex flex-col flex-1 h-12 bg-slate-800 rounded-lg text-xl">
-          <div className="absolute h-12 right-0 rounded-md bg-green-500 flex justify-center hover:bg-green-600">
-            <div className="flex relative">
-              <input
-                type="text"
-                name="amount"
-                placeholder="0"
-                onChange={(e) => {
-                  if (/^[0-9]*$/.test(e.target.value)) {
-                    setAmountArticle(e.target.value);
-                  }
-                }}
-                value={amountArticle}
-                className={`w-32 outline-none rounded-l-md border-l-2 pl-2 border-slate-600 bg-teal-800 ${
-                  errorShowAmount && " shadow-inset-cmg"
-                }`}
-              />
-              <p className="absolute bottom-1 right-1 text-slate-400 text-xs select-none">
+        <div className="relative flex flex-col flex-1 h-12 bg-slate-800 rounded-lg text-lg">
+          <div className="absolute h-12 right-0 top-0 rounded-md  items-center flex">
+            <div className="flex h-full flex-1 p-1 relative rounded-lg ">
+              <div className="flex w-32 h-full border border-slate-600 rounded-l-lg relative items-center justify-center">
+                <div className="flex-1 w-full h-full">
+                  <input
+                    type="text"
+                    name="amount"
+                    placeholder="0"
+                    onChange={(e) => {
+                      console.log(/^[0-9]*$/.test(e.target.value));
+                      if (/^[0-9]*$/.test(e.target.value)) {
+                        setAmountArticle(e.target.value);
+                      }
+                    }}
+                    value={amountArticle}
+                    className={`w-16 h-full outline-none rounded-l-lg pl-3 bg-black ${
+                      errorShowAmount && " shadow-inset-cmg"
+                    }`}
+                  />
+                </div>
+                <p className="absolute">=</p>
+                <div className="flex pl-3 h-full flex-1 items-center bg-black select-none">
+                  <p> {getTotalUnit()}</p>
+                </div>
+              </div>
+              <div className="flex-1 h-full flex items-center border border-slate-600 rounded-r-lg">
+                <SelectM
+                  onChangeSelection={selectionXAmount}
+                  options={optionsAmountSelect}
+                  className="h-full flex-1 rounded-r-lg rounded-l-none border-none"
+                  placeholder=""
+                  slice={-1}
+                  todos={false}
+                  value={optionXSelect}
+                />
+              </div>
+              <p className="absolute bottom-1 right-1 text-slate-400 text-xs select-none flex-1">
                 {articleSelect?.article.stock.unit.abrevUnit}
               </p>
             </div>
             <button
-              className="flex justify-center items-center rounded-md px-2 bg-green-500  hover:bg-green-600"
-              onClick={() => sendArticle("", true, true)}
+              className="flex h-full w-24 justify-center items-center rounded-lg border border-slate-800 px-2 bg-green-500  hover:bg-green-600"
+              onClick={() => sendArticle(true, true)}
             >
               <p>AÑADIR</p>
             </button>
@@ -294,10 +409,10 @@ const MenuArticlesForm: React.FC<propsInput> = ({
           </div>
           <ul
             {...getMenuProps()}
-            className="w-full absolute top-full rounded-b-sm text-2xl z-50"
+            className="w-full absolute top-full rounded-b-sm text-normal z-50"
           >
             {isOpen ? (
-              <li className="w-full flex bg-teal-400 px-1 text-slate-700 h-10 items-center justify-center border-b-2 border-teal-200">
+              <li className="w-full flex bg-teal-400 px-1 text-slate-700 h-7 items-center justify-center border-b-2 border-teal-200">
                 <div className="flex-1 flex justify-start items-center">
                   <p>Nombre</p>
                 </div>
@@ -343,7 +458,19 @@ const MenuArticlesForm: React.FC<propsInput> = ({
                         <p>{item.brand.label}</p>
                       </div>
                       <div className="flex justify-center flex-1 items-center">
-                        <p>${item.article.venta}</p>
+                        <NumericFormat
+                          allowLeadingZeros
+                          allowedDecimalSeparators={[".", "."]}
+                          value={item.article.venta}
+                          decimalScale={2}
+                          thousandSeparator=","
+                          displayType={"text"}
+                          className="text-2xl text-green-400 font-bold"
+                          prefix={"$"}
+                          renderText={(formattedValue) => (
+                            <div>{formattedValue}</div>
+                          )}
+                        />
                       </div>
                       <div className="flex justify-end flex-1 items-center">
                         <p>{item.code}</p>

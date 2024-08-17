@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useReducer, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiFillAppstore } from "react-icons/ai";
 import {
   Action,
@@ -6,7 +6,9 @@ import {
   depositType,
 } from "../../../../../../../../../types/types";
 import CreateDeposit from "./CreateDeposit";
-import Deposit from "./Deposit";
+import EstablishDeposit from "./EstablishDeposit";
+import { RiDeleteBin5Fill, RiEdit2Fill } from "react-icons/ri";
+import EditDepositEstablished from "./EditDepositEstablished";
 
 type DepositsMainProps = {
   stateArticle: articleData;
@@ -14,7 +16,28 @@ type DepositsMainProps = {
   deposits: depositType[];
   errorIn: string[];
   depositState: {
-    deposit: {
+    idObject: string;
+    name: string;
+    depositId: string;
+    address: string;
+    sector: {
+      name: string;
+      sectorId: string;
+    };
+  }[];
+  dispatchDeposit: React.Dispatch<Action>;
+};
+
+const DepositsMain: React.FC<DepositsMainProps> = ({
+  stateArticle,
+  dispatchDeposit,
+  depositState,
+  dispatchMain,
+}) => {
+  const [depositCreateForm, setDepositCreateForm] = useState<boolean>(false);
+  const [depositEditForm, setDepositEditForm] = useState<{
+    active: boolean;
+    depositToEdit: {
       idObject: string;
       name: string;
       depositId: string;
@@ -24,111 +47,81 @@ type DepositsMainProps = {
         sectorId: string;
       };
     };
-    element: React.ReactNode;
-  }[];
-  dispatchDeposit: React.Dispatch<Action>;
-};
+  }>({
+    active: false,
+    depositToEdit: {
+      name: "",
+      address: "",
+      sector: { sectorId: "", name: "" },
+      idObject: "",
+      depositId: "",
+    },
+  });
 
-const DepositsMain: React.FC<DepositsMainProps> = ({
-  stateArticle,
-  dispatchDeposit,
-  depositState,
-  deposits,
-  dispatchMain,
-}) => {
-  const generateId = () => {
-    return `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-  };
-  const [depositCreateForm, setDepositCreateForm] = useState<boolean>(false);
-  const [depositsToLoad, setDepositsToLoad] = useState<React.ReactNode[]>([]);
-
+  const [deposits, setDeposits] = useState<depositType[]>([]);
+  const [establishDeposit, setestablishDeposit] = useState(false);
   const onChangeCreateDeposit = (e: boolean) => {
     setDepositCreateForm(e);
   };
-
-  const updateDeposit = (deposit: {
-    idObject: string;
-    name: string;
-    depositId: string;
-    sector: {
+  const alternEstablishDepositForm = (e: boolean) => {
+    setestablishDeposit(e);
+  };
+  const alternEditDepositEstablished = (e: {
+    active: boolean;
+    depositToEdit: {
+      idObject: string;
       name: string;
-      sectorId: string;
+      depositId: string;
+      address: string;
+      sector: {
+        name: string;
+        sectorId: string;
+      };
     };
   }) => {
-    console.log("EJECUTANDO UPDATE DEPOSIT POR EL DEPOSITO", deposit);
-    const { idObject } = deposit;
-    dispatchDeposit({
-      type: "SET_DEPOSIT",
-      payload: { idObject, deposit: deposit },
-    });
-    return "JOYA";
+    let state = depositEditForm;
+    if (e.active) {
+      setDepositEditForm(e);
+    } else {
+      setDepositEditForm({ ...state, active: false });
+    }
   };
-  const loadDepositSelect = () => {
-    const id = generateId();
-    const newElement = (
-      <Deposit
-        id={id}
-        unLoadDeposit={unLoadDeposit}
-        dispatchDeposit={dispatchDeposit}
-        updateDeposit={updateDeposit}
-        deposits={deposits}
-      />
-    );
-    dispatchDeposit({
-      type: "ADD_DEPOSIT",
-      payload: {
-        deposit: {
-          idObject: id,
-          name: "",
-          depositId: "",
-          address: "",
-          sector: { name: "", sectorId: "" },
-        },
-        element: newElement,
-      },
-    });
+  const deleteDeposit = (id: string) => {
+    dispatchDeposit({ type: "DELETE_DEPOSIT", payload: id });
   };
-  const unLoadDeposit = (depositToDeleteIndex: string) => {
-    dispatchDeposit({ type: "DELETE_DEPOSIT", payload: depositToDeleteIndex });
-  };
-
-  const getDeposits = () => {
+  useEffect(() => {
     window.api.enviarEvento("get-deposits");
-  };
-  const loadDepositsElement = () => {
-    const elements = depositState.map((deposit) => (
-      <Deposit
-        id={deposit.deposit.idObject}
-        depositObject={deposit.deposit}
-        deposits={deposits}
-        dispatchDeposit={dispatchDeposit}
-        unLoadDeposit={unLoadDeposit}
-        updateDeposit={updateDeposit}
-      ></Deposit>
-    ));
-    setDepositsToLoad([...elements]);
-  };
-  useEffect(() => {
-    getDeposits();
-    loadDepositsElement();
-  }, []);
-
-  useEffect(() => {
-    console.log("DEPOSITSTATE CAMBIA LOCO", depositState);
-    loadDepositsElement();
-  }, [depositState]);
-
-  useEffect(() => {
-    dispatchMain({
-      type: "SET_DEPOSITS",
-      payload: depositState.map((deposit) => deposit.deposit),
+    window.api.recibirEvento("response-get-deposits", (data) => {
+      console.log("RESPONDIDO DE CACA", data);
+      setDeposits(data);
     });
-  }, [depositState]);
+
+    return () => {
+      window.api.removeAllListeners("response-get-deposits");
+    };
+  }, []);
 
   return (
     <div className="flex-1 flex flex-col relative">
       {depositCreateForm && (
         <CreateDeposit onChangeCreateDeposit={onChangeCreateDeposit} />
+      )}
+      {establishDeposit && (
+        <EstablishDeposit
+          deposits={deposits}
+          alternEstablishDepositForm={alternEstablishDepositForm}
+          dispatchDeposit={dispatchDeposit}
+          onChangeCreateDeposit={onChangeCreateDeposit}
+        />
+      )}
+      {depositEditForm.active && (
+        <EditDepositEstablished
+          deposits={deposits}
+          alternEditDepositEstablished={alternEditDepositEstablished}
+          dispatchDeposit={dispatchDeposit}
+          depositToEdit={depositEditForm.depositToEdit}
+          onChangeCreateDeposit={onChangeCreateDeposit}
+        />
       )}
 
       <div className="w-full font-bold px-2 text-2xl flex space-x-2 justify-between border-t-8 border-slate-800 mt-2 rounded-t-lg">
@@ -139,7 +132,7 @@ const DepositsMain: React.FC<DepositsMainProps> = ({
         <div className="flex text-base h-full items-center">
           <button
             className="h-7 bg-yellow-700  rounded-l-lg border-r border-slate-800 px-2"
-            onClick={loadDepositSelect}
+            onClick={() => alternEstablishDepositForm(true)}
           >
             Establecer deposito
           </button>
@@ -151,8 +144,47 @@ const DepositsMain: React.FC<DepositsMainProps> = ({
           </button>
         </div>
       </div>
-      <div className="w-full bg-slate-950 flex flex-wrap overflow-x-hidden">
-        {depositsToLoad}
+      <div
+        className={`w-full bg-slate-950 flex flex-wrap overflow-x-hidden overflow-auto ${
+          depositState.length > 2 ? "justify-between" : ""
+        }`}
+      >
+        {depositState.map((deposit) => (
+          <div className="flex flex-col w-1/4 h-52 m-2 bg-slate-900 rounded-lg border border-slate-700 p-2 relative">
+            <div className="w-full flex border-b border-slate-700 justify-center text-xl">
+              <p className="font-bold">{deposit.name}</p>
+            </div>
+            <div className="w-full flex-1 flex flex-col text-normal">
+              <div className="flex flex-1 flex-col">
+                <p>Direccion</p>
+                <p className="font-medium text-2xl">{deposit.address}</p>
+              </div>
+              <div className="flex flex-1 flex-col">
+                <p>Sector</p>
+                <p className="font-medium text-2xl">{deposit.sector.name}</p>
+              </div>
+            </div>
+            <div className="absolute right-0 bottom-0 flex flex-col space-y-2 p-2">
+              <button
+                className="w-7 h-7 flex items-center justify-center bg-black border border-red-500 rounded-full hover:bg-red-500"
+                onClick={() => deleteDeposit(deposit.idObject)}
+              >
+                <RiDeleteBin5Fill className="w-4" />
+              </button>
+              <button
+                className="w-7 h-7 flex items-center justify-center bg-black border border-green-500 rounded-full hover:bg-green-500"
+                onClick={() =>
+                  alternEditDepositEstablished({
+                    active: true,
+                    depositToEdit: deposit,
+                  })
+                }
+              >
+                <RiEdit2Fill className="w-4" />
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

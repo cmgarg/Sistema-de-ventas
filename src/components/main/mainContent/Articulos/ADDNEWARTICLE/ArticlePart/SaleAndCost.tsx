@@ -35,20 +35,22 @@ const SaleAndCost: React.FC<saleAndCost> = ({
             fixedDecimalScale={true}
             allowNegative={false}
             valueIsNumericString={true}
-            value={stateArticle.article.costo}
+            value={
+              stateArticle.article.costo > 0 ? stateArticle.article.costo : ""
+            }
             onValueChange={(values) => {
               const { formattedValue, value } = values;
               console.log(formattedValue);
               dispatch({ type: "SET_COST", payload: value });
             }}
-            className={`${inputStyle} h-14 rounded-l-lg bg-slate-900 ${
+            className={`${inputStyle} h-14 text-3xl rounded-l-lg bg-slate-900 ${
               errorIn.includes("COST")
                 ? "overline outline-red-500 outline-2"
                 : ""
             }`}
           />
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col flex-1">
           <label htmlFor="venta" className="select-none">
             Porcentaje de Venta
           </label>
@@ -63,20 +65,10 @@ const SaleAndCost: React.FC<saleAndCost> = ({
               dispatch({ type: "SET_PROFIT", payload: value });
               console.log(formattedValue);
             }}
-            className={`${inputStyle} "h-14 bg-slate-900 border border-slate-800"`}
-            value={stateArticle.article.profit}
-          />
-        </div>
-        <div className="flex flex-1 flex-col">
-          <label htmlFor="venta" className="select-none">
-            Precio final
-          </label>
-          <input
-            type="text"
-            name="venta"
-            className={`${inputStyle} "h-14 bg-slate-900 border border-slate-800"`}
-            value={finalPrice}
-            disabled
+            className={`${inputStyle} "h-14 text-3xl bg-slate-900 border border-slate-800"`}
+            value={
+              stateArticle.article.profit > 0 ? stateArticle.article.profit : ""
+            }
           />
         </div>
       </div>
@@ -250,8 +242,17 @@ const PriceOfArticle: React.FC<priceOfArticle> = ({
           )} `}</p>
         </div>
       </div>
-      <p>
-        Precio Final: <span className="font-bold">{finalPrice}</span>
+      <p className="text-3xl flex space-x-3">
+        <p>Precio Final:</p>{" "}
+        <NumericFormat
+          value={finalPrice}
+          displayType={"text"}
+          prefix={"$"}
+          renderText={(formattedValue) => (
+            <div className="font-bold">{formattedValue}</div>
+          )}
+          decimalScale={2}
+        />
       </p>
     </div>
   );

@@ -96,10 +96,16 @@ function App() {
       }
     };
 
-    window.api.recibirEvento("datos-usuario-obtenidos", handleObtenerDatosUsuario);
+    window.api.recibirEvento(
+      "datos-usuario-obtenidos",
+      handleObtenerDatosUsuario
+    );
 
     return () => {
-      window.api.removeListener("datos-usuario-obtenidos", handleObtenerDatosUsuario);
+      window.api.removeListener(
+        "datos-usuario-obtenidos",
+        handleObtenerDatosUsuario
+      );
     };
   }, [dispatch]);
 
@@ -134,7 +140,9 @@ function App() {
       return isAuthenticated ? (
         <>
           {showLoadingScreen ? <PantallaDeCarga /> : null}
-          <div className={`${showLoadingScreen ? "hidden" : "flex w-full h-full"}`}>
+          <div
+            className={`${showLoadingScreen ? "hidden" : "flex w-full h-full"}`}
+          >
             <Aside />
             <Main />
           </div>

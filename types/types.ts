@@ -23,20 +23,10 @@ export type articleData = {
     costo: number;
     venta: number;
     profit: number;
-    stock: {
-      amount: number;
-      unit: unitType;
-      minStock: number; // Asegúrate de incluir minStock
-    };
-    grossWeight: {
-      value: number;
-      approx: boolean;
-    };
-    liquidWeight: {
-      value: number;
-      approx: boolean;
-    };
-    palette: {
+    stock: { amount: number; unit: unitType; minStock: number };
+    grossWeight: { value: number; approx: boolean };
+    liquidWeight: { value: number; approx: boolean };
+    pallet: {
       active: boolean;
       value: number;
     };
@@ -144,8 +134,8 @@ export interface saleData {
     code: string;
     total: string | number;
     amount: {
-      value: number;
-      unit: number;
+      value: string;
+      unit: { label: string; palette: boolean; bulk: boolean };
     };
   }[];
   buyer: {
@@ -168,14 +158,17 @@ export interface saleData {
   seller: {
     username: any;
     name: string;
-    email: string;
-    address: string;
-    phone: string;
-    dni: string;
+    id: string;
+    image: string;
   };
   sold: number;
-}
-
+  billData?: {
+    billType: string;
+  };
+  pM?: string;
+  dateToRegister?: string;
+  id?: string;
+};
 // venta a eliminar
 
 export type saleToDelete = {
@@ -235,6 +228,7 @@ export type subCategoryType = {
 // TYPE STORE
 
 export type storeType = {
+  [x: string]: any;
   menuState: {
     value: string;
   };
@@ -300,15 +294,8 @@ export type Action = {
   type: string;
   payload: any;
 };
-
-export interface IUser {
-  nombre: string;
-  username: string;
-  email: string;
-  ubicacion: string;
-  direccion: string;
-  codigopostal: string;
-  imageUrl: string;
-  esAdmin: boolean;
-  _id: string;
-}
+export type pmType = {
+  name: string;
+  salesWithThisMethod: number;
+  totalSoldWithThisMethod: number;
+};

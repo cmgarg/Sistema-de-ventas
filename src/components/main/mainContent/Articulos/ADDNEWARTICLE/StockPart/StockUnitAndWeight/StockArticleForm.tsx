@@ -19,17 +19,14 @@ type propsInput = {
   setInputValueSupplierInput: (e: string) => void;
   dispatch: React.Dispatch<Action>;
   depositState: {
-    deposit: {
-      idObject: string;
+    idObject: string;
+    name: string;
+    depositId: string;
+    address: string;
+    sector: {
       name: string;
-      depositId: string;
-      address: string;
-      sector: {
-        name: string;
-        sectorId: string;
-      };
+      sectorId: string;
     };
-    element: React.ReactNode;
   }[];
   dispatchDeposit: React.Dispatch<Action>;
   deposits: depositType[];

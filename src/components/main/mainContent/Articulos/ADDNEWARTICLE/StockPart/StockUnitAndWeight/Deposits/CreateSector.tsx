@@ -2,7 +2,7 @@ import { articleData, depositType } from "../../../../../../../../../types/types
 import React, { useEffect, useState } from "react";
 
 type CreateSectorProps = {
-  onChangeCreateDeposit: (e: boolean) => void; // Define tus props aquí
+  onChangeCreateSector: (e: boolean) => void; // Define tus props aquí
   depositSelect: depositType;
   updateSectors: (
     e: {
@@ -16,7 +16,7 @@ type CreateSectorProps = {
 const CreateSector: React.FC<CreateSectorProps> = ({
   depositSelect,
   updateSectors,
-  onChangeCreateDeposit,
+  onChangeCreateSector,
 }) => {
   const [sectorData, setSectorData] = useState<{
     name: string;
@@ -54,14 +54,23 @@ const CreateSector: React.FC<CreateSectorProps> = ({
   useEffect(() => {
     window.api.recibirEvento(
       "response-create-sector-in-deposit",
-      (res: any) => {
-        if (res.value === false) {
+      (res: {
+        content: {
+          name: string;
+          sectorId: string;
+          products: articleData[];
+        }[];
+        value: true;
+        message: "Se creo el sector correctamente.";
+      }) => {
+        if (!res.value) {
           console.log(res.message);
         } else {
-          const sectors = [...depositSelect.sectors, { ...res }];
+          const sectors = [...res.content];
           console.log(sectors, "SECTORES A ACTUALIZAR", sectorData);
           updateSectors(sectors);
-          onChangeCreateDeposit(false);
+          window.api.enviarEvento("get-deposits");
+          onChangeCreateSector(false);
         }
       }
     );
@@ -71,8 +80,8 @@ const CreateSector: React.FC<CreateSectorProps> = ({
   }, [sectorData]);
 
   return (
-    <div className="absolute top-0 right-0 bottom-0 left-0 z-50 flex justify-center items-center rounded-lg backdrop-blur-sm">
-      <div className="w-full h-full rounded-lg flex flex-col bg-gradient-to-t to-slate-900 from-cyan-800 border border-slate-700">
+    <div className="absolute top-0 right-0 bottom-0 left-0 z-50 flex justify-center items-center rounded-lg backdrop-brightness-50">
+      <div className="w-2/6 h-3/4 rounded-lg flex flex-col bg-gradient-to-t from-blue-950 to-blue-900 border border-slate-700 ">
         <div className="flex-1 p-2">
           <label htmlFor="sector" className="font-semibold">
             Sector
@@ -85,12 +94,20 @@ const CreateSector: React.FC<CreateSectorProps> = ({
             className="h-10 w-full bg-slate-800 rounded-lg px-2 border border-slate-600"
           />
         </div>
-        <button
-          onClick={createSector}
-          className="h-5 w-full text-sm font-semibold bg-cyan-600 rounded-b-lg"
-        >
-          Crear
-        </button>
+        <div className="flex space-x-2 p-2">
+          <button
+            onClick={() => onChangeCreateSector(false)}
+            className="h-8 flex-1 text-sm font-semibold bg-red-500 rounded-lg"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={createSector}
+            className="h-8 flex-1 text-sm font-semibold bg-green-500 rounded-lg"
+          >
+            Crear
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { VscChromeClose, VscChromeMaximize, VscChromeMinimize, VscChromeRestore } from "react-icons/vsc";
+import {
+  VscChromeClose,
+  VscChromeMaximize,
+  VscChromeMinimize,
+  VscChromeRestore,
+} from "react-icons/vsc";
 
 function Header() {
   const closeWindow = () => {
@@ -20,13 +25,13 @@ function Header() {
   const [isMaximized, setIsMaximized] = useState(false);
 
   useEffect(() => {
-    window.ipcRenderer.on("window-state", (event, state) => {
+    window.api.enviarEvento("window-state", (event, state) => {
       setIsMaximized(state === "maximized");
     });
 
     // Limpiar el listener cuando el componente se desmonta
     return () => {
-      window.ipcRenderer.removeAllListeners("window-state");
+      window.api.removeAllListeners("window-state");
     };
   }, []);
 
@@ -90,7 +95,7 @@ function Header() {
         }}
       >
         {isMaximized ? (
-          <VscChromeRestore size={20} color="white"/>
+          <VscChromeRestore size={20} color="white" />
         ) : (
           <VscChromeMaximize color={"#fff"} size={20} />
         )}

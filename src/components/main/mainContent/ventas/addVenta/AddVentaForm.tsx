@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { saleData, storeType } from "../../../../../../types/types";
 import { useSelector } from "react-redux";
-import MenuClientsForm from "../MenusInputs/MenuClientsForm";
-import MenuArticlesForm from "../MenusInputs/MenuArticlesForm";
 import ListaProductos from "./ListaProductos";
 import AsideForm from "./AsideForm";
-import Factura from "./Factura";
+import Factura from "./Factura/Factura";
+import SelectBuyer from "./SelectBuyer";
+import SelectSeller from "./SelectSeller";
+import FooterForm from "./FooterForm";
+import PayMethod from "./PayMethod/PayMethod";
+import SaleEnd from "./SaleEnd";
 
 // Definiciones de tipo
 interface Article {
@@ -98,17 +102,18 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
     },
     seller: {
       name: "Admin",
-      email: "Admin",
-      address: "Admin",
-      phone: "Admin",
-      dni: "Admin",
+      id: "admin",
+      image: "admin",
     },
+    billData: { billType: "" },
     sold: 0,
   });
-
-  const [listProduct, setListProduct] = useState<Article[]>([]);
-  const clients = useSelector((state: ClientState) => state.clientState);
-  const articles = useSelector((state: ArticleState) => state.articleState);
+  const [userData, setUserData] = useState<any>({});
+  const [facturaOk, setFacturaOk] = useState<boolean>(false);
+  const [pMOk, setpMOk] = useState<boolean>(false);
+  const [saleEnd, setSaleEnd] = useState(false);
+  const clients = useSelector((state: storeType) => state.clientState);
+  const articles = useSelector((state: storeType) => state.articleState);
   const [showOkSignal, setShowOkSignal] = useState<{
     show: boolean;
     save: boolean;
@@ -130,21 +135,24 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
     dni: "",
   });
   const [showModalBuyer, setShowModalBuyer] = useState(false);
-  const [showClientForm, setShowClientForm] = useState(false);
+  const [showModalSeller, setShowModalSeller] = useState(false);
+  const [saveSaleExit, setSaveSaleExit] = useState(false);
 
-  const modalClient = () => {
-    setShowModalBuyer(true);
+  const onClickBuyer = (e: boolean) => {
+    setShowModalBuyer(e);
   };
-
-  const onShowClientForm = (s: boolean) => {
-    setShowClientForm(s);
+  const onClickSeller = (e: boolean) => {
+    setShowModalSeller(e);
   };
 
   const loadClient = () => {
     if (clientData.name) {
       loadBuyer("client");
-      onShowClientForm(false);
     }
+  };
+  const loadSeller = (seller: { name: string; id: string; image: string }) => {
+    setChangeData("seller", seller);
+    onClickSeller(false);
   };
 
   const loadBuyer = (value: string) => {
@@ -186,8 +194,16 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
     }, 3000);
   };
 
-  const addProduct = (e: Article) => {
-    const arr = [...listProduct];
+  const addProduct = (e: {
+    name: string;
+    code?: string;
+    total: string;
+    amount: {
+      value: string;
+      unit: { label: string; palette: boolean; bulk: boolean };
+    };
+  }) => {
+    const arr = [];
     arr.push(e);
     setChangeData("articles", arr);
   };
@@ -203,9 +219,9 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
   };
 
   const deleteOfList = (id: number) => {
-    const arr = [...listProduct];
-    arr.splice(id, 1);
-    setListProduct(arr);
+    console.log("EJECUTANDOOO");
+    const arr = saleData.articles.filter((ar, index) => index !== id);
+    setChangeData("DELETE-ARTICLE", arr);
   };
 
   const showOkSaveSignal = (b: {
@@ -217,13 +233,28 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
   };
 
   function setChangeData(data: string, value: any) {
-    const existingData = ["articles", "sold", "buyer", "seller"];
+    const existingData = [
+      "articles",
+      "sold",
+      "buyer",
+      "seller",
+      "payMethod",
+      "billType",
+      "DELETE-ARTICLE",
+    ];
     if (existingData.includes(data)) {
       switch (data) {
         case "articles":
           setSaleData({
             ...saleData,
             articles: value,
+          });
+          break;
+        case "DELETE-ARTICLE":
+          console.log("se cumple esrte");
+          setSaleData({
+            ...saleData,
+            articles: [...value],
           });
           break;
         case "sold":
@@ -234,6 +265,18 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
           break;
         case "seller":
           setSaleData({ ...saleData, seller: value });
+          break;
+        case "billType":
+          setSaleData({
+            ...saleData,
+            billData: { ...saleData.billData, billType: value },
+          });
+          break;
+        case "payMethod":
+          setSaleData({
+            ...saleData,
+            pM: value,
+          });
           break;
 
         default:
@@ -247,8 +290,11 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
     const existBuyer =
       saleData.buyer.client.active || saleData.buyer.finalConsumer.active;
     if (existArticles && existBuyer) {
-      window.api.enviarEvento("sale-process", saleData);
-      addSales(saleData);
+      showOkSaveSignal({
+        show: true,
+        save: true,
+        message: "Verificaciones realizadas",
+      });
     } else if (!existArticles && !existBuyer) {
       changeShowError("all");
     } else if (!existBuyer) {
@@ -266,11 +312,14 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
     window.api.recibirEvento("response-sale-process", (response) => {
       if (response.success) {
         showOkSaveSignal({
-          show: true,
-          save: true,
+          show: false,
+          save: false,
           message: "Venta realizada con éxito",
         });
-
+        window.api.enviarEvento("get-articles");
+        setpMOk(false);
+        setFacturaOk(false);
+        setSaveSaleExit(true);
         setSaleData({
           _id: "",
           dateOfRegister: "",
@@ -295,10 +344,8 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
           },
           seller: {
             name: "Admin",
-            email: "Admin",
-            address: "Admin",
-            phone: "Admin",
-            dni: "Admin",
+            id: "admin",
+            image: "admin",
           },
           sold: 0,
         });
@@ -315,35 +362,112 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
   const getUserData = () => {
     const userId = localStorage.getItem("userId");
     window.api.enviarEvento("obtener-datos-usuario", userId);
+  }; //
+  const printBill = () => {
+    window.api.enviarEvento("imprimir-pa", saleData);
   };
-
   useEffect(() => {
     getUserData();
     window.api.recibirEvento("datos-usuario-obtenidos", (e) => {
+      console.log(e.data.username, "ESTO ES GONZA");
+
       if (e.success) {
-        setChangeData("seller", e.data);
+        setUserData(e.data);
+        setChangeData("seller", {
+          name: e.data.username,
+          id: e.data._id,
+          image: e.data.imageUrl,
+        });
       }
     });
   }, []);
+  useEffect(() => {
+    if (pMOk && facturaOk) {
+      setSaleEnd(true);
+    } else {
+      setSaleEnd(false);
+    }
+  }, [pMOk, facturaOk]);
 
   const estilosInput = "outline-none px-2";
 
   return (
-    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 app-region-no-drag">
-      {showOkSignal.show && (
-        <Factura
-          onChangeModal={onChangeModal}
-          showOkSaveSignal={showOkSaveSignal}
-          subirVenta={subirVenta}
+    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center p-2 backdrop-blur-lg z-50 app-region-no-drag">
+      {showOkSignal.show &&
+        (!facturaOk ? (
+          <Factura
+            showOkSaveSignal={showOkSaveSignal}
+            subirVenta={subirVenta}
+            setChangeData={setChangeData}
+            setFacturaOk={setFacturaOk}
+            facturaOk={facturaOk}
+            saleData={saleData}
+          />
+        ) : (
+          <PayMethod pMOk={setpMOk} setChangeData={setChangeData} />
+        ))}
+      {saleEnd && (
+        <SaleEnd
+          setFacturaOk={setFacturaOk}
+          setPMOk={setpMOk}
+          setSaleEnd={setSaleEnd}
+          saleData={saleData}
+          addSales={addSales}
         />
       )}
-      <div className="w-full h-full bg-gray-600 opacity-95 absolute z-10"></div>
-      <div className="relative z-30 flex flex-col w-11/12 h-5/6 rounded-md p-2 bg-gray-100">
-        <h3 className="text-2xl underline text-center my-2">
-          Añadir nueva venta
-        </h3>
-        <div className="flex w-full h-full gap-2">
-          <div className="flex flex-col w-3/4 h-full">
+      {saveSaleExit && (
+        <div className="absolute z-50 h-32 w-64 p-2 bg-slate-950 flex flex-col text-slate-50 rounded-lg border border-slate-700">
+          <div className="flex-1 flex justify-center">
+            <p>¿Quieres imprimir la factura?</p>
+          </div>{" "}
+          <div className="w-full h-5 text-xs flex space-x-2">
+            <button
+              onClick={() => onChangeModal(false)}
+              className="flex-1 h-full bg-red-500 rounded-lg"
+            >
+              DESPUES
+            </button>
+            <button
+              onClick={printBill}
+              className="flex-1 h-full bg-green-500 rounded-lg"
+            >
+              IMPRIMIR
+            </button>
+          </div>
+        </div>
+      )}
+      <div className="w-full h-full bg-slate-900  text-slate-50 rounded-lg overflow-hidden flex relative">
+        <AsideForm
+          subirVenta={subirVenta}
+          onChangeModal={onChangeModal}
+          onClickBuyer={onClickBuyer}
+          onClickSeller={onClickSeller}
+          userData={userData}
+          saleData={saleData}
+          showError={showError}
+        />
+
+        {showModalBuyer && (
+          <SelectBuyer
+            clientData={clientData}
+            clients={clients}
+            loadBuyer={loadBuyer}
+            estilosInput={estilosInput}
+            saleData={saleData}
+            loadClient={loadClient}
+            setClientData={setClientData}
+          />
+        )}
+        {showModalSeller && (
+          <SelectSeller
+            loadSeller={loadSeller}
+            estilosInput={estilosInput}
+            saleData={saleData}
+            onClickSeller={onClickSeller}
+          />
+        )}
+        <div className="flex-1 flex w-full flex-col overflow-auto">
+          <div className="flex-1 flex overflow-hidden">
             <ListaProductos
               deleteOfList={deleteOfList}
               listProduct={listProduct}
@@ -364,14 +488,7 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
               setClientData={setClientData}
               showClientForm={showClientForm} style={""}            />
           </div>
-          <AsideForm
-            onChangeModal={onChangeModal}
-            formatMony={formatMony}
-            cost={cost}
-            saleData={saleData}
-            subirVenta={subirVenta}
-            showError={showError}
-          />
+          <FooterForm cost={cost} sumCost={sumCost} />
         </div>
       </div>
     </div>
