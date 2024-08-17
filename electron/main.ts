@@ -82,10 +82,16 @@ export const printBill = async (saleData: saleData, factureType: string) => {
     silent: false,
   };
 
-  let data: PosPrintData[] = [];
+  let data: PosPrintData[] = [
+    {
+      type: "text",
+      value: "------------------------------------------------------------\n",
+      style: { textAlign: "center" },
+    },
+  ];
 
   if (factureType === "TYPEA") {
-    data = [
+    let encabezado: PosPrintData[] = [
       {
         type: "text",
         value: "------------------------------------------------------------\n",
@@ -178,12 +184,16 @@ export const printBill = async (saleData: saleData, factureType: string) => {
         value: "------------------------------------------------------------\n",
         style: { textAlign: "center" },
       },
-      {
+    ];
+    let productos: PosPrintData[] = [];
+    saleData.articles.map((article) => {
+      productos.push({
         type: "text",
-        value:
-          "Producto 1               2           $500.00         $1000.00\n",
+        value: `${article.name}                ${article.amount.value}           ${article.amount.unit}         ${article.total}\n`,
         style: { textAlign: "left" },
-      },
+      });
+    });
+    let pieBill: PosPrintData[] = [
       {
         type: "text",
         value: "Servicio 1               1           $300.00         $300.00\n",
@@ -196,7 +206,7 @@ export const printBill = async (saleData: saleData, factureType: string) => {
       },
       {
         type: "text",
-        value: "Subtotal                                         $1300.00\n",
+        value: `Subtotal                                         ${saleData.sold}\n`,
         style: { textAlign: "left" },
       },
       {
@@ -250,6 +260,7 @@ export const printBill = async (saleData: saleData, factureType: string) => {
         style: { textAlign: "center" },
       },
     ];
+    data = [...encabezado, ...productos, ...pieBill];
   } else if (factureType === "TYPEB") {
     data = [
       {
@@ -402,7 +413,7 @@ export const printBill = async (saleData: saleData, factureType: string) => {
       },
     ];
   }
-
+  console.log("ESTO VOY A IMPRIMIR", data);
   try {
     await PosPrinter.print(data, options);
     console.log("Test print successful");
@@ -411,8 +422,8 @@ export const printBill = async (saleData: saleData, factureType: string) => {
   }
 };
 
-ipcMain.handle("print", async (_event, sale, totalAmount) => {
-  const result = await printBill(sale, "TYPEB");
+ipcMain.on("imprimir-pa", async (_event, sale) => {
+  const result = await printBill(sale.sale, sale.billData.billType);
   return result;
 });
 

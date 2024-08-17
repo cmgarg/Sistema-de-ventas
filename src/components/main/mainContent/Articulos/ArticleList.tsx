@@ -70,6 +70,7 @@ const ArticleList: React.FC<ArticleListProps> = ({
                 <NumericFormat
                   value={articleObject.article.venta}
                   displayType={"text"}
+                  decimalScale={2}
                   prefix={"$"}
                   renderText={(formattedValue) => <div>{formattedValue}</div>}
                 />
@@ -139,12 +140,20 @@ const ArticleList: React.FC<ArticleListProps> = ({
                     <p>{articleObject.brand.label || "falopeado"}</p>
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{articleObject.article.costo || "falopeado"}</p>
+                    <NumericFormat
+                      value={articleObject.article.costo}
+                      displayType={"text"}
+                      prefix={"$"}
+                      renderText={(formattedValue) => (
+                        <div>{formattedValue}</div>
+                      )}
+                    />
                   </div>
                   <div className="flex justify-center items-center flex-1 pl-2">
                     <NumericFormat
                       value={articleObject.article.venta}
                       displayType={"text"}
+                      decimalScale={2}
                       prefix={"$"}
                       renderText={(formattedValue) => (
                         <div>{formattedValue}</div>

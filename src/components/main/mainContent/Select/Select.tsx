@@ -98,7 +98,7 @@ const SelectM: React.FC<SelectProps> = ({
             {options.map((e, i) => {
               return (
                 <SelectItem
-                  value={e.label}
+                  value={e.value}
                   className="flex-1 h-10 hover:bg-slate-700"
                 >
                   <p>{e.label}</p>

@@ -7,9 +7,8 @@ import {
   storeType,
   unitType,
 } from "../../../../../../types/types";
-import { useSelector } from "react-redux";
-import ClientSvg from "../../../../../../src/assets/MAINSVGS/articlesSVG/ClientSvg";
-import FinalConsumer from "../../../../../../src/assets/MAINSVGS/articlesSVG/FinalConsumer";
+import { NumericFormat } from "react-number-format";
+import { TrashIcon } from "@radix-ui/react-icons";
 
 interface ListaProductos {
   deleteOfList: (i: any) => void;
@@ -17,17 +16,20 @@ interface ListaProductos {
     name: string;
     code?: string;
     total: string | number;
-    amount: { value: string | number; unit: string };
+    amount: {
+      value: string | number;
+      unit: { label: string; palette: boolean; bulk: boolean };
+    };
   }[];
   estilosInput: string;
   articles: articleData[];
-  addProduct: (e: {
+  addProduct: (article: {
     name: string;
-    code: string;
+    code?: string;
     total: string;
     amount: {
       value: string;
-      unit: string;
+      unit: { label: string; palette: boolean; bulk: boolean };
     };
   }) => void;
   showError: { in: string };
@@ -101,23 +103,36 @@ const ListaProductos: React.FC<ListaProductos> = ({
         </li>
         {listProduct.map((e, i) => (
           <li className="w-full flex h-12 text-2xl bg-teal-950 items-center relative">
-            <div className="flex-1  flex justify-center items-center">
+            <div className="flex-1  flex justify-start pl-2 items-center">
               <p>{e.name}</p>
             </div>
             <div className="flex-1  flex justify-center">
               <div className="flex">
                 <p>{e.amount.value}</p>
                 <div className="text-sm flex items-end">
-                  <p>{e.amount.unit}</p>
+                  <p>{e.amount.unit.label}</p>
                 </div>
               </div>
             </div>
 
             <div className="flex-1  text-cyan-300 flex justify-center ">
-              <p>{formatMony(Number(e.total))}</p>
+              <NumericFormat
+                allowLeadingZeros
+                allowedDecimalSeparators={[".", "."]}
+                value={e.total}
+                decimalScale={2}
+                thousandSeparator=","
+                displayType={"text"}
+                className="text-2xl text-green-400 font-bold"
+                prefix={"$"}
+                renderText={(formattedValue) => <div>{formattedValue}</div>}
+              />
             </div>
-            <div className="absolute right-0" onClick={() => deleteOfList(i)}>
-              <p>Borrar</p>
+            <div
+              className="absolute right-2 cursor-pointer"
+              onClick={() => deleteOfList(i)}
+            >
+              <TrashIcon className="h-7 w-7 bg-slate-950 border border-red-500 text-red-500 hover:text-red-200 hover:bg-red-500 rounded-full p-[2px]" />
             </div>
           </li>
         ))}

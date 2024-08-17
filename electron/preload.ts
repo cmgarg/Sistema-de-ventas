@@ -187,15 +187,15 @@ contextBridge.exposeInMainWorld("api", {
       "save-supplier",
       "delete-supplier",
       "get-suppliers",
-      //NOTIFICACIONES  
+      //NOTIFICACIONES
       "send-notification",
       "get-notifications",
-      'delete-notification',
+      "delete-notification",
       "mark-notification-as-read",
-      'hide-notification',
-      'disable-notification-type',
-      'get-disabled-notification-types',
-      'delete-old-notifications',
+      "hide-notification",
+      "disable-notification-type",
+      "get-disabled-notification-types",
+      "delete-old-notifications",
       "update-supplier",
       //DEPOSITOS
       "get-deposits",
@@ -205,6 +205,12 @@ contextBridge.exposeInMainWorld("api", {
       "create-deposit",
       //IMPRESORA PRUEBA
       "imprimir-pa",
+      //METODOS DE PAGO
+      "get-pay-methods",
+      "update-pay-method",
+      "add-pay-method",
+      "remove-pay-method",
+      //COMPRAS
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -269,13 +275,15 @@ contextBridge.exposeInMainWorld("api", {
       "response-imprimir-pa",
       //NOTIFICACIONES
       "notification",
-      'response-get-notifications',
-      'hide-notification',
-      'disable-notification-type',
-      'response-get-disabled-notification-types'
-
-
-
+      "response-get-notifications",
+      "hide-notification",
+      "disable-notification-type",
+      "response-get-disabled-notification-types",
+      //METODOS DE PAGO
+      "response-get-pay-methods",
+      "response-update-pay-method",
+      "response-add-pay-method",
+      "response-remove-pay-method",
     ];
 
     if (canalesPermitidos.includes(canal)) {

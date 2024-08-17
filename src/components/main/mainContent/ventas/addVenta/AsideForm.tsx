@@ -5,9 +5,11 @@ import FinalConsumer from "../../../../../../src/assets/MAINSVGS/articlesSVG/Fin
 import { saleData } from "../../../../../../types/types";
 import BackArrowSvg from "../../../../../../src/assets/MAINSVGS/articlesSVG/BackArrowSvg";
 import { FaQuestion } from "react-icons/fa";
-
+import { FaBasketShopping } from "react-icons/fa6";
+import { FcBusinessman } from "react-icons/fc";
 interface AsideForm {
-  modalClient: () => void;
+  onClickBuyer: (e: boolean) => void;
+  onClickSeller: (e: boolean) => void;
   onChangeModal: (e: boolean) => void;
   subirVenta: () => void;
   saleData: saleData;
@@ -16,12 +18,13 @@ interface AsideForm {
 }
 
 const AsideForm: React.FC<AsideForm> = ({
-  modalClient,
+  onClickBuyer,
   onChangeModal,
   subirVenta,
   userData,
   saleData,
   showError,
+  onClickSeller,
 }) => {
   const inputStyles =
     "flex space-x-2 h-12 p-2 items-center rounded-md hover:bg-gray-800 w-full";
@@ -29,33 +32,32 @@ const AsideForm: React.FC<AsideForm> = ({
   useEffect(() => {
     console.log(saleData, "loca loca loca");
   }, [saleData]);
+  useEffect(() => {
+    console.log(userData);
+  }, [userData]);
 
   return (
-    <div className="flex flex-col w-72 items-start bg-slate-950 ">
-      <button
-        onClick={() => onChangeModal(false)}
-        className="h-10 w-10 text-2xl font-normal flex justify-center items-center mb-5 pl-2 hover:bg-slate-800"
-      >
-        <BackArrowSvg size={30} color="#fff" />
-      </button>
+    <div className="flex flex-col w-72 items-start  relative ">
       <div className="flex flex-1 w-full">
-        <div className="flex flex-1 flex-col w-full px-2 font-bold">
+        <div className="flex flex-1 flex-col w-full px-2 font-bold py-2 space-y-2">
           <button
-            onClick={modalClient}
-            className={`flex flex-col border-b-1 relative border-slate-900 flex-1 w-full text-xl items-center justify-center rounded-md hover:bg-slate-900 ${
+            onClick={() => onClickBuyer(true)}
+            className={`flex flex-col border-b-1 bg-slate-950 border border-slate-800 relative flex-1 w-full items-center justify-center rounded-lg hover:bg-slate-700 ${
               showError.in === "all" || showError.in === "buyer"
                 ? "shadow-inset-cmg"
                 : null
             }`}
           >
             <div
-              className={`flex flex-col items-center space-y-2 relative z-40`}
+              className={`flex flex-1 w-full flex-col items-center space-y-2 relative z-40`}
             >
-              <p>Comprador</p>
+              <div className="absolute top-0 text-3xl italic text-slate-300">
+                <p>COMPRADOR</p>
+              </div>
 
               {saleData.buyer.client.active ? (
-                <div className="flex flex-col space-y-2">
-                  <ClientSvg size={180}></ClientSvg>
+                <div className="flex flex-1 items-center justify-center w-full flex-col space-y-2">
+                  <FcBusinessman size={150}></FcBusinessman>
                   <p className="text-teal-500">
                     {saleData.buyer.client.active
                       ? saleData.buyer.client.clientData.name
@@ -63,27 +65,30 @@ const AsideForm: React.FC<AsideForm> = ({
                   </p>
                 </div>
               ) : saleData.buyer.finalConsumer.active ? (
-                <div className="flex flex-col space-y-2">
-                  <FinalConsumer size={180} />
+                <div className="flex flex-1 items-center justify-center w-full flex-col space-y-2">
+                  <FaBasketShopping size={140} className="text-rose-500" />
 
                   <p className="text-teal-500">Consumidor final</p>
                 </div>
               ) : (
-                <div className="flex flex-col space-y-2">
-                  <FaQuestion size={180} color="#fff" />
-
-                  <p className="text-teal-500">Consumidor final</p>
+                <div className="flex flex-1 items-center justify-center w-full flex-col space-y-2">
+                  <FaQuestion size={150} />
                 </div>
               )}
             </div>
           </button>
-          <button className="flex flex-col flex-1 w-full text-xl items-center justify-center rounded-md hover:bg-slate-900">
-            <div className="flex flex-col items-center space-y-2">
-              <p>Vendedor</p>
-              <div className="rounded-full w-32 h-32 border-2 ">
-                {userData.imageUrl ? (
+          <button
+            onClick={() => onClickSeller(true)}
+            className="flex flex-col flex-1 w-full items-center bg-slate-950 justify-center rounded-md hover:bg-slate-700"
+          >
+            <div className="flex flex-1 border border-slate-800 rounded-lg w-full flex-col justify-center items-center space-y-2 relative z-40">
+              <div className="absolute top-0 text-3xl italic text-slate-300">
+                <p>VENDEDOR</p>
+              </div>
+              <div className="rounded-full h-24 w-24 border-2 ">
+                {saleData.seller.image ? (
                   <img
-                    src={userData.imageUrl}
+                    src={saleData.seller.image}
                     alt="usuario"
                     className="h-full w-full rounded-full object-center object-cover"
                   />
@@ -91,17 +96,19 @@ const AsideForm: React.FC<AsideForm> = ({
                   ""
                 )}
               </div>
-              <p>
-                {userData.username ? userData.username : "No hay un usuario"}
-              </p>
+              <div className="relative w-full flex flex-col items-center">
+                <p>
+                  {saleData.seller ? saleData.seller.name : "No hay un usuario"}
+                </p>
+              </div>
             </div>
           </button>
         </div>
       </div>
 
-      <div className="flex flex-row h-12 w-full justify-end">
+      <div className="flex flex-row h-10 w-full justify-end space-x-2 p-1">
         <button
-          className="flex-1 bg-red-700"
+          className="flex-1 bg-red-700 rounded-lg border border-slate-800"
           onClick={() => {
             onChangeModal(false);
           }}
@@ -109,7 +116,7 @@ const AsideForm: React.FC<AsideForm> = ({
           Cancelar
         </button>
         <button
-          className="flex-1 bg-green-700 rounded-tr-lg"
+          className="flex-1 bg-green-700 rounded-lg border border-slate-800"
           onClick={() => {
             subirVenta();
           }}

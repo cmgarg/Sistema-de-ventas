@@ -141,18 +141,21 @@ const StockList: React.FC<StockListProps> = ({
                 <TableRow key={index} padding={true}>
                   <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
                     <Link
-                      to={`/articulo/${article.article.code}`}
+                      to={`/articulo/${article.code}`}
                       className="flex-1 text-start"
                     >{`${article.article.name}`}</Link>
                   </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
+                  <div className="flex justify-center items-center flex-1">
                     <p>{article.brand.label}</p>
                   </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
+                  <div className="flex justify-center items-center flex-1">
                     <p>${article.article.costo}</p>
                   </div>
-                  <div className="flex justify-end items-center flex-1 pl-2">
+                  <div className="flex justify-end items-center flex-1 h-full">
                     <p>{article.article.stock.amount}</p>
+                    <p className="text-sm h-full flex items-end py-2">
+                      {article.article.stock.unit.abrevUnit}
+                    </p>
                   </div>
                 </TableRow>
               );
@@ -163,7 +166,7 @@ const StockList: React.FC<StockListProps> = ({
                 <TableRow>
                   <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
                     <Link
-                      to={`/articulo/${article.article.code}`}
+                      to={`/articulo/${article.code}`}
                       className="flex-1 text-center"
                     >{`${article.article.name}`}</Link>
                   </div>
@@ -184,7 +187,7 @@ const StockList: React.FC<StockListProps> = ({
                 <TableRow>
                   <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
                     <Link
-                      to={`/articulo/${article.article.code}`}
+                      to={`/articulo/${article.code}`}
                       className="flex-1 text-center"
                     >{`${article.article.name}s`}</Link>
                   </div>

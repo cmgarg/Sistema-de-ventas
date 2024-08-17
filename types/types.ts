@@ -8,7 +8,7 @@ export type articleData = {
     stock: { amount: number; unit: unitType; minStock: number };
     grossWeight: { value: number; approx: boolean };
     liquidWeight: { value: number; approx: boolean };
-    palette: {
+    pallet: {
       active: boolean;
       value: number;
     };
@@ -87,7 +87,7 @@ export type saleData = {
     total: number | string;
     amount: {
       value: string;
-      unit: string;
+      unit: { label: string; palette: boolean; bulk: boolean };
     };
   }[];
   buyer: {
@@ -109,13 +109,14 @@ export type saleData = {
   };
   seller: {
     name: string;
-    email: string;
-    address: string;
-    phone: string;
-    dni: string;
+    id: string;
+    image: string;
   };
   sold: number;
-
+  billData?: {
+    billType: string;
+  };
+  pM?: string;
   dateToRegister?: string;
   id?: string;
 };
@@ -208,4 +209,9 @@ export type depositType = {
 export type Action = {
   type: string;
   payload: any;
+};
+export type pmType = {
+  name: string;
+  salesWithThisMethod: number;
+  totalSoldWithThisMethod: number;
 };

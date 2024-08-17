@@ -24,7 +24,7 @@ const MenuClientsForm: React.FC<MenuClientsForm> = ({
   value,
 }) => {
   const [newValue, setNewValue] = useState<string>("");
-
+  const [isOpen, setIsOpen] = useState(false);
   const onChangeNewValue = (newValue: string) => {
     if (/^[a-zA-Z\s]*$/.test(newValue)) {
       setNewValue(newValue);
@@ -95,8 +95,10 @@ const MenuClientsForm: React.FC<MenuClientsForm> = ({
       onSelect={(selectedItem) => {
         onChangeNewValue(selectedItem);
         searchInClients(selectedItem.name);
+        setIsOpen(false);
       }}
       onInputValueChange={(e, stateAndHelpers) => {
+        setIsOpen(true);
         onChangeNewValue(e);
       }}
       inputValue={value || newValue}
@@ -108,8 +110,8 @@ const MenuClientsForm: React.FC<MenuClientsForm> = ({
         getInputProps,
         getItemProps,
         getMenuProps,
-        isOpen,
         inputValue,
+        openMenu,
         highlightedIndex,
         selectedItem,
         getLabelProps,
@@ -125,6 +127,8 @@ const MenuClientsForm: React.FC<MenuClientsForm> = ({
               {...getInputProps()}
               className={`${style} h-12 w-full bg-teal-900 text-2xl rounded-t-md`}
               placeholder="Cliente..."
+              onFocus={() => setIsOpen(true)}
+              onBlur={() => setIsOpen(false)}
               onKeyUp={(e) => {
                 if (e.key === "Enter") {
                   searchInClients(newValue);

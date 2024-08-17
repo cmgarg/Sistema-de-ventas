@@ -31,9 +31,10 @@ const InputSupplier = ({
   value,
 }: propsInput) => {
   const onChangeNewValue = (newValue: string) => {
-    if (/^[a-zA-Z]*$/.test(newValue)) {
+    if (/^[a-zA-Z0-9]*$/.test(newValue)) {
       setInputValueSupplierInput(newValue);
-      dispatch({ type: "SET_SUPPLIER", payload: newValue });
+      dispatch({ type: "SET_SUPPLIER", payload: newValue.toLowerCase() });
+      console.log("ENVIANDO A DISPATCH", newValue);
     }
   };
 
@@ -55,6 +56,7 @@ const InputSupplier = ({
     <Downshift
       onChange={(selection) => {
         onChangeNewValue(selection || "teta");
+        console.log("AJAM", selection);
       }}
       inputValue={inputValueSupplierInput}
       itemToString={(item) =>
@@ -104,7 +106,7 @@ const InputSupplier = ({
           </div>
           <ul
             {...getMenuProps()}
-            className="w-full absolute top-full rounded-b-sm"
+            className="w-full absolute top-full rounded-b-sm z-50"
           >
             {isOpen
               ? suppliers
@@ -116,7 +118,7 @@ const InputSupplier = ({
                   .map((item, index) => (
                     <li
                       {...getItemProps({
-                        key: item.name,
+                        key: item._id,
                         index,
                         item,
                         style: {
@@ -136,9 +138,10 @@ const InputSupplier = ({
                         highlightedIndex === index
                           ? "bg-red-200"
                           : "font-normal"
-                      }`}
+                      } flex px-2 text-xl`}
                     >
-                      {item.name}
+                      <p className="flex-1 text-left">{item.name}</p>
+                      <p className="flex-1 text-right">{item.phoneNumber}</p>
                     </li>
                   ))
               : null}

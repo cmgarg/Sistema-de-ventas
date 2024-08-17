@@ -4,8 +4,8 @@ import {
 } from "../../../../../../../../../types/types";
 import React, { useEffect, useState } from "react";
 
-type CreateSectorProps = {
-  onChangeCreateSector: (e: boolean) => void; // Define tus props aquí
+type EditDepositFormProps = {
+  onChangeEditSector: (e: boolean) => void; // Define tus props aquí
   depositSelect: depositType;
   updateSectors: (
     e: {
@@ -16,10 +16,10 @@ type CreateSectorProps = {
   ) => void;
 };
 
-const CreateSector: React.FC<CreateSectorProps> = ({
+const EditDepositForm: React.FC<EditDepositFormProps> = ({
   depositSelect,
   updateSectors,
-  onChangeCreateSector,
+  onChangeEditSector,
 }) => {
   const [sectorData, setSectorData] = useState<{
     name: string;
@@ -73,7 +73,7 @@ const CreateSector: React.FC<CreateSectorProps> = ({
           console.log(sectors, "SECTORES A ACTUALIZAR", sectorData);
           updateSectors(sectors);
           window.api.enviarEvento("get-deposits");
-          onChangeCreateSector(false);
+          onChangeEditSector(false);
         }
       }
     );
@@ -99,7 +99,7 @@ const CreateSector: React.FC<CreateSectorProps> = ({
         </div>
         <div className="flex space-x-2 p-2">
           <button
-            onClick={() => onChangeCreateSector(false)}
+            onClick={() => onChangeEditSector(false)}
             className="h-8 flex-1 text-sm font-semibold bg-red-500 rounded-lg"
           >
             Cancelar
@@ -116,4 +116,4 @@ const CreateSector: React.FC<CreateSectorProps> = ({
   );
 };
 
-export default CreateSector;
+export default EditDepositForm;

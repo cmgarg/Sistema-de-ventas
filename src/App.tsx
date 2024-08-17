@@ -13,6 +13,7 @@ import { login, logout } from "./redux/estados/authSlice";
 import { cambiar, datosUsuario } from "./redux/estados/estadoTipoDeUser";
 import { RootState } from "./redux/store";
 import PantallaDeCarga from "./components/main/PantallaDeCarga";
+import React from "react";
 
 function App() {
   const [adminExists, setAdminExists] = useState<boolean | null>(null);
@@ -107,17 +108,26 @@ function App() {
   useEffect(() => {
     const handleObtenerDatosUsuario = (response: any) => {
       if (response.success) {
-        console.log(response,"esto recibo del bakcend------------------------------------------------------------------------------------")
+        console.log(
+          response,
+          "esto recibo del bakcend------------------------------------------------------------------------------------"
+        );
         dispatch(datosUsuario({ datosUsuario: response.data }));
       } else {
         console.error("Error al obtener los datos del usuario", response.error);
       }
     };
 
-    window.api.recibirEvento("datos-usuario-obtenidos", handleObtenerDatosUsuario);
+    window.api.recibirEvento(
+      "datos-usuario-obtenidos",
+      handleObtenerDatosUsuario
+    );
 
     return () => {
-      window.api.removeListener("datos-usuario-obtenidos", handleObtenerDatosUsuario);
+      window.api.removeListener(
+        "datos-usuario-obtenidos",
+        handleObtenerDatosUsuario
+      );
     };
   }, [dispatch]);
 
@@ -152,7 +162,9 @@ function App() {
       return isAuthenticated ? (
         <>
           {showLoadingScreen ? <PantallaDeCarga /> : null}
-          <div className={`${showLoadingScreen ? "hidden" : "flex w-full h-full"}`}>
+          <div
+            className={`${showLoadingScreen ? "hidden" : "flex w-full h-full"}`}
+          >
             <Aside />
             <Main />
           </div>

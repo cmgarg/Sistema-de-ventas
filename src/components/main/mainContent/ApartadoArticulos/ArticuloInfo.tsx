@@ -187,24 +187,6 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
         <div className="w-full text-3xl">
           <h1>Ventas [{article.sales.length || "nada"}]</h1>
         </div>
-        <div className="w-full text-3xl">
-          <h1>Ventas [{article.sales.length || "nada"}]</h1>
-        </div>
-        <div className="w-full text-3xl">
-          <h1>Ventas [{article.sales.length || "nada"}]</h1>
-        </div>
-        <div className="w-full text-3xl">
-          <h1>Ventas [{article.sales.length || "nada"}]</h1>
-        </div>
-        <div className="w-full text-3xl">
-          <h1>Ventas [{article.sales.length || "nada"}]</h1>
-        </div>
-        <div className="w-full text-3xl">
-          <h1>Ventas [{article.sales.length || "nada"}]</h1>
-        </div>
-        <div className="w-full text-3xl">
-          <h1>Ventas [{article.sales.length || "nada"}]</h1>
-        </div>
 
         <div className="flex-1 h-52 max-h-80  pb-1 space-y-5">
           <div className="flex flex-1 w-full h-full overflow-auto">
@@ -241,7 +223,7 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
                       </div>
                       <div className="flex justify-center items-center flex-1">
                         <p>{buy.amount.value}</p>
-                        <p className="text-xs">{buy.amount.unit}</p>
+                        <p className="text-xs">{buy.amount.unit.label}</p>
                       </div>
                       <div className="flex justify-end items-center flex-1 pr-2">
                         <p>{formatMony(buy.sold)}</p>

@@ -1,4 +1,4 @@
-import { saleData } from "@/types";
+import { saleData } from "../../../../../types/types";
 import React, { ReactElement, useEffect, useState } from "react";
 
 type ListSaleArticles = {
@@ -20,9 +20,11 @@ const ListSaleArticles: React.FC<ListSaleArticles> = ({ sale, formatMony }) => {
         <span className="flex justify-start items-center flex-1 ">
           {article.name}
         </span>
-        <span className="flex justify-end items-center flex-1 space-x-2">
-          <p>{article.amount.value}</p>
-          <p className="text-xs">{article.amount.unit}</p>
+        <span className="flex justify-start items-center flex-1 h-full">
+          <>{article.amount.value}</>
+          <div className="text-xs h-full flex items-end pb-3">
+            <p>{article.amount.unit.label}</p>
+          </div>
         </span>
         <span className="flex justify-center items-center flex-1">
           {formatMony(article.total)}
@@ -41,7 +43,7 @@ const ListSaleArticles: React.FC<ListSaleArticles> = ({ sale, formatMony }) => {
   return (
     <div
       onClick={onChangeDeploy}
-      className={`flex hover:bg-slate-900 relative border-b select-none pl-2 border-slate-800 flex-row animation-spin text-slate-50 justify-center text-lg items-center w-full ${
+      className={`flex hover:bg-slate-900 relative border-b select-none pl-2 border-slate-800 flex-row animation-spin text-slate-50 justify-center text-base items-center w-full ${
         deploy ? "bg-slate-900 " : "h-12 bg-slate-950"
       } `}
     >
@@ -72,7 +74,7 @@ const ListSaleArticles: React.FC<ListSaleArticles> = ({ sale, formatMony }) => {
           <p>{formatMony(sale.sold)}</p>
         </div>
         <div className="flex-1 flex justify-end">
-          <p>{sale.seller.username ? sale.seller.username : "PAJA"}</p>
+          <p>{sale.seller.name ? sale.seller.name : ""}</p>
         </div>
       </div>
     </div>

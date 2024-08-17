@@ -37,17 +37,7 @@ const Stock: React.FC<StocktProps> = (
     actived: false,
     results: [],
   });
-  //FILTROS opciones
-  const [optionsBrand, setOptionsBrand] = useState<object[]>([]);
-  const [optionsCategory, setOptionsCategory] = useState<object[]>([]);
-  //FUNCIONES DE FILTRO DE brand
-  function onChangeFilter(e, f) {
-    if (f === "brand") {
-      setFilters({ ...filters, brand: e.toLowerCase() });
-    } else if (f === "category") {
-      setFilters({ ...filters, category: e.toLowerCase() });
-    }
-  }
+
   //
   function getResults(e: object[]) {
     let object;
