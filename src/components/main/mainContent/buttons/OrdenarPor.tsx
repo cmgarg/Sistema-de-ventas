@@ -1,7 +1,6 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import Biñeta from "../Biñeta/Biñieta.js";
-import MoreIcon from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/MoreIcon.js";
-import MenuContextual2 from "../../../GMC/MenuContextual2.js";
+
 interface OrdenarPorProps {
   children: ReactNode;
 }
@@ -14,17 +13,13 @@ const OrdenarPor: React.FC<OrdenarPorProps> = ({ children }) => {
       onClick={() => {}}
     >
       <div className="flex justify-center items-center h-full w-full">
-        <MenuContextual2
-          title={
-            <Biñeta title="Ordenar por">
-              <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center">
-                <MoreIcon size={25} color="#fff"></MoreIcon>
-              </div>
-            </Biñeta>
-          }
-        >
-          {children}
-        </MenuContextual2>
+        title=
+        {
+          <Biñeta title="Ordenar por">
+            <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center"></div>
+          </Biñeta>
+        }
+        {children}
       </div>
     </div>
   );

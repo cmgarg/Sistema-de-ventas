@@ -3,32 +3,22 @@ import AsideMain from "../../asidemain/AsideMain";
 import NavMain from "../../navmain/NavMain";
 import Export from "../buttons/Export";
 import StockList from "./StockList";
-import Category from "../Category/Category";
-import AddCategory from "./forms/AddCategory";
-import Addbrand from "./forms/AddBrand";
 import Buscador from "../../../buscador/Buscador";
-import SelectM from "../Select/Select";
 import { articleData, storeType } from "../../../../../types/types";
-
 import { useSelector } from "react-redux";
 
-interface StocktProps {
-  //PROPS
+interface StockProps {
+  // Define los props si los hay
 }
 
-const Stock: React.FC<StocktProps> = (
-  {
-    /*PROPS*/
-  }
-) => {
+const Stock: React.FC<StockProps> = ({}) => {
   const articles = useSelector((state: storeType) => state.articleState);
-
-  const [activeModal, setActiveModal] = useState(false);
 
   const [filters, setFilters] = useState({
     brand: "",
     category: "",
   });
+
   //BUSCADOR ESTADOS
   const [searchActived, setSearchActived] = useState<{
     actived: boolean;
@@ -37,19 +27,21 @@ const Stock: React.FC<StocktProps> = (
     actived: false,
     results: [],
   });
+
   //FILTROS opciones
   const [optionsBrand, setOptionsBrand] = useState<object[]>([]);
   const [optionsCategory, setOptionsCategory] = useState<object[]>([]);
+
   //FUNCIONES DE FILTRO DE brand
-  function onChangeFilter(e, f) {
+  function onChangeFilter(e: string, f: string) {
     if (f === "brand") {
       setFilters({ ...filters, brand: e.toLowerCase() });
     } else if (f === "category") {
       setFilters({ ...filters, category: e.toLowerCase() });
     }
   }
-  //
-  function getResults(e: object[]) {
+
+  function getResults(e: articleData[]) {
     let object;
     if (e.length > 0) {
       object = { actived: true, results: e };
@@ -58,14 +50,11 @@ const Stock: React.FC<StocktProps> = (
     }
     setSearchActived(object);
   }
-  /////LISTA DE ARTICULSO
-  ///carga de ventas
-  //////////////////////////////
 
   return (
     <div className="h-full w-full grid-cmg-program">
       <div className="row-start-1 row-end-2 pb-5">
-        <NavMain title="Stock">
+        <NavMain title="Stock" setLoginUser={""}>
           <Export></Export>
           <Buscador searchIn={articles} functionReturn={getResults}></Buscador>
         </NavMain>

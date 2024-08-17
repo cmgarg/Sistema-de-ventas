@@ -1,12 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
-const ModalCambiarContraseña = ({ setBloqueoPrograma }) => {
-  const [nuevaContraseña, setNuevaContraseña] = useState("");
-  const [mostrarContraseña, setMostrarContraseña] = useState(false);
-  const [datosUsuario, setDatosUsuario] = useState();
+interface ModalCambiarContraseñaProps {
+  setBloqueoPrograma: (bloqueo: boolean) => void;
+}
 
-  const handleChange = (event) => {
+interface DatosUsuario {
+  _id: string;
+}
+
+const ModalCambiarContraseña: React.FC<ModalCambiarContraseñaProps> = ({ setBloqueoPrograma }) => {
+  const [nuevaContraseña, setNuevaContraseña] = useState<string>("");
+  const [mostrarContraseña, setMostrarContraseña] = useState<boolean>(false);
+  const [datosUsuario, setDatosUsuario] = useState<DatosUsuario | null>(null);
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setNuevaContraseña(event.target.value);
   };
 
@@ -14,7 +22,7 @@ const ModalCambiarContraseña = ({ setBloqueoPrograma }) => {
     setMostrarContraseña(!mostrarContraseña);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (datosUsuario) {
       // Envía el evento de IPC para cambiar la contraseña del usuario
@@ -32,7 +40,7 @@ const ModalCambiarContraseña = ({ setBloqueoPrograma }) => {
   useEffect(() => {
     window.api.enviarEvento("obtener-admin");
 
-    const handleDatosAdminObtenidos = (respuesta) => {
+    const handleDatosAdminObtenidos = (respuesta: any) => {
       if (respuesta.exito) {
         setDatosUsuario(respuesta.admin);
       } else {

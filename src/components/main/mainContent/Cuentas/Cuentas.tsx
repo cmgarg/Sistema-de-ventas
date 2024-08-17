@@ -7,70 +7,60 @@ import AddAccountToPay from "./componentes/AddAccountToPay/AddAccountToPay";
 import ListCuenta from "./componentes/ListCuenta";
 import { format } from "date-fns";
 import { useSelector } from "react-redux";
+import { RootState } from "../../../../redux/store";
+import { v4 as uuidv4 } from "uuid"; // Import UUID for generating unique IDs
 
-interface CuentasProps {
-  //PROPS
+interface Cuenta {
+  _id: string;
+  date: string;
+  time: string;
+  tipodegasto: string;
+  descripcion: string;
+  pay: number;
+  pagado: boolean;
+  meses: number;
 }
 
-const Cuentas: React.FC<CuentasProps> = (
-  {
-    /*PROPS*/
-  }
-) => {
+const Cuentas: React.FC = () => {
   const [activeModalForm, setActiveModalForm] = useState(false);
-  const [accountToPay, setAccountToPay] = useState<
-    {
-      date: string;
-      tipodegasto: string;
-      descripcion: string;
-      pay: number;
-      pagado: boolean;
-    }[]
-  >([]);
+  const [accountToPay, setAccountToPay] = useState<Cuenta[]>([]);
   const [filtroActivo, setFiltroActivo] = useState<string>("ninguno");
   const [orden, setOrden] = useState<"asc" | "desc">("asc");
   const [diaSeleccionado, setDiaSeleccionado] = useState(
     format(new Date(), "yyyy-MM-dd")
   );
 
-  function onChangeModal(p: boolean) {
+  const onChangeModal = (p: boolean) => {
     setActiveModalForm(p);
-  }
+  };
 
-  function addAccountToPay(e: {
+  const addAccountToPay = (e: {
     date: string;
     tipodegasto: string;
     descripcion: string;
     pay: number;
     pagado: boolean;
-  }) {
-    const arrayAccounts: {
-      date: string;
-      tipodegasto: string;
-      descripcion: string;
-      pay: number;
-      pagado: boolean;
-    }[] = [...accountToPay, e];
-    setAccountToPay(arrayAccounts);
+    pagado2?: string;
+    pagado3?: string;
+  }) => {
+    const newAccount: Cuenta = {
+      ...e,
+      _id: uuidv4(), // Generate a unique ID
+      time: new Date().toISOString().split("T")[1].split(".")[0], // Generate current time
+      meses: 1 // Set default value for meses or adjust as necessary
+    };
+    setAccountToPay((prev) => [...prev, newAccount]);
     getAccountsToPay();
-  }
+  };
 
-  function getAccountsToPay() {
+  const getAccountsToPay = () => {
     window.api.enviarEvento("get-accountToPay");
-  }
+  };
 
   useEffect(() => {
     getAccountsToPay();
 
-    const recibirCuentas = (
-      accounts: {
-        date: string;
-        tipodegasto: string;
-        descripcion: string;
-        pay: number;
-        pagado: boolean;
-      }[]
-    ) => {
+    const recibirCuentas = (accounts: Cuenta[]) => {
       setAccountToPay(accounts);
     };
 
@@ -98,7 +88,7 @@ const Cuentas: React.FC<CuentasProps> = (
   return (
     <div className="flex flex-col flex-1">
       
-        <NavMain title="Cuentas" >
+        <NavMain title="Cuentas" setLoginUser={""} >
           <Export></Export>
           <Agregar onChangeModal={onChangeModal} title="Cuenta" />
         </NavMain>
@@ -180,7 +170,7 @@ const Cuentas: React.FC<CuentasProps> = (
                         cuenta.date === diaSeleccionado &&
                         cuenta.tipodegasto === "Vencimiento Mensual"
                     )
-                    .map((cuenta, index) => (
+                    .map((cuenta) => (
                       <div
                         className="p-2 border-b-1 border-gray-600"
                         key={cuenta._id}
@@ -206,7 +196,7 @@ const Cuentas: React.FC<CuentasProps> = (
                         cuenta.date === diaSeleccionado &&
                         cuenta.tipodegasto === "Gasto Diario"
                     )
-                    .map((cuenta, index) => (
+                    .map((cuenta) => (
                       <div
                         className="p-2 border-b-1 border-gray-600"
                         key={cuenta._id}

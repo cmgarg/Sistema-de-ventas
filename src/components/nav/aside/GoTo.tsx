@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import Tooltip from "./Tooltip.jsx";
+import Tooltip from "./Tooltip.js";
 import { Link, useLocation } from "react-router-dom";
 
 type Props = {

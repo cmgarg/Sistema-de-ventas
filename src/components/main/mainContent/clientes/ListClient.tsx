@@ -10,7 +10,7 @@ import {
   ContextMenuTrigger,
 } from "../../../../../app/ui/context-menu";
 import { useSelector } from "react-redux";
-import { clientData, storeType } from "@/types";
+import { clientData, storeType } from "../../../../../types/types";
 import { deleteClientState } from "../../../../../src/redux/estados/clientesState";
 
 interface listClientProps {

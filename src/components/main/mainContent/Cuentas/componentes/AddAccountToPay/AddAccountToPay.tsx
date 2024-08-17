@@ -21,7 +21,7 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
   type accountObject = {
     tipodegasto: string;
     date: string;
-    pay: string;
+    pay: string; // keep as string for internal state
     descripcion: string;
     pagado: boolean;
     meses: number;
@@ -77,10 +77,20 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
     const pagado3 = accountData.pagado ? time : "";
     const newAccountData = { ...accountData, time, pagado2, pagado3 };
 
+    const newAccount = {
+      date: newAccountData.date,
+      tipodegasto: newAccountData.tipodegasto,
+      descripcion: newAccountData.descripcion,
+      pay: parseFloat(newAccountData.pay), // convert pay to number
+      pagado: newAccountData.pagado,
+      pagado2: newAccountData.pagado2,
+      pagado3: newAccountData.pagado3
+    };
+
     if (accountData.tipodegasto === "Vencimiento Mensual") {
       for (let i = 0; i < accountData.meses; i++) {
-        const newAccount = {
-          ...newAccountData,
+        const accountWithDate = {
+          ...newAccount,
           date: new Date(
             new Date(accountData.date).setMonth(
               new Date(accountData.date).getMonth() + i
@@ -89,12 +99,12 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
             .toISOString()
             .split("T")[0],
         };
-        window.api.enviarEvento("save-accountToPay", newAccount);
-        addAccountToPay(newAccount);
+        window.api.enviarEvento("save-accountToPay", accountWithDate);
+        addAccountToPay(accountWithDate);
       }
     } else {
-      window.api.enviarEvento("save-accountToPay", newAccountData);
-      addAccountToPay(newAccountData);
+      window.api.enviarEvento("save-accountToPay", newAccount);
+      addAccountToPay(newAccount);
     }
     setAccountData({
       tipodegasto: "",

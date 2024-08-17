@@ -1,58 +1,84 @@
 import React, { useEffect, useState } from "react";
+import ModalIngresarCodigo from "./ModalIngresarCodigo";
+import ModalCambiarContraseña from "./ModalCambiarContaseña";
+import ModalCodigoIncorrecto from "./ModalCodigoIncorrecto";
 import ModalIntentoDeOpciones from "./ModalIntentoDeOpciones";
 import ModalCambioContraRespCorrect from "./ModalCambioContraRespCorrect";
 
-function PasswordRecovery({ onClose, username, setEstadoRecuperacionCuenta }) {
+interface PasswordRecoveryProps {
+  onClose: () => void;
+  username: string;
+  setEstadoRecuperacionCuenta: (value: boolean) => void;
+}
+
+interface DatosUsuario {
+  username: string;
+  email: string;
+  direccion: string;
+  codigopostal: string;  // Mantener como string si es necesario para el backend
+  recuperacioncuenta: number;
+  _id: string;
+}
+
+const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({
+  onClose,
+  username,
+  setEstadoRecuperacionCuenta,
+}) => {
   const [answers, setAnswers] = useState({
     question1: "",
     question2: "",
     question3: "",
     question4: "",
   });
-  const [datosUsuario, setDatosUsuario] = useState(null);
-  const [nombreUsuario, setNombreUsuario] = useState(null);
-  const [opciones, setOpciones] = useState([]);
-  const [opciones2, setOpciones2] = useState([]);
-  const [opciones3, setOpciones3] = useState([]);
-  const [opciones4, setOpciones4] = useState([]);
-  const [respuestasCorrectas, setRespuestasCorrectas] = useState(false);
-  const [mostrarModalEspera, setMostrarModalEspera] = useState(false);
-  const [idUser, setIdUser] = useState("");
-  const [cambiarContraseña, setCambiarContraseña] = useState()
+  const [datosUsuario, setDatosUsuario] = useState<DatosUsuario | null>(null);
+  const [nombreUsuario, setNombreUsuario] = useState<boolean | null>(null);
+  const [opciones, setOpciones] = useState<string[]>([]);
+  const [opciones2, setOpciones2] = useState<string[]>([]);
+  const [opciones3, setOpciones3] = useState<string[]>([]);
+  const [opciones4, setOpciones4] = useState<string[]>([]);
+  const [respuestasCorrectas, setRespuestasCorrectas] = useState<boolean>(false);
+  const [mostrarModalEspera, setMostrarModalEspera] = useState<boolean>(false);
+  const [idUser, setIdUser] = useState<string>("");
+  const [cambiarContraseña, setCambiarContraseña] = useState<boolean>(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setAnswers({ ...answers, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (
       opciones[parseInt(answers.question1.replace("opcion", "")) - 1] ===
-        datosUsuario.username &&
+        datosUsuario?.username &&
       opciones2[parseInt(answers.question2.replace("opcion", "")) - 1] ===
-        datosUsuario.email &&
+        datosUsuario?.email &&
       opciones3[parseInt(answers.question3.replace("opcion", "")) - 1] ===
-        datosUsuario.direccion &&
+        datosUsuario?.direccion &&
       opciones4[parseInt(answers.question4.replace("opcion", "")) - 1] ===
-        datosUsuario.codigopostal
+        datosUsuario?.codigopostal
     ) {
       setRespuestasCorrectas(true);
       // Reiniciar el contador de recuperación en la base de datos
-      window.api.enviarEvento("reiniciar-recuperacioncuenta", datosUsuario._id);
-      setCambiarContraseña(true); 
+      if (datosUsuario) {
+        window.api.enviarEvento("reiniciar-recuperacioncuenta", datosUsuario._id);
+      }
+      setCambiarContraseña(true);
     } else {
       setRespuestasCorrectas(false);
       setMostrarModalEspera(true); // Muestra el modal de espera
       // Restar 1 al contador de recuperación en la base de datos
-      window.api.enviarEvento("restar-recuperacioncuenta", datosUsuario._id);
+      if (datosUsuario) {
+        window.api.enviarEvento("restar-recuperacioncuenta", datosUsuario._id);
+      }
     }
   };
 
   useEffect(() => {
     window.api.enviarEvento("obtener-admin");
 
-    const handleDatosAdminObtenidos = (respuesta) => {
+    const handleDatosAdminObtenidos = (respuesta: { exito: boolean; admin: DatosUsuario; error?: string }) => {
       if (respuesta.exito) {
         setDatosUsuario(respuesta.admin);
         setNombreUsuario(respuesta.admin.username === username);
@@ -64,19 +90,14 @@ function PasswordRecovery({ onClose, username, setEstadoRecuperacionCuenta }) {
       }
     };
 
-    window.api.recibirEvento(
-      "respuesta-obtener-admin",
-      handleDatosAdminObtenidos
-    );
+    window.api.recibirEvento("respuesta-obtener-admin", handleDatosAdminObtenidos);
 
     return () => {
       window.api.removeAllListeners("respuesta-obtener-admin");
     };
   }, [username]);
 
-  console.log(datosUsuario, "nombre del usuario que olvidó su contraseña");
-
-  const shuffleOptions = (options) => {
+  const shuffleOptions = (options: string[]) => {
     return options.sort(() => Math.random() - 0.5);
   };
 
@@ -90,16 +111,16 @@ function PasswordRecovery({ onClose, username, setEstadoRecuperacionCuenta }) {
       setOpciones(opcionesMezcladas);
     }
   }, [datosUsuario]);
-  // En ModalIntentoDeOpciones
-  useEffect(() => {
-    if ( datosUsuario) {
-      if(datosUsuario.recuperacioncuenta == 0)
-      setEstadoRecuperacionCuenta(true); // Esto activará el useEffect en App
-    }
-  }, [ datosUsuario]);
 
-  const shuffleOptions2 = (options2) => {
-    return options2.sort(() => Math.random() - 0.5);
+  useEffect(() => {
+    if (datosUsuario) {
+      if (datosUsuario.recuperacioncuenta === 0)
+        setEstadoRecuperacionCuenta(true); // Esto activará el useEffect en App
+    }
+  }, [datosUsuario, setEstadoRecuperacionCuenta]);
+
+  const shuffleOptions2 = (options: string[]) => {
+    return options.sort(() => Math.random() - 0.5);
   };
 
   useEffect(() => {
@@ -113,8 +134,8 @@ function PasswordRecovery({ onClose, username, setEstadoRecuperacionCuenta }) {
     }
   }, [datosUsuario]);
 
-  const shuffleOptions3 = (options3) => {
-    return options3.sort(() => Math.random() - 0.5);
+  const shuffleOptions3 = (options: string[]) => {
+    return options.sort(() => Math.random() - 0.5);
   };
 
   useEffect(() => {
@@ -128,8 +149,8 @@ function PasswordRecovery({ onClose, username, setEstadoRecuperacionCuenta }) {
     }
   }, [datosUsuario]);
 
-  const shuffleOptions4 = (options4) => {
-    return options4.sort(() => Math.random() - 0.5);
+  const shuffleOptions4 = (options: string[]) => {
+    return options.sort(() => Math.random() - 0.5);
   };
 
   useEffect(() => {
@@ -137,7 +158,7 @@ function PasswordRecovery({ onClose, username, setEstadoRecuperacionCuenta }) {
       const opcionesMezcladas4 = shuffleOptions4([
         datosUsuario.codigopostal,
         datosUsuario.codigopostal + "-2312",
-        datosUsuario.codigopostal - "113",
+        (parseInt(datosUsuario.codigopostal) - 113).toString(),
       ]);
       setOpciones4(opcionesMezcladas4);
     }
@@ -152,8 +173,7 @@ function PasswordRecovery({ onClose, username, setEstadoRecuperacionCuenta }) {
             <ModalCambioContraRespCorrect setCambiarContraseña={setCambiarContraseña} onClose={onClose} />
           )}
 
-
-          {mostrarModalEspera && (
+          {mostrarModalEspera && datosUsuario && (
             <ModalIntentoDeOpciones
               mostrarModalEspera={mostrarModalEspera}
               setMostrarModalEspera={setMostrarModalEspera}
@@ -172,7 +192,7 @@ function PasswordRecovery({ onClose, username, setEstadoRecuperacionCuenta }) {
               </button>
               <h2 className="text-xl mb-4">Recuperar Contraseña</h2>
               <p className=" p-2">
-                Responde corrrectamente y cambia tu contraseña o recupera tu
+                Responde correctamente y cambia tu contraseña o recupera tu
                 contraseña
               </p>
               <form onSubmit={handleSubmit} className="flex flex-col">
@@ -216,7 +236,7 @@ function PasswordRecovery({ onClose, username, setEstadoRecuperacionCuenta }) {
                 </div>
                 <div className="m-3 flex ">
                   <label className=" flex w-1/4" htmlFor="question3">
-                    Direccion:
+                    Dirección:
                   </label>
                   <select
                     className=" flex w-1/2 border border-gray-600 bg-slate-800 focus:outline-none"
@@ -235,7 +255,7 @@ function PasswordRecovery({ onClose, username, setEstadoRecuperacionCuenta }) {
                 </div>
                 <div className="m-3 flex ">
                   <label className=" flex w-1/4" htmlFor="question4">
-                    Codigo postal:
+                    Código postal:
                   </label>
                   <select
                     className=" flex w-1/2 border border-gray-600 bg-slate-800 focus:outline-none"

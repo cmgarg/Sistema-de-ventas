@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { login } from '../../redux/estados/authSlice.ts';
+import { login } from '../../redux/estados/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import PasswordRecovery from './PasswordRecovery.js';
+import { RootState } from '../../redux/store.js';
 
 type LoginProps = {
   setEstadoRecuperacionCuenta: (estado: boolean) => void;
@@ -72,6 +73,33 @@ const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta, setShowLoadi
   const userType = useSelector((state: RootState) => state.estadoTipoDeUser.userType);
   console.log(userType,"--este ees le estado reduxxxxxx")
 
+  // Función para manejar el efecto ripple
+  const handleRippleEffect = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const button = event.currentTarget;
+    const ripple = document.createElement("span");
+
+    // Obtener el tamaño y la posición del botón
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = `${size}px`;
+
+    // Obtener las coordenadas del clic
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    ripple.classList.add("ripple");
+
+    // Agregar el efecto ripple al botón
+    button.appendChild(ripple);
+
+    // Remover el efecto ripple después de la animación
+    ripple.addEventListener("animationend", () => {
+      ripple.remove();
+    });
+  };
+
   return (
     <div
       className={`flex flex-1 items-center justify-center text-white ${
@@ -128,9 +156,12 @@ const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta, setShowLoadi
             </>
           )}
           <button
-            className=" h-10 p-2 bg-cyan-700 justify-center hover:bg-cyan-800 outline-none rounded-lg mt-6"
+            className="relative overflow-hidden h-10 p-2 bg-cyan-700 justify-center hover:bg-cyan-800 outline-none rounded-lg mt-10"
             type="button"
-            onClick={handleSubmit}
+            onClick={(event) => {
+              handleRippleEffect(event);
+              handleSubmit();
+            }}
           >
             Iniciar
           </button>

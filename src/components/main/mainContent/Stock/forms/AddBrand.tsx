@@ -2,23 +2,17 @@ import React, { useEffect, useState } from "react";
 
 interface AddbrandProps {
   onChangeModal: () => void;
-  addOptionBrand: (option: object) => void;
+  addOptionBrand: (option: brandDataObject) => void;
 }
 
-const Addbrand: React.FC<AddbrandProps> = ({
-  onChangeModal,
-  addOptionBrand,
-}) => {
-  // FORMULARIO PARA AGREGAR CATEGORIASS Y brandS
-  //DATOS USUARIOS
+type brandDataObject = {
+  value: string;
+  label: string;
+  typeFilter: string;
+};
 
-  type brandDataObject = {
-    value: string;
-    label: string;
-    typeFilter: string;
-  };
-
-  const [brandData, setarticuloData] = useState<brandDataObject>({
+const Addbrand: React.FC<AddbrandProps> = ({ onChangeModal, addOptionBrand }) => {
+  const [brandData, setBrandData] = useState<brandDataObject>({
     value: "",
     label: "",
     typeFilter: "",
@@ -32,8 +26,7 @@ const Addbrand: React.FC<AddbrandProps> = ({
       switch (data) {
         case "brand":
           console.log("se cumple esrte");
-          setarticuloData({
-            ...brandData,
+          setBrandData({
             value: value.toLowerCase(),
             label: value,
             typeFilter: "brand",
@@ -47,21 +40,22 @@ const Addbrand: React.FC<AddbrandProps> = ({
       console.log("NO ESTA");
     }
   }
+
   useEffect(() => {
     console.log(brandData);
   }, [brandData]);
 
-  //SUBIR USUARIO A BASE DE DATOS LOCAL
-
   function subirArticulo() {
     window.api.enviarEvento("save-brand", brandData);
     addOptionBrand(brandData);
-    setarticuloData({
-      brand: "",
+    setBrandData({
+      value: "",
+      label: "",
+      typeFilter: "",
     });
     onChangeModal();
   }
-  //ESTILOS INPUT
+
   const estilosInput = "outline-none h-9 w-full bg-slate-600 px-2 rounded-md";
 
   return (
@@ -84,7 +78,7 @@ const Addbrand: React.FC<AddbrandProps> = ({
               type="text"
               name="brand"
               className={estilosInput}
-              value={brandData.brand}
+              value={brandData.label}
               onChange={(e) => {
                 setChangeData("brand", e.target.value);
               }}

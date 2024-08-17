@@ -1,12 +1,16 @@
-// Tooltip.jsx
-import React, { useState } from "react";
+import React, { useState, ReactNode, MouseEvent } from "react";
 import ReactDOM from "react-dom";
 
-const Tooltip = ({ children, content }) => {
+interface TooltipProps {
+  content: string;
+  children: ReactNode;
+}
+
+const Tooltip: React.FC<TooltipProps> = ({ children, content }) => {
   const [show, setShow] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
 
-  const handleMouseEnter = (e) => {
+  const handleMouseEnter = (e: MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     setCoords({ top: rect.top, left: rect.right });
     setShow(true);

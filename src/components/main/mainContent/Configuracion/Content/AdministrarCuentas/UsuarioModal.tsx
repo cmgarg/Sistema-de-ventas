@@ -1,14 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 
-function UsuarioModal({ isOpen, onClose }) {
-  const [usuario, setUsuario] = useState({
+interface UsuarioModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+interface Usuario {
+  _id?: string; // Añadido "?" porque se inicializa sin este valor
+  nombre: string;
+  imageUrl: string;
+  password: string;
+  permisos: {
+    gerente: boolean;
+    logistica: boolean;
+    ventas: boolean;
+    stock: boolean;
+  };
+}
+
+const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
+  const [usuario, setUsuario] = useState<Usuario>({
+    _id: "",
     nombre: "",
     password: "",
     imageUrl: "/imagen-usuario/user-1.jpg",
     permisos: {
       gerente: true,
-      Logistica: false,
+      logistica: false,
       ventas: false,
       stock: false,
     },
@@ -16,7 +35,7 @@ function UsuarioModal({ isOpen, onClose }) {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setUsuario((prev) => ({
       ...prev,
@@ -24,13 +43,13 @@ function UsuarioModal({ isOpen, onClose }) {
     }));
   };
 
-  const handleCheckboxChange = (event) => {
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name } = event.target;
     setUsuario((prev) => ({
       ...prev,
       permisos: {
         gerente: false,
-        Logistica: false,
+        logistica: false,
         ventas: false,
         stock: false,
         [name]: true,
@@ -46,12 +65,13 @@ function UsuarioModal({ isOpen, onClose }) {
     onClose();
     setShowPassword(false);
     setUsuario({
+      _id: "",
       nombre: "",
       password: "",
       imageUrl: "/imagen-usuario/user-1.jpg",
       permisos: {
         gerente: true,
-        Logistica: false,
+        logistica: false,
         ventas: false,
         stock: false,
       },
@@ -64,30 +84,40 @@ function UsuarioModal({ isOpen, onClose }) {
     // Envía los datos del formulario al backend
     window.api.enviarEvento("guardar-usuario-secundario", usuario);
     setUsuario({
+      _id: "",
       nombre: "",
       password: "",
       imageUrl: "/imagen-usuario/user-1.jpg",
       permisos: {
         gerente: true,
-        Logistica: false,
+        logistica: false,
         ventas: false,
         stock: false,
       },
     });
   };
 
-  // Verificación de que se guardó correctamente
-  window.api.recibirEvento("respuesta-guardar-usuario", (respuesta) => {
-    if (respuesta.exito) {
-      console.log("Usuario secundario guardado con éxito", respuesta.usuario);
-      //onAdminCreated(respuesta.usuario); // Haz algo después de crear el admin
-    } else {
-      console.error("Error al guardar el usuario secundario", respuesta.error);
-    }
-  });
-const isSaveDisabled = !usuario.nombre || !usuario.password;
   useEffect(() => {
-    const handleKeyPress = (event) => {
+    const handleResponse = (respuesta: { exito: boolean; usuario?: Usuario; error?: string }) => {
+      if (respuesta.exito) {
+        console.log("Usuario secundario guardado con éxito", respuesta.usuario);
+        //onAdminCreated(respuesta.usuario); // Haz algo después de crear el admin
+      } else {
+        console.error("Error al guardar el usuario secundario", respuesta.error);
+      }
+    };
+
+    window.api.recibirEvento("respuesta-guardar-usuario", handleResponse);
+
+    return () => {
+      window.api.removeListener("respuesta-guardar-usuario", handleResponse);
+    };
+  }, []);
+
+  const isSaveDisabled = !usuario.nombre || !usuario.password;
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "Enter" && !isSaveDisabled) {
         handleSave();
       } else if (event.key === "Escape") {
@@ -102,8 +132,6 @@ const isSaveDisabled = !usuario.nombre || !usuario.password;
   }, [isSaveDisabled]);
 
   if (!isOpen) return null;
-
-  
 
   return (
     <div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
@@ -149,7 +177,7 @@ const isSaveDisabled = !usuario.nombre || !usuario.password;
                 <input
                   type="checkbox"
                   name={key}
-                  checked={usuario.permisos[key]}
+                  checked={usuario.permisos[key as keyof typeof usuario.permisos]}
                   onChange={handleCheckboxChange}
                   className="accent-blue-500 h-5 w-5"
                 />
@@ -157,7 +185,7 @@ const isSaveDisabled = !usuario.nombre || !usuario.password;
               </label>
             ))}
           </div>
-          {usuario.permisos.Logistica && (
+          {usuario.permisos.logistica && (
             <div className="mt-5">
               Accesos:
               <p>• Ventas con selección de vendedor</p>

@@ -2,23 +2,17 @@ import React, { useEffect, useState } from "react";
 
 interface AddCategoryProps {
   onChangeModal: () => void;
-  addOptionCategory: (option: object) => void;
+  addOptionCategory: (option: CategoryDataObject) => void;
 }
 
-const AddCategory: React.FC<AddCategoryProps> = ({
-  onChangeModal,
-  addOptionCategory,
-}) => {
-  // FORMULARIO PARA AGREGAR CATEGORIASS Y MARCAS
-  //DATOS USUARIOS
+type CategoryDataObject = {
+  value: string;
+  label: string;
+  typeFilter: string;
+};
 
-  type articuloDataObject = {
-    value: string;
-    label: string;
-    typeFilter: string;
-  };
-
-  const [categoryData, setarticuloData] = useState<articuloDataObject>({
+const AddCategory: React.FC<AddCategoryProps> = ({ onChangeModal, addOptionCategory }) => {
+  const [categoryData, setCategoryData] = useState<CategoryDataObject>({
     value: "",
     label: "",
     typeFilter: "",
@@ -32,8 +26,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({
       switch (data) {
         case "category":
           console.log("se cumple esrte");
-          setarticuloData({
-            ...categoryData,
+          setCategoryData({
             value: value.toLowerCase(),
             label: value,
             typeFilter: "category",
@@ -47,33 +40,30 @@ const AddCategory: React.FC<AddCategoryProps> = ({
       console.log("NO ESTA");
     }
   }
+
   useEffect(() => {
     console.log(categoryData);
   }, [categoryData]);
 
-  //SUBIR USUARIO A BASE DE DATOS LOCAL
-
   function subirArticulo() {
     window.api.enviarEvento("save-category", categoryData);
     addOptionCategory(categoryData);
-
-    setarticuloData({
-      category: "",
+    setCategoryData({
+      value: "",
+      label: "",
+      typeFilter: "",
     });
-
     onChangeModal();
   }
-  //ESTILOS INPUT
+
   const estilosInput = "outline-none h-9 w-full bg-slate-600 px-2 rounded-md";
 
   return (
     <div className="fixed flex-col bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50">
-      <div className=" flex flex-col bg-white space-y-5 p-2 text-white rounded-md relative">
+      <div className="flex flex-col bg-white space-y-5 p-2 text-white rounded-md relative">
         <button
           className="bg-red-500 h-10 w-10 rounded-full absolute -right-2 -top-2"
-          onClick={() => {
-            onChangeModal();
-          }}
+          onClick={onChangeModal}
         >
           X
         </button>
@@ -86,7 +76,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({
               type="text"
               name="category"
               className={estilosInput}
-              value={categoryData.category}
+              value={categoryData.label}
               onChange={(e) => {
                 setChangeData("category", e.target.value);
               }}
@@ -95,9 +85,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({
           <div className="flex flex-1 flex-row space-x-5">
             <button
               className="w-52 h-10 bg-red-400 rounded-md"
-              onClick={() => {
-                onChangeModal();
-              }}
+              onClick={onChangeModal}
             >
               Cancelar
             </button>

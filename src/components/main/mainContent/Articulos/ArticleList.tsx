@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import TableMain from "../../tablaMain/TableMain";
 import TableHead from "../../tablaMain/TableHead";
 import TableRow from "../../tablaMain/TableRow";
@@ -11,12 +11,29 @@ import {
 } from "../../../../../app/ui/context-menu";
 import { useDispatch } from "react-redux";
 import { articleData } from "../../../../../types/types";
-import { NumberFormatBase, NumericFormat } from "react-number-format";
+import { NumericFormat } from "react-number-format";
 
 interface ArticleListProps {
   articles: articleData[];
-  searchActived: { actived: boolean; results: articleData[] };
-  editArticleOn: (e: { active: boolean; articleToEdit: articleData }) => void;
+  searchActived: {
+    actived: boolean;
+    results: articleData[];
+  };
+  editArticleOn: (e: {
+    active: boolean;
+    articleToEdit: {
+      id: string;
+      idArticle: string;
+      code: string;
+      barcode: string;
+    };
+  }) => void;
+  setResDeleteArticle: React.Dispatch<
+    React.SetStateAction<{
+      delete: boolean;
+      active: boolean;
+    }>
+  >;
 }
 
 const ArticleList: React.FC<ArticleListProps> = ({
@@ -35,7 +52,15 @@ const ArticleList: React.FC<ArticleListProps> = ({
   }, [articles]);
 
   const editArticle = (article: articleData) => {
-    editArticleOn({ active: true, articleToEdit: article });
+    editArticleOn({
+      active: true,
+      articleToEdit: {
+        id: article.code, // Asigna el valor correspondiente aquí
+        idArticle: article.code, // Asigna el valor correspondiente aquí
+        code: article.code,
+        barcode: article.barcode,
+      },
+    });
   };
 
   const deleteArticle = (article: articleData) => {
@@ -126,7 +151,7 @@ const ArticleList: React.FC<ArticleListProps> = ({
       <div className="first:bg-white">
         {searchActived.actived && searchActived.results.length > 0 ? (
           searchActived.results.map((articleObject) => (
-            <ContextMenu>
+            <ContextMenu key={articleObject.code}>
               <ContextMenuTrigger>
                 <TableRow key={articleObject.code}>
                   <div className="flex justify-start flex-1 space-x-1">

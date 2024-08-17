@@ -10,7 +10,7 @@ const Scanner: React.FC<ScannerProps> = ({ onDetected }) => {
   const [barcodeType, setBarcodeType] = useState("");
 
   useEffect(() => {
-    const handleKeyPress = (event) => {
+    const handleKeyPress = (event: { key: string; }) => {
       if (event.key === "Enter") {
         if (barcode) {
           onDetected({ code: barcode, type: barcodeType });

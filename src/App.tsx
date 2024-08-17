@@ -13,38 +13,29 @@ import { login, logout } from "./redux/estados/authSlice";
 import { cambiar, datosUsuario } from "./redux/estados/estadoTipoDeUser";
 import { RootState } from "./redux/store";
 import PantallaDeCarga from "./components/main/PantallaDeCarga";
+import React from "react";
 
 function App() {
   const [adminExists, setAdminExists] = useState<boolean | null>(null);
   const [bloqueoPrograma, setBloqueoPrograma] = useState(false);
-  const [estadoRecuperacionCuenta, setEstadoRecuperacionCuenta] =
-    useState(false);
+  const [estadoRecuperacionCuenta, setEstadoRecuperacionCuenta] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
-  const userType = useSelector(
-    (state: RootState) => state.estadoTipoDeUser.userType
-  );
-  const datosUsuarioRedux = useSelector(
-    (state: RootState) => state.estadoTipoDeUser.datosUsuario
-  );
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const userType = useSelector((state: RootState) => state.estadoTipoDeUser.userType);
+  const datosUsuarioRedux = useSelector((state: RootState) => state.estadoTipoDeUser.datosUsuario);
   const [_estadoRedux, setestadoRedux] = useState("");
 
   useEffect(() => {
     window.api.enviarEvento("verificar-admin-existente");
-    window.api.recibirEvento(
-      "respuesta-verificar-admin",
-      ({ existeAdmin, recuperacioncuenta }) => {
-        setAdminExists(existeAdmin);
-        if (recuperacioncuenta === 0) {
-          setBloqueoPrograma(true);
-        }
-        setLoading(false); // Actualizar el estado de carga después de verificar el administrador existente
+    window.api.recibirEvento("respuesta-verificar-admin", ({ existeAdmin, recuperacioncuenta }) => {
+      setAdminExists(existeAdmin);
+      if (recuperacioncuenta === 0) {
+        setBloqueoPrograma(true);
       }
-    );
+      setLoading(false); // Actualizar el estado de carga después de verificar el administrador existente
+    });
 
     return () => {
       window.api.removeAllListeners("respuesta-verificar-admin");
@@ -74,7 +65,7 @@ function App() {
         } else {
           if (permisos.gerente) {
             dispatch(cambiar({ userType: "gerente", datosUsuario }));
-          } else if (permisos.Logistica) {
+          } else if (permisos.logistica) {
             dispatch(cambiar({ userType: "logistica", datosUsuario }));
           } else if (permisos.ventas) {
             dispatch(cambiar({ userType: "ventas", datosUsuario }));
@@ -83,31 +74,22 @@ function App() {
           }
         }
       } else {
-        console.error(
-          "Permisos del usuario no encontrados o incorrectos",
-          response
-        );
+        console.error("Permisos del usuario no encontrados o incorrectos", response);
       }
       setLoading(false); // Marca que la carga ha terminado
     };
 
-    window.api.recibirEvento(
-      "respuesta-obtener-permisos-usuario",
-      handleObtenerPermisosUsuario
-    );
+    window.api.recibirEvento("respuesta-obtener-permisos-usuario", handleObtenerPermisosUsuario);
 
     return () => {
-      window.api.removeListener(
-        "respuesta-obtener-permisos-usuario",
-        handleObtenerPermisosUsuario
-      );
+      window.api.removeListener("respuesta-obtener-permisos-usuario", handleObtenerPermisosUsuario);
     };
   }, [dispatch]);
 
   useEffect(() => {
     const handleObtenerDatosUsuario = (response: any) => {
       if (response.success) {
-        console.log(response,"esto recibo del bakcend------------------------------------------------------------------------------------")
+        console.log(response, "esto recibo del backend");
         dispatch(datosUsuario({ datosUsuario: response.data }));
       } else {
         console.error("Error al obtener los datos del usuario", response.error);
@@ -135,13 +117,13 @@ function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowLoadingScreen(false);
-    }, 150); // Tiempo mínimo de carga de 5 segundos
+    }, 5000); // Tiempo mínimo de carga de 5 segundos
 
     return () => clearTimeout(timer);
   }, [showLoadingScreen]);
 
   function renderContent() {
-    if (false) {
+    if (loading) {
       return <div>Cargando... no se obtuvieron los permisos</div>; // Muestra un mensaje de carga mientras se obtienen los permisos
     }
     if (adminExists === null) {
@@ -173,10 +155,7 @@ function App() {
     setestadoRedux(userType);
   }, [userType]);
 
-  console.log(
-    datosUsuarioRedux,
-    "Estos son los datos del usuario que inicio yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
-  );
+  console.log(datosUsuarioRedux, "Estos son los datos del usuario que inicio");
 
   return (
     <div className="w-full h-screen grid grid-cmg-program bg-gray-800 font-medium overflow-hidden box-border">

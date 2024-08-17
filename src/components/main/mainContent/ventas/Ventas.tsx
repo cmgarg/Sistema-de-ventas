@@ -75,7 +75,7 @@ const Ventas: React.FC<VentastProps> = (
   return (
     <div className="h-full w-full grid-cmg-program">
       <div className="flex-2">
-        <NavMain title="Ventas">
+        <NavMain title="Ventas" setLoginUser={""}>
           <Export></Export>
           <Biñeta title={`Agregar Cuenta`}>
             <div

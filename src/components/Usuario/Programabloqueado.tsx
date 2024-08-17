@@ -1,43 +1,47 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, MouseEvent } from "react";
 import ModalIngresarCodigo from "./ModalIngresarCodigo";
 import ModalCambiarContraseña from "./ModalCambiarContaseña";
 import ModalCodigoIncorrecto from "./ModalCodigoIncorrecto";
 
-export default function Programabloqueado({setBloqueoPrograma}) {
-  const [clickCount, setClickCount] = useState(0);
-  const [mostrarModalCodigo, setMostrarModalCodigo] = useState(false);
-  const [verificarCodigo, setVerificarCodigo] = useState(false);
-  const [autCambioContra, setautCAmbioContra] = useState(false);
-  const [modalCodigoIncorrecto, setModalCodigoIncorrecto] = useState()
+interface ProgramabloqueadoProps {
+  setBloqueoPrograma: (value: boolean) => void;
+}
 
+const Programabloqueado: React.FC<ProgramabloqueadoProps> = ({
+  setBloqueoPrograma,
+}) => {
+  const [clickCount, setClickCount] = useState<number>(0);
+  const [mostrarModalCodigo, setMostrarModalCodigo] = useState<boolean>(false);
+  const [verificarCodigo, setVerificarCodigo] = useState<string | false>(false);
+  const [autCambioContra, setautCAmbioContra] = useState<boolean>(false);
+  const [modalCodigoIncorrecto, setModalCodigoIncorrecto] = useState<boolean>(false);
 
   useEffect(() => {
     if (verificarCodigo) {
       window.api.enviarEvento("verificar-codigo-desbloqueo", verificarCodigo);
     }
-  
-    const handleRespuestaVerificacion = (respuesta) => {
+
+    const handleRespuestaVerificacion = (respuesta: { exito: boolean }) => {
       if (respuesta.exito) {
         setautCAmbioContra(true);
       } else {
-        setModalCodigoIncorrecto(true)
+        setModalCodigoIncorrecto(true);
       }
     };
-  
+
     window.api.recibirEvento("respuesta-verificar-codigo", handleRespuestaVerificacion);
-  
+
     return () => {
       window.api.removeAllListeners("respuesta-verificar-codigo");
     };
   }, [verificarCodigo]);
-  
 
   const handleSVGClick = () => {
     setClickCount((prevCount) => prevCount + 1);
   };
 
-  const handleOutsideClick = (event) => {
-    if (clickCount > 0 && !event.target.closest(".svg-container")) {
+  const handleOutsideClick = (event: MouseEvent<HTMLDivElement>) => {
+    if (clickCount > 0 && !event.currentTarget.closest(".svg-container")) {
       setClickCount(0); // Resetea el contador si el clic es fuera del div del SVG
     }
   };
@@ -56,7 +60,7 @@ export default function Programabloqueado({setBloqueoPrograma}) {
       onClick={handleOutsideClick} // Manejador para clics fuera del SVG
     >
       {modalCodigoIncorrecto && (
-          <ModalCodigoIncorrecto setModalCodigoIncorrecto={setModalCodigoIncorrecto}/>
+        <ModalCodigoIncorrecto setModalCodigoIncorrecto={setModalCodigoIncorrecto} />
       )}
       {mostrarModalCodigo && (
         <ModalIngresarCodigo
@@ -76,7 +80,7 @@ export default function Programabloqueado({setBloqueoPrograma}) {
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 139.4 156.4"
-            className=" w-96 w-96"
+            className="w-96 h-96"
           >
             <defs></defs>
             <g id="Capa_2" data-name="Capa 2">
@@ -117,3 +121,5 @@ export default function Programabloqueado({setBloqueoPrograma}) {
     </div>
   );
 }
+
+export default Programabloqueado;

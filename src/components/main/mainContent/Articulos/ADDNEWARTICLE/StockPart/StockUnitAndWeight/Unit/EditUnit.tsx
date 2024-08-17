@@ -1,4 +1,4 @@
-import { unitType } from "@/types";
+import { unitType } from "../../../../../../../../../types/types";
 import React, { useEffect, useState } from "react";
 import { CheckCircledIcon } from "@radix-ui/react-icons";
 import { RiErrorWarningFill } from "react-icons/ri";

@@ -23,6 +23,7 @@ import { loadBrands } from "../../redux/estados/brandState";
 import { loadCategorys } from "../../redux/estados/categoryState";
 import { loadSubCategorys } from "../../redux/estados/subCategoryState";
 import PanelUsuario from "./PanelUsuario";
+import { RootState } from "../../redux/store";
 
 interface MainContentProps {}
 

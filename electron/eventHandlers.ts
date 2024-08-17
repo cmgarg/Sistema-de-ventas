@@ -68,7 +68,7 @@ import {
 
 } from "./databaseOperations";
 import { verificarToken } from "./vFunctions";
-import { articleData } from "../types/types";
+import { articleData, IUser } from "../types/types";
 
 export const loadEvents = () => {
   console.log("eventHandlers Se esta Ejecutando...");
@@ -203,8 +203,7 @@ export const loadEvents = () => {
   ipcMain.on("get-sales", async (event) => {
     const ventas = await findSales();
 
-    console.log("Se enviaron las ventas", ventas);
-    event.reply("response-get-sales", ventas); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
+    event.reply("response-get-sales", ventas);
   });
 
   ipcMain.on("delete-sale", (_e, ventaAEliminar) => {
@@ -229,9 +228,7 @@ export const loadEvents = () => {
 
   ipcMain.on("verificar-admin-existente", async (event) => {
     try {
-      console.log("Verificando admin existente..."); // Log para depuración
       const adminInfo = await verificarAdminExistente();
-      console.log("Información del admin:", adminInfo); // Log para depuración
       event.reply("respuesta-verificar-admin", adminInfo);
     } catch (error) {
       console.error("Error al verificar admin existente:", error); // Log para depuración
@@ -256,7 +253,6 @@ export const loadEvents = () => {
   ipcMain.on("get-articles", async (event) => {
     const articulos = await findArticles();
 
-    console.log("Se enviaron los ARTICULOS", articulos);
     event.reply("response-get-articles", articulos); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
   });
 
@@ -277,7 +273,6 @@ export const loadEvents = () => {
 
   ipcMain.on("get-sales-stats", async (event) => {
     const statsSales = await getStats();
-    console.log(statsSales, "FALOPERO");
     event.reply("response-get-sales-stats", statsSales);
   });
 
@@ -290,7 +285,6 @@ export const loadEvents = () => {
   ipcMain.on("get-sales", async (event) => {
     const ventas = await findSales();
 
-    console.log("Se enviaron las ventas", ventas);
     event.reply("response-get-sales", ventas); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
   });
 
@@ -352,7 +346,6 @@ export const loadEvents = () => {
   });
   //AACTUALIZAR DEPOSITO
   ipcMain.on("update-deposit", async (event, depositToUpdate) => {
-    console.log("QUE PASA ", depositToUpdate);
     const response = await updateDeposit(depositToUpdate);
 
     event.reply("response-update-deposit", response);
@@ -368,7 +361,7 @@ export const loadEvents = () => {
         productToAdd,
       }: { deposit_id: string; sector: number; productToAdd: articleData }
     ) => {
-      console.log("QUE PASA ", productToAdd);
+
       const response = await addProductInDeposit(
         deposit_id,
         sector,
@@ -426,7 +419,7 @@ export const loadEvents = () => {
   ipcMain.on("get-deposits", async (event) => {
     console.log("QUE PASA ");
     const response = await getDeposits();
-    console.log("RESPUESTA A FRONT", response);
+
 
     event.reply("response-get-deposits", response);
   });
@@ -476,11 +469,11 @@ export const loadEvents = () => {
     }
   });
 
-  ipcMain.on("obtener-datos-usuario", async (event, userId) => {
+  ipcMain.on("obtener-datos-usuario", async (event, userId: string) => {
     try {
-      const usuario = await getUser(userId);
-      if (usuario) {
-        const userData:any = {
+      const usuario: unknown = await getUser(userId);
+      if (isIUser(usuario)) {
+        const userData = {
           username: usuario.username || usuario.nombre,
           email: usuario.email,
           ubicacion: usuario.ubicacion,
@@ -504,6 +497,22 @@ export const loadEvents = () => {
       });
     }
   });
+  
+  function isIUser(obj: unknown): obj is IUser {
+    return (
+      typeof obj === "object" &&
+      obj !== null &&
+      "username" in obj &&
+      "email" in obj &&
+      "ubicacion" in obj &&
+      "direccion" in obj &&
+      "codigopostal" in obj &&
+      "imageUrl" in obj &&
+      "esAdmin" in obj &&
+      "_id" in obj
+    );
+  }
+  
   
   ipcMain.on("verificar-codigo-desbloqueo", async (event, codigoIngresado) => {
     try {
@@ -681,7 +690,7 @@ export const loadEvents = () => {
       const estadoPagadoActualizado = await obtenerEstadoPagado(idCuenta);
       event.reply("estado-pagado-actualizado", { exitoso: true, idCuenta, estadoPagado: estadoPagadoActualizado });
     } catch (error) {
-      event.reply("estado-pagado-actualizado", { exitoso: false, error: error.message, idCuenta });
+      event.reply("estado-pagado-actualizado", { exitoso: false, error: onmessage, idCuenta });
     }
   });
 
@@ -702,7 +711,7 @@ export const loadEvents = () => {
       await eliminarCuenta(id);
       event.reply("cuenta-eliminada", { exitoso: true });
     } catch (error) {
-      event.reply("cuenta-eliminada", { exitoso: false, error: error.message });
+      event.reply("cuenta-eliminada", { exitoso: false, error: onmessage });
     }
   });
 
@@ -748,12 +757,12 @@ export const loadEvents = () => {
 
 // Guardar una notificación y enviarla a todas las ventanas
 // Validar los datos de la notificación
-const validateNotificationData = (data) => {
+const validateNotificationData = (data: { nota: any; } | null) => {
   return typeof data === 'object' && data !== null && typeof data.nota === 'string';
 };
 
 // Guardar una notificación y enviarla a todas las ventanas
-ipcMain.on('send-notification', async (event, data) => {
+ipcMain.on('send-notification', async (_event, data) => {
   if (validateNotificationData(data)) {
     try {
       // Obtener los tipos de notificación desactivados
@@ -801,7 +810,7 @@ ipcMain.on('delete-notification', async (event, notificationId) => {
 });
 
 ////Actualiza si la notificacion fue vistta o no 
-ipcMain.on('mark-notification-as-read', async (event, notificationId) => {
+ipcMain.on('mark-notification-as-read', async (_event, notificationId) => {
   try {
     await markNotificationAsRead(notificationId);
     console.log(`Notificación ${notificationId} marcada como vista.`);
@@ -811,7 +820,7 @@ ipcMain.on('mark-notification-as-read', async (event, notificationId) => {
 });
 
 ///////oculta las notificaciones cambiando la propiedad
-ipcMain.on('hide-notification', async (event, notificationId) => {
+ipcMain.on('hide-notification', async (_event, notificationId) => {
   try {
     await hideNotification(notificationId);
     console.log(`Notificación ${notificationId} oculta.`);
@@ -824,7 +833,7 @@ ipcMain.on('hide-notification', async (event, notificationId) => {
 
 
 /////guarda el tipo de notifiaciones que vana estar bloqueadas
-ipcMain.on('disable-notification-type', async (event, tipo) => {
+ipcMain.on('disable-notification-type', async (_event, tipo) => {
   console.log(tipo)
   try {
     await disableNotificationType(tipo);

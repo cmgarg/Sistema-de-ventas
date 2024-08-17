@@ -8,7 +8,9 @@ export default function
     <div className='flex w-full justify-end relative z-50'>
         <div className='flex items-center absolute pr-5'>
         <Notificaciones/>
-        <UsuarioIniciado/>   
+        <UsuarioIniciado setLoginUser={function (value: React.SetStateAction<boolean>): void {
+          throw new Error('Function not implemented.')
+        } }/>   
         </div>
     </div>
   )

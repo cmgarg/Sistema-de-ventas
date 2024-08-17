@@ -1,4 +1,4 @@
-import { depositType } from "@/types";
+import { depositType } from "../../../../../../../../../types/types";
 import React, { useEffect, useState } from "react";
 
 type CreateDepositProps = {

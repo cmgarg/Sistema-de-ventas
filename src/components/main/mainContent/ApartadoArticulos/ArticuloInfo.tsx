@@ -46,6 +46,7 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
         value: 0,
       },
       description: "",
+      code: ""
     },
     brand: { value: "", label: "" },
     code: "",
@@ -96,7 +97,7 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
   return (
     <div className="flex flex-col flex-1 h-full text-slate-50">
       <div className="w-full">
-        <NavMain title={`${article.article.name}`}>
+        <NavMain title={`${article.article.name}`} setLoginUser={""}>
           <Export></Export>
         </NavMain>
       </div>

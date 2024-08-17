@@ -7,15 +7,42 @@ import { FaUserEdit } from "react-icons/fa";
 import Tooltip from "../../../../nav/aside/Tooltip";
 import { IoMdPersonAdd } from "react-icons/io";
 
+// Define los tipos de usuario y la respuesta del backend
+interface Usuario {
+  _id: string;
+  nombre: string;
+  imageUrl: string;
+  password: string;  // Asegúrate de incluir 'password'
+  permisos: {
+    gerente: boolean;
+    logistica: boolean;
+    ventas: boolean;
+    stock: boolean;
+  };
+}
+
+interface Response {
+  exito: boolean;
+  usuarios: Usuario[];
+  error?: string;
+  mensaje?: string;
+  userId?: string;
+  imageUrl?: string;
+}
+
+
+
+
+
 export default function AdministrarCuentas() {
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [usuarios, setUsuarios] = useState([]);
-  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState("");
-  const [usuarioParaEditar, setUsuarioParaEditar] = useState(null);
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<string>("");
+  const [usuarioParaEditar, setUsuarioParaEditar] = useState<Usuario | null>(null);
   const [changeImageVisible, setChangeImageVisible] = useState(false);
-  const [selectedImagee, setSelectedImagee] = useState(null);
-  const imageRef = useRef(null);
+  const [selectedImagee, setSelectedImagee] = useState<string | null>(null);
+  const imageRef = useRef<HTMLDivElement | null>(null);
 
   const images = [
     "/imagen-usuario/user-1.jpg",
@@ -33,7 +60,7 @@ export default function AdministrarCuentas() {
     window.api.enviarEvento("cargar-todos-usuarios");
 
     // Escuchar la respuesta del backend
-    window.api.recibirEvento("respuesta-cargar-todos-usuarios", (response) => {
+    window.api.recibirEvento("respuesta-cargar-todos-usuarios", (response: Response) => {
       if (response.exito) {
         setUsuarios(response.usuarios);
         if (response.usuarios.length > 0) {
@@ -47,13 +74,13 @@ export default function AdministrarCuentas() {
     // Escuchar la respuesta de la actualización de la imagen del subusuario
     window.api.recibirEvento(
       "respuesta-actualizar-imagen-subusuario",
-      (response) => {
+      (response: Response) => {
         if (response.exito) {
           // Actualizar la URL de la imagen del subusuario en el estado
           setUsuarios((prevUsuarios) =>
             prevUsuarios.map((usuario) =>
               usuario._id === response.userId
-                ? { ...usuario, imageUrl: response.imageUrl }
+                ? { ...usuario, imageUrl: response.imageUrl! }
                 : usuario
             )
           );
@@ -68,7 +95,7 @@ export default function AdministrarCuentas() {
     );
 
     // Escuchar la respuesta de la actualización del usuario
-    window.api.recibirEvento("respuesta-guardar-usuario-editado", (response) => {
+    window.api.recibirEvento("respuesta-guardar-usuario-editado", (response: Response) => {
       if (response.exito) {
         // Solicitar nuevamente la carga de todos los usuarios para reflejar los cambios
         window.api.enviarEvento("cargar-todos-usuarios");
@@ -85,12 +112,12 @@ export default function AdministrarCuentas() {
     };
   }, []);
 
-  const handleMenuClick = (userId) => {
+  const handleMenuClick = (userId: string) => {
     setUsuarioSeleccionado(userId); // Establecer el usuario seleccionado
     setSelectedImagee(null); // Resetear la imagen seleccionada cuando se selecciona un nuevo usuario
   };
 
-  const handleImageClick = (ref) => {
+  const handleImageClick = (ref: React.RefObject<HTMLDivElement>) => {
     if (imageRef.current === ref.current && changeImageVisible) {
       setChangeImageVisible(false);
     } else {
@@ -99,7 +126,7 @@ export default function AdministrarCuentas() {
     }
   };
 
-  const handleImageSelectt = (index:number) => {
+  const handleImageSelectt = (index: number) => {
     setSelectedImagee(images[index]);
     setChangeImageVisible(false);
 
@@ -115,19 +142,20 @@ export default function AdministrarCuentas() {
     }
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files![0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setSelectedImagee(e.target.result);
+        const result = e.target?.result as string;
+        setSelectedImagee(result);
         setChangeImageVisible(false);
 
         if (usuarioSeleccionado) {
           try {
             window.api.enviarEvento("actualizar-imagen-subusuario", {
               userId: usuarioSeleccionado, // Usar el ID del subusuario seleccionado
-              imageUrl: e.target.result,
+              imageUrl: result,
             });
           } catch (error) {
             console.error(
@@ -141,14 +169,17 @@ export default function AdministrarCuentas() {
     }
   };
 
-  const handleClickOutside = (event) => {
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
     if (
-      !event.target.closest(".menu-container") &&
-      !event.target.closest(".image-menu-container")
+      !(target instanceof HTMLElement) ||
+      (!target.closest(".menu-container") &&
+        !target.closest(".image-menu-container"))
     ) {
       setChangeImageVisible(false);
     }
   };
+  
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -163,7 +194,7 @@ export default function AdministrarCuentas() {
 
   function editarUsuario() {
     const userToEdit = usuarios.find((u) => u._id === usuarioSeleccionado);
-    setUsuarioParaEditar(userToEdit);
+    setUsuarioParaEditar(userToEdit || null);
     setShowEditModal(true);
   }
 
@@ -197,7 +228,7 @@ export default function AdministrarCuentas() {
         </div>
         <div className="h-[53.6rem] overflow-auto">
           {usuarios.map((usuario) => {
-            const ref = React.createRef();
+            const ref = React.createRef<HTMLDivElement>();
             return (
               <div
                 key={usuario._id}
@@ -270,7 +301,7 @@ export default function AdministrarCuentas() {
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
         user={usuarioParaEditar}
-        onSave={(updatedUser) => {
+        onSave={(updatedUser: Usuario) => {
           // Lógica para guardar los cambios del usuario editado
           const updatedUsuarios = usuarios.map((usuario) =>
             usuario._id === updatedUser._id ? updatedUser : usuario

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../../redux/estados/authSlice";
@@ -7,7 +7,23 @@ import { cambiar } from "../../../../src/redux/estados/estadoTipoDeUser.js";
 import "../../../App.css";
 import "../../../index.css";
 
-export default function UsuarioIniciado({ setLoginUser }) {
+interface UsuarioIniciadoProps {
+  setLoginUser: Dispatch<SetStateAction<boolean>>;
+}
+
+interface UserData {
+  username?: string;
+  nombre?: string;
+  imageUrl?: string;
+}
+
+interface AppState {
+  auth: {
+    isAuthenticated: boolean;
+  };
+}
+
+const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
   const images = [
     "assets/imagen-usuario/user-1.jpg",
     "assets/imagen-usuario/user-2.jpg",
@@ -21,12 +37,12 @@ export default function UsuarioIniciado({ setLoginUser }) {
 
   const [menuVisible, setMenuVisible] = useState(false);
   const [changeImageVisible, setChangeImageVisible] = useState(false);
-  const [datosUsuario, setDatosUsuario] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [datosUsuario, setDatosUsuario] = useState<UserData | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated } = useSelector((state: AppState) => state.auth);
 
   useEffect(() => {
     console.log("Componente UsuarioIniciado montado");
@@ -37,7 +53,7 @@ export default function UsuarioIniciado({ setLoginUser }) {
     };
   }, []);
 
-  const handleImageSelect = async (index) => {
+  const handleImageSelect = async (index: number) => {
     setSelectedImage(images[index]);
     setChangeImageVisible(false);
 
@@ -55,12 +71,12 @@ export default function UsuarioIniciado({ setLoginUser }) {
     }
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setSelectedImage(e.target.result);
+        setSelectedImage(e.target?.result as string);
         setChangeImageVisible(false);
       };
       reader.readAsDataURL(file);
@@ -77,10 +93,11 @@ export default function UsuarioIniciado({ setLoginUser }) {
     setMenuVisible(false);
   };
 
-  const handleClickOutside = (event) => {
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
     if (
-      !event.target.closest(".menu-container") &&
-      !event.target.closest(".image-menu-container")
+      target.closest(".menu-container") === null &&
+      target.closest(".image-menu-container") === null
     ) {
       setMenuVisible(false);
       setChangeImageVisible(false);
@@ -95,7 +112,15 @@ export default function UsuarioIniciado({ setLoginUser }) {
 
   const handleLogout = () => {
     console.log("Ejecutando handleLogout");
-    dispatch(cambiar({ userType: "" }));
+    dispatch(cambiar({ userType: "", datosUsuario: {
+      email: "",
+      ubicacion: "",
+      direccion: "",
+      codigopostal: "",
+      imageUrl: "",
+      esAdmin: false,
+      _id: ""
+    } })); // Ajusta {} según sea necesario
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     dispatch(logout());
@@ -109,7 +134,7 @@ export default function UsuarioIniciado({ setLoginUser }) {
       window.api.enviarEvento("obtener-datos-usuario", userId);
     }
 
-    const handleDatosUsuarioObtenidos = (respuesta) => {
+    const handleDatosUsuarioObtenidos = (respuesta: any) => {
       if (respuesta) {
         if (respuesta.success) {
           setDatosUsuario(respuesta.data);
@@ -138,9 +163,9 @@ export default function UsuarioIniciado({ setLoginUser }) {
     const lastCacheClear = localStorage.getItem('lastCacheClear');
     const currentTime = new Date().getTime();
 
-    if (!lastCacheClear || currentTime - lastCacheClear > 30 * 24 * 60 * 60 * 1000) {
+    if (!lastCacheClear || currentTime - parseInt(lastCacheClear) > 30 * 24 * 60 * 60 * 1000) {
       window.api.enviarEvento("clear-cache");
-      window.api.recibirEvento("cache-cleared", (_response) => {
+      window.api.recibirEvento("cache-cleared", (_response: any) => {
         localStorage.setItem('lastCacheClear', currentTime.toString());
       });
 
@@ -240,4 +265,6 @@ export default function UsuarioIniciado({ setLoginUser }) {
       </div>
     </>
   );
-}
+};
+
+export default UsuarioIniciado;

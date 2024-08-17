@@ -1,27 +1,42 @@
-import { clientData } from "../../../../../../types/types";
 import Downshift from "downshift";
-import React, { useEffect, useRef, useState } from "react";
-import AutoSuggest from "react-autosuggest";
+import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
 
-interface MenuClientsForm {
-  style: string;
-  clients: clientData[];
-  setClientData: (c: {
-    name: string;
-    email: string;
-    address: string;
-    phone: string;
-    dni: string;
-    _id: string;
-  }) => void;
-  value?: string;
+interface ClientDataLocal {
+  name: string;
+  email: string;
+  address: string;
+  phone: string;
+  dni: string;
+  _id: string;
+  DNI: string;
 }
 
-const MenuClientsForm: React.FC<MenuClientsForm> = ({
+interface MenuClientsFormProps {
+  style: string;
+  clients: ClientDataLocal[];
+  setClientData: (c: ClientDataLocal) => void;
+  value?: string;
+  modalClient: () => void;
+  showModalBuyer: boolean;
+  setShowModalBuyer: Dispatch<SetStateAction<boolean>>;
+  loadBuyer: (value: string) => void;
+  onShowClientForm: (s: boolean) => void;
+  loadClient: () => void;
+  showClientForm: boolean;
+}
+
+const MenuClientsForm: React.FC<MenuClientsFormProps> = ({
   clients,
   style,
   setClientData,
   value,
+  modalClient,
+  showModalBuyer,
+  setShowModalBuyer,
+  loadBuyer,
+  onShowClientForm,
+  loadClient,
+  showClientForm,
 }) => {
   const [newValue, setNewValue] = useState<string>("");
 
@@ -30,6 +45,7 @@ const MenuClientsForm: React.FC<MenuClientsForm> = ({
       setNewValue(newValue);
     }
   };
+
   const searchInClients = (i: string) => {
     const toSearch = [...clients];
     const inputLength = i.length;
@@ -44,7 +60,7 @@ const MenuClientsForm: React.FC<MenuClientsForm> = ({
         } else if (typeof val === "object") {
           return Object.values(val).some((u) => {
             if (typeof u === "string") {
-              return i
+              return u
                 .toLowerCase()
                 .slice(0, inputLength)
                 .includes(i.toLowerCase());
@@ -53,27 +69,22 @@ const MenuClientsForm: React.FC<MenuClientsForm> = ({
         }
       });
     });
-    console.log(result, "RESULTADOOOO", i);
+
     if (result.length > 0 && result.length < 2) {
-      const clientData: {
-        name: string;
-        email: string;
-        address: string;
-        phone: string;
-        dni: string;
-        _id: string;
-      } = {
+      const clientData: ClientDataLocal = {
         name: result[0].name,
         email: result[0].email,
         address: result[0].address,
         phone: result[0].phone.toString(),
         dni: result[0].DNI.toString(),
         _id: result[0]._id,
+        DNI: result[0].DNI,
       };
       setClientData(clientData);
       onChangeNewValue(clientData.name);
     }
   };
+
   const compareSelectItemWithInputValue = (i: string): string => {
     const inputLength = newValue.length;
     const itemValue = i;
@@ -86,9 +97,10 @@ const MenuClientsForm: React.FC<MenuClientsForm> = ({
       return itemValue;
     }
   };
+
   useEffect(() => {
     console.log(clients);
-  }, []);
+  }, [clients]);
 
   return (
     <Downshift

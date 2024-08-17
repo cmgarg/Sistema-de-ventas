@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { articleData, dataToDeleteArticle } from "@/types";
+import { articleData, dataToDeleteArticle } from "../../../types/types";
 
 const initialState: articleData[] = [];
 export const articleSlice = createSlice({
@@ -20,7 +20,7 @@ export const articleSlice = createSlice({
     deleteArticle: (state, action) => {
       const clientToDelete: dataToDeleteArticle = action.payload;
 
-      const result = state.filter((articleData) => {
+      const result = state.filter((articleData: { article: { name: any; code: any; }; }) => {
         return (
           articleData.article.name !== clientToDelete.name &&
           articleData.article.code !== clientToDelete.code

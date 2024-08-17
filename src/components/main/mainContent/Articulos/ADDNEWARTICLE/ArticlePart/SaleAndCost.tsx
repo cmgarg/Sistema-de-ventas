@@ -15,11 +15,12 @@ const SaleAndCost: React.FC<saleAndCost> = ({
   errorIn,
   inputStyle,
 }) => {
-  const [finalPrice, setFinalPrice] = useState(0);
+  const [finalPrice, setFinalPrice] = useState<number>(0);
   useEffect(() => {
     console.log(finalPrice, "PRECIO FINAL");
     dispatch({ type: "SET_FINAL_PRICE", payload: finalPrice });
   }, [finalPrice]);
+
   return (
     <div className="flex flex-col space-x-2 border-t border-slate-700 p-2">
       <div className="flex space-x-2">
@@ -96,15 +97,14 @@ type priceOfArticle = {
   costo: number;
   articleState: articleData;
   value: number;
-  finalPrice: string;
-  setFinalPrice: (e: string) => void;
+  finalPrice: number;
+  setFinalPrice: (e: number) => void;
 };
 
 const PriceOfArticle: React.FC<priceOfArticle> = ({
   percentajeToSale,
   costo,
   articleState,
-  // value,
   finalPrice,
   setFinalPrice,
 }) => {
@@ -117,17 +117,19 @@ const PriceOfArticle: React.FC<priceOfArticle> = ({
     percentaje: "",
     priceWithTaxsAndProfit: 0,
   });
+
   const formatterCurrency = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     currencyDisplay: "symbol",
   });
 
-  const formatMony = (n: number | string) => {
+  const formatMoney = (n: number | string) => {
     return typeof n === "string"
       ? formatterCurrency.format(Number(n))
       : formatterCurrency.format(n);
   };
+
   const taxsReducer = () => {
     const taxtCostPrice = articleState.taxes.filter((e) => e.type.costPrice);
     const taxtFinalPrice = articleState.taxes.filter((e) => e.type.finalPrice);
@@ -153,15 +155,12 @@ const PriceOfArticle: React.FC<priceOfArticle> = ({
       taxFinalPriceSuma,
     };
   };
+
   const applyTaxes = (value: string | number, percentaje: string | number) => {
     const { taxCostPriceSuma, taxFinalPriceSuma } = taxsReducer();
-    //sumo los impuestos sobre el precio de costo
-
     const priceWithTaxCost = Number(value) * (1 + taxCostPriceSuma / 100);
-
     const priceWithTaxCostAndFinalPrice =
       priceWithTaxCost * (1 + taxFinalPriceSuma / 100);
-
     const priceWithTaxsAndProfit =
       priceWithTaxCostAndFinalPrice * (1 + Number(percentaje) / 100);
 
@@ -177,13 +176,13 @@ const PriceOfArticle: React.FC<priceOfArticle> = ({
 
     return priceWithTaxsAndProfit;
   };
+
   useEffect(() => {
     const finalPrice = applyTaxes(costo, percentajeToSale);
-
     console.log("PRECIO FINAL LOQUITO", finalPrice);
-
     setFinalPrice(finalPrice);
   }, [costo, percentajeToSale, articleState.taxes]);
+
   return (
     <div className="flex flex-col">
       <div className="flex space-x-5 w-full border-cyan-700 border-b">
@@ -203,12 +202,12 @@ const PriceOfArticle: React.FC<priceOfArticle> = ({
           <p className="font-thin">
             Precio con Impuestos sobre el Costo:
             <span className="font-bold">
-              {formatMony(toShowOperation.priceWithTaxCost)}
+              {formatMoney(toShowOperation.priceWithTaxCost)}
             </span>
           </p>
-          <p className="text-teal-700 font-medium">{`${formatMony(
+          <p className="text-teal-700 font-medium">{`${formatMoney(
             costo
-          )} x (1 + ${toShowOperation.taxCostPriceSuma}% / 100) = ${formatMony(
+          )} x (1 + ${toShowOperation.taxCostPriceSuma}% / 100) = ${formatMoney(
             toShowOperation.priceWithTaxCost
           )} `}</p>
         </div>
@@ -222,12 +221,12 @@ const PriceOfArticle: React.FC<priceOfArticle> = ({
           <p>
             Precio con Impuestos sobre el Costo y Final:
             <span className="font-bold">
-              {formatMony(toShowOperation.priceWithTaxCostAndFinalPrice)}
+              {formatMoney(toShowOperation.priceWithTaxCostAndFinalPrice)}
             </span>
           </p>
-          <p className="text-teal-700 font-medium">{`${formatMony(
+          <p className="text-teal-700 font-medium">{`${formatMoney(
             toShowOperation.priceWithTaxCost
-          )} x (1 + ${toShowOperation.taxFinalPriceSuma}% / 100) = ${formatMony(
+          )} x (1 + ${toShowOperation.taxFinalPriceSuma}% / 100) = ${formatMoney(
             toShowOperation.priceWithTaxCostAndFinalPrice
           )} `}</p>
         </div>
@@ -241,12 +240,12 @@ const PriceOfArticle: React.FC<priceOfArticle> = ({
           <p>
             Precio Final con Ganancia:
             <span className="font-bold">
-              {formatMony(toShowOperation.priceWithTaxsAndProfit)}
+              {formatMoney(toShowOperation.priceWithTaxsAndProfit)}
             </span>
           </p>
-          <p className="text-teal-700 font-medium">{`${formatMony(
+          <p className="text-teal-700 font-medium">{`${formatMoney(
             toShowOperation.priceWithTaxCostAndFinalPrice
-          )} x (1 + ${toShowOperation.percentaje}% / 100) = ${formatMony(
+          )} x (1 + ${toShowOperation.percentaje}% / 100) = ${formatMoney(
             toShowOperation.priceWithTaxsAndProfit
           )} `}</p>
         </div>

@@ -8,7 +8,7 @@ import EditarClientes from "./editarClientes/editarClientes";
 import Export from "../buttons/Export";
 import Imprimir from "../buttons/Imprimir";
 import ListClient from "./ListClient";
-import { clientData, storeType } from "@/types";
+import { clientData, storeType } from "../../../../../types/types";
 import { useDispatch, useSelector } from "react-redux";
 
 interface ClientesContentProps {
@@ -76,7 +76,7 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
   return (
     <div className="h-full w-full grid-cmg-program">
       <div className="row-start-1 row-end-2">
-        <NavMain title="Clientes">
+        <NavMain title="Clientes" setLoginUser={""}>
           <Buscador searchIn={clients} functionReturn={getResults}></Buscador>
           <Export></Export>
           <Imprimir></Imprimir>

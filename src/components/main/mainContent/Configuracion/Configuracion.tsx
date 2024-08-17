@@ -6,8 +6,8 @@ import General from "./Content/General";
 import AdministrarCuentas from "./Content/AdministrarCuentas";
 import InfoCmg from "./Content/InfoCmg";
 import { useDispatch, useSelector } from "react-redux";
-import { cambiar } from "@/src/redux/estados/estadoTipoDeUser";
 import Notificaciones from "./Content/Notificaciones";
+import { RootState } from "../../../../redux/store";
 
 export default function Configuracion() {
   const dispatch = useDispatch(); 
@@ -46,7 +46,7 @@ export default function Configuracion() {
     <div className="flex flex-1 flex-col">
       <div className="flex">
         <div className="flex-1 text-white "><div className="flex text-4xl pl-16 ">Configuracion</div></div>
-        <div className="flex-1" ><NavMain title="" children={undefined}></NavMain></div>
+        <div className="flex-1" ><NavMain title="" children={undefined} setLoginUser={""}></NavMain></div>
       </div>
       <div className=" flex-1 flex">
         <div className="flex w-1/4">

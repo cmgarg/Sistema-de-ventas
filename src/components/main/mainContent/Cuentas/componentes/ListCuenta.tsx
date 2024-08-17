@@ -6,15 +6,9 @@ import Swal from "sweetalert2";
 import { MdCheckCircleOutline } from "react-icons/md";
 import { LuCalendarDays } from "react-icons/lu";
 
-interface ListCuentaProps {
-  cuentas: any[];
-  filtroActivo: string;
-  orden: "asc" | "desc";
-  getAccountsToPay: () => void;
-}
-
 interface Cuenta {
-  time: string;
+  [x: string]: any;
+  meses: number;
   tipodegasto: string;
   date: string;
   pay: number;
@@ -25,20 +19,25 @@ interface Cuenta {
   pagado3?: string;
 }
 
+interface ListCuentaProps {
+  cuentas: Cuenta[];
+  filtroActivo: string;
+  orden: "asc" | "desc";
+  getAccountsToPay: () => void;
+}
+
 const ListCuenta: React.FC<ListCuentaProps> = ({
   cuentas,
   filtroActivo,
   orden,
   getAccountsToPay,
 }) => {
-  const [fechaActual, setFechaActual] = useState(new Date());
+  const [fechaActual, setFechaActual] = useState<Date>(new Date());
   const [divExpandido, setDivExpandido] = useState<string>("");
-  const [tieneAmbosTiposDeGasto, setTieneAmbosTiposDeGasto] = useState([
-    false,
-    false,
-    false,
-  ]);
-  const [totales, setTotales] = useState([0, 0, 0]);
+  const [tieneAmbosTiposDeGasto, setTieneAmbosTiposDeGasto] = useState<
+    boolean[]
+  >([false, false, false]);
+  const [totales, setTotales] = useState<number[]>([0, 0, 0]);
   const [estadosPagados, setEstadosPagados] = useState<{
     [id: string]: boolean;
   }>({});
@@ -46,9 +45,12 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
   const [cuentaSeleccionada, setCuentaSeleccionada] = useState<Cuenta | null>(
     null
   );
-  const [mostrarOpciones, setMostrarOpciones] = useState(false);
-  const [posicionMenu, setPosicionMenu] = useState({ x: 0, y: 1000 });
-  const [editar, setEditar] = useState(false);
+  const [mostrarOpciones, setMostrarOpciones] = useState<boolean>(false);
+  const [posicionMenu, setPosicionMenu] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 1000,
+  });
+  const [editar, setEditar] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const divRefs = useRef<Array<HTMLDivElement | null>>([]);
 
@@ -64,9 +66,9 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
     return number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,");
   };
 
-  const sumaTotalDeCuentas = (cuentas) => {
+  const sumaTotalDeCuentas = (cuentas: Cuenta[]) => {
     return cuentas.reduce((acumulador, cuenta) => {
-      const monto = parseFloat(cuenta.pay) || 0;
+      const monto = cuenta.pay || 0;
       return acumulador + monto;
     }, 0);
   };
@@ -116,12 +118,18 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
   useEffect(() => {
     window.api.enviarEvento("solicitar-estado-pagado-inicial");
 
-    const manejarEstadoPagadoInicial = ({ exitoso, estados }) => {
+    const manejarEstadoPagadoInicial = ({
+      exitoso,
+      estados,
+    }: {
+      exitoso: boolean;
+      estados: { [id: string]: boolean };
+    }) => {
       if (exitoso) {
         const inicialEstadosPagados = cuentas.reduce((acc, cuenta) => {
           acc[cuenta._id] = cuenta.pagado;
           return acc;
-        }, {});
+        }, {} as { [id: string]: boolean });
         setEstadosPagados(inicialEstadosPagados);
       } else {
         console.error("Error al cargar el estado pagado inicial");
@@ -146,6 +154,10 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
       exitoso,
       idCuenta,
       estadoPagado,
+    }: {
+      exitoso: boolean;
+      idCuenta: string;
+      estadoPagado: { pagado: boolean; pagado2: string; pagado3: string };
     }) => {
       if (exitoso) {
         setCuentasActualizadas((prevCuentas) =>
@@ -251,8 +263,8 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
       case "monto":
         return sortedCuentas.sort((a, b) =>
           orden === "asc"
-            ? parseFloat(a.pay) - parseFloat(b.pay)
-            : parseFloat(b.pay) - parseFloat(a.pay)
+            ? a.pay - b.pay
+            : b.pay - a.pay
         );
       case "pagado":
         return sortedCuentas.sort((a, b) => {
@@ -334,7 +346,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
     setPosicionMenu({ x: event.pageX + offsetX, y: event.pageY + offsetY });
   };
 
-  const updateAccount = (id: string, updatedAccount: object) => {
+  const updateAccount = (id: string, updatedAccount: Partial<Cuenta>) => {
     setCuentasActualizadas((prevCuentas) =>
       prevCuentas.map((cuenta) =>
         cuenta._id === id ? { ...cuenta, ...updatedAccount } : cuenta
@@ -434,7 +446,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
                     : "flex flex-col-reverse justify-start"
                 }
               >
-                {cuentasMes.map((cuenta, _id) => (
+                {cuentasMes.map((cuenta) => (
                   <div
                     key={cuenta._id}
                     className={`flex h-[3rem] flex-row`}

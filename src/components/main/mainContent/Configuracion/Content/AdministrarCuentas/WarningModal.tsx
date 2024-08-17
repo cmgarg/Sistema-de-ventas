@@ -1,8 +1,12 @@
 import React from "react";
 import { IoIosWarning } from "react-icons/io";
 
-function WarningModal({ onConfirm, onCancel }) {
-    
+interface WarningModalProps {
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+const WarningModal: React.FC<WarningModalProps> = ({ onConfirm, onCancel }) => {
   return (
     <div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
       <div
@@ -10,10 +14,12 @@ function WarningModal({ onConfirm, onCancel }) {
         style={{ backgroundColor: "rgba(30, 41, 59, 0.9)" }}
       >
         <div className="flex w-full h-full flex-col justify-center items-center">
-            <div className="flex items-center justify-center"><IoIosWarning size={100} color="red"/></div>
-            <h2 className="text-white text-2xl m-4">Advertencia</h2>
-            </div>
-        
+          <div className="flex items-center justify-center">
+            <IoIosWarning size={100} color="red" />
+          </div>
+          <h2 className="text-white text-2xl m-4">Advertencia</h2>
+        </div>
+
         <div className="flex flex-col p-3">
           <p className="text-xl p-2">
             Cambiar el tipo de perfil del usuario podría perjudicar el funcionamiento del perfil, ya que no estarían las mismas áreas disponibles para trabajar.

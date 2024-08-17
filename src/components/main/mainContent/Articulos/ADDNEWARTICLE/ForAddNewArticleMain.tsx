@@ -57,6 +57,7 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
         value: 0,
       },
       description: "",
+      code: ""
     },
     brand: { value: "", label: "" },
     code: "",

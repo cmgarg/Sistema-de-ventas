@@ -1,6 +1,4 @@
 import React, { ReactNode, useState } from "react";
-import ArrowDown from "../../../../assets/MAINSVGS/mainAsideSvg/ArrowDown.jsx";
-import ArrowRight from "../../../../assets/MAINSVGS/mainAsideSvg/ArrowRight.jsx";
 import ArrowMenu from "./ArrowMenu.js";
 
 interface MenuAsideContentProps {

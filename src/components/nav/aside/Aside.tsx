@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { TbWorld, TbBrandGoogleAnalytics, TbFileDollar } from "react-icons/tb";
 import { useSelector, useDispatch } from "react-redux";
-import Tooltip from "./Tooltip.jsx";
+import Tooltip from "./Tooltip.js";
 import { useLocation } from "react-router-dom";
 import GoTo from "./GoTo.js";
 import {
@@ -23,6 +23,7 @@ import {
 import { RiShoppingBag4Line, RiShoppingBag4Fill } from "react-icons/ri";
 import { TiThMenu } from "react-icons/ti";
 import { LuMenu } from "react-icons/lu";
+import { RootState } from "../../../redux/store.js";
 
 export default function Aside() {
   const [isActive, setIsActive] = useState(false);
@@ -68,7 +69,9 @@ export default function Aside() {
                 isActive && "bg-cyan-800"
               } hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none `}
             >
-              <div className={`h-10 w-10 flex justify-center items-center select-none`}>
+              <div
+                className={`h-10 w-10 flex justify-center items-center select-none`}
+              >
                 {isActive ? (
                   <TiThMenu size={30} color={"#fff"} />
                 ) : (
@@ -91,35 +94,39 @@ export default function Aside() {
                 ) : null}
               </div>
             </div>
-            {userType === "stock" ? null :(
+            {userType === "stock" ? null : (
               <div className="select-none">
-            <GoTo title="Clientes" goTo="/" isActive={isActive}>
-              {location.pathname == "/" ? (
-                <IoPerson color={"#fff"} size={30} />
-              ) : (
-                <IoPersonOutline color={"#fff"} size={30} />
-              )}
-            </GoTo>
-            </div>)}
-            {userType === "stock" ? null :(
+                <GoTo title="Clientes" goTo="/" isActive={isActive}>
+                  {location.pathname == "/" ? (
+                    <IoPerson color={"#fff"} size={30} />
+                  ) : (
+                    <IoPersonOutline color={"#fff"} size={30} />
+                  )}
+                </GoTo>
+              </div>
+            )}
+            {userType === "stock" ? null : (
               <div>
-            <GoTo title="Articulos" goTo="/articulos" isActive={isActive}>
-              {location.pathname == "/articulos" ? (
-                <RiShoppingBag4Fill color={"#fff"} size={30} />
-              ) : (
-                <RiShoppingBag4Line color={"#fff"} size={30} />
-              )}
-            </GoTo>
-            </div>)}
-            {userType === "stock" ? null :(
+                <GoTo title="Articulos" goTo="/articulos" isActive={isActive}>
+                  {location.pathname == "/articulos" ? (
+                    <RiShoppingBag4Fill color={"#fff"} size={30} />
+                  ) : (
+                    <RiShoppingBag4Line color={"#fff"} size={30} />
+                  )}
+                </GoTo>
+              </div>
+            )}
+            {userType === "stock" ? null : (
               <div>
-            <GoTo title="Ventas" goTo="/ventas" isActive={isActive}>
-              {location.pathname == "/ventas" ? (
-                <PiCurrencyDollarBold color={"#fff"} size={35} />
-              ) : (
-                <PiCurrencyDollarLight color={"#fff"} size={35} />
-              )}
-            </GoTo></div>)}
+                <GoTo title="Ventas" goTo="/ventas" isActive={isActive}>
+                  {location.pathname == "/ventas" ? (
+                    <PiCurrencyDollarBold color={"#fff"} size={35} />
+                  ) : (
+                    <PiCurrencyDollarLight color={"#fff"} size={35} />
+                  )}
+                </GoTo>
+              </div>
+            )}
 
             <GoTo title="Stock" goTo="/stock" isActive={isActive}>
               {location.pathname == "/stock" ? (
@@ -129,64 +136,75 @@ export default function Aside() {
               )}
             </GoTo>
 
-             {userType === "ventas "  || userType === "admin"? (<div>
-            <GoTo title="Caja" goTo="/caja" isActive={isActive}>
-              {location.pathname == "/caja" ? (
-                <PiCashRegisterFill size={35} color={"#fff"} />
+            {userType === "ventas " || userType === "admin" ? (
+              <div>
+                <GoTo title="Caja" goTo="/caja" isActive={isActive}>
+                  {location.pathname == "/caja" ? (
+                    <PiCashRegisterFill size={35} color={"#fff"} />
+                  ) : (
+                    <PiCashRegisterLight size={35} color={"#fff"} />
+                  )}
+                </GoTo>
+              </div>
+            ) : null}
+            {userType === "ventas " || userType === "admin" ? (
+              <div>
+                <GoTo title="Cuentas" goTo="/cuentas" isActive={isActive}>
+                  {location.pathname == "/cuentas" ? (
+                    <FaFileInvoiceDollar size={30} color={"#fff"} />
+                  ) : (
+                    <TbFileDollar size={35} color={"#fff"} />
+                  )}
+                </GoTo>
+              </div>
+            ) : null}
+
+            {userType === "ventas " ||
+            userType === "admin" ||
+            userType === "gerente" ? (
+              <div>
+                <GoTo
+                  title="Estadisticas"
+                  goTo="/estadisticas"
+                  isActive={isActive}
+                >
+                  {location.pathname == "/estadisticas" ? (
+                    <SiGoogleanalytics size={30} color={"#fff"} />
+                  ) : (
+                    <TbBrandGoogleAnalytics size={30} color={"#fff"} />
+                  )}
+                </GoTo>{" "}
+              </div>
+            ) : null}
+
+            {userType === "ventas " || userType === "admin" ? (
+              <div>
+                <GoTo title="Navegador" goTo="/navegador" isActive={isActive}>
+                  {location.pathname == "/navegador" ? (
+                    <TbWorld size={40} color={"#fff"} />
+                  ) : (
+                    <TfiWorld size={30} color={"#fff"} />
+                  )}
+                </GoTo>{" "}
+              </div>
+            ) : null}
+          </div>
+          <div>
+            {" "}
+            <GoTo
+              title="Configuracion"
+              goTo="/configuracion"
+              isActive={isActive}
+            >
+              {location.pathname == "/configuracion" ? (
+                <IoSettingsSharp size={30} color="white" />
               ) : (
-                <PiCashRegisterLight size={35} color={"#fff"} />
+                <IoSettingsOutline size={30} color="white">
+                  {" "}
+                </IoSettingsOutline>
               )}
             </GoTo>
-            </div>): null}
-            {userType === "ventas " || userType === "admin" ? (
-            <div>
-            <GoTo title="Cuentas" goTo="/cuentas" isActive={isActive}>
-              {location.pathname == "/cuentas" ? (
-                <FaFileInvoiceDollar size={30} color={"#fff"} />
-              ) : (
-                <TbFileDollar size={35} color={"#fff"} />
-              )}
-            </GoTo></div>
-          ) : null}
-            
-            {userType === "ventas " || userType === "admin" || userType === "gerente"? (
-            <div>
-            <GoTo title="Estadisticas" goTo="/estadisticas" isActive={isActive}>
-              {location.pathname == "/estadisticas" ? (
-                <SiGoogleanalytics size={30} color={"#fff"} />
-              ) : (
-                <TbBrandGoogleAnalytics size={30} color={"#fff"} />
-              )}
-            </GoTo> </div>
-          ) : null}
-
-            {userType === "ventas " || userType === "admin"  ? (
-            <div>
-            <GoTo title="Navegador" goTo="/navegador" isActive={isActive}>
-              {location.pathname == "/navegador" ? (
-                <TbWorld size={40} color={"#fff"} />
-              ) : (
-                <TfiWorld size={30} color={"#fff"} />
-              )}
-            </GoTo> </div>
-          ) : null}
           </div>
-            <div>
-              {" "}
-              <GoTo
-                title="Configuracion"
-                goTo="/configuracion"
-                isActive={isActive}
-              >
-                {location.pathname == "/configuracion" ? (
-                  <IoSettingsSharp size={30} color="white" />
-                ) : (
-                  <IoSettingsOutline size={30} color="white">
-                    {" "}
-                  </IoSettingsOutline>
-                )}
-              </GoTo>
-            </div>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { supplierType } from "@/types";
+import { supplierType } from "../../../../../../../../../types/types";
 import React, { useEffect, useState } from "react";
 import { TbTruck } from "react-icons/tb";
 

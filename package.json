@@ -19,6 +19,7 @@
     "@reduxjs/toolkit": "^1.9.7",
     "@seald-io/nedb": "^4.0.4",
     "@zxing/library": "^0.21.2",
+    "antd": "^5.19.3",
     "autoprefixer": "^10.4.16",
     "axios": "^1.5.1",
     "bcrypt": "^5.1.1",
@@ -57,9 +58,13 @@
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/nedb": "^1.8.16",
-    "@types/react": "^18.2.21",
+    "@types/node": "^22.1.0",
+    "@types/react": "^18.3.3",
     "@types/react-autosuggest": "^10.1.11",
-    "@types/react-dom": "^18.2.7",
+    "@types/react-dom": "^18.3.0",
+    "@types/react-redux": "^7.1.33",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
     "@vitejs/plugin-react": "^4.0.4",
@@ -74,5 +79,27 @@
     "vite-plugin-electron": "^0.14.0",
     "vite-plugin-electron-renderer": "^0.14.5"
   },
-  "main": "dist-electron/main.js"
+  "main": "dist-electron/main.js",
+  "build": {
+    "appId": "com.yourapp.id",
+    "productName": "Punto de Ventas",
+    "directories": {
+      "buildResources": "src/assets"
+    },
+    "files": [
+      "dist-vite/**/*",
+      "dist-electron/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "win": {
+      "icon": "src/assets/icon.ico"
+    },
+    "mac": {
+      "icon": "src/assets/icon.icns"
+    },
+    "linux": {
+      "icon": "src/assets"
+    }
+  }
 }

@@ -1,73 +1,74 @@
-import React, { useState } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MdNotificationsActive } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
-import { FaUserGear } from "react-icons/fa6";
+import { FaUserCog } from "react-icons/fa";
+import { RootState } from "../../../../redux/store";
 
-export default function MenuConfig({ estado, setEstado }) {
+interface MenuConfigProps {
+  estado: string;
+  setEstado: (estado: string) => void;
+}
+
+const MenuConfig: React.FC<MenuConfigProps> = ({ estado, setEstado }) => {
   const userType = useSelector(
     (state: RootState) => state.estadoTipoDeUser.userType
   );
-const dispatch = useDispatch();
-  console.log(
-    userType,
-    "---este es el estado reduxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  );
+  const dispatch = useDispatch();
 
   return (
     <div className="flex flex-1 flex-col bg-gray-900 rounded-lg shadow-xl shadow-black">
       <div className="flex flex-1 flex-col">
         <div
           className={`flex w-full h-16 text-white relative hover:bg-black hover:bg-opacity-10 ${
-            estado == "general-1" &&
+            estado === "general-1" &&
             "border-b-2 border-l-4 border-white bg-black bg-opacity-25 rounded-tl-2xl rounded-bl-2xl"
           }`}
           onClick={() => setEstado("general-1")}
         >
           <div className="flex h-full w-20 items-center justify-center">
-          <FaUserGear size={25} />
-          </div>
-          <div className={`flex items-center text-base `}>
-            <div className=" select-none">General</div>
-          </div>
-        </div>
-        {userType === "ventas " || userType === "admin" || userType === "gerente"? (
-        <div
-          className={`flex w-full h-16 text-white relative hover:bg-black hover:bg-opacity-20 ${
-            estado === "general-2"
-              ? "border-b-2 border-l-4 border-white bg-black bg-opacity-25 rounded-tl-2xl rounded-bl-2xl"
-              : ""
-          }`}
-          onClick={() => setEstado("general-2")}
-        >
-          <div className="flex h-full w-20 items-center justify-center">
-          <FaUsers size={25} />
+            <FaUserCog size={25} />
           </div>
           <div className="flex items-center text-base">
-            <div className=" select-none">Administrar Cuentas</div>
+            <div className="select-none">General</div>
           </div>
-        </div>) : null}
+        </div>
+        {(userType === "ventas" || userType === "admin" || userType === "gerente") && (
+          <div
+            className={`flex w-full h-16 text-white relative hover:bg-black hover:bg-opacity-20 ${
+              estado === "general-2"
+                ? "border-b-2 border-l-4 border-white bg-black bg-opacity-25 rounded-tl-2xl rounded-bl-2xl"
+                : ""
+            }`}
+            onClick={() => setEstado("general-2")}
+          >
+            <div className="flex h-full w-20 items-center justify-center">
+              <FaUsers size={25} />
+            </div>
+            <div className="flex items-center text-base">
+              <div className="select-none">Administrar Cuentas</div>
+            </div>
+          </div>
+        )}
         <div
           className={`flex w-full h-16 text-white relative hover:bg-black hover:bg-opacity-20 ${
-            estado == "general-3" &&
+            estado === "general-3" &&
             "border-b-2 border-l-4 border-white bg-black bg-opacity-25 rounded-tl-2xl rounded-bl-2xl"
           }`}
           onClick={() => setEstado("general-3")}
         >
           <div className="flex h-full w-20 items-center justify-center">
-          <MdNotificationsActive size={25}/>
+            <MdNotificationsActive size={25} />
           </div>
           <div className="flex items-center text-base">
-            <div className=" select-none">Notificaciones</div>
+            <div className="select-none">Notificaciones</div>
           </div>
         </div>
-
-
       </div>
 
       <div
         className={`h-20 flex flex-col hover:bg-gray-800 ${
-          estado == "general-6" ? "border-l-8 bg-black bg-opacity-25" : null
+          estado === "general-6" ? "border-l-8 bg-black bg-opacity-25" : null
         }`}
         onClick={() => setEstado("general-6")}
       >
@@ -76,7 +77,7 @@ const dispatch = useDispatch();
         </div>
         <div className="flex">
           <div className="flex w-20 h-20 items-center justify-center flex-row">
-            <div className="flex w-10 h-10 ">
+            <div className="flex w-10 h-10">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 139.4 156.4"
@@ -121,4 +122,6 @@ const dispatch = useDispatch();
       </div>
     </div>
   );
-}
+};
+
+export default MenuConfig;

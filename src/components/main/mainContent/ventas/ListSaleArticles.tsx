@@ -1,4 +1,4 @@
-import { saleData } from "@/types";
+import { saleData } from "../../../../../types/types";
 import React, { ReactElement, useEffect, useState } from "react";
 
 type ListSaleArticles = {
@@ -15,7 +15,7 @@ const ListSaleArticles: React.FC<ListSaleArticles> = ({ sale, formatMony }) => {
   };
 
   const loadItems = () => {
-    const elements = sale.articles.map((article) => (
+    const elements = sale.articles.map((article:any) => (
       <li className="flex justify-end items-center space-x-2 h-12 pl-2">
         <span className="flex justify-start items-center flex-1 ">
           {article.name}

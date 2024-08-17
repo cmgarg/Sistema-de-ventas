@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { clientData } from "@/types";
+import { clientData } from "../../../../../../types/types";
 import { editClient } from "../../../../../../src/redux/estados/clientesState";
 
 interface EditarClienteProps {

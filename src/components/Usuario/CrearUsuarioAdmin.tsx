@@ -1,8 +1,24 @@
-// AdminCreationPage.tsx
-import React, { useState } from "react";
+import React, { useState, ChangeEvent, MouseEvent } from "react";
 
-function CrearUsuarioAdmin({ setAdminExists }) {
-  const [formData, setFormData] = useState({
+interface CrearUsuarioAdminProps {
+  setAdminExists: (exists: boolean) => void;
+}
+
+interface FormData {
+  username: string;
+  email: string;
+  password: string;
+  passwordconfir: string;
+  ubicacion: string;
+  direccion: string;
+  codigopostal: string;
+  imageUrl: string;
+  recuperacioncuenta: string;
+  bloqueo: string;
+}
+
+const CrearUsuarioAdmin: React.FC<CrearUsuarioAdminProps> = ({ setAdminExists }) => {
+  const [formData, setFormData] = useState<FormData>({
     username: "",
     email: "",
     password: "",
@@ -15,7 +31,7 @@ function CrearUsuarioAdmin({ setAdminExists }) {
     bloqueo: "CMG2024-Company",
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -27,7 +43,7 @@ function CrearUsuarioAdmin({ setAdminExists }) {
   };
 
   // Agrega esto fuera de tu función de handleSubmit, quizás en un useEffect si estás familiarizado con él
-  window.api.recibirEvento("respuesta-guardar-usuario-admin", (respuesta) => {
+  window.api.recibirEvento("respuesta-guardar-usuario-admin", (respuesta: any) => {
     if (respuesta.exito) {
       console.log(
         "Usuario administrador guardado con éxito",
@@ -151,3 +167,7 @@ function CrearUsuarioAdmin({ setAdminExists }) {
 }
 
 export default CrearUsuarioAdmin;
+function onAdminCreated(usuarioAdmin: any) {
+  throw new Error("Function not implemented.");
+}
+

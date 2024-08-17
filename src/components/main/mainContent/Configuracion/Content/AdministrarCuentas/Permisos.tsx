@@ -2,12 +2,34 @@ import React, { useEffect, useState } from "react";
 import { PiCheckCircleFill } from "react-icons/pi";
 import WarningModal from "./WarningModal"; // Importa el modal de advertencia
 
-export default function Permisos({ usuarios, usuarioSeleccionado, setUsuarios }) {
-  const [cargoSelec, setCargoSelec] = useState("");
-  const [showWarningModal, setShowWarningModal] = useState(false);
-  const [selectedCargo, setSelectedCargo] = useState("");
+interface PermisosProps {
+  usuarios: Usuario[];
+  usuarioSeleccionado: string;
+  setUsuarios: React.Dispatch<React.SetStateAction<Usuario[]>>;
+}
 
-  const cargos = [
+// Define el tipo completo de Usuario
+interface Usuario {
+  permisos: any;
+  _id: string;
+  nombre: string;
+  imageUrl: string;
+  password: string;  // Asegúrate de incluir 'password'
+  
+}
+
+
+interface Cargo {
+  key: string;
+  permisos: string[];
+}
+
+const Permisos: React.FC<PermisosProps> = ({ usuarios, usuarioSeleccionado, setUsuarios }) => {
+  const [cargoSelec, setCargoSelec] = useState<string>("");
+  const [showWarningModal, setShowWarningModal] = useState<boolean>(false);
+  const [selectedCargo, setSelectedCargo] = useState<string>("");
+
+  const cargos: Cargo[] = [
     { key: "gerente", permisos: ["Ventas", "Artículos", "Stock", "Clientes", "Estadísticas"] },
     { key: "logistica", permisos: ["Ventas", "Artículos", "Stock", "Clientes"] },
     { key: "ventas", permisos: ["Ventas", "Artículos", "Stock", "Clientes"] },
@@ -20,7 +42,7 @@ export default function Permisos({ usuarios, usuarioSeleccionado, setUsuarios })
         if (a._id === usuarioSeleccionado) {
           const permisos = a.permisos;
           for (const key in permisos) {
-            if (permisos[key] === true) {
+            if (permisos[key]) {
               setCargoSelec(key.toLowerCase());
               break;
             }
@@ -31,7 +53,7 @@ export default function Permisos({ usuarios, usuarioSeleccionado, setUsuarios })
   }, [usuarioSeleccionado, usuarios]);
 
   useEffect(() => {
-    const actualizarPermisos = (response) => {
+    const actualizarPermisos = (response: { exito: boolean; usuario: Usuario; mensaje: string }) => {
       if (response.exito) {
         setUsuarios((prevUsuarios) =>
           prevUsuarios.map((usuario) =>
@@ -39,7 +61,7 @@ export default function Permisos({ usuarios, usuarioSeleccionado, setUsuarios })
           )
         );
         setCargoSelec(
-          Object.keys(response.usuario.permisos).find((key) => response.usuario.permisos[key] === true)
+          Object.keys(response.usuario.permisos).find((key) => response.usuario.permisos[key]) || ""
         );
       } else {
         console.error("Error al actualizar permisos:", response.mensaje);
@@ -53,7 +75,7 @@ export default function Permisos({ usuarios, usuarioSeleccionado, setUsuarios })
     };
   }, [usuarioSeleccionado, setUsuarios]);
 
-  const handleSelect = (cargo) => {
+  const handleSelect = (cargo: string) => {
     setSelectedCargo(cargo);
     setShowWarningModal(true);
   };
@@ -76,7 +98,7 @@ export default function Permisos({ usuarios, usuarioSeleccionado, setUsuarios })
     setShowWarningModal(false);
   };
 
-  const formatKey = (key) => {
+  const formatKey = (key: string) => {
     return key.charAt(0).toUpperCase() + key.slice(1);
   };
 
@@ -125,4 +147,6 @@ export default function Permisos({ usuarios, usuarioSeleccionado, setUsuarios })
       )}
     </div>
   );
-}
+};
+
+export default Permisos;

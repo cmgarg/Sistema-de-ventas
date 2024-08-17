@@ -2,20 +2,21 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 interface Cuenta {
+  meses: number; // asegúrate de que 'meses' sea siempre un número
   tipodegasto: string;
   date: string;
-  pay: string;
+  time?: string; // Agrega la propiedad 'time' si es necesario
+  pay: number;
   descripcion: string;
   pagado: boolean;
-  meses: number;
   _id: string;
 }
 
 interface EditarCuentaProps {
   onChangeModal: (p: boolean) => void;
   cuentaSeleccionada: Cuenta | null;
-  updateAccount: (id: string, updatedAccount: object) => void;
-  getAccountsToPay: () => any[];
+  updateAccount: (id: string, updatedAccount: Partial<Cuenta>) => void;
+  getAccountsToPay: () => void;
 }
 
 const EditarCuenta: React.FC<EditarCuentaProps> = ({
@@ -28,7 +29,8 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
     cuentaSeleccionada || {
       tipodegasto: "",
       date: "",
-      pay: "",
+      time: "", // Agrega la propiedad 'time' si es necesario
+      pay: 0,
       descripcion: "",
       pagado: false,
       meses: 1,
@@ -42,15 +44,16 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
     }
   }, [cuentaSeleccionada]);
 
-  function setChangeData(data: string, value: string | number) {
-    let newAccountData = { ...accountData };
-    newAccountData[data as keyof Cuenta] = value;
-    setAccountData(newAccountData);
+  function setChangeData<K extends keyof Cuenta>(key: K, value: Cuenta[K]) {
+    setAccountData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   }
 
   function validateAndSubmit() {
     const { tipodegasto, date, pay, descripcion } = accountData;
-    if (!tipodegasto || !date || !pay || !descripcion) {
+    if (!tipodegasto || !date || pay <= 0 || !descripcion) {
       Swal.fire({
         title: "Error!",
         text: "Por favor, completa todos los campos antes de continuar.",
@@ -81,7 +84,7 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 w-full h-full">
       <div className="absolute top-0 right-0 bottom-0 left-0 bg-black opacity-60"></div>
       <div
-        className="w-1/4 h-2/2 bg-gray-600 space-y-5 rounded-3xl relative justify-start text-white  border-gray-50 border"
+        className="w-1/4 h-2/2 bg-gray-600 space-y-5 rounded-3xl relative justify-start text-white border-gray-50 border"
         style={{ backgroundColor: "rgba(30, 41, 59, 0.9)" }}
       >
         <div className="flex-1 flex flex-row h-8 mt-6 text-white text-2xl items-center justify-center">
@@ -98,7 +101,7 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
                 className="outline-none h-9 w-56 bg-slate-700 px-2 rounded-md"
                 value={accountData.tipodegasto}
                 onChange={(e) => {
-                  setChangeData("tipodegasto", e.target.value);
+                  setChangeData("tipodegasto", e.target.value as string);
                 }}
               >
                 <option value="">Selecciona una opción</option>
@@ -117,7 +120,7 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
                     value={accountData.meses}
                     min="1"
                     onChange={(e) => {
-                      setChangeData("meses", e.target.value);
+                      setChangeData("meses", Number(e.target.value));
                     }}
                   />
                 </div>
@@ -134,7 +137,7 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
               className="outline-none h-9 w-56 px-2 rounded-md bg-slate-700 fecha-input fecha-input:focus"
               value={accountData.date}
               onChange={(e) => {
-                setChangeData("date", e.target.value);
+                setChangeData("date", e.target.value as string);
               }}
             />
           </div>
@@ -145,10 +148,10 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
             <input
               type="number"
               name="pay"
-              className="outline-none h-9 w-56 px-2 rounded-md bg-slate-700 "
+              className="outline-none h-9 w-56 px-2 rounded-md bg-slate-700"
               value={accountData.pay}
               onChange={(e) => {
-                setChangeData("pay", e.target.value);
+                setChangeData("pay", Number(e.target.value));
               }}
             />
           </div>
@@ -159,10 +162,10 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
             <input
               type="text"
               name="descripcion"
-              className="outline-none h-9 w-56 px-2 rounded-md bg-slate-700 "
+              className="outline-none h-9 w-56 px-2 rounded-md bg-slate-700"
               value={accountData.descripcion}
               onChange={(e) => {
-                setChangeData("descripcion", e.target.value);
+                setChangeData("descripcion", e.target.value as string);
               }}
             />
           </div>

@@ -1,35 +1,64 @@
-import {
-  articleData,
-  brandType,
-  categoryType,
-} from "../../../../../../types/types";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Downshift from "downshift";
+
+interface Article {
+  name: string;
+  code?: string; // Hacemos `code` opcional para que coincida con el tipo esperado
+  total: string;
+  amount: {
+    value: string;
+    unit: string;
+  };
+}
+
+interface articleData {
+  article: {
+    name: string;
+    venta: number;
+    stock: {
+      unit: {
+        abrevUnit: string;
+      };
+      amount: number;
+    };
+  };
+  brand: {
+    value: string;
+    label: string;
+  };
+  code: string;
+  barcode: string;
+  category: {
+    value: string;
+    label: string;
+  };
+  subCategory: {
+    value: string;
+    label: string;
+  };
+  dateToRegister: string;
+  supplier: string;
+  sales: number;
+  taxes: number;
+  deposits: string;
+}
 
 type propsInput = {
   style: string;
   articles: articleData[];
-  addProduct: (article: {
-    name: string;
-    code?: string;
-    total: string;
-    amount: {
-      value: string;
-      unit: string;
-    };
-  }) => void;
+  addProduct: (article: Article) => void;
   value?: string;
 };
 
-const MenuArticlesForm = ({
+const MenuArticlesForm: React.FC<propsInput> = ({
   style,
   addProduct,
   articles,
   value,
-}: propsInput) => {
+}) => {
   const [newValue, setNewValue] = useState<string>("");
   const [amountArticle, setAmountArticle] = useState<string>("");
-  const [articleSelect, setarticleSelect] = useState<articleData>();
+  const [articleSelect, setArticleSelect] = useState<articleData | null>(null);
   const [unitShow, setUnitShow] = useState<string>("Ud");
   const [errorShowAmount, setErrorShowAmount] = useState(false);
   const [errorShowArticle, setErrorShowArticle] = useState(false);
@@ -61,7 +90,7 @@ const MenuArticlesForm = ({
 
       const totalAmount = Number(amountArticle) * Number(price);
 
-      const articleForList = {
+      const articleForList: Article = {
         name: articleToSend.article.name,
         code: articleToSend.code,
         total: `${totalAmount}`,
@@ -96,20 +125,17 @@ const MenuArticlesForm = ({
             setErrorShowAmount(false);
           }, 3000);
           setErrorShowArticle(false);
-
-          console.log(newValue, "putasd");
         }
       }
     }
     if (showCurrentArticle) {
-      setarticleSelect(articleToSend);
+      setArticleSelect(articleToSend);
     }
   };
   const abreviationUnit = (unit: string) => {
     let abreviation = "";
     const units = ["kilogramos", "unidades", "litros", "paquetes", "cajas"];
     if (units.includes(unit.toLowerCase())) {
-      console.log("MATANGA");
       switch (unit.toLowerCase()) {
         case "kilogramos":
           abreviation = "Kg";
@@ -126,7 +152,6 @@ const MenuArticlesForm = ({
         case "cajas":
           abreviation = "Caj";
           break;
-
         default:
           break;
       }
@@ -210,7 +235,7 @@ const MenuArticlesForm = ({
       }}
       onSelect={(selectedItem) => {
         onChangeNewValue(selectedItem.article.name);
-        setarticleSelect(selectedItem);
+        setArticleSelect(selectedItem);
       }}
     >
       {({
@@ -232,7 +257,6 @@ const MenuArticlesForm = ({
                 name="amount"
                 placeholder="0"
                 onChange={(e) => {
-                  console.log(/^[0-9]*$/.test(e.target.value));
                   if (/^[0-9]*$/.test(e.target.value)) {
                     setAmountArticle(e.target.value);
                   }

@@ -1,13 +1,41 @@
-//types ARTICULOS
+import { Key } from "antd/es/table/interface";
+
+// Ajuste tus interfaces
+export type articleToEdit = {
+  id: string;
+  idArticle: string;
+};
+
+export type Article = {
+  name: string;
+  code?: string;
+  total: string | number;
+  amount: {
+    value: string | number;
+    unit: string;
+  };
+};
+
 export type articleData = {
   article: {
+    code: string;
     name: string;
     costo: number;
     venta: number;
     profit: number;
-    stock: { amount: number; unit: unitType; minStock: number };
-    grossWeight: { value: number; approx: boolean };
-    liquidWeight: { value: number; approx: boolean };
+    stock: {
+      amount: number;
+      unit: unitType;
+      minStock: number; // Asegúrate de incluir minStock
+    };
+    grossWeight: {
+      value: number;
+      approx: boolean;
+    };
+    liquidWeight: {
+      value: number;
+      approx: boolean;
+    };
     palette: {
       active: boolean;
       value: number;
@@ -22,11 +50,20 @@ export type articleData = {
     };
     description: string;
   };
-  brand: { value: string; label: string };
+  brand: {
+    value: string;
+    label: string;
+  };
   code: string;
   barcode: string;
-  category: { value: string; label: string };
-  subCategory: { value: string; label: string };
+  category: {
+    value: string;
+    label: string;
+  };
+  subCategory: {
+    value: string;
+    label: string;
+  };
   dateToRegister: string;
   supplier: supplierType;
   sales: {
@@ -40,22 +77,34 @@ export type articleData = {
           phone: string;
         };
       };
-      finalConsumer: { active: boolean; cae: string };
+      finalConsumer: {
+        active: boolean;
+        cae: string;
+      };
     };
-    amount: { value: number; unit: string };
+    amount: {
+      value: number;
+      unit: string;
+    };
     sold: number;
   }[];
   taxes: {
     name: string;
     percentage: number;
-    type: { costPrice: boolean; finalPrice: boolean };
+    type: {
+      costPrice: boolean;
+      finalPrice: boolean;
+    };
   }[];
   deposits: {
     idObject: string;
     name: string;
     depositId: string;
     address: string;
-    sector: { name: string; sectorId: string };
+    sector: {
+      name: string;
+      sectorId: string;
+    };
   }[];
 };
 
@@ -72,22 +121,31 @@ export type dataToEditArticle = {
     amount: number;
     unit: string;
   };
-  brand: { value: string; label: string };
-  category: { value: string; label: string };
+  brand: {
+    value: string;
+    label: string;
+  };
+  category: {
+    value: string;
+    label: string;
+  };
   code: string;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// TYPES VENTAS
 
-export type saleData = {
+export interface saleData {
+  id: Key | null | undefined;
+  _id: string;
+  dateOfRegister: string;
   articles: {
     name: string;
     code: string;
-    total: number | string;
+    total: string | number;
     amount: {
-      value: string;
-      unit: string;
+      value: number;
+      unit: number;
     };
   }[];
   buyer: {
@@ -108,6 +166,7 @@ export type saleData = {
     };
   };
   seller: {
+    username: any;
     name: string;
     email: string;
     address: string;
@@ -115,17 +174,17 @@ export type saleData = {
     dni: string;
   };
   sold: number;
+}
 
-  dateToRegister?: string;
-  id?: string;
-};
 // venta a eliminar
 
 export type saleToDelete = {
   id: string;
 };
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-///CLIENTES TYPES
+/// CLIENTES TYPES
+
 export type clientData = {
   name: string;
   address: string;
@@ -146,22 +205,39 @@ export type clientData = {
   _id?: string;
 };
 
-//Tipo de objeto que enviaran para eliminar un cliente del estado.
+// Tipo de objeto que enviaran para eliminar un cliente del estado.
 
 export type dataToDeleteClient = {
   name: string;
   _id: string;
 };
-//TYPE BRAND
-export type brandType = { label: string; value: string; _id?: string };
-//
-export type categoryType = { label: string; value: string; _id?: string };
-export type subCategoryType = { label: string; value: string; _id?: string };
 
-//TYPE STORE
+// TYPE BRAND
+
+export type brandType = {
+  label: string;
+  value: string;
+  _id?: string;
+};
+
+export type categoryType = {
+  label: string;
+  value: string;
+  _id?: string;
+};
+
+export type subCategoryType = {
+  label: string;
+  value: string;
+  _id?: string;
+};
+
+// TYPE STORE
 
 export type storeType = {
-  menuState: { value: string };
+  menuState: {
+    value: string;
+  };
   clientState: clientData[];
   articleState: articleData[];
   categoryState: categoryType[];
@@ -170,14 +246,17 @@ export type storeType = {
   saleState: saleData[];
   auth: authType;
 };
-//UNIDAD TYPE
+
+// UNIDAD TYPE
+
 export type unitType = {
   label: string;
   value: string;
   abrevUnit: string;
   _id?: string;
 };
-/////////////usuario auth
+
+///////////// usuario auth
 
 export type authType = {
   isAuthenticated: boolean;
@@ -193,7 +272,8 @@ export type supplierType = {
   _id?: string;
 };
 
-//ALMACEN
+// ALMACEN
+
 export type depositType = {
   name: string;
   address: string;
@@ -205,7 +285,30 @@ export type depositType = {
   _id?: string;
 };
 
+export type depositToAddProduct = {
+  sectorId: string;
+  number: number;
+  sectorToAdd: {
+    sectorId: string;
+    name: string;
+    products: articleData[];
+    number: number;
+  };
+};
+
 export type Action = {
   type: string;
   payload: any;
 };
+
+export interface IUser {
+  nombre: string;
+  username: string;
+  email: string;
+  ubicacion: string;
+  direccion: string;
+  codigopostal: string;
+  imageUrl: string;
+  esAdmin: boolean;
+  _id: string;
+}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Cards from "./Cards/Cards";
 
 import { useSelector } from "react-redux";
-import { storeType } from "@/types";
+import { storeType } from "../../../../../types/types";
 import Graphics from "./Graphics";
 
 interface EstadisticastProps {

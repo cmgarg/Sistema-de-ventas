@@ -1,7 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 
-function EditUserModal({ isOpen, onClose, user, onSave }) {
-  const [usuario, setUsuario] = useState({
+interface Permisos {
+  gerente: boolean;
+  logistica: boolean;
+  ventas: boolean;
+  stock: boolean;
+}
+
+interface Usuario {
+  _id: string;
+  nombre: string;
+  password: string;
+  permisos: Permisos;
+  imageUrl: string; // Asegúrate de que esta propiedad esté incluida
+}
+
+interface EditUserModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  user: Usuario | null;  // Usa 'Usuario' aquí
+  onSave: (user: Usuario) => void;  // Usa 'Usuario' aquí
+}
+
+const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, user, onSave }) => {
+  const [usuario, setUsuario] = useState<Usuario>({
+    _id: "",
     nombre: "",
     password: "",
     permisos: {
@@ -10,7 +33,9 @@ function EditUserModal({ isOpen, onClose, user, onSave }) {
       ventas: false,
       stock: false,
     },
+    imageUrl: ""
   });
+
   const [changePassword, setChangePassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
 
@@ -22,7 +47,7 @@ function EditUserModal({ isOpen, onClose, user, onSave }) {
     }
   }, [user]);
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setUsuario((prev) => ({
       ...prev,
@@ -30,21 +55,18 @@ function EditUserModal({ isOpen, onClose, user, onSave }) {
     }));
   };
 
-  const handlePermisosChange = (event) => {
+  const handlePermisosChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name } = event.target;
     setUsuario((prev) => ({
       ...prev,
       permisos: {
-        gerente: false,
-        logistica: false,
-        ventas: false,
-        stock: false,
-        [name]: true,
+        ...prev.permisos,
+        [name]: event.target.checked,
       },
     }));
   };
 
-  const handlePasswordChange = (event) => {
+  const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setNewPassword(value);
   };
@@ -120,7 +142,7 @@ function EditUserModal({ isOpen, onClose, user, onSave }) {
                 <input
                   type="checkbox"
                   name={key}
-                  checked={usuario.permisos[key]}
+                  checked={usuario.permisos[key as keyof Permisos]}
                   onChange={handlePermisosChange}
                   className="accent-blue-500 h-5 w-5"
                 />
@@ -189,6 +211,6 @@ function EditUserModal({ isOpen, onClose, user, onSave }) {
       </div>
     </div>
   );
-}
+};
 
 export default EditUserModal;

@@ -25,12 +25,13 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
     currency: "USD",
     currencyDisplay: "symbol",
   });
-  const formatMony = (n: number | string) => {
+  const formatMoney = (n: number | string) => {
     return typeof n === "string"
       ? formatterCurrency.format(Number(n))
       : formatterCurrency.format(n);
   };
-  const [activeModal, setActiveModal] = useState(false);
+
+  const [activeModal, setActiveModal] = useState<boolean>(false);
 
   const [searchActived, setSearchActived] = useState<{
     actived: boolean;
@@ -39,9 +40,11 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
     actived: false,
     results: [],
   });
+
   const [articleToEdit, setArticleToEdit] = useState<{
     active: boolean;
     articleToEdit: {
+      id: string;
       idArticle: string;
       code: string;
       barcode: string;
@@ -49,45 +52,60 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
   }>({
     active: false,
     articleToEdit: {
+      id: "",
       idArticle: "",
       code: "",
       barcode: "",
     },
   });
-  const [resDeleteArticle, setResDeleteArticle] = useState({
+
+  const [resDeleteArticle, setResDeleteArticle] = useState<{
+    delete: boolean;
+    active: boolean;
+  }>({
     delete: false,
     active: false,
   });
+
   function onChangeModal(p: boolean) {
     setActiveModal(p);
   }
+
   const onChangeModalEdit = (p: boolean) => {
-    setArticleToEdit({
+    setArticleToEdit((prev) => ({
+      ...prev,
       active: p,
-      code: "",
-    });
+    }));
   };
 
-  function editArticleOn(e: { active: boolean; code: string }) {
+  function editArticleOn(e: {
+    active: boolean;
+    articleToEdit: {
+      id: string;
+      idArticle: string;
+      code: string;
+      barcode: string;
+    };
+  }) {
     setArticleToEdit(e);
   }
-  function resultFindArticles(e: object[], actived: boolean) {
+
+  function resultFindArticles(e: articleData[], actived: boolean) {
     let object = { actived: actived, results: e };
     setSearchActived(object);
     console.log(object, "aca");
   }
 
-  //////////////////////////////
   useEffect(() => {
     console.log(articles, "craneo");
     console.log(articles, "DAAAAAAAALEEEEEE");
 
     console.log(categorys, "()()()()()()())(((())))");
     console.log(brands, "%&%&%&%&%&%&%&%&");
-  }, []);
+  }, [articles, categorys, brands]);
 
   useEffect(() => {
-    window.api.recibirEvento("response-delete-article", (e) => {
+    window.api.recibirEvento("response-delete-article", (e: boolean) => {
       if (e) {
         setResDeleteArticle({ delete: true, active: true });
         window.api.enviarEvento("get-articles");
@@ -96,10 +114,11 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
       }
     });
   }, []);
+
   return (
     <div className="h-full w-full grid-cmg-program">
       <div className="row-start-1 row-end-2">
-        <NavMain title="Articulos">
+        <NavMain title="Articulos" setLoginUser={""}>
           <Buscador
             searchIn={articles}
             functionReturn={resultFindArticles}
@@ -118,7 +137,7 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
               categorys={categorys}
               brands={brands}
               articles={articles}
-              articleToEdit={articleToEdit}
+              articleToEdit={articleToEdit.articleToEdit} 
             ></EditArticleForm>
           )}
           <ArticleList

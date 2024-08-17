@@ -11,7 +11,7 @@ export const getDate = (): string => {
 
   return date;
 };
-export const verificarToken = (token) => {
+export const verificarToken = (token: any) => {
   const jwt = require("jsonwebtoken");
   const secretKey = "tu_clave_secreta"; // Asegúrate de usar una clave secreta segura y única
   try {

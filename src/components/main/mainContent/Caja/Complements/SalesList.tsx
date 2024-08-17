@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { storeType } from "../../../../../../types/types";
 
 interface SalesListProps {
   ventas: any[];
@@ -9,6 +10,22 @@ interface SalesListProps {
   setCuentasP: (cuentas: any[]) => void;
 }
 
+interface Venta {
+  _id: string;
+  dateOfRegister: string;
+  sold: number;
+  seller: {
+    name: string;
+  };
+}
+
+interface Cuenta {
+  _id: string;
+  date: string;
+  descripcion: string;
+  pay: string;
+}
+
 const SalesList: React.FC<SalesListProps> = ({
   ventas,
   fecha,
@@ -16,19 +33,19 @@ const SalesList: React.FC<SalesListProps> = ({
   setTotalCuentas,
   setCuentasP,
 }) => {
-  const [cuentas, setCuentas] = useState<object[]>([]);
+  const [cuentas, setCuentas] = useState<Cuenta[]>([]);
   const dispatch = useDispatch();
   const sales = useSelector((state: storeType) => state.saleState);
-  const [ventasNuevas, setVentasNuevas] = useState([]);
-  
+  const [ventasNuevas, setVentasNuevas] = useState<Venta[]>([]);
+
   useEffect(() => {
     // Función para filtrar las ventas según la fecha
-    const filtrarVentasPorFecha = (ventas: any[], fecha: string) => {
+    const filtrarVentasPorFecha = (ventas: Venta[], fecha: string) => {
       const fechaFormateada = fecha.split("-").reverse().join("-");
       return ventas.filter((venta) => venta.dateOfRegister === fechaFormateada);
     };
     
-    const filtrarCuentasPorFecha = (cuentas: any[], fecha: string) => {
+    const filtrarCuentasPorFecha = (cuentas: Cuenta[], fecha: string) => {
       const fechaFormateada = fecha.split("-").join("-");
       return cuentas.filter((cuenta) => cuenta.date === fechaFormateada);
     };
@@ -44,7 +61,7 @@ const SalesList: React.FC<SalesListProps> = ({
 
     window.api.enviarEvento("get-accountToPay");
 
-    const handleAccounts = (accounts: any[]) => {
+    const handleAccounts = (accounts: Cuenta[]) => {
       const cuentasFiltrada = filtrarCuentasPorFecha(accounts, fecha);
       setCuentas(cuentasFiltrada);
       setCuentasP(cuentasFiltrada);

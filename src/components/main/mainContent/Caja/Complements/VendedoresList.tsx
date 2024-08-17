@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { storeType } from "../../../../../types"; // Ajusta la ruta según sea necesario
 import { parseISO, format, isValid } from "date-fns";
 import { FaUserTie } from "react-icons/fa";
 
@@ -9,7 +7,6 @@ interface VendedoresListProps {
 }
 
 const VendedoresList: React.FC<VendedoresListProps> = ({ fecha }) => {
-  const sales = useSelector((state: storeType) => state.saleState);
   const [vendedores, setVendedores] = useState<
     { vendedor: string; totalVendido: number }[]
   >([]);
@@ -23,7 +20,7 @@ const VendedoresList: React.FC<VendedoresListProps> = ({ fecha }) => {
       console.error("Fecha inválida:", fecha);
       return;
     }
-
+    const sales: any[] = [];
     // Agrupar ventas por vendedor y sumar el total vendido en la fecha seleccionada
     sales.forEach((venta) => {
       const ventaFecha = parseISO(venta.dateOfRegister);
@@ -47,7 +44,7 @@ const VendedoresList: React.FC<VendedoresListProps> = ({ fecha }) => {
 
     setVendedores(vendedoresArray);
     console.log(vendedoresArray, "Vendedores agrupados");
-  }, [sales, fecha]);
+  }, [fecha]);
 
   return (
     <div className="flex flex-1 flex-col">

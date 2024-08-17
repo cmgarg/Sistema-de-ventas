@@ -1,36 +1,82 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import MenuClientsForm from "../MenusInputs/MenuClientsForm";
 import MenuArticlesForm from "../MenusInputs/MenuArticlesForm";
-import {
-  articleData,
-  saleData,
-  storeType,
-} from "../../../../../../types/types";
-import { useSelector } from "react-redux";
 import ListaProductos from "./ListaProductos";
 import AsideForm from "./AsideForm";
-import { CheckCircledIcon } from "@radix-ui/react-icons";
 import Factura from "./Factura";
 
-interface AddVentaForm {
+// Definiciones de tipo
+interface Article {
+  name: string;
+  code: string;
+  total: string | number;
+  amount: {
+    value: string | number;
+    unit: string;
+  };
+}
+
+interface ClientData {
+  name: string;
+  email: string;
+  address: string;
+  phone: string;
+  dni: string;
+  _id: string;
+  DNI: string;
+}
+
+interface Buyer {
+  client: {
+    active: boolean;
+    clientData: ClientData;
+  };
+  finalConsumer: {
+    active: boolean;
+    cae: string;
+  };
+}
+
+interface Seller {
+  name: string;
+  email: string;
+  address: string;
+  phone: string;
+  dni: string;
+}
+
+interface saleData {
+  _id: string;
+  dateOfRegister: string;
+  articles: Article[];
+  buyer: Buyer;
+  seller: Seller;
+  sold: number;
+}
+
+interface ClientState {
+  clientState: ClientData[];
+}
+
+interface ArticleState {
+  articleState: Article[];
+}
+
+interface AddVentaFormProps {
   onChangeModal: (p: boolean) => void;
-  addSales: (e: saleData) => void;
+  addSales: any;
   formatMony: (number: number) => string;
 }
-type productOfList = {
-  name: string;
-  code?: string;
-  total: string;
-  amount: string;
-};
 
-const AddVentaForm: React.FC<AddVentaForm> = ({
+const AddVentaForm: React.FC<AddVentaFormProps> = ({
   onChangeModal,
   addSales,
   formatMony,
 }) => {
-  //DATOS USUARIOS
   const [saleData, setSaleData] = useState<saleData>({
+    _id: "",
+    dateOfRegister: "",
     articles: [],
     buyer: {
       client: {
@@ -42,6 +88,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
           _id: "",
           phone: "",
           dni: "",
+          DNI: "",
         },
       },
       finalConsumer: {
@@ -58,24 +105,16 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
     },
     sold: 0,
   });
-  const [userData, setUserData] = useState<any>({});
 
-  const clients = useSelector((state: storeType) => state.clientState);
-  const articles = useSelector((state: storeType) => state.articleState);
+  const [listProduct, setListProduct] = useState<Article[]>([]);
+  const clients = useSelector((state: ClientState) => state.clientState);
+  const articles = useSelector((state: ArticleState) => state.articleState);
   const [showOkSignal, setShowOkSignal] = useState<{
     show: boolean;
     save: boolean;
     message: string;
   }>({ show: false, save: false, message: "" });
   const [showError, setShowError] = useState<{ in: string }>({ in: "" });
-  const [listProduct, setListProduct] = useState<
-    {
-      name: string;
-      code?: string;
-      total: string;
-      amount: string;
-    }[]
-  >([]);
   const [cost, setCost] = useState<number>(0);
   const [clientData, setClientData] = useState<{
     name: string;
@@ -96,13 +135,14 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
   const modalClient = () => {
     setShowModalBuyer(true);
   };
+
   const onShowClientForm = (s: boolean) => {
     setShowClientForm(s);
   };
+
   const loadClient = () => {
     if (clientData.name) {
       loadBuyer("client");
-
       onShowClientForm(false);
     }
   };
@@ -146,17 +186,12 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
     }, 3000);
   };
 
-  const addProduct = (e: {
-    name: string;
-    code?: string;
-    total: string;
-    amount: string;
-  }) => {
+  const addProduct = (e: Article) => {
     const arr = [...listProduct];
     arr.push(e);
-
     setChangeData("articles", arr);
   };
+
   const sumCost = () => {
     const arr = saleData.articles.map((product) => product.total);
     let suma = 0;
@@ -166,13 +201,10 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
     setChangeData("sold", suma);
     setCost(suma);
   };
-  //
 
   const deleteOfList = (id: number) => {
     const arr = [...listProduct];
-
     arr.splice(id, 1);
-
     setListProduct(arr);
   };
 
@@ -183,22 +215,21 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
   }) => {
     setShowOkSignal(b);
   };
+
   function setChangeData(data: string, value: any) {
     const existingData = ["articles", "sold", "buyer", "seller"];
     if (existingData.includes(data)) {
       switch (data) {
         case "articles":
-          console.log("se cumple esrte");
           setSaleData({
             ...saleData,
-            articles: [...saleData.articles, ...value],
+            articles: value,
           });
           break;
         case "sold":
           setSaleData({ ...saleData, sold: value });
           break;
         case "buyer":
-          console.log("ACA SE LLEGA RICO", value);
           setSaleData({ ...saleData, buyer: { ...value } });
           break;
         case "seller":
@@ -208,12 +239,8 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
         default:
           break;
       }
-    } else {
-      console.log("NO ESTA");
     }
   }
-
-  //SUBIR USUARIO A BASE DE DATOS LOCAL
 
   function subirVenta() {
     const existArticles = saleData.articles.length > 0;
@@ -221,7 +248,6 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
       saleData.buyer.client.active || saleData.buyer.finalConsumer.active;
     if (existArticles && existBuyer) {
       window.api.enviarEvento("sale-process", saleData);
-
       addSales(saleData);
     } else if (!existArticles && !existBuyer) {
       changeShowError("all");
@@ -233,13 +259,11 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
   }
 
   useEffect(() => {
-    console.log(listProduct);
     sumCost();
   }, [saleData.articles]);
 
   useEffect(() => {
     window.api.recibirEvento("response-sale-process", (response) => {
-      console.log("SE GUARDO SARPADAMENTE", response);
       if (response.success) {
         showOkSaveSignal({
           show: true,
@@ -248,6 +272,8 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
         });
 
         setSaleData({
+          _id: "",
+          dateOfRegister: "",
           articles: [],
           buyer: {
             client: {
@@ -256,9 +282,10 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
                 name: "",
                 email: "",
                 address: "",
+                _id: "",
                 phone: "",
                 dni: "",
-                _id: "",
+                DNI: "",
               },
             },
             finalConsumer: {
@@ -284,24 +311,21 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
       }
     });
   }, []);
-  //
+
   const getUserData = () => {
     const userId = localStorage.getItem("userId");
     window.api.enviarEvento("obtener-datos-usuario", userId);
-  }; //
+  };
+
   useEffect(() => {
     getUserData();
     window.api.recibirEvento("datos-usuario-obtenidos", (e) => {
-      console.log(e, "ESTO ES GONZA");
-
       if (e.success) {
-        setUserData(e.data);
         setChangeData("seller", e.data);
       }
     });
   }, []);
 
-  //ESTILOS INPUT
   const estilosInput = "outline-none px-2";
 
   return (
@@ -313,146 +337,41 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
           subirVenta={subirVenta}
         />
       )}
-      <div className="w-full h-full bg-slate-900  text-slate-50 rounded-md flex relative">
-        <AsideForm
-          subirVenta={subirVenta}
-          onChangeModal={onChangeModal}
-          modalClient={modalClient}
-          userData={userData}
-          saleData={saleData}
-          showError={showError}
-        />
-
-        {showModalBuyer && (
-          <div className="flex flex-col absolute h-2/4 w-2/4 left-1/4 top-1/4 bg-gradient-to-t from-slate-950 to-blue-800 rounded-md z-50">
-            {/* <div>
-              <MenuClientsForm
-                clients={clients}
-                setClientData={setClientData}style={estilosInput}
-                
-              <button>Aceptar</button>
-              <button>Cancelar</button>e
-              />
-            </div> */}
-            <div className="absolute bottom-full text-4xl font-bold italic text-slate-600">
-              <p>COMPRADOR</p>
-            </div>
-            <div className="flex flex-1 items-center select-none relative">
-              {showClientForm && (
-                <div className="absolute flex w-full h-full bg-slate-900 rounded-md rounded-bl-md bg-gradient-to-t from-slate-950 to-blue-950 flex-col">
-                  <MenuClientsForm
-                    style={estilosInput}
-                    clients={clients}
-                    setClientData={setClientData}
-                  ></MenuClientsForm>
-                  <div className="flex flex-1">
-                    <div className="flex flex-col border-r border-slate-800">
-                      <div className="flex-1 flex justify-center items-center">
-                        "clientesvg"
-                      </div>
-                      <div className="flex w-full justify-start">
-                        <button
-                          onClick={() => {
-                            setShowClientForm(false);
-                            setClientData({
-                              name: "",
-                              email: "",
-                              address: "",
-                              phone: "",
-                              dni: "",
-                            });
-                          }}
-                          className="bg-red-500 text-xl w-32 h-10 rounded-bl-md"
-                        >
-                          Cancelar
-                        </button>
-                        <button
-                          onClick={() => {
-                            loadClient();
-                          }}
-                          className="bg-green-500 text-xl w-32 h-10"
-                        >
-                          Aceptar
-                        </button>
-                      </div>
-                    </div>
-                    <div className="flex-1 flex flex-col text-lg justify-around">
-                      <div className="flex flex-col flex-1">
-                        <p className="border-b-2 border-slate-800 pl-2">
-                          Nombre
-                        </p>
-                        <p className="pl-2">{clientData.name}</p>
-                      </div>
-                      <div className="flex flex-col flex-1">
-                        <p className="border-b-2 border-slate-800 pl-2">CUIT</p>
-                        <p className="pl-2">{clientData.dni}</p>
-                      </div>
-                      <div className="flex flex-col flex-1">
-                        <p className="border-b-2 border-slate-800 pl-2">
-                          Direccion
-                        </p>
-                        <p className="pl-2">{clientData.address}</p>
-                      </div>
-                      <div className="flex flex-col flex-1">
-                        <p className="border-b-2 border-slate-800 pl-2">
-                          Correo electronico
-                        </p>
-                        <p className="pl-2">{clientData.email}</p>
-                      </div>
-                      <div className="flex flex-col flex-1">
-                        <p className="border-b-2 border-slate-800 pl-2">
-                          Telefono
-                        </p>
-                        <p className="pl-2">{clientData.phone}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              <button
-                onClick={() => loadBuyer("finalConsumer")}
-                className="h-full flex flex-col items-center justify-center space-y-5 w-1/2 shadow-inner shadow-slate-950 hover:shadow-transparent bg-gradient-to-t from-slate-950 to-blue-800 rounded-md hover:to-blue-600"
-              >
-                "te borre iconoconsumidor final"
-                <p className="text-3xl">CONSUMIDOR FINAL</p>
-              </button>
-              <button
-                onClick={() => {
-                  onShowClientForm(true);
-                }}
-                className="h-full flex flex-col items-center justify-center space-y-5 w-1/2 shadow-inner shadow-slate-950 hover:shadow-transparent bg-gradient-to-t from-slate-950 to-blue-800 rounded-md hover:to-blue-600"
-              >
-                "borre icono cliente"
-                <p className="text-3xl">CLIENTE</p>
-              </button>
-            </div>
-          </div>
-        )}
-        <div className="flex-1 flex w-full flex-col overflow-auto">
-          <div className="flex-1 flex overflow-hidden">
+      <div className="w-full h-full bg-gray-600 opacity-95 absolute z-10"></div>
+      <div className="relative z-30 flex flex-col w-11/12 h-5/6 rounded-md p-2 bg-gray-100">
+        <h3 className="text-2xl underline text-center my-2">
+          Añadir nueva venta
+        </h3>
+        <div className="flex w-full h-full gap-2">
+          <div className="flex flex-col w-3/4 h-full">
             <ListaProductos
               deleteOfList={deleteOfList}
-              listProduct={saleData.articles}
+              listProduct={listProduct}
               articles={articles}
               addProduct={addProduct}
               estilosInput={estilosInput}
               formatMony={formatMony}
               showError={showError}
             />
+            <MenuClientsForm
+              modalClient={modalClient}
+              showModalBuyer={showModalBuyer}
+              setShowModalBuyer={setShowModalBuyer}
+              clients={clients}
+              loadBuyer={loadBuyer}
+              onShowClientForm={onShowClientForm}
+              loadClient={loadClient}
+              setClientData={setClientData}
+              showClientForm={showClientForm} style={""}            />
           </div>
-          <div className="flex justify-end space-x-2 bg-slate-950">
-            <button className="p-2 bg-blue-500 flex-1">
-              <p>Generar factura</p>
-            </button>
-            <div className="flex space-x-2 bg-teal-900 rounded-tl-lg p-1">
-              <p className="text-green-50 text-4xl font-bold" onClick={sumCost}>
-                Total
-              </p>
-              <p className="text-4xl text-green-400 font-bold">
-                {formatMony(cost)}
-              </p>
-            </div>
-          </div>
+          <AsideForm
+            onChangeModal={onChangeModal}
+            formatMony={formatMony}
+            cost={cost}
+            saleData={saleData}
+            subirVenta={subirVenta}
+            showError={showError}
+          />
         </div>
       </div>
     </div>

@@ -1,5 +1,4 @@
-import { articleData, depositType } from "@/types";
-import { Value } from "@radix-ui/react-select";
+import { articleData, depositType } from "../../../../../../../../../types/types";
 import React, { useEffect, useState } from "react";
 
 type CreateSectorProps = {

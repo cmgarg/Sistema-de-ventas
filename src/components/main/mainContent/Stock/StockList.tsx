@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import TableMain from "../../tablaMain/TableMain";
 import TableHead from "../../tablaMain/TableHead";
 import TableRow from "../../tablaMain/TableRow";
@@ -11,12 +11,7 @@ interface StockListProps {
   searchActived: { actived: boolean; results: articleData[] };
 }
 
-const StockList: React.FC<StockListProps> = ({
-  filtersActived,
-  searchActived,
-}) => {
-  // HACEEEER QUE EL BUSCADOR FUNCIONE
-  //ORDENAR LISTA
+const StockList: React.FC<StockListProps> = ({ filtersActived, searchActived }) => {
   const articles = useSelector((state: storeType) => state.articleState);
   const [articlesFilter, setArticlesFilter] = useState<articleData[]>([]);
   const [articlesOrder, setArticlesOrder] = useState<articleData[]>([]);
@@ -56,10 +51,8 @@ const StockList: React.FC<StockListProps> = ({
     }
     if (stock) {
       articlesToOrder.sort((a, b) => {
-        if (Number(a.article.stock.amount) > Number(b.article.stock.amount))
-          return -1;
-        if (Number(a.article.stock.amount) < Number(b.article.stock.amount))
-          return 1;
+        if (Number(a.article.stock.amount) > Number(b.article.stock.amount)) return -1;
+        if (Number(a.article.stock.amount) < Number(b.article.stock.amount)) return 1;
         return 0;
       });
     }
@@ -71,26 +64,26 @@ const StockList: React.FC<StockListProps> = ({
     const { category, brand } = filtersActived;
     const articlesToFilter = [...articles];
 
-    let articlesFilter: articleData[] = [];
+    let filteredArticles: articleData[] = [];
 
-    if (category !== "" && category !== "") {
-      articlesFilter = articlesToFilter.filter((article) => {
+    if (category !== "" && brand !== "") {
+      filteredArticles = articlesToFilter.filter((article) => {
         return (
-          article.category.value == category && article.brand.value == category
+          article.category.value === category && article.brand.value === brand
         );
       });
     } else if (brand !== "") {
-      articlesFilter = articlesToFilter.filter((article) => {
-        return article.brand.value == brand;
+      filteredArticles = articlesToFilter.filter((article) => {
+        return article.brand.value === brand;
       });
     } else if (category !== "") {
-      articlesFilter = articlesToFilter.filter((article) => {
-        return article.category.value == category;
+      filteredArticles = articlesToFilter.filter((article) => {
+        return article.category.value === category;
       });
     }
 
-    if (articlesFilter.length > 0) {
-      setArticlesFilter(articlesFilter);
+    if (filteredArticles.length > 0) {
+      setArticlesFilter(filteredArticles);
     }
   };
 
@@ -99,16 +92,17 @@ const StockList: React.FC<StockListProps> = ({
       applyFilters();
     }
   }, [filtersActived]);
+
   useEffect(() => {
     orderArticlesFor();
     console.log(articlesOrder, "ARGENT", searchActived);
   }, [optionsFilterActived]);
+
   useEffect(() => {
     console.log(searchActived.results, "RESULTADOS DE LA BUSQUEDAD");
   }, [searchActived]);
 
   return (
-    //PODER ORDENAR LAS LISTAS
     <TableMain>
       <TableHead>
         <div className="flex-1 pl-2 flex items-center justify-start">
@@ -136,70 +130,64 @@ const StockList: React.FC<StockListProps> = ({
       </TableHead>
       <div className="first:bg-white">
         {!searchActived.actived
-          ? articlesOrder.map((article, index) => {
-              return (
-                <TableRow key={index} padding={true}>
-                  <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
-                    <Link
-                      to={`/articulo/${article.article.code}`}
-                      className="flex-1 text-start"
-                    >{`${article.article.name}`}</Link>
-                  </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{article.brand.label}</p>
-                  </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>${article.article.costo}</p>
-                  </div>
-                  <div className="flex justify-end items-center flex-1 pl-2">
-                    <p>{article.article.stock.amount}</p>
-                  </div>
-                </TableRow>
-              );
-            })
+          ? articlesOrder.map((article, index) => (
+              <TableRow key={index} padding={true}>
+                <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+                  <Link
+                    to={`/articulo/${article.article.code}`}
+                    className="flex-1 text-start"
+                  >{`${article.article.name}`}</Link>
+                </div>
+                <div className="flex justify-center items-center flex-1 pl-2">
+                  <p>{article.brand.label}</p>
+                </div>
+                <div className="flex justify-center items-center flex-1 pl-2">
+                  <p>${article.article.costo}</p>
+                </div>
+                <div className="flex justify-end items-center flex-1 pl-2">
+                  <p>{article.article.stock.amount}</p>
+                </div>
+              </TableRow>
+            ))
           : articlesFilter.length > 0
-          ? articlesFilter.map((article) => {
-              return (
-                <TableRow>
-                  <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
-                    <Link
-                      to={`/articulo/${article.article.code}`}
-                      className="flex-1 text-center"
-                    >{`${article.article.name}`}</Link>
-                  </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{article.brand.label}</p>
-                  </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>${article.article.costo}</p>
-                  </div>
-                  <div className="flex justify-end items-center flex-1 pl-2">
-                    <p>{article.article.stock.amount}</p>
-                  </div>
-                </TableRow>
-              );
-            })
-          : searchActived.results.map((article) => {
-              return (
-                <TableRow>
-                  <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
-                    <Link
-                      to={`/articulo/${article.article.code}`}
-                      className="flex-1 text-center"
-                    >{`${article.article.name}s`}</Link>
-                  </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{article.brand.label}</p>
-                  </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>${article.article.costo}</p>
-                  </div>
-                  <div className="flex justify-end items-center flex-1 pl-2">
-                    <p>{article.article.stock.amount}</p>
-                  </div>
-                </TableRow>
-              );
-            })}
+          ? articlesFilter.map((article, index) => (
+              <TableRow key={index}>
+                <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+                  <Link
+                    to={`/articulo/${article.article.code}`}
+                    className="flex-1 text-center"
+                  >{`${article.article.name}`}</Link>
+                </div>
+                <div className="flex justify-center items-center flex-1 pl-2">
+                  <p>{article.brand.label}</p>
+                </div>
+                <div className="flex justify-center items-center flex-1 pl-2">
+                  <p>${article.article.costo}</p>
+                </div>
+                <div className="flex justify-end items-center flex-1 pl-2">
+                  <p>{article.article.stock.amount}</p>
+                </div>
+              </TableRow>
+            ))
+          : searchActived.results.map((article, index) => (
+              <TableRow key={index}>
+                <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+                  <Link
+                    to={`/articulo/${article.article.code}`}
+                    className="flex-1 text-center"
+                  >{`${article.article.name}s`}</Link>
+                </div>
+                <div className="flex justify-center items-center flex-1 pl-2">
+                  <p>{article.brand.label}</p>
+                </div>
+                <div className="flex justify-center items-center flex-1 pl-2">
+                  <p>${article.article.costo}</p>
+                </div>
+                <div className="flex justify-end items-center flex-1 pl-2">
+                  <p>{article.article.stock.amount}</p>
+                </div>
+              </TableRow>
+            ))}
       </div>
     </TableMain>
   );

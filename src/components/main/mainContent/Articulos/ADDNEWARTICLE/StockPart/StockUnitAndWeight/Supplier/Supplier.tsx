@@ -1,4 +1,4 @@
-import { supplierType } from "@/types/types";
+import { supplierType } from "../../../../../../../../../types/types";
 import React, { useEffect, useState } from "react";
 import { BiEdit } from "react-icons/bi";
 import { FaRoad } from "react-icons/fa";

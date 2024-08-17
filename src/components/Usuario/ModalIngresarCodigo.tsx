@@ -1,13 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, ChangeEvent, FormEvent } from "react";
 
-const ModalIngresarCodigo = ({ setVerificarCodigo, setMostrarModalCodigo }) => {
-  const [codigo, setCodigo] = useState("");
+interface ModalIngresarCodigoProps {
+  setVerificarCodigo: (codigo: string) => void;
+  setMostrarModalCodigo: (mostrar: boolean) => void;
+}
 
-  const handleChange = (event) => {
+const ModalIngresarCodigo: React.FC<ModalIngresarCodigoProps> = ({
+  setVerificarCodigo,
+  setMostrarModalCodigo,
+}) => {
+  const [codigo, setCodigo] = useState<string>("");
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setCodigo(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     setVerificarCodigo(codigo);
     setMostrarModalCodigo(false);
