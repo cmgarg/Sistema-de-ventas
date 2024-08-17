@@ -1,9 +1,5 @@
-import Usuario from "../../../../../../src/assets/asidesvg/Usuario";
-import ClientSvg from "../../../../../../src/assets/MAINSVGS/articlesSVG/ClientSvg";
 import React, { useEffect, useRef, useState } from "react";
-import FinalConsumer from "../../../../../../src/assets/MAINSVGS/articlesSVG/FinalConsumer";
 import { saleData } from "../../../../../../types/types";
-import BackArrowSvg from "../../../../../../src/assets/MAINSVGS/articlesSVG/BackArrowSvg";
 import { FaQuestion } from "react-icons/fa";
 import { FaBasketShopping } from "react-icons/fa6";
 import { FcBusinessman } from "react-icons/fc";

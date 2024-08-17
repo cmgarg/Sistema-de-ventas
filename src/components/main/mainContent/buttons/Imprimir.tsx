@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Biñeta from "../Biñeta/Biñieta.js";
-import PrintIcon from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/PrintIcon.js";
 interface ImprimirProps {}
+import { BsPrinter } from "react-icons/bs";
 
 const Imprimir: React.FC<ImprimirProps> = ({}) => {
   return (
@@ -10,7 +10,7 @@ const Imprimir: React.FC<ImprimirProps> = ({}) => {
       onClick={() => {}}
     >
       <Biñeta title="Imprimir">
-        <PrintIcon size={25} color="#fff"></PrintIcon>
+      <BsPrinter  size={25} color="white" />
       </Biñeta>
     </div>
   );

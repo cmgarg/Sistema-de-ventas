@@ -1,7 +1,7 @@
 import react from "@vitejs/plugin-react";
 import { UserConfig, ConfigEnv } from "vite";
 import { rmSync } from "node:fs";
-import { join } from "path";
+import { join, resolve } from "path";
 import electron from "vite-plugin-electron";
 import renderer from "vite-plugin-electron-renderer";
 import pkg from "./package.json";
@@ -75,7 +75,7 @@ export default ({ command }: ConfigEnv): UserConfig => {
       plugins: plugins(true), // Plugins para desarrollo
       resolve: {
         alias: {
-          "/@": srcRoot, // Alias para el directorio src
+          "/@": resolve(__dirname, "src"), // Alias para el directorio src
         },
       },
       build: {
@@ -86,6 +86,7 @@ export default ({ command }: ConfigEnv): UserConfig => {
       server: {
         port: process.env.PORT === undefined ? 3000 : +process.env.PORT, // Puerto para el servidor de desarrollo
       },
+      publicDir: "public", // Asegurar que la carpeta public sea servida correctamente
       optimizeDeps: {
         exclude: ["path"], // Excluir el módulo 'path' de la optimización de dependencias
       },
@@ -99,7 +100,7 @@ export default ({ command }: ConfigEnv): UserConfig => {
     plugins: plugins(false), // Plugins para producción
     resolve: {
       alias: {
-        "/@": srcRoot, // Alias para el directorio src
+        "/@": resolve(__dirname, "src"), // Alias para el directorio src
       },
     },
     build: {
@@ -110,6 +111,7 @@ export default ({ command }: ConfigEnv): UserConfig => {
     server: {
       port: process.env.PORT === undefined ? 3000 : +process.env.PORT, // Puerto para el servidor (si es necesario en producción)
     },
+    publicDir: "public", // Asegurar que la carpeta public sea servida correctamente
     optimizeDeps: {
       exclude: ["path"], // Excluir el módulo 'path' de la optimización de dependencias
     },

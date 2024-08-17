@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import CheckSvg from "../../../../../assets/MAINSVGS/mainAsideSvg/editSVG/CheckSvg";
-import ErrorSvg from "../../../../../assets/MAINSVGS/mainAsideSvg/editSVG/ErrorSvg";
 import { clientData } from "@/types";
 import { editClient } from "../../../../../../src/redux/estados/clientesState";
 
@@ -159,7 +157,7 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
         {mensajeTrueFalse.seGuardo === 1 && mensajeTrueFalse.value ? (
           <div className="top-0 left-0 right-0 bottom-0 bg-slate-50 text-slate-950 absolute justify-center items-center flex rounded-xl flex-col">
             <div className="flex-1 flex justify-center items-end">
-              <CheckSvg size={150} color="rgb(74 222 128)" />
+              "icono check"
             </div>
             <div className="flex-1 text-xl flex justify-center items-center">
               <p>Se guardo correctamente.</p>
@@ -178,7 +176,7 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
         ) : mensajeTrueFalse.value && mensajeTrueFalse.seGuardo !== 1 ? (
           <div className="top-0 left-0 right-0 bottom-0 bg-slate-50 text-slate-950 absolute justify-center items-center flex rounded-xl flex-col">
             <div className="flex-1 flex justify-center items-end">
-              <ErrorSvg size={150} color="rgb(248 113 113)" />
+              "icono error"
             </div>
             <div className="flex-1 text-xl flex justify-center items-center">
               <p>Hubo un error.</p>

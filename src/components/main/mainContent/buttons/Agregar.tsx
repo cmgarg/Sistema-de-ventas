@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import AddIcon from "../../../../assets/MAINSVGS/mainAsideSvg/maincontent/AddIcon.js";
 import Biñeta from "../Biñeta/Biñieta.js";
+import { MdAdd } from "react-icons/md";
 interface AgregarProps {
   onChangeModal: (p: boolean) => void;
   title: string;
@@ -15,7 +15,7 @@ const Agregar: React.FC<AgregarProps> = ({ onChangeModal, title }) => {
       }}
     >
       <Biñeta title={`Agregar ${title}`}>
-        <AddIcon size={30} color="#0ff"></AddIcon>
+      <MdAdd size={25} color="white" />
       </Biñeta>
     </div>
   );

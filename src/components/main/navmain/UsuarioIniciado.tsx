@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../../redux/estados/authSlice.ts";
+import { logout } from "../../../redux/estados/authSlice";
 import { MdAddPhotoAlternate } from "react-icons/md";
-import { cambiar } from "../../../../src/redux/estados/estadoTipoDeUser.ts";
-import "../.././../App.css";
+import { cambiar } from "../../../../src/redux/estados/estadoTipoDeUser.js";
+import "../../../App.css";
+import "../../../index.css";
 
-export default function UsuarioIniciado({ setLoginUser }: any) {
+export default function UsuarioIniciado({ setLoginUser }) {
   const images = [
-    "/imagen-usuario/user-1.jpg",
-    "/imagen-usuario/user-2.jpg",
-    "/imagen-usuario/user-3.jpg",
-    "/imagen-usuario/user-4.jpg",
-    "/imagen-usuario/user-5.jpg",
-    "/imagen-usuario/user-6.jpg",
-    "/imagen-usuario/user-7.jpg",
-    "/imagen-usuario/user-8.jpg",
+    "assets/imagen-usuario/user-1.jpg",
+    "assets/imagen-usuario/user-2.jpg",
+    "assets/imagen-usuario/user-3.jpg",
+    "assets/imagen-usuario/user-4.jpg",
+    "assets/imagen-usuario/user-5.jpg",
+    "assets/imagen-usuario/user-6.jpg",
+    "assets/imagen-usuario/user-7.jpg",
+    "assets/imagen-usuario/user-8.jpg",
   ];
 
   const [menuVisible, setMenuVisible] = useState(false);
@@ -132,11 +133,22 @@ export default function UsuarioIniciado({ setLoginUser }: any) {
       window.api.removeAllListeners("datos-usuario-obtenidos");
     };
   }, []);
-  useEffect(() => {
-    console.log(datosUsuario, "GONZAAAAAAAAAAAAAAA");
-  }, [datosUsuario]);
 
-  const navigate2 = useNavigate();
+  useEffect(() => {
+    const lastCacheClear = localStorage.getItem('lastCacheClear');
+    const currentTime = new Date().getTime();
+
+    if (!lastCacheClear || currentTime - lastCacheClear > 30 * 24 * 60 * 60 * 1000) {
+      window.api.enviarEvento("clear-cache");
+      window.api.recibirEvento("cache-cleared", (_response) => {
+        localStorage.setItem('lastCacheClear', currentTime.toString());
+      });
+
+      return () => {
+        window.api.removeAllListeners("cache-cleared");
+      };
+    }
+  }, []);
 
   const abrirConfiguracion = () => {
     navigate("/configuracion");
@@ -158,7 +170,7 @@ export default function UsuarioIniciado({ setLoginUser }: any) {
 
           <div
             className="w-11 h-11 bg-cover bg-center rounded-full cursor-pointer border mr-2"
-            style={{ backgroundImage: `url(${selectedImage})` }}
+            style={{ backgroundImage: `url(${selectedImage})`}}
           />
           {/* TOP */}
           <span className="absolute left-0 top-0 h-[2px] w-0 bg-sky-700 transition-all duration-100 group-hover:w-full rounded-t-lg" />

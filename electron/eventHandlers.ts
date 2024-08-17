@@ -51,7 +51,6 @@ import {
   updateSuppliers,
   createDeposit,
   updateDeposit,
-  addSectorInDeposit,
   addProductInDeposit,
   deleteSector,
   editSectorInDeposit,
@@ -65,6 +64,7 @@ import {
   disableNotificationType,
   getDisabledNotificationTypes,
   deleteOldNotifications,
+  actualizarImagenUsuario,
   getPayMethods,
   addPayMethod,
   removePayMethod,
@@ -611,6 +611,25 @@ export const loadEvents = () => {
   );
 
   ipcMain.on(
+    "actualizar-imagen-usuario",
+    async (event, { userId, imageUrl }) => {
+      try {
+        await actualizarImagenUsuario(userId, imageUrl);
+        event.reply("respuesta-actualizar-imagen-subusuario", {
+          exito: true,
+          userId,
+          imageUrl,
+        });
+      } catch (error: any) {
+        event.reply("respuesta-actualizar-imagen-subusuario", {
+          exito: false,
+          mensaje: error.message,
+        });
+      }
+    }
+  );
+
+  ipcMain.on(
     "actualizar-permisos-usuario",
     async (event, { userId, nuevosPermisos }) => {
       try {
@@ -880,4 +899,20 @@ ipcMain.on("delete-old-notifications", async () => {
   } catch (error) {
     console.error("Error al eliminar notificaciones antiguas:", error);
   }
+});
+
+//////////////////limpiar cache
+ipcMain.on("clear-cache", (event) => {
+  const webContents = BrowserWindow.getAllWindows()[0].webContents;
+
+  webContents.session
+    .clearCache()
+    .then(() => {
+      console.log("Caché limpiada");
+      event.reply("cache-cleared", { success: true });
+    })
+    .catch((error) => {
+      console.error("Error al limpiar la caché:", error);
+      event.reply("cache-cleared", { success: false, error: error.message });
+    });
 });

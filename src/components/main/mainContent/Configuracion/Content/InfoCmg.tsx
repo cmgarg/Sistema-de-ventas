@@ -1,5 +1,5 @@
-import Check from "../../../../../assets/MAINSVGS/Configuracion SVG/Check";
 import React, { useEffect, useState } from "react";
+import { CiCircleCheck } from "react-icons/ci";
 
 export default function InfoCmg() {
   const [estado, setEstado] = useState(false);
@@ -63,7 +63,7 @@ export default function InfoCmg() {
         </div>
         <div className="flex h-28 w-full items-center pl-6 border-b border-gray-600">
           {estadoAct === true ? (
-            <Check fill="green" width="30" height="30" />
+          <CiCircleCheck size={40} color="#34EB17" />
           ) : (
             <div role="status">
               <svg

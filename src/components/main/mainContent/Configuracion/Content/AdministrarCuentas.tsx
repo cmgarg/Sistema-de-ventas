@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import AgregarUserSVG from "../../../../../../src/assets/MAINSVGS/Configuracion SVG/AgregarUserSVG";
 import UsuarioModal from "./AdministrarCuentas/UsuarioModal";
 import EditUserModal from "./AdministrarCuentas/EditUserModal";
 import Permisos from "./AdministrarCuentas/Permisos";
-import { MdAddPhotoAlternate } from "react-icons/md";
+import { MdAdd, MdAddPhotoAlternate } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
 import Tooltip from "../../../../nav/aside/Tooltip";
+import { IoMdPersonAdd } from "react-icons/io";
 
 export default function AdministrarCuentas() {
   const [showModal, setShowModal] = useState(false);
@@ -172,7 +172,7 @@ export default function AdministrarCuentas() {
       <div className="flex flex-col w-1/4 border border-gray-600 rounded-lg overflow-hidden">
         <div className="h-12 flex justify-between pl-1 items-center border border-gray-600 rounded-lg">
           <div className="text-2xl select-none pl-1">Usuarios</div>
-          <div className="flex">
+          <div className="flex items-center">
             <Tooltip content="Editar Usuario">
               <div
                 className="text-2xl p-2 hover:bg-gray-950 rounded-full flex justify-center items-center"
@@ -186,7 +186,7 @@ export default function AdministrarCuentas() {
                 className="text-2xl p-2 hover:bg-gray-950 rounded-full flex"
                 onClick={agregarUser}
               >
-                <AgregarUserSVG width="30" height="30" />
+                <IoMdPersonAdd size={26} color="white" />
               </div>
             </Tooltip>
           </div>

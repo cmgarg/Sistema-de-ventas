@@ -1,6 +1,5 @@
-import ContraVisibleSVG from "../../assets/SvgUsuario/ContraVisibleSVG";
-import ContraNoVisibleSVG from "../../assets/SvgUsuario/ContraNoVisibleSVG";
 import React, { useEffect, useState } from "react";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 const ModalCambioContraRespCorrect = ({ setCambiarContraseña, onClose }) => {
   const [nuevaContraseña, setNuevaContraseña] = useState("");
@@ -73,11 +72,7 @@ const ModalCambioContraRespCorrect = ({ setCambiarContraseña, onClose }) => {
               onClick={toggleMostrarContraseña}
               className="absolute right-2 top-1 text-sm text-white"
             >
-              {mostrarContraseña ? (
-                <ContraVisibleSVG />
-              ) : (
-                <ContraNoVisibleSVG />
-              )}
+              {mostrarContraseña ? <FaRegEye /> : <FaRegEyeSlash />}
             </button>
             <button
               type="submit"

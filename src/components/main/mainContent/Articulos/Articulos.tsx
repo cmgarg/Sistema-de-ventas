@@ -8,8 +8,6 @@ import ArticleList from "./ArticleList";
 import { useDispatch, useSelector } from "react-redux";
 import { articleData, storeType } from "../../../../../types/types";
 import EditArticleForm from "./EDITARTICLE/EditArticleForm";
-import CheckSvg from "../../../../assets/MAINSVGS/mainAsideSvg/editSVG/CheckSvg";
-import UnCheckSvg from "../../../../assets/MAINSVGS/mainAsideSvg/editSVG/UnCheckSvg";
 import ForAddNewArticle from "./ADDNEWARTICLE/ForAddNewArticleMain";
 
 interface ArticulosProps {}
@@ -147,14 +145,11 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
                 </div>
                 {resDeleteArticle.delete ? (
                   <div className="flex-1 flex items-center">
-                    <CheckSvg size={100} color="rgb(134 239 172)"></CheckSvg>
+                    te borre un icono
                   </div>
                 ) : (
                   <div className="flex-1 flex items-center">
-                    <UnCheckSvg
-                      size={100}
-                      color="rgb(248 113 113)"
-                    ></UnCheckSvg>
+                    te borre un icono
                   </div>
                 )}
                 <button

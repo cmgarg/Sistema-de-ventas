@@ -176,7 +176,6 @@ contextBridge.exposeInMainWorld("api", {
       "guardar-usuario-editado",
       "obtener-permisos-usuario",
       "verificar-admin-existente",
-      "actualizar-imagen-usuario",
       "obtener-admin",
       //Unidades
       "get-unitsArticleForm",
@@ -211,6 +210,7 @@ contextBridge.exposeInMainWorld("api", {
       "add-pay-method",
       "remove-pay-method",
       //COMPRAS
+      "clear-cache",
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -274,11 +274,11 @@ contextBridge.exposeInMainWorld("api", {
       //IMPRESORA
       "response-imprimir-pa",
       //NOTIFICACIONES
-      "notification",
       "response-get-notifications",
       "hide-notification",
       "disable-notification-type",
       "response-get-disabled-notification-types",
+      "cache-cleared",
       //METODOS DE PAGO
       "response-get-pay-methods",
       "response-update-pay-method",

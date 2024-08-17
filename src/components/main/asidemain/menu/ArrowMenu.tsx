@@ -1,6 +1,5 @@
 import React, { ReactNode, useState } from "react";
-import ArrowDown from "../../../../assets/MAINSVGS/mainAsideSvg/ArrowDown.jsx";
-import ArrowRight from "../../../../assets/MAINSVGS/mainAsideSvg/ArrowRight.jsx";
+
 
 interface ArrowMenuContentProps {
   isActive: boolean;
@@ -12,11 +11,11 @@ const ArrowMenu: React.FC<ArrowMenuContentProps> = ({ isActive }) => {
     <div className="flex items-center select-none">
       {(isActive && (
         <div className="flex items-center">
-          <ArrowDown size={15} color={"#fff"}></ArrowDown>
+          "icono"
         </div>
       )) || (
         <div className="flex items-center">
-          <ArrowRight size={15} color={"#fff"}></ArrowRight>
+          "otro icono"
         </div>
       )}
     </div>
