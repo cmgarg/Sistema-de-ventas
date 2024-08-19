@@ -84,7 +84,6 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
     // Envía los datos del formulario al backend
     window.api.enviarEvento("guardar-usuario-secundario", usuario);
     setUsuario({
-      _id: "",
       nombre: "",
       password: "",
       imageUrl: "/imagen-usuario/user-1.jpg",
@@ -98,12 +97,19 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
   };
 
   useEffect(() => {
-    const handleResponse = (respuesta: { exito: boolean; usuario?: Usuario; error?: string }) => {
+    const handleResponse = (respuesta: {
+      exito: boolean;
+      usuario?: Usuario;
+      error?: string;
+    }) => {
       if (respuesta.exito) {
         console.log("Usuario secundario guardado con éxito", respuesta.usuario);
         //onAdminCreated(respuesta.usuario); // Haz algo después de crear el admin
       } else {
-        console.error("Error al guardar el usuario secundario", respuesta.error);
+        console.error(
+          "Error al guardar el usuario secundario",
+          respuesta.error
+        );
       }
     };
 
@@ -165,7 +171,11 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
               onClick={toggleShowPassword}
               className="absolute right-5 top-1/2 transform -translate-y-1/2 cursor-pointer"
             >
-              {showPassword ? <BsEyeFill size={25} /> : <BsEyeSlashFill size={25} />}
+              {showPassword ? (
+                <BsEyeFill size={25} />
+              ) : (
+                <BsEyeSlashFill size={25} />
+              )}
             </div>
           </div>
 
@@ -177,7 +187,9 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
                 <input
                   type="checkbox"
                   name={key}
-                  checked={usuario.permisos[key as keyof typeof usuario.permisos]}
+                  checked={
+                    usuario.permisos[key as keyof typeof usuario.permisos]
+                  }
                   onChange={handleCheckboxChange}
                   className="accent-blue-500 h-5 w-5"
                 />
@@ -224,7 +236,8 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
             </div>
           )}
           <div className="flex border border-gray-600 text-red-700 p-2 rounded-md mt-2">
-            Puede acceder a una configuración avanzada en la sección "Configuración avanzada" dentro de los permisos de usuarios.
+            Puede acceder a una configuración avanzada en la sección
+            "Configuración avanzada" dentro de los permisos de usuarios.
           </div>
 
           <div className="flex justify-around">
@@ -238,7 +251,11 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
             <button
               onClick={handleSave}
               disabled={isSaveDisabled}
-              className={`font-bold py-2 px-4 rounded m-3 mt-10 ${isSaveDisabled ? 'bg-gray-500' : 'bg-blue-800 hover:bg-blue-700 text-white'}`}
+              className={`font-bold py-2 px-4 rounded m-3 mt-10 ${
+                isSaveDisabled
+                  ? "bg-gray-500"
+                  : "bg-blue-800 hover:bg-blue-700 text-white"
+              }`}
             >
               Guardar
             </button>
@@ -247,6 +264,6 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
       </div>
     </div>
   );
-}
+};
 
 export default UsuarioModal;

@@ -16,10 +16,9 @@ interface AsideForm {
 const AsideForm: React.FC<AsideForm> = ({
   onClickBuyer,
   onChangeModal,
-  formatMony,
-  cost,
-  saleData,
   subirVenta,
+  userData,
+  saleData,
   showError,
   onClickSeller,
 }) => {
@@ -120,17 +119,6 @@ const AsideForm: React.FC<AsideForm> = ({
         >
           Añadir
         </button>
-        {showError.in === "all" && (
-          <p className="text-red-600 mt-4">
-            Debes añadir productos y seleccionar un comprador
-          </p>
-        )}
-        {showError.in === "buyer" && (
-          <p className="text-red-600 mt-4">Debes seleccionar un comprador</p>
-        )}
-        {showError.in === "articles" && (
-          <p className="text-red-600 mt-4">Debes añadir productos</p>
-        )}
       </div>
     </div>
   );

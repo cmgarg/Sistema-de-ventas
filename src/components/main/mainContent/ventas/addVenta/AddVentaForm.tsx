@@ -10,77 +10,25 @@ import FooterForm from "./FooterForm";
 import PayMethod from "./PayMethod/PayMethod";
 import SaleEnd from "./SaleEnd";
 
-// Definiciones de tipo
-interface Article {
-  name: string;
-  code: string;
-  total: string | number;
-  amount: {
-    value: string | number;
-    unit: string;
-  };
-}
-
-interface ClientData {
-  name: string;
-  email: string;
-  address: string;
-  phone: string;
-  dni: string;
-  _id: string;
-  DNI: string;
-}
-
-interface Buyer {
-  client: {
-    active: boolean;
-    clientData: ClientData;
-  };
-  finalConsumer: {
-    active: boolean;
-    cae: string;
-  };
-}
-
-interface Seller {
-  name: string;
-  email: string;
-  address: string;
-  phone: string;
-  dni: string;
-}
-
-interface saleData {
-  _id: string;
-  dateOfRegister: string;
-  articles: Article[];
-  buyer: Buyer;
-  seller: Seller;
-  sold: number;
-}
-
-interface ClientState {
-  clientState: ClientData[];
-}
-
-interface ArticleState {
-  articleState: Article[];
-}
-
-interface AddVentaFormProps {
+interface AddVentaForm {
   onChangeModal: (p: boolean) => void;
-  addSales: any;
+  addSales: (e: saleData) => void;
   formatMony: (number: number) => string;
 }
+type productOfList = {
+  name: string;
+  code?: string;
+  total: string;
+  amount: string;
+};
 
-const AddVentaForm: React.FC<AddVentaFormProps> = ({
+const AddVentaForm: React.FC<AddVentaForm> = ({
   onChangeModal,
   addSales,
   formatMony,
 }) => {
+  //DATOS USUARIOS
   const [saleData, setSaleData] = useState<saleData>({
-    _id: "",
-    dateOfRegister: "",
     articles: [],
     buyer: {
       client: {
@@ -92,7 +40,6 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
           _id: "",
           phone: "",
           dni: "",
-          DNI: "",
         },
       },
       finalConsumer: {
@@ -144,7 +91,6 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
   const onClickSeller = (e: boolean) => {
     setShowModalSeller(e);
   };
-
   const loadClient = () => {
     if (clientData.name) {
       loadBuyer("client");
@@ -205,9 +151,9 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
   }) => {
     const arr = [];
     arr.push(e);
+
     setChangeData("articles", arr);
   };
-
   const sumCost = () => {
     const arr = saleData.articles.map((product) => product.total);
     let suma = 0;
@@ -217,6 +163,7 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
     setChangeData("sold", suma);
     setCost(suma);
   };
+  //
 
   const deleteOfList = (id: number) => {
     console.log("EJECUTANDOOO");
@@ -231,7 +178,6 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
   }) => {
     setShowOkSignal(b);
   };
-
   function setChangeData(data: string, value: any) {
     const existingData = [
       "articles",
@@ -245,9 +191,10 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
     if (existingData.includes(data)) {
       switch (data) {
         case "articles":
+          console.log("se cumple esrte");
           setSaleData({
             ...saleData,
-            articles: value,
+            articles: [...saleData.articles, ...value],
           });
           break;
         case "DELETE-ARTICLE":
@@ -261,6 +208,7 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
           setSaleData({ ...saleData, sold: value });
           break;
         case "buyer":
+          console.log("ACA SE LLEGA RICO", value);
           setSaleData({ ...saleData, buyer: { ...value } });
           break;
         case "seller":
@@ -282,8 +230,12 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
         default:
           break;
       }
+    } else {
+      console.log("NO ESTA");
     }
   }
+
+  //SUBIR USUARIO A BASE DE DATOS LOCAL
 
   function subirVenta() {
     const existArticles = saleData.articles.length > 0;
@@ -310,6 +262,7 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
 
   useEffect(() => {
     window.api.recibirEvento("response-sale-process", (response) => {
+      console.log("SE GUARDO SARPADAMENTE", response);
       if (response.success) {
         showOkSaveSignal({
           show: false,
@@ -321,8 +274,6 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
         setFacturaOk(false);
         setSaveSaleExit(true);
         setSaleData({
-          _id: "",
-          dateOfRegister: "",
           articles: [],
           buyer: {
             client: {
@@ -331,10 +282,9 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
                 name: "",
                 email: "",
                 address: "",
-                _id: "",
                 phone: "",
                 dni: "",
-                DNI: "",
+                _id: "",
               },
             },
             finalConsumer: {
@@ -358,7 +308,7 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
       }
     });
   }, []);
-
+  //
   const getUserData = () => {
     const userId = localStorage.getItem("userId");
     window.api.enviarEvento("obtener-datos-usuario", userId);
@@ -389,6 +339,7 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
     }
   }, [pMOk, facturaOk]);
 
+  //ESTILOS INPUT
   const estilosInput = "outline-none px-2";
 
   return (
@@ -470,23 +421,13 @@ const AddVentaForm: React.FC<AddVentaFormProps> = ({
           <div className="flex-1 flex overflow-hidden">
             <ListaProductos
               deleteOfList={deleteOfList}
-              listProduct={listProduct}
+              listProduct={saleData.articles}
               articles={articles}
               addProduct={addProduct}
               estilosInput={estilosInput}
               formatMony={formatMony}
               showError={showError}
             />
-            <MenuClientsForm
-              modalClient={modalClient}
-              showModalBuyer={showModalBuyer}
-              setShowModalBuyer={setShowModalBuyer}
-              clients={clients}
-              loadBuyer={loadBuyer}
-              onShowClientForm={onShowClientForm}
-              loadClient={loadClient}
-              setClientData={setClientData}
-              showClientForm={showClientForm} style={""}            />
           </div>
           <FooterForm cost={cost} sumCost={sumCost} />
         </div>

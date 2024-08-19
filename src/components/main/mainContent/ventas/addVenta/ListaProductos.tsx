@@ -1,27 +1,13 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+import MenuClientsForm from "../MenusInputs/MenuClientsForm";
 import MenuArticlesForm from "../MenusInputs/MenuArticlesForm";
-import {
-  articleData,
-  saleData,
-  storeType,
-  unitType,
-} from "../../../../../../types/types";
+import { articleData } from "../../../../../../types/types";
 import { NumericFormat } from "react-number-format";
 import { TrashIcon } from "@radix-ui/react-icons";
 
-
-interface Article {
-  name: string;
-  code?: string;
-  total: string | number;
-  amount: {
-    value: string | number;
-    unit: string;
-  };
-}
-
-interface articleData {
-  article: {
+interface ListaProductos {
+  deleteOfList: (i: any) => void;
+  listProduct: {
     name: string;
     code?: string;
     total: string | number;
@@ -40,39 +26,13 @@ interface articleData {
       value: string;
       unit: { label: string; palette: boolean; bulk: boolean };
     };
-  };
-  brand: {
-    value: string;
-    label: string;
-  };
-  code: string;
-  barcode: string;
-  category: {
-    value: string;
-    label: string;
-  };
-  subCategory: {
-    value: string;
-    label: string;
-  };
-  dateToRegister: string;
-  supplier: string;
-  sales: number;
-  taxes: number;
-  deposits: string;
-}
-
-interface ListaProductosProps {
-  deleteOfList: (i: number) => void;
-  listProduct: Article[];
-  estilosInput: string;
-  articles: any;
-  addProduct: any;
+  }) => void;
   showError: { in: string };
+
   formatMony: (m: number) => string;
 }
 
-const ListaProductos: React.FC<ListaProductosProps> = ({
+const ListaProductos: React.FC<ListaProductos> = ({
   listProduct,
   deleteOfList,
   estilosInput,
@@ -83,31 +43,32 @@ const ListaProductos: React.FC<ListaProductosProps> = ({
 }) => {
   const abreviationUnit = (unit: string) => {
     let abreviation = "";
-    const units = ["kg", "ud", "l", "paq", "caj"];
+    const units = ["kilogramos", "unidades", "litros", "paquetes", "cajas"];
     if (units.includes(unit.toLowerCase())) {
+      console.log("MATANGA");
       switch (unit.toLowerCase()) {
-        case "kg":
+        case "kilogramos":
           abreviation = "Kg";
           break;
-        case "ud":
+        case "unidades":
           abreviation = "Ud";
           break;
-        case "l":
+        case "litros":
           abreviation = "L";
           break;
-        case "paq":
+        case "paquetes":
           abreviation = "Paq";
           break;
-        case "caj":
+        case "cajas":
           abreviation = "Caj";
           break;
+
         default:
           break;
       }
     }
     return abreviation;
   };
-
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
       <div className="bg-slate-950 border-b-1 border-l-1 border-gray-600">
@@ -121,7 +82,7 @@ const ListaProductos: React.FC<ListaProductosProps> = ({
         className={`overflow-auto flex-1 relative custom-scrollbar ${
           showError.in === "all" || showError.in === "articles"
             ? "shadow-inset-cmg shadow-red-600"
-            : ""
+            : null
         }`}
       >
         <li className="w-full flex flex-row h-12 text-2xl bg-teal-900 sticky top-0 z-40">
@@ -140,7 +101,7 @@ const ListaProductos: React.FC<ListaProductosProps> = ({
             <div className="flex-1  flex justify-start pl-2 items-center">
               <p>{e.name}</p>
             </div>
-            <div className="flex-1 flex justify-center">
+            <div className="flex-1  flex justify-center">
               <div className="flex">
                 <p>{e.amount.value}</p>
                 <div className="text-sm flex items-end">

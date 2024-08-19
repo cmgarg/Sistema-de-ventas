@@ -20,10 +20,10 @@ export const articleSlice = createSlice({
     deleteArticle: (state, action) => {
       const clientToDelete: dataToDeleteArticle = action.payload;
 
-      const result = state.filter((articleData: { article: { name: any; code: any; }; }) => {
+      const result = state.filter((articleData: articleData) => {
         return (
           articleData.article.name !== clientToDelete.name &&
-          articleData.article.code !== clientToDelete.code
+          articleData.code !== clientToDelete.code
         );
       });
 
