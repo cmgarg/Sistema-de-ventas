@@ -4,48 +4,6 @@ import Downshift from "downshift";
 import { NumericFormat } from "react-number-format";
 import SelectM from "../../Select/Select";
 
-interface Article {
-  name: string;
-  code?: string; // Hacemos `code` opcional para que coincida con el tipo esperado
-  total: string;
-  amount: {
-    value: string;
-    unit: string;
-  };
-}
-
-interface articleData {
-  article: {
-    name: string;
-    venta: number;
-    stock: {
-      unit: {
-        abrevUnit: string;
-      };
-      amount: number;
-    };
-  };
-  brand: {
-    value: string;
-    label: string;
-  };
-  code: string;
-  barcode: string;
-  category: {
-    value: string;
-    label: string;
-  };
-  subCategory: {
-    value: string;
-    label: string;
-  };
-  dateToRegister: string;
-  supplier: string;
-  sales: number;
-  taxes: number;
-  deposits: string;
-}
-
 type propsInput = {
   style: string;
   articles: articleData[];
@@ -61,12 +19,12 @@ type propsInput = {
   value?: string;
 };
 
-const MenuArticlesForm: React.FC<propsInput> = ({
+const MenuArticlesForm = ({
   style,
   addProduct,
   articles,
   value,
-}) => {
+}: propsInput) => {
   const [newValue, setNewValue] = useState<string>("");
   const [amountArticle, setAmountArticle] = useState<string>("");
   const [articleSelect, setarticleSelect] = useState<articleData>();
@@ -125,7 +83,7 @@ const MenuArticlesForm: React.FC<propsInput> = ({
           Number(amountArticle) * amountOptions.forBulk.amount * Number(price);
       }
 
-      const articleForList: Article = {
+      const articleForList = {
         name: articleToSend.article.name,
         code: articleToSend.code,
         total: `${totalAmount}`,
@@ -176,7 +134,7 @@ const MenuArticlesForm: React.FC<propsInput> = ({
       }
     }
     if (showCurrentArticle) {
-      setArticleSelect(articleToSend);
+      setarticleSelect(articleToSend);
     }
   };
   const amountSelect = () => {
@@ -193,13 +151,13 @@ const MenuArticlesForm: React.FC<propsInput> = ({
     let articleS;
     if (articleSelect) {
       articleS = articleSelect;
-      if (articleS.article.palette.active) {
+      if (articleS.article.pallet.active) {
         console.log("Se cumple PALETTE");
         amountOptions = {
           ...amountOptions,
           palette: {
             active: true,
-            amount: Number(articleS.article.palette.value),
+            amount: Number(articleS.article.pallet.value),
           },
         };
       }
@@ -219,7 +177,7 @@ const MenuArticlesForm: React.FC<propsInput> = ({
     }
     setAmountOptions({ ...amountOptions });
     setOptionsAmount(amountOptions);
-    console.log(articleS.article.palette, "ARTICULOS COCO5");
+    console.log(articleS.article.pallet, "ARTICULOS COCO5");
   };
   const setOptionsAmount = (amountOptions: {
     palette: {
@@ -330,7 +288,7 @@ const MenuArticlesForm: React.FC<propsInput> = ({
       }}
       onSelect={(selectedItem) => {
         onChangeNewValue(selectedItem.article.name);
-        setArticleSelect(selectedItem);
+        setarticleSelect(selectedItem);
       }}
     >
       {({

@@ -1,193 +1,17 @@
 import crypto from "crypto";
+import {
+  articleData,
+  clientData,
+  dataToEditArticle,
+  depositType,
+  pmType,
+  saleData,
+  supplierType,
+  unitType,
+} from "../types/types";
 import Datastore from "@seald-io/nedb";
-import jwt from "jsonwebtoken";
 import { getDate } from "./vFunctions";
-import { dataToEditArticle, pmType, saleData } from "../types/types";
-
-// Definición de tipos
-interface ArticleStock {
-  amount: number;
-  unit: string;
-}
-
-interface Article {
-  code: string;
-  name: string;
-  costo: number;
-  venta: number;
-  profit: number;
-  stock: ArticleStock;
-  minStock: number;
-  grossWeight: {
-    value: number;
-    approx: boolean;
-  };
-  liquidWeight: {
-    value: number;
-    approx: boolean;
-  };
-  palette: {
-    active: boolean;
-    value: number;
-  };
-  quantityperunit: {
-    active: boolean;
-    value: number;
-  };
-  forBulk: {
-    active: boolean;
-    value: number;
-  };
-  description: string;
-}
-
-interface ArticleData {
-  article: Article;
-  brand: {
-    value: string;
-    label: string;
-  };
-  code: string;
-  barcode: string;
-  category: {
-    value: string;
-    label: string;
-  };
-  subCategory: {
-    value: string;
-    label: string;
-  };
-  dateToRegister: string;
-  supplier: SupplierType;
-  sales: {
-    buyer: {
-      client: {
-        active: boolean;
-        clientData: {
-          name: string;
-          email: string;
-          address: string;
-          phone: string;
-        };
-      };
-      finalConsumer: {
-        active: boolean;
-        cae: string;
-      };
-    };
-    amount: {
-      value: number;
-      unit: string;
-    };
-    sold: number;
-  }[];
-  taxes: {
-    name: string;
-    percentage: number;
-    type: {
-      costPrice: boolean;
-      finalPrice: boolean;
-    };
-  }[];
-  deposits: {
-    idObject: string;
-    name: string;
-    depositId: string;
-    address: string;
-    sector: {
-      name: string;
-      sectorId: string;
-    };
-  }[];
-}
-
-interface SupplierType {
-  name: string;
-  phoneNumber: string;
-  email: string;
-  address: string;
-  _id?: string;
-}
-
-export interface SaleData {
-  _id: string;
-  dateOfRegister: string;
-  articles: {
-    name: string;
-    code: string;
-    total: string | number; // Acepta string o number
-    amount: {
-      value: string; // Asegúrate de que sea string
-      unit: string;
-    };
-  }[];
-  buyer: {
-    client: {
-      active: boolean;
-      clientData: {
-        name: string;
-        email: string;
-        address: string;
-        phone: string;
-        dni: string;
-        _id: string;
-      };
-    };
-    finalConsumer: {
-      active: boolean;
-      cae: string;
-    };
-  };
-  seller: {
-    name: string;
-    email: string;
-    address: string;
-    phone: string;
-    dni: string;
-  };
-  sold: number;
-}
-
-
-interface ClientData {
-  name: string;
-  address: string;
-  phone: number;
-  email: string;
-  birthdate: string;
-  DNI: number;
-  shopping: {
-    articulos: {
-      nameArticle: string;
-      amount: number;
-      cost: number;
-      idArticle: string;
-    }[];
-    totalCost: number;
-    _id?: string;
-  }[];
-  _id?: string;
-}
-
-interface UnitType {
-  label: string;
-  value: string;
-  abrevUnit: string;
-  _id?: string;
-}
-
-interface DepositType {
-  name: string;
-  address: string;
-  sectors: {
-    name: string;
-    sectorId: string;
-    products: ArticleData[];
-  }[];
-  _id?: string;
-}
-
-// Base de datos
+import jwt from "jsonwebtoken";
 const db = {
   clients: new Datastore({ filename: "database/clients.db", autoload: true }),
   articles: new Datastore({
@@ -234,32 +58,31 @@ const db = {
     autoload: true,
   }),
 };
-
 console.log("databaseOperations Se esta ejecutanado...");
 
-// Funciones para manejar clientes y demás
+//funciones para manejar clientes y demas
 export const saveClient = async (data: object) => {
   await db.clients.insertAsync(data);
 };
 
-export const registerBuyClient = async (sale: SaleData) => {
+export const registerBuyClient = async (sale: saleData) => {
   if (sale.buyer.client.active) {
-    const buyer = await getClientById(sale.buyer.client.clientData._id);
-    const sales = [...buyer.shopping, sale];
+    const buyer = getClientById(sale.buyer.client.clientData._id);
+
+    const sales = [...(await buyer).shopping, sale];
 
     await db.clients.updateAsync(
-      { _id: buyer._id },
+      { _id: (await buyer)._id },
       { $set: { shopping: sales } }
     );
   }
 };
+export const getClientById = async (clientId: string): Promise<clientData> => {
+  const client: clientData = await db.clients.findOneAsync({ _id: clientId });
 
-export const getClientById = async (clientId: string): Promise<ClientData> => {
-  const client = await db.clients.findOneAsync({ _id: clientId }) as ClientData;
   return client;
 };
-
-export const deleteClient = async (data: ClientData) => {
+export const deleteClient = async (data: clientData) => {
   await db.clients
     .removeAsync({ _id: data._id }, {})
     .then((data) => {
@@ -269,7 +92,6 @@ export const deleteClient = async (data: ClientData) => {
       return false;
     });
 };
-
 export const findClients = async () => {
   const clients = await db.clients
     .findAsync({})
@@ -279,8 +101,7 @@ export const findClients = async () => {
     .catch((_err: any) => {});
   return clients;
 };
-
-export async function updateClient(clientId: string, updateData: any) {
+export function updateClient(clientId: string, updateData: any) {
   delete updateData._id;
   return new Promise((resolve, reject) => {
     db.clients.update(
@@ -297,21 +118,28 @@ export async function updateClient(clientId: string, updateData: any) {
     );
   });
 }
+////////////////////////////////
+//FUNCIONES DE ARTICULOS ARKCHIVO ARTICULOS.JS
+///////////////////////////////
 
-// Funciones de artículos
 export const generateCodeArticle = (category: string, brand: string) => {
   const timeStamp = Date.now().toString();
+
   const randomPart = crypto.randomBytes(4).toString("hex");
+
   const uniqueCode = `${timeStamp.slice(0, 3)}${randomPart.slice(
     0,
     3
   )}-${category.slice(0, 2).toUpperCase()}${brand.slice(0, 2).toUpperCase()}`;
+
   return uniqueCode;
 };
 
-export const saveArticle = async (a: ArticleData) => {
+export const saveArticle = async (a: articleData) => {
   const date = getDate();
+
   const code = generateCodeArticle(a.category.value, a.brand.value);
+
   const articleToSave = {
     ...a,
     code: code,
@@ -324,13 +152,22 @@ export const saveArticle = async (a: ArticleData) => {
     .then((_res) => {})
     .catch((_err) => {});
 };
-
 export const getArticleByCode = async (
   articleCode: string
-): Promise<ArticleData> => {
+): Promise<articleData> => {
   return await db.articles.findOneAsync({ code: articleCode });
 };
-
+// function getArticleByName(articleName: string) {
+//   return new Promise((resolve, reject) => {
+//     db.articles.find({ articulo: articleName }, (err: any, doc: any) => {
+//       if (err) {
+//         reject(err);
+//       } else {
+//         resolve(doc);
+//       }
+//     });
+//   });
+// }
 export const editArticle = async (articleEdit: dataToEditArticle) => {
   const { numAffected } = await db.articles.updateAsync(
     {
@@ -359,8 +196,7 @@ export const editArticle = async (articleEdit: dataToEditArticle) => {
     return false;
   }
 };
-
-export const findArticles = async (): Promise<ArticleData[]> => {
+export const findArticles = async (): Promise<articleData[]> => {
   return await db.articles
     .findAsync({})
     .then((doc: any) => {
@@ -368,16 +204,15 @@ export const findArticles = async (): Promise<ArticleData[]> => {
     })
     .catch((_err: any) => {});
 };
-
 export const deleteArticle = async (code: string) => {
   const numRemoved = await db.articles.removeAsync({ code: code }, {});
+
   if (numRemoved) {
     return true;
   } else {
     return false;
   }
 };
-
 export async function updatedStockArticle(article: {
   idArticle: string;
   quantity: string;
@@ -385,7 +220,7 @@ export async function updatedStockArticle(article: {
   totalCost: string;
 }) {
   const { idArticle, quantity } = article;
-  const articleUpdate: ArticleData = await getArticleByCode(idArticle);
+  const articleUpdate: articleData = await getArticleByCode(idArticle);
   const stock = articleUpdate.article.stock.amount;
   const restSold = stock - parseInt(quantity);
 
@@ -407,7 +242,6 @@ export async function updatedStockArticle(article: {
     );
   });
 }
-
 export async function updatedStockArticles(
   articles: {
     name: string;
@@ -433,13 +267,14 @@ export async function updatedStockArticles(
           Number(article.amount.value);
       } else if (article.amount.unit.palette) {
         amountReal =
-          Number(articleDBCurrent.article.palette.value) *
+          Number(articleDBCurrent.article.pallet.value) *
           Number(article.amount.value);
       } else {
         amountReal = Number(article.amount.value);
       }
       let newAmount =
-        Number(articleDBCurrent.article.stock.amount) - Number(article.amount);
+        Number(articleDBCurrent.article.stock.amount) - amountReal;
+      //EMITIR NOTI SI EL MONTO RESTANTE ES CERCANO AL MINIMO
       db.articles
         .updateAsync(
           { code: articleDBCurrent.code },
@@ -449,12 +284,17 @@ export async function updatedStockArticles(
             },
           }
         )
-        .then((_res) => {})
-        .catch((_err) => {});
-    } else {}
+        .then((res) => {
+          console.log("ARTICULO ACTUALZIADO", res);
+        })
+        .catch((err) => {
+          console.log("NO SE PUDO ACTUALIZAR", err);
+        });
+    } else {
+      console.log("No se encontró el artículo en la base de datos", article);
+    }
   });
 }
-
 export async function updateCountSaleArticle(article: {
   idArticle: string;
   quantity: string;
@@ -462,7 +302,9 @@ export async function updateCountSaleArticle(article: {
   totalCost: string;
 }) {
   const { idArticle } = article;
-  const articleUpdate: ArticleData = await getArticleByCode(idArticle);
+
+  const articleUpdate: articleData = await getArticleByCode(idArticle);
+
   const salesCount = articleUpdate.sales;
 
   return new Promise((resolve, reject) => {
@@ -534,9 +376,11 @@ export const saveSale = async (a: saleData) => {
   const seconds = fechaActual.getSeconds();
 
   const articlesTotalSold = a.articles.map((ar) => ar.total);
+  console.log("TOTAL VENDIDO", articlesTotalSold);
   const soldTotal = articlesTotalSold.reduce((acc, ad) => {
     return Number(acc) + Number(ad);
   });
+  console.log("TOTAL VENDIDO 2", soldTotal);
 
   const saleToSave = {
     ...a,
@@ -547,30 +391,36 @@ export const saveSale = async (a: saleData) => {
       .padStart(2, "0")}Z`,
     sold: soldTotal,
   };
-  const resultSave = await db.sales
+  const resultSave = db.sales
     .insertAsync(saleToSave)
     .then((saleResult) => {
+      console.log(saleResult, "SE GUARDO CORRECTAMENTE");
       return { save: true, res: saleResult };
     })
-    .catch((_err) => {
-      return { save: false, res: _err };
+    .catch((err) => {
+      console.log(err, "error al guardar la venta");
+      return { save: false, res: err };
     });
 
   return resultSave;
 };
-
 export const verifStockOfArticles = async (
   articlesOfSale: {
     name: string;
-    code?: string;
+    code: string;
     total: number | string;
     amount: {
       value: string;
-      unit: string;
+      unit: {
+        label: string;
+        palette: boolean;
+        bulk: boolean;
+      };
     };
   }[]
 ) => {
   const articles = await findArticles();
+
   const insufficientItems: {
     articleCode: string;
     amount: string;
@@ -599,7 +449,6 @@ export const verifStockOfArticles = async (
     return { value: false, insufficientItems: [] };
   }
 };
-
 const clientConfirmData = async (e: {
   name: string;
   email: string;
@@ -611,19 +460,19 @@ const clientConfirmData = async (e: {
   const clientDB = await getClientById(e._id);
 
   if (!clientDB) {
+    console.log("EL CLIENTE NO EXISTE");
     return false;
   }
   return true;
 };
-
-const payMethod = (_e: string) => {
+const payMethod = (e: string) => {
   return "PROXIMAMENTE";
 };
 
-export const saleProcess = async (venta: SaleData) => {
-  // Verificar stock de artículos
+export const saleProcess = async (venta: saleData) => {
+  //VERIFICAR STOCK DE ARTICULOS
   const verifStock = await verifStockOfArticles(venta.articles);
-
+  console.log("VERIFICANDO STOCK", verifStock);
   if (verifStock.value) {
     return {
       type: "stock",
@@ -632,8 +481,9 @@ export const saleProcess = async (venta: SaleData) => {
       adjunt: verifStock.insufficientItems,
     };
   }
-  // Verificar cliente
-  let clientVerif = false;
+
+  //verificar cliente
+  let clientVerif;
   if (venta.buyer.client.active) {
     clientVerif = await clientConfirmData(venta.buyer.client.clientData);
   }
@@ -646,16 +496,18 @@ export const saleProcess = async (venta: SaleData) => {
       adjunt: venta.buyer.client.clientData,
     };
   }
-  // Verificar método de pago
+  //verificar metodo de pago
   const payMethodVerif = payMethod("PROXIMAMENTE");
-  // Actualizar stock
+  console.log("VERIFICACION EMTODO DE PAGO,", payMethodVerif);
+  //ACTUALIZAR STOCK
   await updatedStockArticles(venta.articles);
-  // Registrar venta en artículo
+  //registrar venta
   await registBuyInArticle(venta);
-  // Registrar compra en cliente
+  //registrar compra en cliente
   await registerBuyClient(venta);
-  // Guardar venta
-  const resultToProcess = saveSale(venta);
+  //GUARDAR VENTA
+
+  const resultToProcess = await saveSale(venta);
 
   return {
     type: "success save sale",
@@ -664,8 +516,7 @@ export const saleProcess = async (venta: SaleData) => {
     adjunt: verifStock.insufficientItems,
   };
 };
-
-export const registBuyInArticle = async (saleInfo: SaleData) => {
+export const registBuyInArticle = async (saleInfo: saleData) => {
   const articlesOfSale = [...saleInfo.articles];
 
   articlesOfSale.map(async (article) => {
@@ -692,16 +543,15 @@ export const registBuyInArticle = async (saleInfo: SaleData) => {
     }
   });
 };
-
 export const findSales = () => {
   return db.sales.findAsync({});
 };
-
 export const deleteSales = (data: any) => {
   db.sales.remove({ _id: data }, (_err, _newDoc) => {});
 };
-
-// Funciones de categorías y filtros
+//////////////////////////////////////////////////////
+//FUNCIONES DE CUENTAS ARCHIVO filtersFile.js////////
+/////////////////////////////////////////////////////
 export const addCategory = async (newCategory: string) => {
   const newCategoryLabel =
     newCategory.charAt(0).toUpperCase() + newCategory.slice(1).toLowerCase();
@@ -713,7 +563,6 @@ export const addCategory = async (newCategory: string) => {
   };
   return await db.filters.insertAsync(category);
 };
-
 export const addSubCategory = async (newSubCategory: string) => {
   const newSubCategoryLabel =
     newSubCategory.charAt(0).toUpperCase() +
@@ -726,7 +575,6 @@ export const addSubCategory = async (newSubCategory: string) => {
   };
   return await db.filters.insertAsync(subCategory);
 };
-
 export const addBrand = async (newBrand: string) => {
   const newBrandLabel =
     newBrand.charAt(0).toUpperCase() + newBrand.slice(1).toLowerCase();
@@ -749,20 +597,26 @@ export const getCategoryAndBrand = async () => {
 
   return { categorys: categorys, subCategorys: subCategorys, brands: brands };
 };
+//FUNCIONES DE PETICIONES DE ESTADISTICAS
 
-// Funciones de peticiones de estadísticas
 export const getStats = async () => {
+  // const articles = await findArticles();
   const sales = await findSales();
+  // const clients = await findClients();
+
   const lastSale = sales[sales.length - 1];
+
   const allStats = {
     lastSale: lastSale,
   };
+
   return allStats;
 };
+//UNITS Y DEMAS
+//FUNCTIONS UNITS KG, LIT, ETC
 
-// Funciones de unidades
 const verifUnitExists = async (
-  e: UnitType,
+  e: unitType,
   _edit?: boolean
 ): Promise<{ value: boolean; abrevUnit: boolean }> => {
   const { value, abrevUnit } = e;
@@ -776,6 +630,7 @@ const verifUnitExists = async (
   ];
 
   const units = [...unitOfDb, ...unitDefault];
+
   const existUnitValue = [...units].filter((unit) => {
     return unit.value.toLowerCase() === value.toLowerCase();
   });
@@ -809,9 +664,8 @@ const verifUnitExists = async (
 export const getUnits = async () => {
   return await db.unitsArticleForm.findAsync({});
 };
-
 export const saveNewUnits = async (
-  e: UnitType
+  e: unitType
 ): Promise<{ message: string; value?: any }> => {
   const { value, abrevUnit }: { value: boolean; abrevUnit: boolean } =
     await verifUnitExists(e);
@@ -855,8 +709,7 @@ export const saveNewUnits = async (
     };
   }
 };
-
-export const updateUnit = async (e: UnitType, id: string) => {
+export const updateUnit = async (e: unitType, id: string) => {
   const { value, abrevUnit }: { value: boolean; abrevUnit: boolean } =
     await verifUnitExists(e);
 
@@ -889,7 +742,6 @@ export const updateUnit = async (e: UnitType, id: string) => {
       };
     });
 };
-
 export const deleteUnit = async (e: string) => {
   return await db.unitsArticleForm
     .removeAsync({ _id: e }, {})
@@ -906,18 +758,17 @@ export const deleteUnit = async (e: string) => {
       };
     });
 };
-
-// Proveedores
-export const saveSupplier = async (e: SupplierType) => {
+//PROVEEDORES
+export const saveSupplier = async (e: supplierType) => {
   return await db.suppliers
     .insertAsync(e)
-    .then((_res) => {
+    .then((res) => {
       return {
         message: "Proveedor guardado correctamente",
         value: true,
       };
     })
-    .catch((_err) => {
+    .catch((err) => {
       return {
         message: "NO SE PUDO GUARDAR EL PROVEEDOR",
         value: false,
@@ -925,7 +776,8 @@ export const saveSupplier = async (e: SupplierType) => {
     });
 };
 
-export const deleteSupplier = async (supplierToDelete: SupplierType) => {
+export const deleteSupplier = async (supplierToDelete: supplierType) => {
+  console.log("buenas tardes");
   return await db.suppliers
     .removeAsync({ _id: supplierToDelete._id }, { multi: false })
     .then((_res) => {
@@ -945,10 +797,9 @@ export const deleteSupplier = async (supplierToDelete: SupplierType) => {
 export const getSuppliers = async () => {
   return await db.suppliers.findAsync({});
 };
-
 export const updateSuppliers = async (
   id: string,
-  newSupplier: SupplierType
+  newSupplier: supplierType
 ) => {
   return await db.suppliers
     .updateAsync(
@@ -959,77 +810,84 @@ export const updateSuppliers = async (
         },
       }
     )
-    .then((_res) => {
+    .then((res) => {
+      console.log("Proveedor actualizado correctamente", res);
       return {
         message: "Proveedor actualizado correctamente",
         value: true,
       };
     })
-    .catch((_err) => {
+    .catch((err) => {
+      console.log("Error al actualizar el proveedor", err);
       return {
         message: "Error al actualizar el proveedor",
         value: false,
       };
     });
 };
+//DEPOSITOS
 
-// Depósitos
 export const getDeposits = async () => {
   return await db.deposits
     .findAsync({})
     .then((deposits) => {
+      console.log("Depositos encontrados", deposits);
       return deposits;
     })
-    .catch((_err) => {
+    .catch((err) => {
+      console.log("Error al encotrar los depositos", err);
       return {
-        message: "Error al encontrar los depósitos",
+        message: "Error al encotrar los depositos",
         value: false,
       };
     });
 };
 
-export const getDepositById = async (id: string): Promise<DepositType> => {
+export const getDepositById = async (id: string): Promise<depositType> => {
   return await db.deposits.findOneAsync({ _id: id });
 };
 
-export const createDeposit = async (newDeposit: DepositType) => {
+export const createDeposit = async (newDeposit: depositType) => {
   return await db.deposits
     .insertAsync(newDeposit)
-    .then((_res) => {
+    .then((res) => {
+      console.log("DEPOSITO CREADO CORRECTAMENTE");
       return {
-        message: "Depósito creado correctamente",
+        message: "Deposito creado correctamente",
         value: true,
       };
     })
-    .catch((_err) => {
+    .catch((err) => {
+      console.log("Error al crear el deposito");
       return {
-        message: "Error al crear el depósito",
+        message: "Error al crear el deposito",
         value: false,
       };
     });
 };
 
-export const updateDeposit = async (depositToUpdate: DepositType) => {
+export const updateDeposit = async (depositToUpdate: depositType) => {
   return await db.deposits.updateAsync(
     { _id: depositToUpdate._id },
     { $set: { ...depositToUpdate } }
   );
 };
-
 export const addProductInDeposit = async (
   depositId: string,
   sectorId: any,
-  productToAdd: any
+  productToAdd: articleData
 ) => {
   const depositToAddProduct = await getDepositById(depositId);
+  console.log(depositToAddProduct);
 
   if (!depositToAddProduct) {
+    console.log("No se encontro el deposito");
     return {
-      message: "No se encontró el depósito",
+      message: "No se encontro el deposito",
       value: false,
     };
   } else {
-    depositToAddProduct.sectors.map((e) => {
+    const res = depositToAddProduct.sectors.map((e) => {
       if (e.sectorId === sectorId) {
         e.products.push(productToAdd);
         return `"Producto añadido al sector" ${e.name}`;
@@ -1037,6 +895,10 @@ export const addProductInDeposit = async (
         return `"Sector no encontrado"`;
       }
     });
+    console.log(
+      res,
+      "RESPUESTA AL AÑADIR EL PRODUCTO AL SECTOR CORRESPONDIENTE"
+    );
   }
 };
 
@@ -1044,20 +906,20 @@ export const createSectorInDeposit = async (
   depositId: string,
   sectorinfo: {
     name: string;
-    products: ArticleData[];
+    sectorId: string;
+    products: articleData[];
   }
 ) => {
-  const newSectorId = crypto.randomBytes(4).toString("hex");
   const sectorToAdd = {
     ...sectorinfo,
-    sectorId: newSectorId,
+    sectorId: crypto.randomBytes(4).toString("hex"),
   };
   const depositToAddSector = await getDepositById(depositId);
 
   if (!depositToAddSector) {
     console.log("No se encontro el deposito");
     return {
-      message: "No se encontró el depósito",
+      message: "No se encontro el deposito",
       value: false,
       content: [],
     };
@@ -1099,7 +961,7 @@ export const editSectorInDeposit = async (
   newSector: {
     name: string;
     sectorId: string;
-    products: ArticleData[];
+    products: articleData[];
   }
 ) => {
   const deposit = await getDepositById(depositId);
@@ -1117,16 +979,22 @@ export const editSectorInDeposit = async (
         return s;
       }),
     };
-    return await updateDeposit(depositWithEditSector as DepositType);
+    return await updateDeposit(depositWithEditSector);
   } else {
+    console.error(`No se encontró el sector con id ${sectorId}`);
     return {
       message: `No se encontró el sector con id ${sectorId}`,
       value: false,
     };
   }
 };
+//SEGUR CON TODO LO DEMAS
+////////////////////////MARTIN
 
-// Funciones de cuentas
+//////////////////////////////////////////////////////
+//FUNCIONES DE CUENTAS ARCHIVO cuentasFile.js////////
+/////////////////////////////////////////////////////
+
 export const obtenerEstadoPagado = (idCuenta: any) => {
   return new Promise((resolve, reject) => {
     db.accounts.findOne({ _id: idCuenta }, (err, doc) => {

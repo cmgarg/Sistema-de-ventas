@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import ButtonCheck from "../../ButtonCheck";
-import {
-  Action,
-  articleData,
-  unitType,
-} from "../../../../../../../../../types/types";
+import { Action, articleData } from "../../../../../../../../../types/types";
 
 type CantidadPorProps = {
   stateArticle: articleData;
@@ -29,15 +24,15 @@ const CantidadPor: React.FC<CantidadPorProps> = ({
                 x PALETTE
               </label>
             </div>
-            {stateArticle.article.palette.active ? (
+            {stateArticle.article.pallet.active ? (
               <div className="flex bg-slate-900 border border-slate-700 rounded-lg h-14 w-full">
                 <input
                   type="text"
                   name="palette"
                   className={"outline-none w-full bg-slate-900 rounded-lg px-2"}
                   value={
-                    stateArticle.article.palette.active
-                      ? `${stateArticle.article.palette.value}`
+                    stateArticle.article.pallet.active
+                      ? `${stateArticle.article.pallet.value}`
                       : "0"
                   }
                   onChange={(e) => {
@@ -46,7 +41,7 @@ const CantidadPor: React.FC<CantidadPorProps> = ({
                       payload: e.target.value,
                     });
                   }}
-                  disabled={!stateArticle.article.palette ? true : false}
+                  disabled={!stateArticle.article.pallet ? true : false}
                 />
                 <button
                   onClick={() =>

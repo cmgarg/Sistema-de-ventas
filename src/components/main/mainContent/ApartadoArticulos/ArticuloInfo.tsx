@@ -37,7 +37,7 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
         active: false,
         value: 0,
       },
-      palette: {
+      pallet: {
         active: false,
         value: 0,
       },
@@ -46,7 +46,6 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
         value: 0,
       },
       description: "",
-      code: ""
     },
     brand: { value: "", label: "" },
     code: "",
@@ -224,7 +223,7 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
                       </div>
                       <div className="flex justify-center items-center flex-1">
                         <p>{buy.amount.value}</p>
-                        <p className="text-xs">{buy.amount.unit.label}</p>
+                        <p className="text-xs">{buy.amount.unit}</p>
                       </div>
                       <div className="flex justify-end items-center flex-1 pr-2">
                         <p>{formatMony(buy.sold)}</p>

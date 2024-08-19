@@ -1,14 +1,3 @@
-{"value":"magnolia","label":"Magnolia","typeFilter":"brand","_id":"69aZnM7xWK39eFQh"}
-{"value":"estupefacientes","label":"Estupefacientes","typeFilter":"brand","_id":"9oae1naLwEqe6A3I"}
-{"value":"chinos","label":"Chinos","typeFilter":"subCategory","_id":"Ad2NOjiQ96zU9qDG"}
-{"value":"fernandez","label":"Fernandez","typeFilter":"category","_id":"Ijh5RwoOqGBZPgJO"}
-{"value":"alberto","label":"Alberto","typeFilter":"brand","_id":"O1A83yG6xf3Gj8DY"}
-{"value":"alimentos","label":"Alimentos","typeFilter":"category","_id":"OdX9UGCX5rWa5Hfh"}
-{"value":"aromatizantes","label":"Aromatizantes","typeFilter":"subCategory","_id":"RsTAmrAdcNt7LAfM"}
-{"value":"electronica","label":"Electronica","typeFilter":"category","_id":"TAbjxiFih3kAvuFa"}
-{"value":"energizantes","label":"Energizantes","typeFilter":"subCategory","_id":"hrEENksXCfG09c9z"}
-{"value":"perfumes","label":"Perfumes","typeFilter":"category","_id":"nWDkzPhzwMEEUxdj"}
-{"value":"cosmico","label":"Cosmico","typeFilter":"brand","_id":"ovleoTti4V2Gkaqv"}
-{"value":"merca","label":"Merca","typeFilter":"category","_id":"pOMREvmGsMyML7Kf"}
-{"value":"nokia","label":"Nokia","typeFilter":"brand","_id":"plnOocA4ljvVvn1A"}
-{"value":"olivos","label":"Olivos","typeFilter":"brand","_id":"wjOSikj7QI8EDJd7"}
+{"value":"alimentos","label":"Alimentos","typeFilter":"category","_id":"8LZPEJKhZeF9wLVS"}
+{"value":"china","label":"China","typeFilter":"subCategory","_id":"D0MffdYpwI5f9L3q"}
+{"value":"marolio","label":"Marolio","typeFilter":"brand","_id":"vpEWlWXv51KjYoBF"}

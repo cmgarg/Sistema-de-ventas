@@ -20,10 +20,11 @@ const SelectSeller: React.FC<SelectSellerProps> = ({
 
     // Escuchar la respuesta del backend
     window.api.recibirEvento("respuesta-cargar-todos-usuarios", (response) => {
+      console.log("RESPUESTA", response);
       if (response.exito) {
         console.log("USUARIOS CARGADOSD", response.usuarios);
         let sellers = response.usuarios.filter(
-          (users) => users.permisos.ventas || users.permisos.gerente
+          (users: any) => users.permisos.ventas || users.permisos.gerente
         );
         setUsuarios(sellers);
       } else {
@@ -47,7 +48,7 @@ const SelectSeller: React.FC<SelectSellerProps> = ({
       </div>
       <div className="h-80 w-96 custom-scrollbar relative bg-cyan-9500 px-2 flex flex-col py-2  rounded-lg border border-slate-800 space-y-1 overflow-auto">
         {usuarios &&
-          usuarios.map((seller) => {
+          usuarios.map((seller: any) => {
             return (
               <div
                 key={seller.id}

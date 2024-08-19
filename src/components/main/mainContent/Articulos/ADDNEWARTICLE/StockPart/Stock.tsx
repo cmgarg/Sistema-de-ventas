@@ -15,17 +15,11 @@ type StockProps = {
   stateArticle: articleData;
   deposits: depositType[];
   depositState: {
-    deposit: {
-      idObject: string;
-      name: string;
-      depositId: string;
-      address: string;
-      sector: {
-        name: string;
-        sectorId: string;
-      };
-    };
-    element: React.ReactNode;
+    idObject: string;
+    name: string;
+    depositId: string;
+    address: string;
+    sector: { name: string; sectorId: string };
   }[];
   dispatchDeposit: React.Dispatch<Action>;
   suppliers: supplierType[];

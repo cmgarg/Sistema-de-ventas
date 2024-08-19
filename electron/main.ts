@@ -2,15 +2,23 @@ import { app, BrowserWindow, globalShortcut, ipcMain } from "electron";
 import path from "path";
 import { loadEvents } from "./eventHandlers";
 import isDev from "electron-is-dev";
+import {
+  PosPrintData,
+  PosPrinter,
+  PosPrintOptions,
+} from "electron-pos-printer";
+import { findArticles, findClients } from "./databaseOperations";
+import { saleData } from "../types/types";
 
 let win: BrowserWindow | null;
+const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
 
 function createWindow() {
   win = new BrowserWindow({
     width: 1100,
     height: 1800,
     minWidth: 1600,
-    icon: path.join(__dirname, 'assets', 'icon.ico'), // Asegúrate de que esta ruta sea correcta
+    icon: path.join(__dirname, "assets", "icon.ico"), // Asegúrate de que esta ruta sea correcta
     title: "Punto de Ventas",
     minHeight: 600,
     titleBarStyle: "hidden",
@@ -30,11 +38,10 @@ function createWindow() {
   win.webContents.on("did-finish-load", () => {
     win?.webContents.send("main-process-message", new Date().toLocaleString());
   });
-
   const port = process.env.PORT || 3000;
   const url = isDev
     ? `http://localhost:${port}`
-    : path.join(__dirname, "../dist-vite/index.html"); // Asegúrate de que esta ruta sea correcta
+    : path.join(__dirname, "../dist-vite/index.html");
 
   if (isDev) {
     win.loadURL(url);
@@ -45,10 +52,9 @@ function createWindow() {
   globalShortcut.register("CommandOrControl+Shift+I", () => {
     win?.webContents.openDevTools();
   });
-
   // Configuración de CSP para permitir conexiones WebSocket y scripts en línea en desarrollo
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    const csp = isDev 
+    const csp = isDev
       ? "default-src 'self' 'unsafe-inline'; connect-src 'self' ws://vps-4260176-x.dattaweb.com; style-src 'self' 'unsafe-inline';"
       : "default-src 'self'; connect-src 'self' ws://vps-4260176-x.dattaweb.com;";
 

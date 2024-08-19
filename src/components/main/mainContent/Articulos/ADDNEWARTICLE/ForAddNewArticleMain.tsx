@@ -55,7 +55,6 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
         value: 0,
       },
       description: "",
-      code: ""
     },
     brand: { value: "", label: "" },
     code: "",
@@ -198,7 +197,7 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
           ...state,
           article: {
             ...state.article,
-            palette: {
+            pallet: {
               ...state.article.pallet,
               value: action.payload,
             },
@@ -248,17 +247,7 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
             },
           },
         };
-      case "SET_QUANTITYPERUNITACTIVE":
-        return {
-          ...state,
-          article: {
-            ...state.article,
-            quantityperunit: {
-              value: 0,
-              active: action.payload,
-            },
-          },
-        };
+
       case "SET_SUPPLIER":
         const supp = suppliers.filter((e: supplierType) => {
           return e.name
