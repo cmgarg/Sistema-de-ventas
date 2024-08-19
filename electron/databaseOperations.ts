@@ -2,7 +2,7 @@ import crypto from "crypto";
 import Datastore from "@seald-io/nedb";
 import jwt from "jsonwebtoken";
 import { getDate } from "./vFunctions";
-import { dataToEditArticle, saleData } from "../types/types";
+import { dataToEditArticle, pmType, saleData } from "../types/types";
 
 // Definición de tipos
 interface ArticleStock {
@@ -524,7 +524,7 @@ export const updatePayMethod = async (id: string, pmUpdate: pmType) => {
 ////////////////////////////////////////////////////////////
 ////////FUNCIONES DE CLIENTES ARCHIVO ventasFile.js////////
 //////////////////////////////////////////////////////////
-export const saveSale = (a: saleData) => {
+export const saveSale = async (a: saleData) => {
   const fechaActual = new Date();
   const año = fechaActual.getFullYear();
   const mes = fechaActual.getMonth() + 1;
@@ -659,7 +659,7 @@ export const saleProcess = async (venta: SaleData) => {
 
   return {
     type: "success save sale",
-    success: resultToProcess.save,
+    success: (await resultToProcess).save,
     message: "Stock insuficiente de",
     adjunt: verifStock.insufficientItems,
   };
