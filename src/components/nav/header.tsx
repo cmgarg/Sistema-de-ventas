@@ -25,7 +25,7 @@ function Header() {
   const [isMaximized, setIsMaximized] = useState(false);
 
   useEffect(() => {
-    window.api.enviarEvento("window-state", (event, state) => {
+    window.api.enviarEvento("window-state", (event: any, state: string) => {
       setIsMaximized(state === "maximized");
     });
 

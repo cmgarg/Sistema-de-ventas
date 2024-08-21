@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { storeType } from "../../../../../../types/types";
 
 interface SalesListProps {
   ventas: any[];
@@ -26,6 +25,10 @@ interface Cuenta {
   pay: string;
 }
 
+interface StoreType {
+  saleState: Venta[];
+}
+
 const SalesList: React.FC<SalesListProps> = ({
   ventas,
   fecha,
@@ -35,7 +38,7 @@ const SalesList: React.FC<SalesListProps> = ({
 }) => {
   const [cuentas, setCuentas] = useState<Cuenta[]>([]);
   const dispatch = useDispatch();
-  const sales = useSelector((state: storeType) => state.saleState);
+  const sales = useSelector((state: StoreType) => state.saleState);
   const [ventasNuevas, setVentasNuevas] = useState<Venta[]>([]);
 
   useEffect(() => {
@@ -44,7 +47,7 @@ const SalesList: React.FC<SalesListProps> = ({
       const fechaFormateada = fecha.split("-").reverse().join("-");
       return ventas.filter((venta) => venta.dateOfRegister === fechaFormateada);
     };
-    
+
     const filtrarCuentasPorFecha = (cuentas: Cuenta[], fecha: string) => {
       const fechaFormateada = fecha.split("-").join("-");
       return cuentas.filter((cuenta) => cuenta.date === fechaFormateada);
@@ -56,7 +59,7 @@ const SalesList: React.FC<SalesListProps> = ({
     const totalVentas = ventasFiltradas.reduce((acumulado, venta) => {
       return acumulado + Number(venta.sold);
     }, 0);
-    
+
     setTotalCantidad(totalVentas || 0);
 
     window.api.enviarEvento("get-accountToPay");

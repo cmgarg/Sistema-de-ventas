@@ -162,6 +162,7 @@ export type subCategoryType = { label: string; value: string; _id?: string };
 //TYPE STORE
 
 export type storeType = {
+  estadoTipoDeUser: any;
   menuState: { value: string };
   clientState: clientData[];
   articleState: articleData[];

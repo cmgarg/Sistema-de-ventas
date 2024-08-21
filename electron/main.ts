@@ -2,13 +2,9 @@ import { app, BrowserWindow, globalShortcut, ipcMain } from "electron";
 import path from "path";
 import { loadEvents } from "./eventHandlers";
 import isDev from "electron-is-dev";
-import {
-  PosPrintData,
-  PosPrinter,
-  PosPrintOptions,
-} from "electron-pos-printer";
+/* import { PosPrintData, PosPrinter, PosPrintOptions} from "electron-pos-printer";
 import { findArticles, findClients } from "./databaseOperations";
-import { saleData } from "../types/types";
+import { saleData } from "../types/types"; */
 
 let win: BrowserWindow | null;
 const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
@@ -83,7 +79,7 @@ ipcMain.on("minimize-window", () => {
 });
 
 // Impresora
-export const printBill = async (saleData: saleData, factureType: string) => {
+/* export const printBill = async (saleData: saleData, factureType: string) => {
   const articulos = await findArticles();
   const clientes = await findClients();
   const options: PosPrintOptions = {
@@ -441,7 +437,7 @@ ipcMain.on("imprimir-pa", async (_event, sale) => {
   const result = await printBill(sale.sale, sale.billData.billType);
   return result;
 });
-
+ */
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
