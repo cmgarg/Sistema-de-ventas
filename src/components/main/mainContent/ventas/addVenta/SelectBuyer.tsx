@@ -5,21 +5,9 @@ import { FaBasketShopping } from "react-icons/fa6";
 import { FcBusinessman } from "react-icons/fc";
 type SelectBuyerProps = {
   clients: clientData[]; // Define tus props aquí
-  clientData: {
-    name: string;
-    email: string;
-    address: string;
-    phone: string;
-    dni: string;
-  };
+  clientData: clientData;
   saleData: saleData;
-  setClientData: (e: {
-    name: string;
-    email: string;
-    address: string;
-    phone: string;
-    dni: string;
-  }) => void;
+  setClientData: (e: clientData) => void;
   estilosInput: string;
   loadClient: () => void;
   loadBuyer: (e: string) => void;
@@ -67,8 +55,10 @@ const SelectBuyer: React.FC<SelectBuyerProps> = ({
                         name: "",
                         email: "",
                         address: "",
-                        phone: "",
-                        dni: "",
+                        phone: 0,
+                        DNI: 0,
+                        birthdate: "",
+                        shopping: [],
                       });
                     }}
                     className={`bg-blue-500 text-xl w-32 h-10 rounded-bl-md`}
@@ -96,7 +86,7 @@ const SelectBuyer: React.FC<SelectBuyerProps> = ({
                   <p className="border-b-2 border-slate-800 pl-2 text-sm font-bold">
                     CUIT
                   </p>
-                  <p className="pl-2 font-thin">{clientData.dni}</p>
+                  <p className="pl-2 font-thin">{clientData.DNI}</p>
                 </div>
                 <div className="flex flex-col flex-1">
                   <p className="border-b-2 border-slate-800 pl-2 text-sm font-bold">

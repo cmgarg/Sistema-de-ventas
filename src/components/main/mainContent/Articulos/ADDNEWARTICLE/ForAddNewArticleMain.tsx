@@ -459,7 +459,7 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
           setErrorIn={setErrorIn}
           stateArticle={stateArticle}
         />
-        <div className="flex-1 bg-slate-950 app-region-no-drag overflow-auto">
+        <div className="flex-1 bg-black app-region-no-drag overflow-auto">
           {router === "article" ? (
             <Article
               stateArticle={stateArticle}

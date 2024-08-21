@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { storeType } from "../../../../../../types/types";
+import { saleData, storeType } from "../../../../../../types/types";
 
 interface SalesListProps {
   ventas: any[];
@@ -36,15 +36,15 @@ const SalesList: React.FC<SalesListProps> = ({
   const [cuentas, setCuentas] = useState<Cuenta[]>([]);
   const dispatch = useDispatch();
   const sales = useSelector((state: storeType) => state.saleState);
-  const [ventasNuevas, setVentasNuevas] = useState<Venta[]>([]);
+  const [ventasNuevas, setVentasNuevas] = useState<saleData[]>([]);
 
   useEffect(() => {
     // Función para filtrar las ventas según la fecha
-    const filtrarVentasPorFecha = (ventas: Venta[], fecha: string) => {
+    const filtrarVentasPorFecha = (ventas: saleData[], fecha: string) => {
       const fechaFormateada = fecha.split("-").reverse().join("-");
-      return ventas.filter((venta) => venta.dateOfRegister === fechaFormateada);
+      return ventas.filter((venta) => venta.dateToRegister === fechaFormateada);
     };
-    
+
     const filtrarCuentasPorFecha = (cuentas: Cuenta[], fecha: string) => {
       const fechaFormateada = fecha.split("-").join("-");
       return cuentas.filter((cuenta) => cuenta.date === fechaFormateada);
@@ -56,7 +56,7 @@ const SalesList: React.FC<SalesListProps> = ({
     const totalVentas = ventasFiltradas.reduce((acumulado, venta) => {
       return acumulado + Number(venta.sold);
     }, 0);
-    
+
     setTotalCantidad(totalVentas || 0);
 
     window.api.enviarEvento("get-accountToPay");
@@ -86,7 +86,7 @@ const SalesList: React.FC<SalesListProps> = ({
         <div className="w-[27rem]">
           {ventasNuevas.map((e) => (
             <div
-              key={e._id}
+              key={e.id}
               className="flex flex-1 flex-row h-12 rounded-e-lg items-center p-2 border border-gray-600 mb-2"
             >
               <div className="flex flex-1 flex-row items-center h-12 text-white text-lg">
@@ -95,7 +95,12 @@ const SalesList: React.FC<SalesListProps> = ({
               </div>
               <div className="flex flex-1 flex-row items-center text-green-400 text-lg">
                 <div className="flex items-center p-2">$</div>
-                <p className="">{Number(e.sold).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                <p className="">
+                  {Number(e.sold).toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </p>
               </div>
             </div>
           ))}
@@ -112,7 +117,13 @@ const SalesList: React.FC<SalesListProps> = ({
                 {e.descripcion}
               </div>
               <div className="flex flex-1 flex-row items-center text-red-400 text-lg justify-end">
-                <p className="">$ {Number(e.pay).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                <p className="">
+                  ${" "}
+                  {Number(e.pay).toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </p>
               </div>
             </div>
           ))}

@@ -8,6 +8,8 @@ import {
   categoryType,
 } from "../../../../../../../types/types";
 import AddTax from "./AddTax";
+import ButtonR from "../../../buttons/ButtonR";
+import { BiMoney } from "react-icons/bi";
 
 type propsInput = {
   stateArticle: articleData;
@@ -37,14 +39,18 @@ const Impuestos = ({ stateArticle, dispatch }: propsInput) => {
           <p className="select-none">Impuestos aplicados</p>
         </div>
         <div className="absolute top-0 right-2 text-green-300 z-40 hover:text-green-200 flex space-x-2">
-          <button
+          <ButtonR
+            bgColor="bg-green-700"
             onClick={() => {
               setAddImpuesto(true);
             }}
-            className="select-none text-sm font-bold bg-cyan-600 text-slate-50 p-1 rounded-lg"
+            width="w-44"
+            textSize="text-sm"
+            height="h-7"
+            title="Añadir impuesto"
           >
-            Agregar
-          </button>
+            <BiMoney size={20} color="#fff" />
+          </ButtonR>
         </div>
         <div className="flex-1 w-full">
           <ul className="min-h-full w-full">

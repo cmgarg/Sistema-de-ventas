@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { clientData } from "../../../../../../types/types";
+import ButtonR from "../../buttons/ButtonR";
 
 interface AddClientresFormProps {
   onChangeModal: (p: boolean) => void;
@@ -161,24 +162,30 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             />
           </div>
         </div>
-        <div className="flex flex-row w-full">
-          <button
-            className="flex-1 h-10 bg-red-900 rounded-bl-md hover:bg-red-800"
+        <div className="flex flex-row w-full px-2 space-x-2">
+          <ButtonR
+            borderSize="border-b-[4px]"
+            textSize="text-lg"
             onClick={() => {
               onChangeModal(false);
             }}
-          >
-            Cancelar
-          </button>
-          <button
-            className="flex-1 h-10 bg-green-900 rounded-br-md hover:bg-green-800"
+            bgColor="bg-red-700"
+            height="h-10"
+            width="w-1/2"
+            title="Cancelar"
+          />
+          <ButtonR
+            borderSize="border-b-[4px]"
+            textSize="text-lg"
             onClick={() => {
               subirUsuario();
               onChangeModal(false);
             }}
-          >
-            Añadir
-          </button>
+            bgColor="bg-green-700"
+            height="h-10"
+            width="w-1/2"
+            title="Añadir"
+          />
         </div>
       </div>
     </div>

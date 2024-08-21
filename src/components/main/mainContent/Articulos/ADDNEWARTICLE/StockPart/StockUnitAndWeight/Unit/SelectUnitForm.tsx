@@ -91,12 +91,12 @@ const SelectUnitForm: React.FC<SelectProps> = ({
         <SelectContent
           className={`${
             backGround2 || "bg-slate-950"
-          } text-white   max-w-full min-w-full border-l border-r border-b border-slate-800`}
+          } text-gray-200   max-w-full min-w-full border-l border-r border-b border-gray-600`}
         >
           <li className="flex-1 z-50 h-5 text-xs rounded-t-lg justify-between  list-none flex mb-2 text-white">
             <button
               onClick={onUnitForm}
-              className="flex-1 w-5 justify-center hover:bg-slate-900 hover:text-yellow-500 flex items-center border-r"
+              className="flex-1 w-5 justify-center hover:bg-slate-900 hover:text-yellow-500 flex items-center"
             >
               <IoCreateSharp size={15} />
             </button>

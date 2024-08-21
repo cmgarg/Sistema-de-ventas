@@ -39,7 +39,7 @@ const UnitsForm: React.FC<UnitsFormProps> = ({ units, onUnitForm }) => {
   }, []);
   return (
     <div className="absolute backdrop-brightness-50 top-0 bottom-0 left-0 right-0 flex justify-center items-center z-50">
-      <div className="flex flex-col h-2/3 w-3/4 bg-slate-950 border text-white border-slate-500 rounded-lg ">
+      <div className="flex flex-col h-2/3 w-3/4 bg-zinc-950 border text-white border-gray-600 rounded-lg ">
         {editUnitForm && (
           <EditUnit setEditUnitForm={setEditUnitForm} unitToEdit={unitToEdit} />
         )}
@@ -51,9 +51,10 @@ const UnitsForm: React.FC<UnitsFormProps> = ({ units, onUnitForm }) => {
               onClick={() => {
                 setCreateUnitForm(true);
               }}
-              className="text-green-50 bg-green-500 rounded-full w-10 flex items-center justify-center"
+              className="text-green-50 bg-gray-600 shadow-sm shadow-gray-100 rounded-full p-2 h-8 flex items-center justify-between"
             >
-              <IoAdd size={30} />
+              <p className="text-xs">Crear unidad</p>
+              <IoAdd className="w-7 h-7 text-gray-200" />
             </button>
             <button
               onClick={() => {
@@ -61,8 +62,8 @@ const UnitsForm: React.FC<UnitsFormProps> = ({ units, onUnitForm }) => {
               }}
               className="h-10 text-red-50 relative"
             >
-              <div className="relative right-1 bg-red-500 rounded-full w-10 justify-center h-full flex items-center">
-                <IoClose />
+              <div className="relative right-1 bg-gray-600 rounded-full w-7 h-7 shadow-sm shadow-gray-100 justify-center  flex items-center">
+                <IoClose className="w-7 h-7 text-red-200" />
               </div>
             </button>
           </div>

@@ -30,7 +30,7 @@ const Stock: React.FC<StockProps> = ({}) => {
 
   //
   function getResults(e: object[]) {
-    let object;
+    let object: any;
     if (e.length > 0) {
       object = { actived: true, results: e };
     } else {

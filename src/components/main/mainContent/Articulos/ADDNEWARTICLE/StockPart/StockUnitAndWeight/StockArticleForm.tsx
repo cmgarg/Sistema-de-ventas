@@ -106,7 +106,7 @@ const StockArticleForm = ({
             <input
               type="text"
               name="stock"
-              className={`outline-none h-14 w-full bg-slate-900 px-2 rounded-l-lg border border-slate-500 ${
+              className={`outline-none h-12 w-full bg-zinc-900 px-2 rounded-l-lg border border-gray-600 ${
                 errorIn.includes("STOCK")
                   ? "overline outline-red-500 outline-2"
                   : ""
@@ -126,7 +126,7 @@ const StockArticleForm = ({
             <input
               type="text"
               name="minstock"
-              className={`outline-none h-14 w-full bg-slate-900 border-t border-b border-slate-500 px-2 ${
+              className={`outline-none h-12 w-full bg-zinc-900 border-t border-b border-gray-600 px-2 ${
                 errorIn.includes("MINSTOCK")
                   ? "overline outline-red-500 outline-2"
                   : ""
@@ -137,9 +137,9 @@ const StockArticleForm = ({
               }}
             />
           </div>
-          <div className="flex flex-col items-center w-24 space-y-1">
+          <div className="flex flex-col justify-center h-full w-24 space-y-1">
             <p className="w-full flex justify-start select-none h-5">Unidad</p>
-            <div className="w-full h-14 flex items-center bg-slate-900 border-l border-r border-t border-b rounded-r-lg border-slate-500">
+            <div className="w-full h-12 flex items-center bg-zinc-900 border-l border-r border-t border-b rounded-r-lg border-gray-600">
               <SelectUnitForm
                 options={optionsUnits}
                 value={unitSelect}
@@ -147,8 +147,8 @@ const StockArticleForm = ({
                 filter={"Unit"}
                 slice={3}
                 placeholder={unitSelect}
-                backGround="bg-slate-900"
-                backGround2="bg-slate-950"
+                backGround="bg-zinc-900"
+                backGround2="bg-zinc-950"
                 border={false}
                 todos={false}
                 setUnitForm={setUnitForm}
