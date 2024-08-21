@@ -43,7 +43,7 @@ const SaleAndCost: React.FC<saleAndCost> = ({
               console.log(formattedValue);
               dispatch({ type: "SET_COST", payload: value });
             }}
-            className={`${inputStyle} h-14 text-3xl rounded-l-lg bg-slate-900 ${
+            className={`${inputStyle} h-10 text-3xl rounded-l-lg bg-zinc-900 ${
               errorIn.includes("COST")
                 ? "overline outline-red-500 outline-2"
                 : ""
@@ -65,7 +65,7 @@ const SaleAndCost: React.FC<saleAndCost> = ({
               dispatch({ type: "SET_PROFIT", payload: value });
               console.log(formattedValue);
             }}
-            className={`${inputStyle} "h-14 text-3xl bg-slate-900 border border-slate-800"`}
+            className={`${inputStyle} "h-14 text-3xl bg-zinc-900 border border-slate-800"`}
             value={
               stateArticle.article.profit > 0 ? stateArticle.article.profit : ""
             }
@@ -176,7 +176,7 @@ const PriceOfArticle: React.FC<priceOfArticle> = ({
   }, [costo, percentajeToSale, articleState.taxes]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col bg-zinc-900 border-zinc-700 border rounded-sm mt-2 p-1">
       <div className="flex space-x-5 w-full border-cyan-700 border-b">
         <h3 className="font-bold">Cálculo Detallado |</h3>
         <p>
@@ -218,7 +218,9 @@ const PriceOfArticle: React.FC<priceOfArticle> = ({
           </p>
           <p className="text-teal-700 font-medium">{`${formatMoney(
             toShowOperation.priceWithTaxCost
-          )} x (1 + ${toShowOperation.taxFinalPriceSuma}% / 100) = ${formatMoney(
+          )} x (1 + ${
+            toShowOperation.taxFinalPriceSuma
+          }% / 100) = ${formatMoney(
             toShowOperation.priceWithTaxCostAndFinalPrice
           )} `}</p>
         </div>

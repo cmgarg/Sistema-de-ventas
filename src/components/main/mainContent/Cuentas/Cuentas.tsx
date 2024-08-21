@@ -9,6 +9,10 @@ import { format } from "date-fns";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
 import { v4 as uuidv4 } from "uuid"; // Import UUID for generating unique IDs
+import ButtonR from "../buttons/ButtonR";
+import { MdMore } from "react-icons/md";
+import { IoAdd } from "react-icons/io5";
+import { BiExport } from "react-icons/bi";
 
 interface Cuenta {
   _id: string;
@@ -47,7 +51,7 @@ const Cuentas: React.FC = () => {
       ...e,
       _id: uuidv4(), // Generate a unique ID
       time: new Date().toISOString().split("T")[1].split(".")[0], // Generate current time
-      meses: 1 // Set default value for meses or adjust as necessary
+      meses: 1, // Set default value for meses or adjust as necessary
     };
     setAccountToPay((prev) => [...prev, newAccount]);
     getAccountsToPay();
@@ -84,15 +88,35 @@ const Cuentas: React.FC = () => {
     (state: RootState) => state.estadoTipoDeUser.datosUsuario
   );
 
-  console.log(datosUsuarioRedux,"estos son los datos del usuario iniciaado --------------ppppppppppppppp")
+  console.log(
+    datosUsuarioRedux,
+    "estos son los datos del usuario iniciaado --------------ppppppppppppppp"
+  );
   return (
     <div className="flex flex-col flex-1">
-      
-        <NavMain title="Cuentas" setLoginUser={""} >
-          <Export></Export>
-          <Agregar onChangeModal={onChangeModal} title="Cuenta" />
-        </NavMain>
-      
+      <NavMain title="Cuentas" setLoginUser={""}>
+        <ButtonR
+          borderSize="border-b-[4px]"
+          textSize="text-lg"
+          onClick={onChangeModal}
+          bgIconColor="bg-gray-700"
+          height="h-10"
+          width="w-10"
+        >
+          <BiExport size={30} className="text-white" />
+        </ButtonR>
+        <ButtonR
+          borderSize="border-b-[4px]"
+          textSize="text-lg"
+          onClick={onChangeModal}
+          bgIconColor="bg-gray-700"
+          height="h-10"
+          width="w-10"
+        >
+          <IoAdd size={30} className="text-white" />
+        </ButtonR>
+      </NavMain>
+
       <div className="flex flex-1 flex-row">
         {activeModalForm && (
           <AddAccountToPay

@@ -170,6 +170,7 @@ export type storeType = {
   subCategoryState: subCategoryType[];
   brandState: brandType[];
   saleState: saleData[];
+  estadoTipoDeUser: any;
   auth: authType;
 };
 //UNIDAD TYPE

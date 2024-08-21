@@ -1,28 +1,12 @@
 import Downshift from "downshift";
 import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
-
-interface ClientDataLocal {
-  name: string;
-  email: string;
-  address: string;
-  phone: string;
-  dni: string;
-  _id: string;
-  DNI: string;
-}
+import { clientData } from "../../../../../../types/types";
 
 interface MenuClientsFormProps {
   style: string;
-  clients: ClientDataLocal[];
-  setClientData: (c: ClientDataLocal) => void;
+  clients: clientData[];
+  setClientData: (c: clientData) => void;
   value?: string;
-  modalClient: () => void;
-  showModalBuyer: boolean;
-  setShowModalBuyer: Dispatch<SetStateAction<boolean>>;
-  loadBuyer: (value: string) => void;
-  onShowClientForm: (s: boolean) => void;
-  loadClient: () => void;
-  showClientForm: boolean;
 }
 
 const MenuClientsForm: React.FC<MenuClientsFormProps> = ({
@@ -30,13 +14,6 @@ const MenuClientsForm: React.FC<MenuClientsFormProps> = ({
   style,
   setClientData,
   value,
-  modalClient,
-  showModalBuyer,
-  setShowModalBuyer,
-  loadBuyer,
-  onShowClientForm,
-  loadClient,
-  showClientForm,
 }) => {
   const [newValue, setNewValue] = useState<string>("");
   const [isOpen, setIsOpen] = useState(false);
@@ -58,7 +35,7 @@ const MenuClientsForm: React.FC<MenuClientsFormProps> = ({
             .slice(0, inputLength)
             .includes(i.toLowerCase());
         } else if (typeof val === "object") {
-          return Object.values(val).some((u) => {
+          return Object.values(val).some((u: any) => {
             if (typeof u === "string") {
               return u
                 .toLowerCase()
@@ -71,14 +48,15 @@ const MenuClientsForm: React.FC<MenuClientsFormProps> = ({
     });
 
     if (result.length > 0 && result.length < 2) {
-      const clientData: ClientDataLocal = {
+      const clientData: clientData = {
         name: result[0].name,
         email: result[0].email,
         address: result[0].address,
-        phone: result[0].phone.toString(),
-        dni: result[0].DNI.toString(),
+        phone: result[0].phone,
         _id: result[0]._id,
         DNI: result[0].DNI,
+        birthdate: result[0].birthdate,
+        shopping: result[0].shopping,
       };
       setClientData(clientData);
       onChangeNewValue(clientData.name);

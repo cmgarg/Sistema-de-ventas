@@ -2,7 +2,16 @@ import { app, BrowserWindow, globalShortcut, ipcMain } from "electron";
 import path from "path";
 import { loadEvents } from "./eventHandlers";
 import isDev from "electron-is-dev";
-/* import { PosPrintData, PosPrinter, PosPrintOptions} from "electron-pos-printer";
+// @ts-ignore
+import {
+  // @ts-ignore
+  PosPrintData,
+  // @ts-ignore
+  PosPrinter,
+  // @ts-ignore
+  PosPrintOptions,
+  // @ts-ignore
+} from "electron-pos-printer";
 import { findArticles, findClients } from "./databaseOperations";
 import { saleData } from "../types/types"; */
 
@@ -13,7 +22,7 @@ function createWindow() {
   win = new BrowserWindow({
     width: 1100,
     height: 1800,
-    minWidth: 1600,
+    minWidth: 1100,
     icon: path.join(__dirname, "assets", "icon.ico"), // Asegúrate de que esta ruta sea correcta
     title: "Punto de Ventas",
     minHeight: 600,

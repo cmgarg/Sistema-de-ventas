@@ -66,9 +66,9 @@ const Stock: React.FC<StockProps> = () => {
     results: [],
   });
 
-  // Función para obtener resultados de búsqueda
-  function getResults(e: ArticleData[]) {
-    let object: SearchState;
+  //
+  function getResults(e: object[]) {
+    let object: any;
     if (e.length > 0) {
       object = { actived: true, results: e };
     } else {

@@ -10,6 +10,13 @@ import Imprimir from "../buttons/Imprimir";
 import ListClient from "./ListClient";
 import { clientData, storeType } from "../../../../../types/types";
 import { useDispatch, useSelector } from "react-redux";
+import ButtonR from "../buttons/ButtonR";
+import { FaAddressBook } from "react-icons/fa";
+import { MdMore } from "react-icons/md";
+import { IoAdd, IoAddCircle } from "react-icons/io5";
+import { CgClose } from "react-icons/cg";
+import { PiPrinter } from "react-icons/pi";
+import { BiExport } from "react-icons/bi";
 
 interface ClientesContentProps {
   searchIn?: string;
@@ -78,9 +85,34 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
       <div className="row-start-1 row-end-2">
         <NavMain title="Clientes" setLoginUser={""}>
           <Buscador searchIn={clients} functionReturn={getResults}></Buscador>
-          <Export></Export>
-          <Imprimir></Imprimir>
-          <Agregar title="cliente" onChangeModal={onChangeModal}></Agregar>
+          <ButtonR
+            borderSize="border-b-[4px]"
+            textSize="text-lg"
+            bgIconColor="bg-gray-700"
+            height="h-10"
+            width="w-10"
+          >
+            <BiExport size={30} className="text-white" />
+          </ButtonR>
+          <ButtonR
+            borderSize="border-b-[4px]"
+            textSize="text-lg"
+            bgIconColor="bg-gray-700"
+            height="h-10"
+            width="w-10"
+          >
+            <PiPrinter size={30} className="text-white" />
+          </ButtonR>
+          <ButtonR
+            borderSize="border-b-[4px]"
+            textSize="text-lg"
+            bgIconColor="bg-gray-700"
+            height="h-10"
+            width="w-10"
+            onClick={onChangeModal}
+          >
+            <IoAdd size={30} className="text-white" />
+          </ButtonR>
         </NavMain>
       </div>
       <div className="flex flex-row pb-5 row-start-2 row-end-7">

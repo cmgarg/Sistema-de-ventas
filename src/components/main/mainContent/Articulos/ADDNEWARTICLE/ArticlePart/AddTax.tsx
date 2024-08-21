@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ButtonCheck from "../StockPart/ButtonCheck";
 import { Action, articleData } from "../../../../../../../types/types";
+import ButtonR from "../../../buttons/ButtonR";
 
 type AddTaxProps = {
   stateArticle: articleData;
@@ -168,19 +169,23 @@ const AddTax: React.FC<AddTaxProps> = ({ dispatch, setAddImpuesto }) => {
             />
           </div>
         </div>
-        <div className="flex text-xl font-bold items-end">
-          <button
-            className="flex-1 bg-rose-600 h-10 rounded-bl-lg"
+        <div className="flex text-xl font-bold items-end px-2 py-2 space-x-2">
+          <ButtonR
+            bgColor="bg-red-700"
             onClick={() => setAddImpuesto(false)}
-          >
-            Cancelar
-          </button>
-          <button
-            className="bg-cyan-600 flex-1 h-10 rounded-br-lg"
+            width="w-1/2"
+            textSize="text-sm"
+            height="h-8"
+            title="Cancelar"
+          ></ButtonR>
+          <ButtonR
+            bgColor="bg-green-700"
             onClick={() => addNewTax()}
-          >
-            Agregar
-          </button>
+            width="w-1/2"
+            textSize="text-sm"
+            height="h-8"
+            title="Añadir"
+          ></ButtonR>
         </div>
       </div>
     </div>

@@ -10,6 +10,9 @@ import {
 import InputCategory from "./Inputs/InputCategory";
 import InputSubCategory from "./Inputs/InputSubCategory";
 import { useSelector } from "react-redux";
+import ButtonR from "../../../../buttons/ButtonR";
+import { IoAdd } from "react-icons/io5";
+import Biñeta from "../../../../Biñeta/Biñieta";
 
 interface CategoryAndBrandProps {
   errorToSave: { active: boolean; type: string; message: string };
@@ -46,14 +49,19 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
                 <p className="text-red-200 text-xs">{errorToSave.message}</p>
               </div>
             )}
-          <button
-            onClick={() => {
-              setAddBrandInput(true);
-            }}
-            className="select-none"
-          >
-            +
-          </button>
+          <Biñeta title="Crear marca">
+            <ButtonR
+              height="h-6"
+              onClick={() => {
+                setAddBrandInput(true);
+              }}
+              width="w-6"
+              textSize="text-xs"
+              bgIconColor="bg-green-800"
+            >
+              <IoAdd size={20} className="text-green-100" />
+            </ButtonR>
+          </Biñeta>
         </div>
         <InputBrand
           errorIn={errorIn}
@@ -72,14 +80,19 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
               <p className="text-red-200 text-xs">{errorToSave.message}</p>
             </div>
           )}
-          <button
-            onClick={() => {
-              setAddCategoryInput(true);
-            }}
-            className="select-none"
-          >
-            +
-          </button>
+          <Biñeta title="Crear categoria">
+            <ButtonR
+              height="h-6"
+              onClick={() => {
+                setAddCategoryInput(true);
+              }}
+              width="w-6"
+              textSize="text-xs"
+              bgIconColor="bg-green-800"
+            >
+              <IoAdd size={20} className="text-green-100" />
+            </ButtonR>
+          </Biñeta>
         </div>
         <InputCategory
           errorIn={errorIn}
@@ -98,14 +111,19 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
               <p className="text-red-200 text-xs">{errorToSave.message}</p>
             </div>
           )}
-          <button
-            onClick={() => {
-              setAddSubCategoryInput(true);
-            }}
-            className="select-none"
-          >
-            +
-          </button>
+          <Biñeta title="Crear sub categoria">
+            <ButtonR
+              height="h-6"
+              onClick={() => {
+                setAddSubCategoryInput(true);
+              }}
+              width="w-6"
+              textSize="text-xs"
+              bgIconColor="bg-green-800"
+            >
+              <IoAdd size={20} className="text-green-100" />
+            </ButtonR>
+          </Biñeta>
         </div>
         <InputSubCategory
           errorIn={errorIn}

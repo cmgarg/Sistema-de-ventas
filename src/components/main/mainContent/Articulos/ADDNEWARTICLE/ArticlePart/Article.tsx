@@ -25,7 +25,7 @@ const Article: React.FC<ArticleProps> = ({
   const [addSubCategoryInput, setAddSubCategoryInput] = useState(false);
 
   const inputStyle =
-    "bg-slate-900 rounded-lg border border-slate-500 px-2 h-14 outline-none";
+    "bg-zinc-900 rounded-lg border border-slate-500 px-2 h-14 outline-none";
   return (
     <div className="text-slate-50 font-thin flex flex-1 flex-col ">
       <div className="flex flex-col w-full text-xl p-2 space-y-5">
@@ -100,7 +100,7 @@ const Article: React.FC<ArticleProps> = ({
             onChange={(e) => {
               dispatch({ type: "SET_DESCRIPTION", payload: e.target.value });
             }}
-            className="flex-1 text-xl bg-slate-900 border border-slate-800 rounded-lg px-2 pt-1 outline-none"
+            className="flex-1 text-xl bg-zinc-900 border border-slate-800 rounded-lg px-2 pt-1 outline-none"
           />
         </div>
         <Impuestos

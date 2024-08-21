@@ -1,13 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import Biñeta from "../main/mainContent/Biñeta/Biñieta";
 import { GiMagnifyingGlass } from "react-icons/gi";
+import ButtonR from "../main/mainContent/buttons/ButtonR";
+import { BiSearch } from "react-icons/bi";
 
 interface MainContentProps<T> {
   searchIn: T[];
   functionReturn: (e: T[], f: boolean) => void;
 }
 
-const Buscador = <T extends object>({ searchIn, functionReturn }: MainContentProps<T>) => {
+const Buscador = <T extends object>({
+  searchIn,
+  functionReturn,
+}: MainContentProps<T>) => {
   const [ActivarBuscador, setActivarBuscador] = useState(false);
   const [result, setResult] = useState<T[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -47,7 +52,10 @@ const Buscador = <T extends object>({ searchIn, functionReturn }: MainContentPro
 
   useEffect(() => {
     function clickOutsideSearch(event: MouseEvent) {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         console.log(inputValue.length);
         if (inputValue === "") {
           setActivarBuscador(false);
@@ -96,11 +104,15 @@ const Buscador = <T extends object>({ searchIn, functionReturn }: MainContentPro
           type="text"
         ></input>
       )}
-      <div className="w-10 flex justify-center items-center">
-        <Biñeta title="Buscador">
-          <GiMagnifyingGlass size={20} color="white" />
-        </Biñeta>
-      </div>
+      <ButtonR
+        borderSize="border-b-[4px]"
+        textSize="text-lg"
+        bgIconColor="bg-gray-700"
+        height="h-10"
+        width="w-10"
+      >
+        <BiSearch size={20} className="text-white" />
+      </ButtonR>
     </div>
   );
 };

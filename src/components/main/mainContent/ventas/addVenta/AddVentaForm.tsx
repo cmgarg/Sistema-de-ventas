@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { saleData, storeType } from "../../../../../../types/types";
+import { clientData, saleData, storeType } from "../../../../../../types/types";
 import { useSelector } from "react-redux";
 import ListaProductos from "./ListaProductos";
 import AsideForm from "./AsideForm";
@@ -68,18 +68,14 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
   }>({ show: false, save: false, message: "" });
   const [showError, setShowError] = useState<{ in: string }>({ in: "" });
   const [cost, setCost] = useState<number>(0);
-  const [clientData, setClientData] = useState<{
-    name: string;
-    email: string;
-    address: string;
-    phone: string;
-    dni: string;
-  }>({
+  const [clientData, setClientData] = useState<clientData>({
     name: "",
     email: "",
     address: "",
-    phone: "",
-    dni: "",
+    phone: 0,
+    DNI: 0,
+    birthdate: "",
+    shopping: [],
   });
   const [showModalBuyer, setShowModalBuyer] = useState(false);
   const [showModalSeller, setShowModalSeller] = useState(false);
