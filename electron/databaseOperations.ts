@@ -366,7 +366,7 @@ export const updatePayMethod = async (id: string, pmUpdate: pmType) => {
 ////////////////////////////////////////////////////////////
 ////////FUNCIONES DE CLIENTES ARCHIVO ventasFile.js////////
 //////////////////////////////////////////////////////////
-export const saveSale = (a: saleData) => {
+export const saveSale = async (a: saleData) => {
   const fechaActual = new Date();
   const año = fechaActual.getFullYear();
   const mes = fechaActual.getMonth() + 1;
@@ -511,7 +511,7 @@ export const saleProcess = async (venta: saleData) => {
 
   return {
     type: "success save sale",
-    success: resultToProcess.save,
+    success: (await resultToProcess).save,
     message: "Stock insuficiente de",
     adjunt: verifStock.insufficientItems,
   };
