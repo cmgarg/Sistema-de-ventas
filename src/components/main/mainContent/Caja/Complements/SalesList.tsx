@@ -26,6 +26,10 @@ interface Cuenta {
   pay: string;
 }
 
+interface StoreType {
+  saleState: Venta[];
+}
+
 const SalesList: React.FC<SalesListProps> = ({
   ventas,
   fecha,

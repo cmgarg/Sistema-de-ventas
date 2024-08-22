@@ -39,9 +39,18 @@ const SelectBuyer: React.FC<SelectBuyerProps> = ({
           <div className="flex flex-1 bg-slate-900 rounded-md rounded-bl-md bg-gradient-to-t from-slate-950 to-blue-950 flex-col">
             <MenuClientsForm
               style={estilosInput}
-              clients={clients}
-              setClientData={setClientData}
-            ></MenuClientsForm>
+              ////clients={clients}
+              setClientData={setClientData} clients={[]} modalClient={function (): void {
+                throw new Error("Function not implemented.");
+              } } showModalBuyer={false} setShowModalBuyer={function (value: React.SetStateAction<boolean>): void {
+                throw new Error("Function not implemented.");
+              } } loadBuyer={function (value: string): void {
+                throw new Error("Function not implemented.");
+              } } onShowClientForm={function (s: boolean): void {
+                throw new Error("Function not implemented.");
+              } } loadClient={function (): void {
+                throw new Error("Function not implemented.");
+              } } showClientForm={false}            ></MenuClientsForm>
             <div className="flex flex-1">
               <div className="flex flex-col border-r border-slate-800">
                 <div className="flex-1 flex justify-center items-center">

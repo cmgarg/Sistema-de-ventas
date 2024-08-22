@@ -12,11 +12,9 @@ import {
   PosPrintOptions,
   // @ts-ignore
 } from "electron-pos-printer";
-import { findArticles, findClients } from "./databaseOperations";
 import { saleData } from "../types/types";
 
 let win: BrowserWindow | null;
-const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
 
 function createWindow() {
   win = new BrowserWindow({
@@ -88,9 +86,7 @@ ipcMain.on("minimize-window", () => {
 });
 
 // Impresora
-export const printBill = async (saleData: saleData, factureType: string) => {
-  const articulos = await findArticles();
-  const clientes = await findClients();
+const printBill = async (saleData: saleData, factureType: string) => {
   const options: PosPrintOptions = {
     preview: true,
     margin: "5 5 5 5",
@@ -446,7 +442,6 @@ ipcMain.on("imprimir-pa", async (_event, sale) => {
   const result = await printBill(sale.sale, sale.billData.billType);
   return result;
 });
-
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();

@@ -12,6 +12,8 @@ import { GrUpdate } from "react-icons/gr";
 import { TbFileDollar } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { IconType } from "react-icons";
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
 
 interface Notification {
   _id: string;
@@ -66,6 +68,34 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
   const loadingRef = useRef(false);
 
   const navigate = useNavigate();
+
+  ///////////////////////////notif
+
+
+// Import the functions you need from the SDKs you need
+
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDS_IAVmdRNa8pfv7c8L0KJeSfdVBDFdqU",
+  authDomain: "cmg-company.firebaseapp.com",
+  projectId: "cmg-company",
+  storageBucket: "cmg-company.appspot.com",
+  messagingSenderId: "206948296278",
+  appId: "1:206948296278:web:6a2348d8e8e2ea75743df7",
+  measurementId: "G-2YKHCCRVNK"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+
+  //////////////////notif
+
 
   useEffect(() => {
     window.api.enviarEvento("get-disabled-notification-types");
