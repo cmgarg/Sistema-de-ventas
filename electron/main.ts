@@ -23,7 +23,7 @@ function createWindow() {
     width: 1100,
     height: 1800,
     minWidth: 1100,
-    icon: path.join(__dirname, "assets", "icon.ico"), // Asegúrate de que esta ruta sea correcta
+    icon: path.join(__dirname, "../src/assets/favicon.ico"), // Asegúrate de que esta ruta sea correcta
     title: "Punto de Ventas",
     minHeight: 600,
     titleBarStyle: "hidden",
