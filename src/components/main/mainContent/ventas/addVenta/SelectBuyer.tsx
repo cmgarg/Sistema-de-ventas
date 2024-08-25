@@ -40,17 +40,7 @@ const SelectBuyer: React.FC<SelectBuyerProps> = ({
             <MenuClientsForm
               style={estilosInput}
               ////clients={clients}
-              setClientData={setClientData} clients={[]} modalClient={function (): void {
-                throw new Error("Function not implemented.");
-              } } showModalBuyer={false} setShowModalBuyer={function (value: React.SetStateAction<boolean>): void {
-                throw new Error("Function not implemented.");
-              } } loadBuyer={function (value: string): void {
-                throw new Error("Function not implemented.");
-              } } onShowClientForm={function (s: boolean): void {
-                throw new Error("Function not implemented.");
-              } } loadClient={function (): void {
-                throw new Error("Function not implemented.");
-              } } showClientForm={false}            ></MenuClientsForm>
+              setClientData={setClientData} clients={[]} ></MenuClientsForm>
             <div className="flex flex-1">
               <div className="flex flex-col border-r border-slate-800">
                 <div className="flex-1 flex justify-center items-center">

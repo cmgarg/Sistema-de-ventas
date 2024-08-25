@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { IconType } from "react-icons";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getMessaging, getToken } from "firebase/messaging";
 
 interface Notification {
   _id: string;
@@ -71,31 +72,39 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
 
   ///////////////////////////notif
 
+  const messaging = getMessaging();
 
-// Import the functions you need from the SDKs you need
+  function requestPermission() {
+    console.log("Requesting permission... preguntando si me dan el permisos");
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        console.log("Notification permission granted permiso otorgadooooooooooooooo.");
+        // Obtener token para enviar notificaciones a esta instancia
+        getToken(messaging, {
+          vapidKey: "xHNBNSS-qZ_qpo4qn8omd_cIqHyPnv0rc4wp87tz7wk",
+        })
+          .then((currentToken) => {
+            if (currentToken) {
+              console.log("Token:", currentToken);
+              // Envía el token al backend o úsalo en tu lógica
+            } else {
+              console.log(
+                "No registration token available. Request permission to generate one."
+              );
+            }
+          })
+          .catch((err) => {
+            console.log("An error occurred while retrieving token. ", err);
+          });
+      } else {
+        console.log("Unable to get permission to notify.");
+      }
+    });
+  }
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDS_IAVmdRNa8pfv7c8L0KJeSfdVBDFdqU",
-  authDomain: "cmg-company.firebaseapp.com",
-  projectId: "cmg-company",
-  storageBucket: "cmg-company.appspot.com",
-  messagingSenderId: "206948296278",
-  appId: "1:206948296278:web:6a2348d8e8e2ea75743df7",
-  measurementId: "G-2YKHCCRVNK"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-
-  //////////////////notif
-
+  useEffect(() => {
+    requestPermission();
+  }, []);
 
   useEffect(() => {
     window.api.enviarEvento("get-disabled-notification-types");
