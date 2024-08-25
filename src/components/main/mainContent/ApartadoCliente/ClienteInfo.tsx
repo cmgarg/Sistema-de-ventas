@@ -5,78 +5,57 @@ import Export from "../buttons/Export";
 import TableMain from "../../tablaMain/TableMain";
 import TableHead from "../../tablaMain/TableHead";
 import TableRow from "../../tablaMain/TableRow";
-
-interface Articulo {
-  nombreArticulo: string;
-}
-
-interface Compra {
-  articulo: Articulo;
-  cantidad: number;
-}
-
-interface CompraData {
-  compra: Compra;
-  dateOfRegister: string;
-}
-
-interface Cliente {
-  nombre: string;
-  apellido: string;
-  direccion: string;
-  email: string;
-  telefono: string;
-  compras: CompraData[];
-}
+import { clientData } from "../../../../../types/types";
 
 interface ClienteInfoProps {}
 
 const ClienteInfo: React.FC<ClienteInfoProps> = () => {
   console.log("BUENAS TARDES");
-  
-  const [cliente, setCliente] = useState<Cliente>({
-    nombre: "",
-    apellido: "",
-    direccion: "",
+
+  const [cliente, setCliente] = useState<clientData>({
+    name: "",
+    address: "",
+    phone: 0,
     email: "",
-    telefono: "",
-    compras: [],
+    birthdate: "",
+    DNI: 0,
+    shopping: [],
   });
-  
+
   const { id } = useParams();
-  
+
   function getClienteInfo() {
-    window.api.enviarEvento("obtener-clienteById", id);
+    window.api.enviarEvento("get-client-byId", id);
   }
-  
+
   useEffect(() => {
     console.log(id);
     getClienteInfo();
 
-    window.api.recibirEvento("cliente-encontradoById", (e: Cliente[]) => {
-      setCliente(e[0]);
+    window.api.recibirEvento("response-get-client-byId", (e: clientData) => {
+      setCliente(e);
       console.log(e, "KIKO");
     });
   }, [id]);
-  
+
   useEffect(() => {
-    console.log(cliente.compras[0]);
+    console.log(cliente.shopping[0], "PORRO");
   }, [cliente]);
 
   return (
     <div className="flex flex-col flex-1 text-slate-50">
       <div className="flex-2">
-        <NavMain title={`${cliente.nombre} ${cliente.apellido}`} setLoginUser={""}>
+        <NavMain title={`${cliente.name}`} setLoginUser={""}>
           <Export />
         </NavMain>
       </div>
-      <div className="flex-1 flex flex-col space-y-5 bg-slate-900">
-        <div className="bg-slate-800 flex">
+      <div className="flex-1 flex flex-col space-y-5">
+        <div className="bg-[#222] flex">
           <div className="flex-1 border-r-2 border-slate-700">
-            <div className="flex-1 h-20 text-2xl text-center flex justify-start pl-5 items-center border-b-2 border-slate-700">
+            <div className="flex-1 h-20 text-2xl text-center flex justify-start text-gray-200 pl-5 items-center border-b-2 border-slate-700">
               <p>
                 <span>Direccion: </span>
-                {cliente.direccion}
+                {cliente.address}
               </p>
             </div>
             <div className="flex-1 h-20 text-2xl text-center flex justify-start pl-5 items-center">
@@ -90,13 +69,13 @@ const ClienteInfo: React.FC<ClienteInfoProps> = () => {
             <div className="flex-1 h-20 text-2xl text-center flex justify-start pl-5 items-center border-b-2 border-slate-700">
               <p>
                 <span>Telefono: </span>
-                {cliente.telefono}
+                {cliente.phone}
               </p>
             </div>
             <div className="flex-1 h-20 text-2xl text-center flex justify-start pl-5 items-center">
               <p>
                 <span>Direccion: </span>
-                {cliente.direccion}
+                {cliente.address}
               </p>
             </div>
           </div>
@@ -118,16 +97,18 @@ const ClienteInfo: React.FC<ClienteInfoProps> = () => {
                   <p className="text-center">Fecha</p>
                 </div>
               </TableHead>
-              {cliente.compras.map((com, index) => (
+              {cliente.shopping.map((com, index) => (
                 <TableRow key={index}>
                   <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{com.compra.articulo.nombreArticulo}</p>
-                  </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{com.compra.cantidad}</p>
-                  </div>
-                  <div className="flex justify-center items-center flex-1 pl-2">
-                    <p>{com.dateOfRegister}</p>
+                    <div className="flex-1">
+                      {com.articles.map((c) => (
+                        <div className="flex-1 flex">
+                          <p>{c.name}</p>
+                          <p>{c.total}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div>{com.sold}</div>
                   </div>
                 </TableRow>
               ))}

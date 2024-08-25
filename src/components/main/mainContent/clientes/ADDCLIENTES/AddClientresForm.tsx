@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { clientData } from "../../../../../../types/types";
 import ButtonR from "../../buttons/ButtonR";
+import { IoAdd } from "react-icons/io5";
+import { FcCancel } from "react-icons/fc";
+import { GiCancel } from "react-icons/gi";
+import { MdCancel } from "react-icons/md";
+import { TiCancel } from "react-icons/ti";
 
 interface AddClientresFormProps {
   onChangeModal: (p: boolean) => void;
@@ -84,14 +89,14 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
 
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center text-lg z-50 bg-slate-950 bg-opacity-30 backdrop-blur-xl">
-      <div className="w-1/3 bg-slate-950 text-slate-50 rounded-md relative shadow-lg shadow-slate-950">
+      <div className="w-2/4 bg-gradient-to-r bg-[#1C1C1C] p-2 font-mono text-zinc-950 space-y-5 rounded-md relative shadow-slate-950">
         <div className="flex flex-row space-x-1 p-2">
           <div className="flex-1 flex flex-col">
             <label htmlFor="nombre">Nombre</label>
             <input
               type="text"
               name="nombre"
-              className={`w-full bg-slate-900 border border-slate-800 h-12 rounded-md outline-none`}
+              className={`w-full bg-zinc-400 text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-12 rounded-md outline-none pl-2`}
               value={clienteData.name}
               onChange={(e) => {
                 setChangeData("name", e.target.value);
@@ -104,7 +109,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
           <input
             type="text"
             name="address"
-            className={`w-full bg-slate-900 border border-slate-800 h-12 rounded-md outline-none`}
+            className={`w-full bg-zinc-400 text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-12 rounded-md outline-none pl-2`}
             value={clienteData.address}
             onChange={(e) => {
               setChangeData("address", e.target.value);
@@ -117,7 +122,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
           <input
             type="text"
             name="email"
-            className={`w-full bg-slate-900 border border-slate-800 h-12 rounded-md outline-none`}
+            className={`w-full bg-zinc-400 text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-12 rounded-md outline-none pl-2`}
             value={clienteData.email}
             onChange={(e) => {
               setChangeData("email", e.target.value);
@@ -130,7 +135,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             <input
               type="date"
               name="fechaNacimiento"
-              className={`w-full bg-slate-900 border border-slate-800 h-12 rounded-md outline-none`}
+              className={`w-full bg-zinc-400 text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-12 rounded-md outline-none pl-2`}
               value={clienteData.birthdate}
               onChange={(e) => {
                 setChangeData("birthdate", e.target.value);
@@ -142,7 +147,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             <input
               type="text"
               name="phone"
-              className={`w-full bg-slate-900 border border-slate-800 h-12 rounded-md outline-none`}
+              className={`w-full bg-zinc-400 text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-12 rounded-md outline-none pl-2`}
               value={clienteData.phone}
               onChange={(e) => {
                 setChangeData("phone", e.target.value);
@@ -154,7 +159,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             <input
               type="text"
               name="dni"
-              className={`w-full bg-slate-900 border border-slate-800 h-12 rounded-md outline-none`}
+              className={`w-full bg-zinc-400 text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-12 rounded-md outline-none pl-2`}
               value={clienteData.DNI}
               onChange={(e) => {
                 setChangeData("DNI", e.target.value);
@@ -162,30 +167,28 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             />
           </div>
         </div>
-        <div className="flex flex-row w-full px-2 space-x-2">
+        <div className="flex flex-row w-full px-2 space-x-2 justify-end">
           <ButtonR
-            borderSize="border-b-[4px]"
             textSize="text-lg"
             onClick={() => {
               onChangeModal(false);
             }}
-            bgColor="bg-red-700"
+            bgColor="bg-zinc-300 text-black"
             height="h-10"
-            width="w-1/2"
+            width="w-32"
             title="Cancelar"
-          />
+          ></ButtonR>
           <ButtonR
-            borderSize="border-b-[4px]"
             textSize="text-lg"
             onClick={() => {
               subirUsuario();
               onChangeModal(false);
             }}
-            bgColor="bg-green-700"
+            bgColor="bg-gradient-to-t from-yellow-500 via-yellow-400 to-yellow-500 text-black"
             height="h-10"
-            width="w-1/2"
+            width="w-32"
             title="Añadir"
-          />
+          ></ButtonR>
         </div>
       </div>
     </div>
