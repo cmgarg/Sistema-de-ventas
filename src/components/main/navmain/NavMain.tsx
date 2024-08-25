@@ -14,9 +14,9 @@ const NavMain: React.FC<MainContentProps> = ({
   setLoginUser,
 }) => {
   return (
-    <div className="flex-1 flex flex-row h-[3rem] items-center justify-between relative">
+    <div className="flex-1 text-[#B0B0B0] flex flex-row h-[3rem] items-center justify-between relative">
       <div className="flex-1 pl-5">
-        <div className=" text-slate-50 flex justify-start items-center">
+        <div className=" flex justify-start items-center">
           <p className="text-4xl">{title}</p>
         </div>
       </div>
@@ -25,7 +25,9 @@ const NavMain: React.FC<MainContentProps> = ({
       </div>
       <div className=" flex-1 flex">
         <div className="flex justify-center items-center">
-          <button onClick={() => sendNotification("sopa", "Sopa", 2, "actualizacion")}>
+          <button
+            onClick={() => sendNotification("sopa", "Sopa", 2, "actualizacion")}
+          >
             <AiFillAlert size={30} color="white" />
           </button>
         </div>

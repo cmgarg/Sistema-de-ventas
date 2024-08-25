@@ -18,24 +18,34 @@ import React from "react";
 function App() {
   const [adminExists, setAdminExists] = useState<boolean | null>(null);
   const [bloqueoPrograma, setBloqueoPrograma] = useState(false);
-  const [estadoRecuperacionCuenta, setEstadoRecuperacionCuenta] = useState(false);
+  const [estadoRecuperacionCuenta, setEstadoRecuperacionCuenta] =
+    useState(false);
   const [loading, setLoading] = useState(true);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const userType = useSelector((state: RootState) => state.estadoTipoDeUser.userType);
-  const datosUsuarioRedux = useSelector((state: RootState) => state.estadoTipoDeUser.datosUsuario);
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
+  const userType = useSelector(
+    (state: RootState) => state.estadoTipoDeUser.userType
+  );
+  const datosUsuarioRedux = useSelector(
+    (state: RootState) => state.estadoTipoDeUser.datosUsuario
+  );
   const [_estadoRedux, setestadoRedux] = useState("");
 
   useEffect(() => {
     window.api.enviarEvento("verificar-admin-existente");
-    window.api.recibirEvento("respuesta-verificar-admin", ({ existeAdmin, recuperacioncuenta }) => {
-      setAdminExists(existeAdmin);
-      if (recuperacioncuenta === 0) {
-        setBloqueoPrograma(true);
+    window.api.recibirEvento(
+      "respuesta-verificar-admin",
+      ({ existeAdmin, recuperacioncuenta }) => {
+        setAdminExists(existeAdmin);
+        if (recuperacioncuenta === 0) {
+          setBloqueoPrograma(true);
+        }
+        setLoading(false); // Actualizar el estado de carga después de verificar el administrador existente
       }
-      setLoading(false); // Actualizar el estado de carga después de verificar el administrador existente
-    });
+    );
 
     return () => {
       window.api.removeAllListeners("respuesta-verificar-admin");
@@ -74,15 +84,24 @@ function App() {
           }
         }
       } else {
-        console.error("Permisos del usuario no encontrados o incorrectos", response);
+        console.error(
+          "Permisos del usuario no encontrados o incorrectos",
+          response
+        );
       }
       setLoading(false); // Marca que la carga ha terminado
     };
 
-    window.api.recibirEvento("respuesta-obtener-permisos-usuario", handleObtenerPermisosUsuario);
+    window.api.recibirEvento(
+      "respuesta-obtener-permisos-usuario",
+      handleObtenerPermisosUsuario
+    );
 
     return () => {
-      window.api.removeListener("respuesta-obtener-permisos-usuario", handleObtenerPermisosUsuario);
+      window.api.removeListener(
+        "respuesta-obtener-permisos-usuario",
+        handleObtenerPermisosUsuario
+      );
     };
   }, [dispatch]);
 
@@ -166,7 +185,7 @@ function App() {
   console.log(datosUsuarioRedux, "Estos son los datos del usuario que inicio");
 
   return (
-    <div className="w-full h-screen grid grid-cmg-program bg-gray-800 font-medium overflow-hidden box-border">
+    <div className="w-full h-screen grid grid-cmg-program bg-[#1E1E1E] font-medium overflow-hidden box-border">
       <Header />
       <div className="flex flex-row row-start-2 row-end-7 relative">
         <Router>{renderContent()}</Router>

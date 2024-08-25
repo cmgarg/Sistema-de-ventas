@@ -135,13 +135,14 @@ export type clientData = {
   birthdate: string;
   DNI: number;
   shopping: {
-    articulos: {
-      nameArticle: string;
+    articles: {
+      name: string;
       amount: number;
       cost: number;
       idArticle: string;
+      total: string;
     }[];
-    totalCost: number;
+    sold: number;
     _id?: string;
   }[];
   _id?: string;

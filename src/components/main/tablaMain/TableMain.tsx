@@ -6,7 +6,7 @@ interface TableProps {
 
 const TableMain: React.FC<TableProps> = ({ children }) => {
   return (
-    <div className="rounded-b-lg bg-opacity-10 max-w-full max-h-full overflow-auto custom-scrollbar relative w-full">
+    <div className="rounded-b-lg bg-opacity-10 max-w-full max-h-full border border-[#333333] overflow-auto custom-scrollbar relative w-full">
       {children}
     </div>
   );

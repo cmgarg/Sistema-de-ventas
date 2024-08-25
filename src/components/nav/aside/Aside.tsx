@@ -26,9 +26,8 @@ import { LuMenu } from "react-icons/lu";
 import { RootState } from "../../../redux/store.js";
 
 export default function Aside() {
-  const [isActive, setIsActive] = useState(false);
   const location = useLocation();
-
+  const [expand, setExpand] = useState<boolean>(false);
   const userType = useSelector(
     (state: RootState) => state.estadoTipoDeUser.userType
   );
@@ -40,9 +39,6 @@ export default function Aside() {
 
   const dispatch = useDispatch();
 
-  const handleClick = () => {
-    setIsActive(!isActive);
-  };
   useEffect(() => {
     if (location.pathname !== "articulos") {
     }
@@ -54,106 +50,85 @@ export default function Aside() {
   );
   return (
     <div
-      className={`flex flex-row h-full bg-gradient-to-b to-blue-950 from-slate-800 ${
-        isActive ? "" : ""
+      className={`flex flex-row h-full bg-[#121212] relative z-40 overflow-hidden ${
+        expand ? "w-52 bg-zinc-300" : "w-10"
       }`}
     >
-      <div className={`h-full flex items-center `}>
-        <div
-          className={` flex flex-col  h-full justify-between items-center  `}
-        >
-          <div>
+      <div className={`h-full flex items-center`}>
+        <div className={` flex flex-col h-full items-center `}>
+          <div className="h-full flex flex-col">
             <div
-              onClick={handleClick}
-              className={`flex flex-row  justify-center items-center mt-5 mb-5 ${
-                isActive && "bg-cyan-800"
-              } hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none `}
+              className={`flex flex-row  justify-center items-center hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none w-full `}
             >
               <div
                 className={`h-10 w-10 flex justify-center items-center select-none`}
+                onClick={() => setExpand(!expand)}
               >
-                {isActive ? (
-                  <TiThMenu size={30} color={"#fff"} />
-                ) : (
-                  <Tooltip content="Menu">
-                    <LuMenu size={30} color="#fff" />
-                  </Tooltip>
-                )}
-              </div>
-              <div
-                className={`${
-                  isActive
-                    ? " flex h-full  items-center w-24 justify-center cursor-pointer select-none "
-                    : ""
-                }`}
-              >
-                {isActive ? (
-                  <div className="  text-white flex justify-center items-center select-none">
-                    <p>Menu</p>
-                  </div>
-                ) : null}
+                <Tooltip content="Menu">
+                  <LuMenu size={30} color="#000" />
+                </Tooltip>
               </div>
             </div>
             {userType === "stock" ? null : (
               <div className="select-none">
-                <GoTo title="Clientes" goTo="/" isActive={isActive}>
+                <GoTo title="Clientes" goTo="/" expand={expand}>
                   {location.pathname == "/" ? (
-                    <IoPerson color={"#fff"} size={30} />
+                    <IoPerson size={30} />
                   ) : (
-                    <IoPersonOutline color={"#fff"} size={30} />
+                    <IoPersonOutline size={30} />
                   )}
                 </GoTo>
               </div>
             )}
             {userType === "stock" ? null : (
-              <div>
-                <GoTo title="Articulos" goTo="/articulos" isActive={isActive}>
+              <div className="select-none">
+                <GoTo title="Articulos" goTo="/articulos" expand={expand}>
                   {location.pathname == "/articulos" ? (
-                    <RiShoppingBag4Fill color={"#fff"} size={30} />
+                    <RiShoppingBag4Fill size={30} />
                   ) : (
-                    <RiShoppingBag4Line color={"#fff"} size={30} />
+                    <RiShoppingBag4Line size={30} />
                   )}
                 </GoTo>
               </div>
             )}
             {userType === "stock" ? null : (
               <div>
-                <GoTo title="Ventas" goTo="/ventas" isActive={isActive}>
+                <GoTo title="Ventas" goTo="/ventas" expand={expand}>
                   {location.pathname == "/ventas" ? (
-                    <PiCurrencyDollarBold color={"#fff"} size={35} />
+                    <PiCurrencyDollarBold size={35} />
                   ) : (
-                    <PiCurrencyDollarLight color={"#fff"} size={35} />
+                    <PiCurrencyDollarLight size={35} />
                   )}
                 </GoTo>
               </div>
             )}
 
-            <GoTo title="Stock" goTo="/stock" isActive={isActive}>
+            <GoTo title="Stock" goTo="/stock" expand={expand}>
               {location.pathname == "/stock" ? (
-                <BsBoxSeamFill color={"#fff"} size={30} />
+                <BsBoxSeamFill size={30} />
               ) : (
-                <BsBoxSeam color={"#fff"} size={30} />
+                <BsBoxSeam size={30} />
               )}
             </GoTo>
 
             {userType === "ventas " || userType === "admin" ? (
               <div>
-                <GoTo title="Caja" goTo="/caja" isActive={isActive}>
+                <GoTo title="Caja" goTo="/caja" expand={expand}>
                   {location.pathname == "/caja" ? (
-                    <PiCashRegisterFill size={35} color={"#fff"} />
+                    <PiCashRegisterFill size={35} />
                   ) : (
-                    <PiCashRegisterLight size={35} color={"#fff"} />
+                    <PiCashRegisterLight size={35} />
                   )}
                 </GoTo>
               </div>
             ) : null}
             {userType === "ventas " || userType === "admin" ? (
               <div>
-                <GoTo title="Cuentas" goTo="/cuentas" isActive={isActive}>
+                <GoTo title="Cuentas" goTo="/cuentas" expand={expand}>
                   {location.pathname == "/cuentas" ? (
-                    <FaFileInvoiceDollar size={30} color={"#fff"} />
+                    <FaFileInvoiceDollar size={30} />
                   ) : (
-                    <TbFileDollar size={35} color={"#fff"} />
+                    <TbFileDollar size={35} />
                   )}
                 </GoTo>
               </div>
@@ -163,15 +138,11 @@ export default function Aside() {
             userType === "admin" ||
             userType === "gerente" ? (
               <div>
-                <GoTo
-                  title="Estadisticas"
-                  goTo="/estadisticas"
-                  isActive={isActive}
-                >
+                <GoTo title="Estadisticas" goTo="/estadisticas" expand={expand}>
                   {location.pathname == "/estadisticas" ? (
-                    <SiGoogleanalytics size={30} color={"#fff"} />
+                    <SiGoogleanalytics size={30} />
                   ) : (
-                    <TbBrandGoogleAnalytics size={30} color={"#fff"} />
+                    <TbBrandGoogleAnalytics size={30} />
                   )}
                 </GoTo>{" "}
               </div>
@@ -179,29 +150,23 @@ export default function Aside() {
 
             {userType === "ventas " || userType === "admin" ? (
               <div>
-                <GoTo title="Navegador" goTo="/navegador" isActive={isActive}>
+                <GoTo title="Navegador" goTo="/navegador" expand={expand}>
                   {location.pathname == "/navegador" ? (
-                    <TbWorld size={40} color={"#fff"} />
+                    <TbWorld size={40} />
                   ) : (
-                    <TfiWorld size={30} color={"#fff"} />
+                    <TfiWorld size={30} />
                   )}
                 </GoTo>{" "}
               </div>
             ) : null}
           </div>
-          <div>
+          <div className="mb-5">
             {" "}
-            <GoTo
-              title="Configuracion"
-              goTo="/configuracion"
-              isActive={isActive}
-            >
+            <GoTo title="Configuracion" goTo="/configuracion" expand={expand}>
               {location.pathname == "/configuracion" ? (
-                <IoSettingsSharp size={30} color="white" />
+                <IoSettingsSharp size={30} />
               ) : (
-                <IoSettingsOutline size={30} color="white">
-                  {" "}
-                </IoSettingsOutline>
+                <IoSettingsOutline size={30}> </IoSettingsOutline>
               )}
             </GoTo>
           </div>

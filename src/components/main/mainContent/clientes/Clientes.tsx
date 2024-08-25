@@ -88,30 +88,30 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
           <ButtonR
             borderSize="border-b-[4px]"
             textSize="text-lg"
-            bgIconColor="bg-gray-700"
+            bgIconColor="bg-[#333] border border-[#333333]"
             height="h-10"
             width="w-10"
           >
-            <BiExport size={30} className="text-white" />
+            <BiExport size={30} className="text-[#E0E0E0]" />
           </ButtonR>
           <ButtonR
             borderSize="border-b-[4px]"
             textSize="text-lg"
-            bgIconColor="bg-gray-700"
+            bgIconColor="bg-[#333] border border-[#333333]"
             height="h-10"
             width="w-10"
           >
-            <PiPrinter size={30} className="text-white" />
+            <PiPrinter size={30} className="text-[#E0E0E0]" />
           </ButtonR>
           <ButtonR
             borderSize="border-b-[4px]"
             textSize="text-lg"
-            bgIconColor="bg-gray-700"
+            bgIconColor="bg-[#333] border border-[#333333]"
             height="h-10"
             width="w-10"
             onClick={onChangeModal}
           >
-            <IoAdd size={30} className="text-white" />
+            <IoAdd size={30} className="text-[#E0E0E0]" />
           </ButtonR>
         </NavMain>
       </div>

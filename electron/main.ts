@@ -1,22 +1,27 @@
 import { app, BrowserWindow, globalShortcut, ipcMain } from "electron";
 import path from "path";
 import { loadEvents } from "./eventHandlers";
-// No necesitas `electron-is-dev`, puedes usar `process.env.NODE_ENV`
-
-const isDev = process.env.NODE_ENV !== 'production';
-
-
-
+import isDev from "electron-is-dev";
+// @ts-ignore
+import {
+  // @ts-ignore
+  PosPrintData,
+  // @ts-ignore
+  PosPrinter,
+  // @ts-ignore
+  PosPrintOptions,
+  // @ts-ignore
+} from "electron-pos-printer";
+import { saleData } from "../types/types";
 
 let win: BrowserWindow | null;
-const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
 
 function createWindow() {
   win = new BrowserWindow({
     width: 1100,
     height: 1800,
     minWidth: 1100,
-    icon: path.join(__dirname, "assets", "icon.ico"),
+    icon: path.join(__dirname, "../src/assets/favicon.ico"), // Asegúrate de que esta ruta sea correcta
     title: "Punto de Ventas",
     minHeight: 600,
     titleBarStyle: "hidden",
@@ -92,6 +97,363 @@ ipcMain.on("minimize-window", () => {
   win?.minimize();
 });
 
+// Impresora
+const printBill = async (saleData: saleData, factureType: string) => {
+  const options: PosPrintOptions = {
+    preview: true,
+    margin: "5 5 5 5",
+    copies: 1,
+    printerName: "IMPRESORATERMICA",
+    pageSize: "80mm",
+    timeOutPerLine: 1000,
+    boolean: false,
+    silent: false,
+  };
+
+  let data: PosPrintData[] = [
+    {
+      type: "text",
+      value: "------------------------------------------------------------\n",
+      style: { textAlign: "center" },
+    },
+  ];
+
+  if (factureType === "TYPEA") {
+    let encabezado: PosPrintData[] = [
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "FACTURA A\n",
+        style: {
+          textAlign: "center",
+          fontSize: "22px",
+          fontWeight: "bold",
+          fontFamily: "italic",
+        },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value:
+          "Fecha: 18/07/2024                          Nro: 0001-00001234\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "Razón Social: Empresa Ejemplo S.A.\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "Domicilio: Calle Falsa 123, Ciudad\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "CUIT: 30-12345678-9\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "Condición IVA: Responsable Inscripto\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "Cliente: Juan Pérez\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "Domicilio: Av. Siempreviva 742, Ciudad\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "CUIT/CUIL: 20-87654321-0\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "Condición IVA: Responsable Inscripto\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value:
+          "Descripción           Cantidad   Precio Unitario   Precio Total\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+    ];
+    let productos: PosPrintData[] = [];
+    saleData.articles.map((article) => {
+      productos.push({
+        type: "text",
+        value: `${article.name}                ${article.amount.value}           ${article.amount.unit}         ${article.total}\n`,
+        style: { textAlign: "left" },
+      });
+    });
+    let pieBill: PosPrintData[] = [
+      {
+        type: "text",
+        value: "Servicio 1               1           $300.00         $300.00\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: `Subtotal                                         ${saleData.sold}\n`,
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "IVA 21%                                           $273.00\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "Total                                            $1573.00\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "Condiciones de Venta: Contado\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "CAE: 12345678901234\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "Fecha Vto. CAE: 25/07/2024\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "[QR]",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+    ];
+    data = [...encabezado, ...productos, ...pieBill];
+  } else if (factureType === "TYPEB") {
+    data = [
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "FACTURA B\n",
+        style: { textAlign: "center", fontSize: "22px", fontWeight: "bold" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value:
+          "Fecha: 18/07/2024                          Nro: 0002-00001234\n",
+        style: { textAlign: "left", fontWeight: "bold" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "Razón Social: Empresa Ejemplo S.A.\n",
+        style: { textAlign: "left", fontStyle: "italic" },
+      },
+      {
+        type: "text",
+        value: "Domicilio: Calle Falsa 123, Ciudad\n",
+        style: { textAlign: "left", fontWeight: "bold" },
+      },
+      {
+        type: "text",
+        value: "CUIT: 30-12345678-9\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "Condición IVA: Responsable Inscripto\n",
+        style: { textAlign: "left", textDecoration: "underline" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "Cliente: Juan Pérez\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "Domicilio: Av. Siempreviva 742, Ciudad\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "CUIT/CUIL: 20-87654321-0\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "Condición IVA: Consumidor Final\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value:
+          "Descripción           Cantidad   Precio Unitario   Precio Total\n",
+        style: { textAlign: "left", fontWeight: "bold" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value:
+          "Producto 1               2           $500.00         $1000.00\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "Servicio 1               1           $300.00         $300.00\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "Total                                            $1300.00\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "Condiciones de Venta: Contado\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "CAE: 12345678901234\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "Fecha Vto. CAE: 25/07/2024\n",
+        style: { textAlign: "left" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "[QR]",
+        style: { textAlign: "center" },
+      },
+      {
+        type: "text",
+        value: "------------------------------------------------------------\n",
+        style: { textAlign: "center" },
+      },
+    ];
+  }
+  console.log("ESTO VOY A IMPRIMIR", data);
+  try {
+    await PosPrinter.print(data, options);
+    console.log("Test print successful");
+  } catch (error) {
+    console.error("Test print failed", error);
+  }
+};
+
+ipcMain.on("imprimir-pa", async (_event, sale) => {
+  const result = await printBill(sale.sale, sale.billData.billType);
+  return result;
+});
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();

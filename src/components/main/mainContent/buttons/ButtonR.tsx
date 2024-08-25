@@ -46,7 +46,7 @@ const ButtonR: React.FC<ButtonRProps> = ({
       onClick={onClick ? onClick : () => {}}
       className={`flex ${height ? height : "h-12"} ${
         width ? width : "w-52"
-      } text-white font-bold rounded-full  cursor-pointer overflow-hidden shadow-[0_2px_5px_rgba(0,0,0,0.50)]`}
+      } text-white font-bold rounded-full  cursor-pointer overflow-hidden`}
       onMouseDown={mouseDownEvent}
       onMouseUp={mouseUpEvent}
       onMouseEnter={onMouseEnter}

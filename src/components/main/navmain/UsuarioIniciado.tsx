@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../../redux/estados/authSlice";
@@ -112,15 +118,20 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
 
   const handleLogout = () => {
     console.log("Ejecutando handleLogout");
-    dispatch(cambiar({ userType: "", datosUsuario: {
-      email: "",
-      ubicacion: "",
-      direccion: "",
-      codigopostal: "",
-      imageUrl: "",
-      esAdmin: false,
-      _id: ""
-    } })); // Ajusta {} según sea necesario
+    dispatch(
+      cambiar({
+        userType: "",
+        datosUsuario: {
+          email: "",
+          ubicacion: "",
+          direccion: "",
+          codigopostal: "",
+          imageUrl: "",
+          esAdmin: false,
+          _id: "",
+        },
+      })
+    ); // Ajusta {} según sea necesario
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     dispatch(logout());
@@ -160,13 +171,16 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
   }, []);
 
   useEffect(() => {
-    const lastCacheClear = localStorage.getItem('lastCacheClear');
+    const lastCacheClear = localStorage.getItem("lastCacheClear");
     const currentTime = new Date().getTime();
 
-    if (!lastCacheClear || currentTime - parseInt(lastCacheClear) > 30 * 24 * 60 * 60 * 1000) {
+    if (
+      !lastCacheClear ||
+      currentTime - parseInt(lastCacheClear) > 30 * 24 * 60 * 60 * 1000
+    ) {
       window.api.enviarEvento("clear-cache");
       window.api.recibirEvento("cache-cleared", (_response: any) => {
-        localStorage.setItem('lastCacheClear', currentTime.toString());
+        localStorage.setItem("lastCacheClear", currentTime.toString());
       });
 
       return () => {
@@ -195,7 +209,7 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
 
           <div
             className="w-11 h-11 bg-cover bg-center rounded-full cursor-pointer border mr-2"
-            style={{ backgroundImage: `url(${selectedImage})`}}
+            style={{ backgroundImage: `url(${selectedImage})` }}
           />
           {/* TOP */}
           <span className="absolute left-0 top-0 h-[2px] w-0 bg-sky-700 transition-all duration-100 group-hover:w-full rounded-t-lg" />
