@@ -2,7 +2,6 @@ import { app, BrowserWindow, globalShortcut, ipcMain } from "electron";
 import path from "path";
 import { loadEvents } from "./eventHandlers";
 import isDev from "electron-is-dev";
-
 // @ts-ignore
 import {
   // @ts-ignore
@@ -33,17 +32,12 @@ function createWindow() {
   if (!isDev) {
     win.removeMenu(); // Esto remueve el menú que incluye la opción de abrir DevTools
   }
-
+  
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     callback({
-      responseHeaders: Object.assign(
-        {
-          "Content-Security-Policy": [
-            "default-src 'self' 'unsafe-eval' 'unsafe-inline' blob: data: filesystem:; connect-src 'self' https: wss:; frame-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:;",
-          ],
-        },
-        details.responseHeaders
-      ),
+      responseHeaders: Object.assign({
+        'Content-Security-Policy': ["default-src 'self' 'unsafe-eval' 'unsafe-inline' blob: data: filesystem:; connect-src 'self' https: wss:; frame-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:;"]
+      }, details.responseHeaders)
     });
   });
 

@@ -50,23 +50,26 @@ export default function Aside() {
   );
   return (
     <div
-      className={`flex flex-row h-full bg-[#121212] relative z-40 overflow-hidden ${
-        expand ? "w-52 bg-zinc-300" : "w-10"
+      className={`flex flex-row h-full border-t border-black bg-[#2f2f2fff] relative z-40 overflow-hidden 
+        shadow-[2px_0px_15px_-3px_rgba(0,0,0,0.6)] ${
+        expand ? "w-52 bg-[#2f2f2fff]" : "w-10"
       }`}
+      
     >
       <div className={`h-full flex items-center`}>
         <div className={` flex flex-col h-full items-center `}>
           <div className="h-full flex flex-col">
             <div
-              className={`flex flex-row  justify-center items-center hover:bg-gray-700 active:bg-gray-900 cursor-pointer select-none w-full `}
+              className={`flex flex-row  justify-center items-center active:bg-gray-900 cursor-pointer select-none w-full `}
             >
               <div
                 className={`h-10 w-10 flex justify-center items-center select-none`}
                 onClick={() => setExpand(!expand)}
               >
-                <Tooltip content="Menu">
-                  <LuMenu size={30} color="#000" />
-                </Tooltip>
+              {expand ? <TiThMenu size={30} color="#fff"/>:
+              <Tooltip content="Menu">
+              <LuMenu size={30} color="#fff" />
+            </Tooltip>}
               </div>
             </div>
             {userType === "stock" ? null : (
@@ -160,13 +163,13 @@ export default function Aside() {
               </div>
             ) : null}
           </div>
-          <div className="mb-5">
+          <div className="mb-3">
             {" "}
             <GoTo title="Configuracion" goTo="/configuracion" expand={expand}>
               {location.pathname == "/configuracion" ? (
-                <IoSettingsSharp size={30} />
+                <IoSettingsSharp size={40} />
               ) : (
-                <IoSettingsOutline size={30}> </IoSettingsOutline>
+                <IoSettingsOutline size={35}/>
               )}
             </GoTo>
           </div>
