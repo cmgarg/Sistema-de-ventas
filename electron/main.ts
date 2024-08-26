@@ -33,7 +33,6 @@ function createWindow() {
   if (!isDev) {
     win.removeMenu(); // Esto remueve el menú que incluye la opción de abrir DevTools
   }
-
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: Object.assign(

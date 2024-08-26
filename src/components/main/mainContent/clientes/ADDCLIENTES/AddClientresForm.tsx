@@ -96,7 +96,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             <input
               type="text"
               name="nombre"
-              className={`w-full bg-zinc-400 text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-12 rounded-md outline-none pl-2`}
+              className={`w-full bg-[#808080ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-12 rounded-md outline-none pl-2`}
               value={clienteData.name}
               onChange={(e) => {
                 setChangeData("name", e.target.value);
