@@ -21,12 +21,19 @@ export default function GoTo({ goTo, children, title, expand }: Props) {
         isActiveStateFunction(isActive);
         return `${
           isActive
-            ? "h-14 bg-gradient-to-t from-yellow-500 via-yellow-400 to-yellow-500 border-y-2"
+            ? "h-14 bg-gradient-to-l from-yellow-500 via-yellow-300 to-yellow-200"
             : " h-12"
-        } flex items-center justify-center w-full border-black hover:bg-yellow-600`;
+        } flex items-center justify-center w-full`;
       }}
-    >
-      <Tooltip content={`${title}`}>
+    >{expand?
+      <div
+        className={`flex justify-evenly cursor-pointer select-none ${
+          isActiveState ? "text-yellow-950" : "text-white"
+        }`}
+      >
+        {children}
+      </div>
+    :      <Tooltip content={`${title}`}>
         <div
           className={`flex justify-evenly cursor-pointer select-none ${
             isActiveState ? "text-yellow-950" : "text-white"
@@ -35,12 +42,13 @@ export default function GoTo({ goTo, children, title, expand }: Props) {
           {children}
         </div>
       </Tooltip>
+    }
       {expand ? (
         <div
-          className={`absolute left-10 right-0 pl-2  flex justify-start hover:text-yellow-300  items-center ${
+          className={`absolute left-10 right-0 pl-2  flex justify-start text-white  items-center ${
             isActiveState
-              ? "bg-gradient-to-t from-yellow-500 text-black border-black via-yellow-400 to-yellow-500 h-14 border-r-2 border-b-2 border-t-2"
-              : "h-10 text-white"
+              ? "bg-gradient-to-l from-yellow-900 text-black via-yellow-700 to-yellow-500 h-14 "
+              : "h-10 "
           }`}
         >
           <p>{title}</p>

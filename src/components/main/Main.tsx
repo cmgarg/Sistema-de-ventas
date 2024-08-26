@@ -110,7 +110,7 @@ const MainContent: React.FC<MainContentProps> = ({}) => {
 
   // SEGUIR CON LOS ESTADOS.
   return (
-    <div className="bg-[#121212] text-[#E0E0E0] h-full w-full flex flex-col ">
+    <div className=" h-full w-full flex flex-col ">
       <PanelUsuario />
       <Routes>
         <Route path="/" element={<ClientesContent />} />

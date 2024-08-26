@@ -2,7 +2,6 @@ import { app, BrowserWindow, globalShortcut, ipcMain } from "electron";
 import path from "path";
 import { loadEvents } from "./eventHandlers";
 import isDev from "electron-is-dev";
-
 // @ts-ignore
 import {
   // @ts-ignore
