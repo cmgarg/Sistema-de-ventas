@@ -1,6 +1,6 @@
 import { supplierType } from "../../../../../../../../../types/types";
 import React, { useEffect, useState } from "react";
-import { BiEdit } from "react-icons/bi";
+import { BiEdit, BiPhoneCall } from "react-icons/bi";
 import { FaRoad } from "react-icons/fa";
 import { TbTrash, TbTruck } from "react-icons/tb";
 import CreateSupplier from "./CreateSupplier";
@@ -43,7 +43,7 @@ const Supplier: React.FC<SupplierProps> = ({
 
   //ONCHANGE
   const setChangeData = (f: string, v: string) => {
-    const includes = ["name", "phoneNumber", "email", "address"];
+    const includes = ["name", "phoneNumber", "email", "address", "reset"];
 
     if (includes.includes(f)) {
       switch (f) {
@@ -69,6 +69,14 @@ const Supplier: React.FC<SupplierProps> = ({
           setSupplierData({
             ...supplierData,
             address: v,
+          });
+          break;
+        case "reset":
+          setSupplierData({
+            name: "",
+            phoneNumber: "",
+            email: "",
+            address: "",
           });
           break;
 
@@ -121,9 +129,10 @@ const Supplier: React.FC<SupplierProps> = ({
               <ButtonR
                 title="Agregar"
                 onClick={() => setSupplierCreate(true)}
-                height="h-10"
-                width="w-40"
-                bgColor="bg-gradient-to-l from-yellow-600 via-yellow-700 to-yellow-800 text-lg"
+                height="h-9"
+                bgColor="bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-500 text-sm"
+                width="w-52"
+                bgIconColor="bg-yellow-800 text-[#fff8dcff]"
               >
                 <IoAdd size={30} className="text-[#fff8dcff]" />
               </ButtonR>
@@ -131,7 +140,7 @@ const Supplier: React.FC<SupplierProps> = ({
                 onClick={() => {
                   setSupplierForm(false);
                 }}
-                height="h-10"
+                height="h-7"
                 width="w-10"
                 bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
               >
@@ -141,24 +150,26 @@ const Supplier: React.FC<SupplierProps> = ({
           </div>
         </div>
         {showError.active && (
-          <div className="absolute justify-center items-center top-0 bottom-0 left-0 right-0 z-50 rounded-lg flex flex-col">
-            <div className="flex flex-col justify-center w-96 h-52 rounded-lg  bg-slate-700">
-              <div className="text-cyan-600 text-2xl font-bold flex-1 flex justify-center items-center">
-                <p className="text-center">{showError.message}</p>
+          <div className="absolute justify-center items-center top-0 bottom-0 left-0 right-0 z-50 rounded-lg flex flex-col backdrop-brightness-50">
+            <div className="flex border border-gray-800 flex-col p-2 justify-center w-96 h-52 rounded-lg  bg-gray-950">
+              <div className="text-lg font-bold flex-1 flex justify-center items-center">
+                <p className="text-center">{showError.message}.</p>
               </div>
-              <div className="flex w-full">
-                <button
+              <div className="flex w-full justify-end">
+                <ButtonR
                   onClick={() => setShowError({ message: "", active: false })}
-                  className="flex-1 bg-cyan-700 rounded-b-lg"
-                >
-                  Aceptar
-                </button>
+                  bgColor="bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-500"
+                  width="w-32"
+                  height="h-7"
+                  title="
+                  Aceptar"
+                ></ButtonR>
               </div>
             </div>
           </div>
         )}
         <div className="w-full h-full flex-col relative flex overflow-auto">
-          <div className="w-full h-5 sticky top-0 text-slate-500 font-bold flex pl-2 items-center">
+          <div className="w-full h-10 rounded-t-lg sticky top-0 bg-gradient-to-t from-yellow-500 via-yellow-400 to-yellow-500 text-[#000] font-bold flex pl-2 items-center">
             <div className="flex-1 flex justify-start">
               <p>Nombre</p>
             </div>
@@ -171,8 +182,8 @@ const Supplier: React.FC<SupplierProps> = ({
             </div>
           </div>
           <div className="flex-1 w-full bg-gray-900 rounded-b-lg flex flex-col shadow-inner">
-            {suppliers.map((supplier) => (
-              <div className="w-full relative h-10 space-x-2 bg-[#2f2f2fff] font-medium text-xs border-gray-900 border-y flex pl-2 items-center">
+            {suppliers.map((supplier, index) => (
+              <div className="w-full relative h-10 space-x-2 bg-[#2f2f2fff] font-medium text-xs border-gray-700 border-y flex pl-2 items-center">
                 <div className="flex-1 flex justify-start">
                   <p>{supplier.name}</p>
                 </div>
@@ -180,8 +191,9 @@ const Supplier: React.FC<SupplierProps> = ({
                   <p>{supplier.email}</p>
                 </div>
                 <div className="flex flex-col flex-1">
-                  <div className="flex-1 flex justify-center">
-                    {supplier.phoneNumber}
+                  <div className="flex-1 flex justify-center items-center space-x-2">
+                    <BiPhoneCall />
+                    <p>{supplier.phoneNumber}</p>
                   </div>
 
                   <div className="flex-1 flex justify-center">
