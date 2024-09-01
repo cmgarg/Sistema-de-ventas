@@ -8,6 +8,7 @@ import {
 import React, { useEffect, useState } from "react";
 import Downshift from "downshift";
 import { TbTruckDelivery } from "react-icons/tb";
+import ButtonR from "../../../../../buttons/ButtonR";
 
 type propsInput = {
   style: string;
@@ -82,18 +83,24 @@ const InputSupplier = ({
         getLabelProps,
         getRootProps,
       }) => (
-        <div className="flex-1 flex flex-col relative">
-          <div className="flex space-x-5 w-full justify-between">
-            <label {...getLabelProps()} className="select-none">
-              Proveedor
-            </label>
-            <button
-              onClick={() => setSupplierForm(true)}
-              className="flex items-center space-x-2 bg-cyan-700 rounded-lg px-2 mb-1"
+        <div className="flex w-80 flex-col relative">
+          <div className="flex space-x-5 mb-2 w-full justify-between">
+            <label
+              {...getLabelProps()}
+              className="select-none h-full flex items-center justify-center"
             >
-              <p className="text-sm font-bold">PROVEEDORES</p>
+              <p>Proveedor</p>
+            </label>
+            <ButtonR
+              onClick={() => setSupplierForm(true)}
+              bgColor="bg-gradient-to-l text-[#ffd700ff]  from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff] text-xs"
+              height="h-6"
+              width="w-32"
+              bgIconColor="bg-gray-700"
+              title="Proveedores"
+            >
               <TbTruckDelivery size={20} />
-            </button>
+            </ButtonR>
           </div>
           <div
             style={{ display: "inline-block" }}
@@ -101,7 +108,7 @@ const InputSupplier = ({
           >
             <input
               {...getInputProps()}
-              className={`${style} ${isOpen ? "rounded-b-none" : ""} w-full`}
+              className={`${style} ${isOpen ? "rounded-b-none" : ""} w-full `}
             />
           </div>
           <ul

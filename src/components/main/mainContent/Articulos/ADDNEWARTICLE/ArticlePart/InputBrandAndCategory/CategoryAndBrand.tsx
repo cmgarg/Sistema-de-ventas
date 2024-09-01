@@ -40,9 +40,9 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
     (state: storeType) => state.subCategoryState
   );
   return (
-    <div className="flex w-full items-start space-x-2">
+    <div className="flex w-full items-start space-x-2 px-2">
       <div className="flex flex-col flex-1 w-full relative ">
-        <div className="absolute  right-0 text-green-300 z-40 hover:text-green-200 flex space-x-2">
+        <div className="absolute -top-2 right-0 text-green-300 z-40 hover:text-green-200 flex space-x-2">
           {errorToSave.active &&
             (errorToSave.type == "all" || errorToSave.type == "brand") && (
               <div className="flex items-center">
@@ -57,9 +57,9 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
               }}
               width="w-6"
               textSize="text-xs"
-              bgIconColor="bg-green-800"
+              bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
             >
-              <IoAdd size={20} className="text-green-100" />
+              <IoAdd size={20} className="text-[#ffd700ff] " />
             </ButtonR>
           </Biñeta>
         </div>
@@ -74,7 +74,7 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
         />
       </div>
       <div className="flex-1 relative w-full">
-        <div className="absolute  right-0 text-green-300 z-40 hover:text-green-200 flex space-x-2">
+        <div className="absolute -top-2 right-0 text-green-300 z-40 hover:text-green-200 flex space-x-2">
           {errorToSave.active && (errorToSave.type == "all" || "category") && (
             <div className="flex items-center">
               <p className="text-red-200 text-xs">{errorToSave.message}</p>
@@ -88,9 +88,9 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
               }}
               width="w-6"
               textSize="text-xs"
-              bgIconColor="bg-green-800"
+              bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
             >
-              <IoAdd size={20} className="text-green-100" />
+              <IoAdd size={20} className="text-[#ffd700ff] " />
             </ButtonR>
           </Biñeta>
         </div>
@@ -105,7 +105,7 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
         />
       </div>
       <div className="flex-1 relative w-full">
-        <div className="absolute  right-0 text-green-300 z-40 hover:text-green-200 flex space-x-2">
+        <div className="absolute -top-2 right-0 text-green-300 z-40 hover:text-green-200 flex space-x-2">
           {errorToSave.active && (errorToSave.type == "all" || "category") && (
             <div className="flex items-center">
               <p className="text-red-200 text-xs">{errorToSave.message}</p>
@@ -119,9 +119,9 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
               }}
               width="w-6"
               textSize="text-xs"
-              bgIconColor="bg-green-800"
+              bgIconColor="bg-gradient-to-l  from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
             >
-              <IoAdd size={20} className="text-green-100" />
+              <IoAdd size={20} className="text-[#ffd700ff] " />
             </ButtonR>
           </Biñeta>
         </div>

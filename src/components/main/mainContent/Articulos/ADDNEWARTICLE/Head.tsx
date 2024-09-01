@@ -1,5 +1,7 @@
 import React from "react";
 import { articleData, unitType } from "../../../../../../types/types";
+import ButtonR from "../../buttons/ButtonR";
+import { BiSave } from "react-icons/bi";
 
 type HeadProps = {
   setRouter: (e: string) => void;
@@ -35,39 +37,24 @@ const Head: React.FC<HeadProps> = ({
     }
   };
   return (
-    <div className="h-14 text-3xl bg-slate-950 text-white w-full flex font-bold border-b border-slate-700 app-region-drag">
-      <div className="flex h-full">
-        <button
-          onClick={() =>
-            router !== "article" ? setRouter("article") : () => {}
-          }
-          className="w-52 flex justify-center items-center border-r bg-teal-900 hover:bg-teal-800 app-region-no-drag"
-        >
-          <p>Articulo</p>
-        </button>
-        <button
-          onClick={() => (router !== "stock" ? setRouter("stock") : () => {})}
-          className="w-52 flex justify-center items-center bg-teal-900 hover:bg-teal-800 rounded-r-full app-region-no-drag"
-        >
-          <p>Stock</p>
-        </button>
-      </div>
-      <div className="flex-1 h-full flex text-xl justify-center items-center bg-slate-950">
-        <p>AGREGANDO ARTICULO</p>
-      </div>
-      <div>
-        <button
+    <div className="text-3xl text-white w-full flex font-bold pb-2">
+      <div className="flex-1 flex justify-end space-x-5 pr-5">
+        <ButtonR
           onClick={() => onChangeModal(false)}
-          className="w-52 bg-rose-700 h-full hover:bg-rose-800 rounded-l-full app-region-no-drag"
-        >
-          <p>Cancelar</p>
-        </button>
-        <button
+          bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
+          height="h-10"
+          width="w-32"
+          title="Cancelar"
+        ></ButtonR>
+        <ButtonR
           onClick={saveNewArticle}
-          className="w-52 bg-cyan-600 h-full hover:bg-cyan-800 app-region-no-drag"
+          bgColor="bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-500 text-[#fff8dcff]"
+          title="Guardar"
+          height="h-10"
+          width="w-52"
         >
-          <p>Agregar</p>
-        </button>
+          <BiSave size={20} />
+        </ButtonR>
       </div>
     </div>
   );
