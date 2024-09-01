@@ -34,7 +34,8 @@ const Article: React.FC<ArticleProps> = ({
             <label htmlFor="name">Articulo</label>
             <input
               type="text"
-              className={`${inputStyle} ${
+              spellCheck="false"
+              className={` ${inputStyle} ${
                 errorIn.includes("ARTICLENAME")
                   ? "overline outline-red-500 outline-2"
                   : ""
@@ -51,6 +52,7 @@ const Article: React.FC<ArticleProps> = ({
             </label>
             <input
               type="text"
+              spellCheck="false"
               className={`${inputStyle} ${
                 errorIn.includes("BARCODE")
                   ? "overline outline-red-500 outline-2"

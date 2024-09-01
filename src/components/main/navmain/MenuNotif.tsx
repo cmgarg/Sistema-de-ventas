@@ -12,9 +12,9 @@ import { GrUpdate } from "react-icons/gr";
 import { TbFileDollar } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { IconType } from "react-icons";
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getMessaging, getToken } from "firebase/messaging";
+import { getToken, onMessage } from "@firebase/messaging";
+import { messaging } from "../../../main";
+
 
 interface Notification {
   _id: string;
@@ -67,45 +67,47 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
   const moreButtonRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const loadingRef = useRef(false);
+  const [notifiacionRecibida, setNotifiacionRecibida] = useState()
 
   const navigate = useNavigate();
+  ///////////////////////////////nuevo codigo ne notificaaciones
+  window.api.enviarEvento("START_NOTIFICATION_SERVICE", {
+    appId: "1:206948296278:web:6a2348d8e8e2ea75743df7",
+    apiKey: "AIzaSyDS_IAVmdRNa8pfv7c8L0KJeSfdVBDFdqU",
+    projectId: "cmg-company",
+    vapidKey:"BIkvNP1qaD2seOcMvFGtW5nvQ6ENnrfZx32ziVaec9_VnkrDLh2hZxv47Ka2eWVPH-Ztc4snHrYYS7cJbP7Ici4",
+  });
 
-  ///////////////////////////notif
+  // src/index.tsx
 
-  const messaging = getMessaging();
 
-  function requestPermission() {
-    console.log("Requesting permission... preguntando si me dan el permisos");
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        console.log("Notification permission granted permiso otorgadooooooooooooooo.");
-        // Obtener token para enviar notificaciones a esta instancia
-        getToken(messaging, {
-          vapidKey: "xHNBNSS-qZ_qpo4qn8omd_cIqHyPnv0rc4wp87tz7wk",
-        })
-          .then((currentToken) => {
-            if (currentToken) {
-              console.log("Token:", currentToken);
-              // Envía el token al backend o úsalo en tu lógica
-            } else {
-              console.log(
-                "No registration token available. Request permission to generate one."
-              );
-            }
-          })
-          .catch((err) => {
-            console.log("An error occurred while retrieving token. ", err);
-          });
-      } else {
-        console.log("Unable to get permission to notify.");
-      }
-    });
-  }
+// Obtener el token de FCM
+ getToken(messaging, { vapidKey: "BI0FaUPg2jSE45iQrUc9yTjpT2M_ivWL3SOau0nzIFhbAddeecGUQi2DHmK_TJa-n-4Xh-0zjr-eW7JIKvHsSzQ" })
+  .then((currentToken) => {
+    if (currentToken) {
+      console.log('Token de FCM:', currentToken);
+      // Aquí puedes enviar el token a tu servidor backend si es necesario
+    } else {
+      console.warn('No se pudo obtener el token de registro.');
+    }
+  })
+  .catch((err) => {
+    console.error('Error al obtener el token de FCM:', err);
+  });
 
-  useEffect(() => {
-    requestPermission();
-  }, []);
+// Escuchar los mensajes entrantes
+onMessage(messaging, (payload) => {
+  console.log('Mensaje recibido:', payload);
+  // Muestra la notificación
+  new Notification(payload.notification.title, {
+    body: payload.notification.body,
+  });
+});
 
+
+
+
+  
   useEffect(() => {
     window.api.enviarEvento("get-disabled-notification-types");
     window.api.recibirEvento(

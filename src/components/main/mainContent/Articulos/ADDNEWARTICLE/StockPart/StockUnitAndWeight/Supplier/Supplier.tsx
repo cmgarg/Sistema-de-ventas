@@ -127,6 +127,7 @@ const Supplier: React.FC<SupplierProps> = ({
             </div>
             <div className="flex-1 h-full flex justify-end space-x-5">
               <ButtonR
+                title="Agregar"
                 onClick={() => setSupplierCreate(true)}
                 height="h-9"
                 bgColor="bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-500 text-sm"
@@ -134,7 +135,7 @@ const Supplier: React.FC<SupplierProps> = ({
                 title="Agregar proveedor"
                 bgIconColor="bg-yellow-800 text-[#fff8dcff]"
               >
-                <IoAdd size={30} className="text-[#ffd700ff]" />
+                <IoAdd size={30} className="text-[#fff8dcff]" />
               </ButtonR>
               <ButtonR
                 onClick={() => {
@@ -144,7 +145,7 @@ const Supplier: React.FC<SupplierProps> = ({
                 width="w-10"
                 bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
               >
-                <IoClose size={30} className="text-[#ffd700ff]" />
+                <IoClose size={30} className="text-red-400" />
               </ButtonR>
             </div>
           </div>

@@ -465,7 +465,7 @@ const clientConfirmData = async (e: {
   }
   return true;
 };
-const payMethod = (e: string) => {
+const payMethod = (_e: string) => {
   return "PROXIMAMENTE";
 };
 
@@ -762,13 +762,13 @@ export const deleteUnit = async (e: string) => {
 export const saveSupplier = async (e: supplierType) => {
   return await db.suppliers
     .insertAsync(e)
-    .then((res) => {
+    .then(() => {
       return {
         message: "Proveedor guardado correctamente",
         value: true,
       };
     })
-    .catch((err) => {
+    .catch(() => {
       return {
         message: "NO SE PUDO GUARDAR EL PROVEEDOR",
         value: false,
@@ -850,14 +850,14 @@ export const getDepositById = async (id: string): Promise<depositType> => {
 export const createDeposit = async (newDeposit: depositType) => {
   return await db.deposits
     .insertAsync(newDeposit)
-    .then((res) => {
+    .then(() => {
       console.log("DEPOSITO CREADO CORRECTAMENTE");
       return {
         message: "Deposito creado correctamente",
         value: true,
       };
     })
-    .catch((err) => {
+    .catch(() => {
       console.log("Error al crear el deposito");
       return {
         message: "Error al crear el deposito",
