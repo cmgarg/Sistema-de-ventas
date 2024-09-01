@@ -12,9 +12,7 @@ import { GrUpdate } from "react-icons/gr";
 import { TbFileDollar } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { IconType } from "react-icons";
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getMessaging, getToken } from "firebase/messaging";
+import { NOTIFICATION_RECEIVED, NOTIFICATION_SERVICE_ERROR, NOTIFICATION_SERVICE_STARTED, START_NOTIFICATION_SERVICE, TOKEN_UPDATED } from "electron-push-receiver";
 
 interface Notification {
   _id: string;
@@ -69,42 +67,44 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
   const loadingRef = useRef(false);
 
   const navigate = useNavigate();
+///////////////////////////////nuevo codigo ne notificaaciones
+/*
+// Iniciar el servicio de notificaciones
+window.api.enviarEvento(START_NOTIFICATION_SERVICE, {
+  appId: '1:206948296278:web:6a2348d8e8e2ea75743df7', 
+  apiKey: 'AIzaSyDS_IAVmdRNa8pfv7c8L0KJeSfdVBDFdqU',
+  projectId: 'cmg-company',
+  vapidKey: 'BIkvNP1qaD2seOcMvFGtW5nvQ6ENnrfZx32ziVaec9_VnkrDLh2hZxv47Ka2eWVPH-Ztc4snHrYYS7cJbP7Ici4',
+});
 
-  ///////////////////////////notif
+// Escuchar cuando el servicio de notificaciones se haya iniciado
+window.api.recibirEvento(NOTIFICATION_SERVICE_STARTED, (token) => {
+  console.log('Servicio de notificaciones iniciado con token:', token);
+});
 
-  const messaging = getMessaging();
+// Manejar errores del servicio de notificaciones
+window.api.recibirEvento(NOTIFICATION_SERVICE_ERROR, (error) => {
+  console.error('Error en el servicio de notificaciones:', error);
+});
 
-  function requestPermission() {
-    console.log("Requesting permission... preguntando si me dan el permisos");
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        console.log("Notification permission granted permiso otorgadooooooooooooooo.");
-        // Obtener token para enviar notificaciones a esta instancia
-        getToken(messaging, {
-          vapidKey: "xHNBNSS-qZ_qpo4qn8omd_cIqHyPnv0rc4wp87tz7wk",
-        })
-          .then((currentToken) => {
-            if (currentToken) {
-              console.log("Token:", currentToken);
-              // Envía el token al backend o úsalo en tu lógica
-            } else {
-              console.log(
-                "No registration token available. Request permission to generate one."
-              );
-            }
-          })
-          .catch((err) => {
-            console.log("An error occurred while retrieving token. ", err);
-          });
-      } else {
-        console.log("Unable to get permission to notify.");
-      }
-    });
-  }
+// Manejar la recepción de una notificación
+window.api.recibirEvento(NOTIFICATION_RECEIVED, (notification) => {
+  console.log('Notificación recibida:', notification);
+  new Notification(notification.title, {
+    body: notification.body,
+  });
+});
 
-  useEffect(() => {
-    requestPermission();
-  }, []);
+// Actualizar el token FCM
+window.api.recibirEvento(TOKEN_UPDATED, (token) => {
+  console.log('Token FCM actualizado:', token);
+  // Enviar el token al backend si es necesario
+});
+
+*/
+
+
+ 
 
   useEffect(() => {
     window.api.enviarEvento("get-disabled-notification-types");

@@ -184,6 +184,11 @@ function App() {
 
   console.log(datosUsuarioRedux, "Estos son los datos del usuario que inicio");
 
+
+
+
+  
+
   return (
     <div className="w-full h-screen grid grid-cmg-program bg-gradient-to-t from-[#262626] via-[#2f2f2fff] to-[#000000] font-medium overflow-hidden box-border">
       <Header />

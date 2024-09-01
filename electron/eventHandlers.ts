@@ -73,6 +73,11 @@ import {
 import { verificarToken } from "./vFunctions";
 import { articleData, IUser } from "../types/types";
 
+
+
+
+
+
 export const loadEvents = () => {
   console.log("eventHandlers Se esta Ejecutando...");
 
@@ -922,3 +927,7 @@ ipcMain.on("clear-cache", (event) => {
       event.reply("cache-cleared", { success: false, error: error.message });
     });
 });
+
+
+
+///////////////////////
