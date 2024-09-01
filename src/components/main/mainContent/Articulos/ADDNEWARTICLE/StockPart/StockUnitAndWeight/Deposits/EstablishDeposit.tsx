@@ -160,7 +160,7 @@ const EstablishDeposit: React.FC<EstablishDepositProps> = ({
           updateSectors={updateSectors}
         />
       )}
-      <div className="flex flex-col w-2/6 h-3/4 bg-slate-900 rounded-lg border border-slate-700 relative ">
+      <div className="flex flex-col w-2/6 h-3/4 bg-[#2f2f2fff] rounded-lg border border-slate-700 relative ">
         <div className="flex-1 flex flex-col justify-evenly p-2 relative">
           <div className="absolute top-2 right-2 space-x-2 flex">
             <div
@@ -177,7 +177,7 @@ const EstablishDeposit: React.FC<EstablishDepositProps> = ({
             todos={false}
             options={depositsToSelect}
             onChangeSelection={selectionDeposit}
-            className="bg-blue-950 font-bold text-xl"
+            className="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 shadow-[0_2px_5px_rgba(0,0,0,0.50)] font-bold text-xl"
             placeholder="Deposito"
             slice={-1}
             value={depositSelect?.name ? depositSelect.name : ""}
