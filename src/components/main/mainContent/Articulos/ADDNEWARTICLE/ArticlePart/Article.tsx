@@ -25,7 +25,7 @@ const Article: React.FC<ArticleProps> = ({
   const [addSubCategoryInput, setAddSubCategoryInput] = useState(false);
 
   const inputStyle =
-    "bg-[#707070ff] font-normal rounded-md shadow-[0_2px_5px_rgba(0,0,0,0.50)] px-2 h-10 outline-none";
+    "bg-[#707070ff] font-normal rounded-md shadow-[0_2px_5px_rgba(0,0,0,0.50)] px-2 h-10 outline-none focus:bg-[#505050ff]";
   return (
     <div className="flex flex-1 flex-col pt-2">
       <div className="flex flex-col w-full space-y-5">
@@ -34,7 +34,8 @@ const Article: React.FC<ArticleProps> = ({
             <label htmlFor="name">Articulo</label>
             <input
               type="text"
-              className={`${inputStyle} ${
+              spellCheck="false"
+              className={` ${inputStyle} ${
                 errorIn.includes("ARTICLENAME")
                   ? "overline outline-red-500 outline-2"
                   : ""
@@ -51,6 +52,7 @@ const Article: React.FC<ArticleProps> = ({
             </label>
             <input
               type="text"
+              spellCheck="false"
               className={`${inputStyle} ${
                 errorIn.includes("BARCODE")
                   ? "overline outline-red-500 outline-2"

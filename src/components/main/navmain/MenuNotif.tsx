@@ -12,7 +12,9 @@ import { GrUpdate } from "react-icons/gr";
 import { TbFileDollar } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { IconType } from "react-icons";
-import { NOTIFICATION_RECEIVED, NOTIFICATION_SERVICE_ERROR, NOTIFICATION_SERVICE_STARTED, START_NOTIFICATION_SERVICE, TOKEN_UPDATED } from "electron-push-receiver";
+import { getToken, onMessage } from "@firebase/messaging";
+import { messaging } from "../../../main";
+
 
 interface Notification {
   _id: string;
@@ -65,47 +67,47 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
   const moreButtonRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const loadingRef = useRef(false);
+  const [notifiacionRecibida, setNotifiacionRecibida] = useState()
 
   const navigate = useNavigate();
-///////////////////////////////nuevo codigo ne notificaaciones
-/*
-// Iniciar el servicio de notificaciones
-window.api.enviarEvento(START_NOTIFICATION_SERVICE, {
-  appId: '1:206948296278:web:6a2348d8e8e2ea75743df7', 
-  apiKey: 'AIzaSyDS_IAVmdRNa8pfv7c8L0KJeSfdVBDFdqU',
-  projectId: 'cmg-company',
-  vapidKey: 'BIkvNP1qaD2seOcMvFGtW5nvQ6ENnrfZx32ziVaec9_VnkrDLh2hZxv47Ka2eWVPH-Ztc4snHrYYS7cJbP7Ici4',
-});
+  ///////////////////////////////nuevo codigo ne notificaaciones
+  window.api.enviarEvento("START_NOTIFICATION_SERVICE", {
+    appId: "1:206948296278:web:6a2348d8e8e2ea75743df7",
+    apiKey: "AIzaSyDS_IAVmdRNa8pfv7c8L0KJeSfdVBDFdqU",
+    projectId: "cmg-company",
+    vapidKey:"BIkvNP1qaD2seOcMvFGtW5nvQ6ENnrfZx32ziVaec9_VnkrDLh2hZxv47Ka2eWVPH-Ztc4snHrYYS7cJbP7Ici4",
+  });
 
-// Escuchar cuando el servicio de notificaciones se haya iniciado
-window.api.recibirEvento(NOTIFICATION_SERVICE_STARTED, (token) => {
-  console.log('Servicio de notificaciones iniciado con token:', token);
-});
+  // src/index.tsx
 
-// Manejar errores del servicio de notificaciones
-window.api.recibirEvento(NOTIFICATION_SERVICE_ERROR, (error) => {
-  console.error('Error en el servicio de notificaciones:', error);
-});
 
-// Manejar la recepción de una notificación
-window.api.recibirEvento(NOTIFICATION_RECEIVED, (notification) => {
-  console.log('Notificación recibida:', notification);
-  new Notification(notification.title, {
-    body: notification.body,
+// Obtener el token de FCM
+ getToken(messaging, { vapidKey: "BI0FaUPg2jSE45iQrUc9yTjpT2M_ivWL3SOau0nzIFhbAddeecGUQi2DHmK_TJa-n-4Xh-0zjr-eW7JIKvHsSzQ" })
+  .then((currentToken) => {
+    if (currentToken) {
+      console.log('Token de FCM:', currentToken);
+      // Aquí puedes enviar el token a tu servidor backend si es necesario
+    } else {
+      console.warn('No se pudo obtener el token de registro.');
+    }
+  })
+  .catch((err) => {
+    console.error('Error al obtener el token de FCM:', err);
+  });
+
+// Escuchar los mensajes entrantes
+onMessage(messaging, (payload) => {
+  console.log('Mensaje recibido:', payload);
+  // Muestra la notificación
+  new Notification(payload.notification.title, {
+    body: payload.notification.body,
   });
 });
 
-// Actualizar el token FCM
-window.api.recibirEvento(TOKEN_UPDATED, (token) => {
-  console.log('Token FCM actualizado:', token);
-  // Enviar el token al backend si es necesario
-});
-
-*/
 
 
- 
 
+  
   useEffect(() => {
     window.api.enviarEvento("get-disabled-notification-types");
     window.api.recibirEvento(

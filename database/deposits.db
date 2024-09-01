@@ -1,2 +1,3 @@
-{"name":"AlimentosVarios","address":"jukillo","sectors":[{"name":"Arroz","sectorId":"b5907302","products":[]}],"_id":"1vE7hGgga0Uo1ElB"}
+{"name":"AlimentosVarios","address":"jukillo","sectors":[{"name":"Arroz","sectorId":"b5907302","products":[]},{"name":"sector pajas","sectorId":"a155b607","products":[]}],"_id":"1vE7hGgga0Uo1ElB"}
+{"name":"asdasd","address":"asdasd","sectors":[],"_id":"CL3ecWbCjXz8NZBY"}
 {"name":"Alimentos Chinos","address":"Chinocalle","sectors":[{"name":"Arrozes","sectorId":"f1d917d8","products":[]}],"_id":"HVlu3AnEUcNXrocz"}
