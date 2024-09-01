@@ -7,6 +7,7 @@ import CreateSupplier from "./CreateSupplier";
 import { IoAdd, IoClose } from "react-icons/io5";
 import EditSupplier from "./EditSupplier";
 import { Action } from "../../../../../../../../../types/types";
+import ButtonR from "../../../../../buttons/ButtonR";
 
 type SupplierProps = {
   setSupplierForm: (e: boolean) => void;
@@ -109,28 +110,32 @@ const Supplier: React.FC<SupplierProps> = ({
   }, [supplierData]);
 
   return (
-    <div className="absolute text-white top-0 bottom-0 right-0 left-0 z-50 flex justify-center items-center backdrop-blur-xl">
-      <div className="flex pb-2 space-y-5 h-5/6 w-5/6 flex-col relative rounded-lg bg-slate-900 rounde-lg border-2 border-slate-800 p-2">
-        <div className="h-14 flex w-full">
+    <div className="absolute top-0 bottom-0 right-0 left-0 z-50 flex justify-center items-center backdrop-brightness-50">
+      <div className="flex pb-2 space-y-5 h-5/6 w-11/12 flex-col relative rounded-lg bg-[#2f2f2fff] rounde-lg border-2 border-slate-800 p-2">
+        <div className="h-10 flex w-full">
           <div className="w-full justify-between flex items-center p-1">
             <div className="font-bold text-3xl">
               <p>PROVEEDORES</p>
             </div>
             <div className="flex-1 h-full flex justify-end space-x-5">
-              <button
+              <ButtonR
                 onClick={() => setSupplierCreate(true)}
-                className="h-10 w-10 flex justify-center items-center bg-teal-800 font-bold rounded-full"
+                height="h-10"
+                width="w-10"
+                bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
               >
-                <IoAdd size={30} />
-              </button>
-              <button
+                <IoAdd size={30} className="text-[#ffd700ff]" />
+              </ButtonR>
+              <ButtonR
                 onClick={() => {
                   setSupplierForm(false);
                 }}
-                className="h-10 w-10 flex justify-center items-center rounded-full bg-rose-800"
+                height="h-10"
+                width="w-10"
+                bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
               >
-                <IoClose size={30} />
-              </button>
+                <IoClose size={30} className="text-[#ffd700ff]" />
+              </ButtonR>
             </div>
           </div>
         </div>
@@ -152,50 +157,53 @@ const Supplier: React.FC<SupplierProps> = ({
           </div>
         )}
         <div className="w-full h-full flex-col relative flex overflow-auto">
-          <div className="w-full h-10 sticky top-0 bg-slate-900 text-slate-200 font-bold border-y flex pl-2 items-center">
+          <div className="w-full h-5 sticky top-0 text-slate-500 font-bold flex pl-2 items-center">
             <div className="flex-1 flex justify-start">
               <p>Nombre</p>
-            </div>
-            <div className="flex-1 flex justify-center">
-              <p>Telefono</p>
             </div>
             <div className="flex-1 flex justify-center">
               <p>Email</p>
             </div>
             <div className="flex-1 flex justify-center">
+              <p>Telefono /</p>
               <p>Direccion</p>
             </div>
-            <div className="w-11"></div>
           </div>
-          <div className="flex-1 w-full bg-slate-800 flex flex-col">
+          <div className="flex-1 w-full bg-gray-900 rounded-b-lg flex flex-col shadow-inner">
             {suppliers.map((supplier) => (
-              <div className="w-full h-10 font-medium text-sm bg-indigo-950 border-slate-600 border-y flex pl-2 items-center">
+              <div className="w-full relative h-10 space-x-2 bg-[#2f2f2fff] font-medium text-xs border-gray-900 border-y flex pl-2 items-center">
                 <div className="flex-1 flex justify-start">
                   <p>{supplier.name}</p>
                 </div>
-                <div className="flex-1 flex justify-center">
-                  {supplier.phoneNumber}
+                <div className="flex-1 flex justify-start">
+                  <p>{supplier.email}</p>
                 </div>
-                <div className="flex-1 flex justify-center">
-                  {supplier.email}
-                </div>
+                <div className="flex flex-col flex-1">
+                  <div className="flex-1 flex justify-center">
+                    {supplier.phoneNumber}
+                  </div>
 
-                <div className="flex-1 flex justify-center">
-                  <p>{supplier.address}</p>
+                  <div className="flex-1 flex justify-center">
+                    <p>{supplier.address}</p>
+                  </div>
                 </div>
-                <div className="flex flex-col items-center w-7 h-full">
-                  <button
+                <div className="flex items-center space-x-2 absolute right-0">
+                  <ButtonR
                     onClick={() => deleteSupplier(supplier)}
-                    className="bg-rose-900 rounded-l-full flex-1 w-full flex items-center justify-center hover:bg-rose-600"
+                    width="w-min"
+                    height="h-min"
+                    bgIconColor="bg-transparent"
                   >
                     <TbTrash size={15} />
-                  </button>
-                  <button
+                  </ButtonR>
+                  <ButtonR
                     onClick={() => onEditSupplier(supplier)}
-                    className="bg-cyan-900 rounded-l-full flex-1 w-full flex items-center justify-center hover:bg-cyan-600"
+                    width="w-min"
+                    height="h-min"
+                    bgIconColor="bg-transparent"
                   >
                     <BiEdit size={15} />
-                  </button>
+                  </ButtonR>
                 </div>
               </div>
             ))}

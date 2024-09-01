@@ -449,43 +449,41 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
     console.log("CODIGO DE BARRAS ESCANEADO", barcode);
   }, [barcode]);
   return (
-    <div className="absolute right-0 top-0 bottom-0 left-0 overflow-hidden bg-blue-950 flex flex-col z-40 hover:bg-slate-600">
-      <div className="flex h-full w-full flex-col relative z-40">
-        <Head
-          setRouter={setRouter}
-          router={router}
-          onChangeModal={onChangeModal}
-          errorIn={errorIn}
-          setErrorIn={setErrorIn}
-          stateArticle={stateArticle}
-        />
-        <div className="flex-1 bg-black app-region-no-drag overflow-auto">
-          {router === "article" ? (
-            <Article
-              stateArticle={stateArticle}
-              errorIn={errorIn}
-              dispatch={dispatch}
-              errorToSave={errorToSave}
-              router={router}
-            />
-          ) : router === "stock" ? (
-            <Stock
-              stateArticle={stateArticle}
-              inputValueSupplierInput={inputValueSupplierInput}
-              deposits={deposits}
-              depositState={depositState}
-              dispatchDeposit={dispatchDeposit}
-              setInputValueSupplierInput={setInputValueSupplierInput}
-              router={router}
-              errorIn={errorIn}
-              errorToSave={errorToSave}
-              suppliers={suppliers}
-              setSuppliers={setSuppliers}
-              dispatch={dispatch}
-              unitsArticleForm={unitsArticleForm}
-            />
-          ) : null}
+    <div className="absolute right-0 top-0 bottom-0 left-0 overflow-hidden backdrop-brightness-50 flex flex-col justify-center items-center z-40 text-[#fff8dcff]">
+      <div className="flex h-5/6 w-11/12 flex-col text-sm relative bg-[#2f2f2fff] z-50 rounded-lg">
+        <div className="flex-1 app-region-no-drag overflow-auto custom-scrollbar">
+          <Article
+            stateArticle={stateArticle}
+            errorIn={errorIn}
+            dispatch={dispatch}
+            errorToSave={errorToSave}
+            router={router}
+          />
+          <Stock
+            stateArticle={stateArticle}
+            inputValueSupplierInput={inputValueSupplierInput}
+            deposits={deposits}
+            depositState={depositState}
+            dispatchDeposit={dispatchDeposit}
+            setInputValueSupplierInput={setInputValueSupplierInput}
+            router={router}
+            errorIn={errorIn}
+            errorToSave={errorToSave}
+            suppliers={suppliers}
+            setSuppliers={setSuppliers}
+            dispatch={dispatch}
+            unitsArticleForm={unitsArticleForm}
+          />
+          <Head
+            setRouter={setRouter}
+            router={router}
+            onChangeModal={onChangeModal}
+            errorIn={errorIn}
+            setErrorIn={setErrorIn}
+            stateArticle={stateArticle}
+          />
         </div>
+
         {errorToSave.active ? (
           <Modals errorToSave={errorToSave} setErrorToSave={setErrorToSave} />
         ) : null}

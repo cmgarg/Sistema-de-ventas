@@ -9,6 +9,9 @@ import CreateDeposit from "./CreateDeposit";
 import EstablishDeposit from "./EstablishDeposit";
 import { RiDeleteBin5Fill, RiEdit2Fill } from "react-icons/ri";
 import EditDepositEstablished from "./EditDepositEstablished";
+import ButtonR from "../../../../../buttons/ButtonR";
+import { PiHandDeposit } from "react-icons/pi";
+import { IoAdd, IoAddCircle } from "react-icons/io5";
 
 type DepositsMainProps = {
   stateArticle: articleData;
@@ -130,18 +133,30 @@ const DepositsMain: React.FC<DepositsMainProps> = ({
           <AiFillAppstore size={30} className="text-amber-300" />
         </div>
         <div className="flex text-base h-full items-center">
-          <button
-            className="h-7 bg-yellow-700  rounded-l-lg border-r border-slate-800 px-2"
+          <ButtonR
+            bgColor=" bg-gradient-to-l text-[#ffd700ff]  from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff] text-sm"
+            textSize="text-sm"
+            height="h-7"
+            width="w-52"
             onClick={() => alternEstablishDepositForm(true)}
+            title={"Establecer deposito"}
           >
-            Establecer deposito
-          </button>
-          <button
-            className="px-2 h-7 bg-purple-900 font-bold rounded-r-lg"
+            <AiFillAppstore size={20} className="text-white" />
+          </ButtonR>
+          <ButtonR
+            bgColor="bg-gradient-to-l text-[#ffd700ff]  from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff] text-sm"
             onClick={() => onChangeCreateDeposit(true)}
+            height="h-7"
+            title={"Crear nuevo deposito"}
           >
-            Crear nuevo deposito
-          </button>
+            <div className="relative">
+              <AiFillAppstore size={20} className="text-white" />
+              <IoAddCircle
+                size={15}
+                className="absolute z-50 rounded-full bg-black -right-1 -bottom-1 text-green-300"
+              />
+            </div>
+          </ButtonR>
         </div>
       </div>
       <div

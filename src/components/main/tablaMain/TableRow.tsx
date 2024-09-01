@@ -27,7 +27,7 @@ const TableRow: React.FC<myComponentProps> = (props) => {
           hoverState ? " opacity-80" : "opacity-0"
         }`}
       ></div>
-      <div className="relative z-40 w-full flex">{children}</div>
+      <div className="relative z-30 w-full flex">{children}</div>
     </div>
   );
 };

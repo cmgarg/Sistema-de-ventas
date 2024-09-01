@@ -53,7 +53,7 @@ const Stock: React.FC<StockProps> = ({
     setUnitForm(!unitForm);
   };
   const inputStyle =
-    "bg-slate-900 rounded-lg border border-slate-500 px-2 h-14 outline-none";
+    "bg-[#707070ff] rounded-lg px-2 h-10 outline-none shadow-[0_2px_5px_rgba(0,0,0,0.50)]";
 
   useEffect(() => {
     console.log(stateArticle);

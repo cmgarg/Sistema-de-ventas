@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { Action, articleData } from "../../../../../../../../../types/types";
+import ButtonR from "../../../../../buttons/ButtonR";
+import { MdCancel } from "react-icons/md";
+import { GiCancel } from "react-icons/gi";
 
 type CantidadPorProps = {
   stateArticle: articleData;
@@ -12,24 +15,23 @@ const CantidadPor: React.FC<CantidadPorProps> = ({
   dispatch,
 }) => {
   return (
-    <div className="flex flex-col flex-1">
-      <div className="flex justify-start font-bold text-2xl pl-2">
-        <p>Cantidad</p>
-      </div>
-      <div className="flex flex-1 space-x-1 pl-1">
-        <div className="flex-1 flex">
-          <div className="flex-1 relative space-y-1">
+    <div className="flex flex-col">
+      <div className="flex space-x-1 pl-1">
+        <div className="flex">
+          <div className="relative space-y-1">
             <div className="flex flex-1 h-5">
               <label htmlFor="costo" className="select-none">
                 x PALETTE
               </label>
             </div>
             {stateArticle.article.pallet.active ? (
-              <div className="flex bg-slate-900 border border-slate-700 rounded-lg h-14 w-full">
+              <div className="flex border border-slate-700 rounded-lg h-10 w-32">
                 <input
                   type="text"
                   name="palette"
-                  className={"outline-none w-full bg-slate-900 rounded-lg px-2"}
+                  className={
+                    "bg-[#808080ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] outline-none h-10 w-full rounded-l-md  border border-slate-800 px-2"
+                  }
                   value={
                     stateArticle.article.pallet.active
                       ? `${stateArticle.article.pallet.value}`
@@ -47,35 +49,38 @@ const CantidadPor: React.FC<CantidadPorProps> = ({
                   onClick={() =>
                     dispatch({ type: "SET_PALETTEACTIVE", payload: false })
                   }
-                  className="bg-red-600 rounded-lg p-2 text-xs"
+                  className="w-10 h-10 bg-red-900 rounded-r-md flex justify-center items-center"
                 >
-                  No establecer
+                  <GiCancel size={20} />
                 </button>
               </div>
             ) : (
-              <button
+              <ButtonR
                 onClick={() =>
                   dispatch({ type: "SET_PALETTEACTIVE", payload: true })
                 }
-                className="w-full bg-green-900 h-14 rounded-lg px-2"
-              >
-                Establecer
-              </button>
+                width="w-32"
+                height="h-10"
+                bgColor="bg-gradient-to-l text-[#ffd700ff] from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
+                title="Establecer"
+              ></ButtonR>
             )}
           </div>
         </div>
-        <div className="flex-1 relative space-y-1">
+        <div className="relative space-y-1">
           <div className="flex h-5">
             <label htmlFor="bulk" className="select-none">
               x BULTO
             </label>
           </div>
           {stateArticle.article.forBulk.active ? (
-            <div className="flex bg-slate-900 border border-slate-700 rounded-lg h-14 w-full">
+            <div className="flex bg-slate-900 border border-slate-700 rounded-lg h-10 w-32">
               <input
                 type="text"
                 name="bulk"
-                className={"outline-none w-full bg-slate-900 rounded-lg px-2"}
+                className={
+                  "bg-[#808080ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] outline-none h-10 w-full rounded-l-md  border border-slate-800 px-2"
+                }
                 value={
                   stateArticle.article.forBulk.active
                     ? `${stateArticle.article.forBulk.value}`
@@ -90,70 +95,21 @@ const CantidadPor: React.FC<CantidadPorProps> = ({
                 onClick={() =>
                   dispatch({ type: "SET_BULKACTIVE", payload: false })
                 }
-                className="bg-red-600 rounded-lg p-2 text-xs"
+                className="w-10 h-10 bg-red-900 rounded-r-md flex justify-center items-center"
               >
-                No establecer
+                <GiCancel size={20} />
               </button>
             </div>
           ) : (
-            <button
+            <ButtonR
               onClick={() =>
                 dispatch({ type: "SET_BULKACTIVE", payload: true })
               }
-              className="w-full bg-green-900 h-14 rounded-lg px-2"
-            >
-              Establecer
-            </button>
-          )}
-        </div>
-        <div className="flex-1 relative space-y-1">
-          <div className="flex h-5">
-            <label htmlFor="costo" className="select-none">
-              x {stateArticle.article.stock.unit.label}
-            </label>
-          </div>
-          {stateArticle.article.quantityperunit.active ? (
-            <div className="flex bg-slate-900 border border-slate-700 rounded-lg h-14 w-full">
-              <input
-                type="text"
-                name="palette"
-                className={"outline-none w-full bg-slate-900 rounded-lg px-2"}
-                value={
-                  stateArticle.article.quantityperunit.active
-                    ? `${stateArticle.article.quantityperunit.value}`
-                    : "0"
-                }
-                onChange={(e) => {
-                  dispatch({
-                    type: "SET_QUANTITYPERUNITVALUE",
-                    payload: e.target.value,
-                  });
-                }}
-                disabled={
-                  !stateArticle.article.quantityperunit.active ? true : false
-                }
-              />
-              <button
-                onClick={() =>
-                  dispatch({
-                    type: "SET_QUANTITYPERUNITACTIVE",
-                    payload: false,
-                  })
-                }
-                className="bg-red-600 rounded-lg p-2 text-xs"
-              >
-                No establecer
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() =>
-                dispatch({ type: "SET_QUANTITYPERUNITACTIVE", payload: true })
-              }
-              className="w-full bg-green-900 h-14 rounded-lg px-2"
-            >
-              Establecer
-            </button>
+              width="w-32"
+              height="h-10"
+              bgColor="bg-gradient-to-l text-[#ffd700ff]  from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
+              title="Establecer"
+            ></ButtonR>
           )}
         </div>
       </div>

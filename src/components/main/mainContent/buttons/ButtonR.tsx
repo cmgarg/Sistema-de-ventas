@@ -46,7 +46,7 @@ const ButtonR: React.FC<ButtonRProps> = ({
       onClick={onClick ? onClick : () => {}}
       className={`flex ${height ? height : "h-12"} ${
         width ? width : "w-52"
-      } text-white font-bold rounded-full  cursor-pointer overflow-hidden`}
+      } text-white rounded-full  cursor-pointer overflow-hidden shadow-[0_2px_5px_rgba(0,0,0,0.50)]`}
       onMouseDown={mouseDownEvent}
       onMouseUp={mouseUpEvent}
       onMouseEnter={onMouseEnter}
@@ -60,7 +60,7 @@ const ButtonR: React.FC<ButtonRProps> = ({
         <div
           className={`absolute  ${hoverActive ? "bg-white  opacity-5" : ""} ${
             borderNone ? "bg-black  opacity-5" : ""
-          } top-0 left-0 z-50 right-0 bottom-0 rounded-full`}
+          } top-0 left-0 z-40 right-0 bottom-0 rounded-full`}
         ></div>
         {title ? (
           <div
@@ -75,7 +75,7 @@ const ButtonR: React.FC<ButtonRProps> = ({
           <div
             className={`${title ? "w-1/4" : "w-full rounded-l-full"} ${
               bgIconColor ? bgIconColor : "bg-gray-800"
-            }  rounded-r-full h-full flex items-center justify-center text-white `}
+            } rounded-r-full h-full flex items-center justify-center  text-white `}
           >
             {children}
           </div>

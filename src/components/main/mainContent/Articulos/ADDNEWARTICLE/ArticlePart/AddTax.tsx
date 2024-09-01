@@ -103,8 +103,8 @@ const AddTax: React.FC<AddTaxProps> = ({ dispatch, setAddImpuesto }) => {
     }
   };
   return (
-    <div className="absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center z-50">
-      <div className="flex flex-col w-96 relative bg-slate-950 rounded-lg border border-slate-700">
+    <div className="absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center z-50 backdrop-brightness-50">
+      <div className="flex flex-col w-96 relative bg-[#2f2f2fff] rounded-lg">
         {showError.active && (
           <div className="absolute top-0 right-0 bottom-0 left-0 bg-slate-950 z-50 flex flex-col rounded-lg">
             <div className="flex-1 flex justify-center flex-col items-center p-2 text-red-500 font-mono text-3xl">
@@ -155,7 +155,7 @@ const AddTax: React.FC<AddTaxProps> = ({ dispatch, setAddImpuesto }) => {
               type="text"
               onChange={(e) => onChangeTaxName(e.target.value)}
               value={taxData.name}
-              className="bg-slate-900 outline-none h-12 rounded-lg  border border-slate-800 px-2"
+              className="bg-[#808080ff] outline-none h-12 rounded-lg  border border-slate-800 px-2"
             />
           </div>
           <div className="flex flex-col">
@@ -165,24 +165,24 @@ const AddTax: React.FC<AddTaxProps> = ({ dispatch, setAddImpuesto }) => {
               type="text"
               onChange={(e) => onChangeTaxPercentage(e.target.value)}
               value={taxData.percentage}
-              className="bg-slate-900 outline-none h-12 rounded-lg  border border-slate-800 px-2"
+              className="bg-[#808080ff] outline-none h-12 rounded-lg  border border-slate-800 px-2"
             />
           </div>
         </div>
-        <div className="flex text-xl font-bold items-end px-2 py-2 space-x-2">
+        <div className="flex w-full text-xl font-bold justify-end items-end px-2 py-2 space-x-2">
           <ButtonR
-            bgColor="bg-red-700"
+            bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
             onClick={() => setAddImpuesto(false)}
-            width="w-1/2"
-            textSize="text-sm"
+            width="w-28"
+            textSize="text-xs"
             height="h-8"
             title="Cancelar"
           ></ButtonR>
           <ButtonR
-            bgColor="bg-green-700"
+            bgColor="bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-500 text-[#fff8dcff]"
             onClick={() => addNewTax()}
-            width="w-1/2"
-            textSize="text-sm"
+            width="w-28"
+            textSize="text-xs"
             height="h-8"
             title="Añadir"
           ></ButtonR>
