@@ -132,7 +132,6 @@ const Supplier: React.FC<SupplierProps> = ({
                 height="h-9"
                 bgColor="bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-500 text-sm"
                 width="w-52"
-                title="Agregar proveedor"
                 bgIconColor="bg-yellow-800 text-[#fff8dcff]"
               >
                 <IoAdd size={30} className="text-[#fff8dcff]" />
