@@ -23,11 +23,11 @@ const TableRow: React.FC<myComponentProps> = (props) => {
       onMouseLeave={() => setHoverState(false)}
     >
       <div
-        className={`absolute z-30 right-0 top-0 bottom-0 left-0 transition-opacity bg-gradient-to-t from-gray-800 via-gray-800 to-gray-800  duration-300   ${
+        className={`absolute z-20 right-0 top-0 bottom-0 left-0 transition-opacity bg-gradient-to-t from-gray-800 via-gray-800 to-gray-800  duration-300   ${
           hoverState ? " opacity-80" : "opacity-0"
         }`}
       ></div>
-      <div className="relative z-30 w-full flex">{children}</div>
+      <div className="relative z-20 w-full flex">{children}</div>
     </div>
   );
 };

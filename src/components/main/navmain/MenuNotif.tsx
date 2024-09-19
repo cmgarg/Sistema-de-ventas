@@ -15,7 +15,6 @@ import { IconType } from "react-icons";
 import { getToken, onMessage } from "@firebase/messaging";
 import { messaging } from "../../../main";
 
-
 interface Notification {
   _id: string;
   tipo: string;
@@ -67,7 +66,7 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
   const moreButtonRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const loadingRef = useRef(false);
-  const [notifiacionRecibida, setNotifiacionRecibida] = useState()
+  const [notifiacionRecibida, setNotifiacionRecibida] = useState();
 
   const navigate = useNavigate();
   ///////////////////////////////nuevo codigo ne notificaaciones
@@ -75,39 +74,38 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
     appId: "1:206948296278:web:6a2348d8e8e2ea75743df7",
     apiKey: "AIzaSyDS_IAVmdRNa8pfv7c8L0KJeSfdVBDFdqU",
     projectId: "cmg-company",
-    vapidKey:"BIkvNP1qaD2seOcMvFGtW5nvQ6ENnrfZx32ziVaec9_VnkrDLh2hZxv47Ka2eWVPH-Ztc4snHrYYS7cJbP7Ici4",
+    vapidKey:
+      "BIkvNP1qaD2seOcMvFGtW5nvQ6ENnrfZx32ziVaec9_VnkrDLh2hZxv47Ka2eWVPH-Ztc4snHrYYS7cJbP7Ici4",
   });
 
   // src/index.tsx
 
-
-// Obtener el token de FCM
- getToken(messaging, { vapidKey: "BI0FaUPg2jSE45iQrUc9yTjpT2M_ivWL3SOau0nzIFhbAddeecGUQi2DHmK_TJa-n-4Xh-0zjr-eW7JIKvHsSzQ" })
-  .then((currentToken) => {
-    if (currentToken) {
-      console.log('Token de FCM:', currentToken);
-      // Aquí puedes enviar el token a tu servidor backend si es necesario
-    } else {
-      console.warn('No se pudo obtener el token de registro.');
-    }
+  // Obtener el token de FCM
+  getToken(messaging, {
+    vapidKey:
+      "BI0FaUPg2jSE45iQrUc9yTjpT2M_ivWL3SOau0nzIFhbAddeecGUQi2DHmK_TJa-n-4Xh-0zjr-eW7JIKvHsSzQ",
   })
-  .catch((err) => {
-    console.error('Error al obtener el token de FCM:', err);
+    .then((currentToken) => {
+      if (currentToken) {
+        console.log("Token de FCM:", currentToken);
+        // Aquí puedes enviar el token a tu servidor backend si es necesario
+      } else {
+        console.warn("No se pudo obtener el token de registro.");
+      }
+    })
+    .catch((err) => {
+      console.error("Error al obtener el token de FCM:", err);
+    });
+
+  // Escuchar los mensajes entrantes
+  onMessage(messaging, (payload) => {
+    console.log("Mensaje recibido:", payload);
+    // Muestra la notificación
+    new Notification(payload.notification.title, {
+      body: payload.notification.body,
+    });
   });
 
-// Escuchar los mensajes entrantes
-onMessage(messaging, (payload) => {
-  console.log('Mensaje recibido:', payload);
-  // Muestra la notificación
-  new Notification(payload.notification.title, {
-    body: payload.notification.body,
-  });
-});
-
-
-
-
-  
   useEffect(() => {
     window.api.enviarEvento("get-disabled-notification-types");
     window.api.recibirEvento(
@@ -235,7 +233,7 @@ onMessage(messaging, (payload) => {
 
   return (
     <div>
-      <div className="absolute right-0 top-full w-[30rem] h-[50rem] bg-gray-800 shadow-lg border border-gray-600 rounded-lg text-white py-2 z-50 menu-container select-none ">
+      <div className="absolute right-0 top-full w-[30rem] h-[50rem] bg-gray-800 shadow-lg border border-gray-600 rounded-lg text-white py-2 z-10 menu-container select-none ">
         <div className="flex flex-col">
           <div className="flex w-full h-12 justify-between items-center border-b border-gray-600">
             <div className="text-xl pl-4">Notificaciones</div>

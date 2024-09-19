@@ -225,7 +225,7 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
         </div>
 
         {menuVisible && (
-          <div className="absolute right-0 top-full w-48 bg-gray-800 shadow-lg border border-gray-600 rounded-lg text-white py-2 z-50 menu-container select-none">
+          <div className="absolute right-0 top-full w-48 bg-gray-800 shadow-lg border border-gray-600 rounded-lg text-white py-2 z-10 menu-container select-none">
             <div
               className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
               onClick={toggleChangeImage}
@@ -248,7 +248,7 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
         )}
 
         {changeImageVisible && (
-          <div className="absolute right-0 w-48 bg-gray-800 border border-gray-600 shadow-lg rounded-lg py-4 z-50 image-menu-container">
+          <div className="absolute right-0 w-48 bg-gray-800 border border-gray-600 shadow-lg rounded-lg py-4 z-10 image-menu-container">
             <div className="flex flex-wrap justify-between px-2 py-2">
               {images.map((image, index) => (
                 <div

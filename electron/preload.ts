@@ -1,6 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
-import * as pushReceiver from 'electron-push-receiver';
-
+// import * as pushReceiver from "electron-push-receiver";
 
 // Expose some API to the Renderer process
 contextBridge.exposeInMainWorld("ipcRenderer", withPrototype(ipcRenderer));
@@ -202,8 +201,10 @@ contextBridge.exposeInMainWorld("api", {
       "get-deposits",
       "edit-sector-in-deposit",
       "create-sector-in-deposit",
+      "update-deposit",
       "response-get-deposits",
       "create-deposit",
+      "add-product-in-Deposits",
       //IMPRESORA PRUEBA
       "imprimir-pa",
       //METODOS DE PAGO
@@ -272,8 +273,10 @@ contextBridge.exposeInMainWorld("api", {
       "response-update-supplier",
       //DEPOSITOS RESPONSE
       "response-get-deposits",
+      "response-update-deposit",
       "response-create-deposit",
       "response-create-sector-in-deposit",
+      "response-add-product-in-Deposits",
       //IMPRESORA
       "response-imprimir-pa",
       //NOTIFICACIONES
@@ -313,19 +316,15 @@ contextBridge.exposeInMainWorld("api", {
   },
 });
 
-window.addEventListener('DOMContentLoaded', () => {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/firebase-messaging-sw.js')
+window.addEventListener("DOMContentLoaded", () => {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+      .register("/firebase-messaging-sw.js")
       .then((registration) => {
-        console.log('Service Worker registrado con éxito:', registration.scope);
-      }).catch((err) => {
-        console.log('Error al registrar el Service Worker:', err);
+        console.log("Service Worker registrado con éxito:", registration.scope);
+      })
+      .catch((err) => {
+        console.log("Error al registrar el Service Worker:", err);
       });
   }
 });
-
-
-
-
-
-

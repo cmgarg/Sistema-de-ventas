@@ -10,11 +10,12 @@ type HeadProps = {
   errorIn: string[];
   setErrorIn: (e: string[]) => void;
   stateArticle: articleData;
+  depositState: any[];
 };
 
 const Head: React.FC<HeadProps> = ({
   setRouter,
-  router,
+  depositState,
   setErrorIn,
   onChangeModal,
   stateArticle,
@@ -32,8 +33,11 @@ const Head: React.FC<HeadProps> = ({
     if (errors.length > 0) {
       return setErrorIn([...errors]);
     } else {
-      console.log("AVEEEEEEEEEEEER");
-      window.api.enviarEvento("save-article", stateArticle);
+      console.log("AVEEEEEEEEEEEER", depositState);
+      window.api.enviarEvento("save-article", {
+        depositState,
+        articleToSave: stateArticle,
+      });
     }
   };
   return (

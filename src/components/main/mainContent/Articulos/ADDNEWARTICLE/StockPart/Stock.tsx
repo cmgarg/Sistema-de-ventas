@@ -19,7 +19,14 @@ type StockProps = {
     name: string;
     depositId: string;
     address: string;
-    sector: { name: string; sectorId: string };
+    sector: {
+      name: string;
+      sectorId: string;
+      amount: {
+        value: number;
+        saveCount: string;
+      };
+    };
   }[];
   dispatchDeposit: React.Dispatch<Action>;
   suppliers: supplierType[];

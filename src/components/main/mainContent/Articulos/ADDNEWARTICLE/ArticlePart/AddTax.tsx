@@ -155,7 +155,7 @@ const AddTax: React.FC<AddTaxProps> = ({ dispatch, setAddImpuesto }) => {
               type="text"
               onChange={(e) => onChangeTaxName(e.target.value)}
               value={taxData.name}
-              className="bg-[#808080ff] outline-none h-12 rounded-lg  border border-slate-800 px-2"
+              className="bg-[#707070ff] outline-none h-12 rounded-lg  border border-slate-800 px-2"
             />
           </div>
           <div className="flex flex-col">
@@ -165,7 +165,7 @@ const AddTax: React.FC<AddTaxProps> = ({ dispatch, setAddImpuesto }) => {
               type="text"
               onChange={(e) => onChangeTaxPercentage(e.target.value)}
               value={taxData.percentage}
-              className="bg-[#808080ff] outline-none h-12 rounded-lg  border border-slate-800 px-2"
+              className="bg-[#707070ff] outline-none h-12 rounded-lg  border border-slate-800 px-2"
             />
           </div>
         </div>

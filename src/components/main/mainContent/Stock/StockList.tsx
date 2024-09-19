@@ -40,7 +40,10 @@ interface ArticleData {
   dateToRegister: string;
 }
 
-const StockList: React.FC<StockListProps> = ({ filtersActived, searchActived }) => {
+const StockList: React.FC<StockListProps> = ({
+  filtersActived,
+  searchActived,
+}) => {
   const articles = useSelector((state: storeType) => state.articleState);
   const [articlesFilter, setArticlesFilter] = useState<ArticleData[]>([]);
   const [articlesOrder, setArticlesOrder] = useState<ArticleData[]>([]);
@@ -80,8 +83,10 @@ const StockList: React.FC<StockListProps> = ({ filtersActived, searchActived }) 
     }
     if (stock) {
       articlesToOrder.sort((a, b) => {
-        if (Number(a.article.stock.amount) > Number(b.article.stock.amount)) return -1;
-        if (Number(a.article.stock.amount) < Number(b.article.stock.amount)) return 1;
+        if (Number(a.article.stock.amount) > Number(b.article.stock.amount))
+          return -1;
+        if (Number(a.article.stock.amount) < Number(b.article.stock.amount))
+          return 1;
         return 0;
       });
     }
@@ -214,6 +219,372 @@ const StockList: React.FC<StockListProps> = ({ filtersActived, searchActived }) 
                 </div>
               </TableRow>
             ))}
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        {/* RELLENO */}
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        v
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
+        <TableRow>
+          <div className="flex items-center justify-start flex-1 pl-2 space-x-1">
+            <Link to={`/articulo/}`} className="flex-1 text-center">{`L`}</Link>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-center items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+          <div className="flex justify-end items-center flex-1 pl-2">
+            <p>L</p>
+          </div>
+        </TableRow>
       </div>
     </TableMain>
   );

@@ -51,7 +51,7 @@ import {
   updateSuppliers,
   createDeposit,
   updateDeposit,
-  addProductInDeposit,
+  addProductInDeposits,
   deleteSector,
   editSectorInDeposit,
   getDeposits,
@@ -72,11 +72,6 @@ import {
 } from "./databaseOperations";
 import { verificarToken } from "./vFunctions";
 import { articleData, IUser } from "../types/types";
-
-
-
-
-
 
 export const loadEvents = () => {
   console.log("eventHandlers Se esta Ejecutando...");
@@ -137,45 +132,50 @@ export const loadEvents = () => {
   });
 
   // Artículos
-  ipcMain.on("save-article", async (event, articuloAGuardar) => {
-    const categoryAndBrands = await getCategoryAndBrand();
-    const { brand, category } = articuloAGuardar;
-    const categorys = categoryAndBrands.categorys;
-    const brands = categoryAndBrands.brands;
-    const categoryString = categorys.map((cat) => cat.value.toLowerCase());
-    const brandString = brands.map((br) => br.value.toLowerCase());
-    const categoryExist = categoryString.includes(category.value.toLowerCase());
-    const brandExist = brandString.includes(brand.value.toLowerCase());
+  ipcMain.on(
+    "save-article",
+    async (event, a: { articleToSave: articleData; depositState: any }) => {
+      const categoryAndBrands = await getCategoryAndBrand();
+      const { brand, category } = a.articleToSave;
+      const categorys = categoryAndBrands.categorys;
+      const brands = categoryAndBrands.brands;
+      const categoryString = categorys.map((cat) => cat.value.toLowerCase());
+      const brandString = brands.map((br) => br.value.toLowerCase());
+      const categoryExist = categoryString.includes(
+        category.value.toLowerCase()
+      );
+      const brandExist = brandString.includes(brand.value.toLowerCase());
 
-    if (categoryExist && brandExist) {
-      await saveArticle(articuloAGuardar);
-      const articles = await findArticles();
-      event.reply("response-get-articles", articles);
-      event.reply("error-save-article", {
-        message: "",
-        type: "",
-        active: false,
-      });
-    } else if (!brandExist && !categoryExist) {
-      event.reply("error-save-article", {
-        message: "no registrada",
-        type: "all",
-        active: true,
-      });
-    } else if (!categoryExist) {
-      event.reply("error-save-article", {
-        message: "no registrada",
-        type: "category",
-        active: true,
-      });
-    } else if (!brandExist) {
-      event.reply("error-save-article", {
-        message: "no registrada",
-        type: "brand",
-        active: true,
-      });
+      if (categoryExist && brandExist) {
+        await saveArticle(a);
+        const articles = await findArticles();
+        event.reply("response-get-articles", articles);
+        event.reply("error-save-article", {
+          message: "",
+          type: "",
+          active: false,
+        });
+      } else if (!brandExist && !categoryExist) {
+        event.reply("error-save-article", {
+          message: "no registrada",
+          type: "all",
+          active: true,
+        });
+      } else if (!categoryExist) {
+        event.reply("error-save-article", {
+          message: "no registrada",
+          type: "category",
+          active: true,
+        });
+      } else if (!brandExist) {
+        event.reply("error-save-article", {
+          message: "no registrada",
+          type: "brand",
+          active: true,
+        });
+      }
     }
-  });
+  );
 
   ipcMain.on("get-articleByCode", async (event, articleCode) => {
     const article = await getArticleByCode(articleCode);
@@ -360,22 +360,12 @@ export const loadEvents = () => {
   });
   //AÑADIR PRODUCTO A DEPOSITO
   ipcMain.on(
-    "add-product-in-Deposit",
-    async (
-      event,
-      {
-        deposit_id,
-        sector,
-        productToAdd,
-      }: { deposit_id: string; sector: number; productToAdd: articleData }
-    ) => {
-      const response = await addProductInDeposit(
-        deposit_id,
-        sector,
-        productToAdd
-      );
+    "add-product-in-Deposits",
+    async (event, e: { depositState: any[]; articleToSave: articleData }) => {
+      console.log("EVENTITOLOCO", e);
+      const response = await addProductInDeposits(e);
 
-      event.reply("response-add-product-in-Deposit", response);
+      event.reply("response-add-product-in-Deposits", response);
     }
   );
   //ELIMINAR SECTOR DE DEPOSITO
@@ -424,7 +414,6 @@ export const loadEvents = () => {
   );
   //OBTENER DEPOSITOS
   ipcMain.on("get-deposits", async (event) => {
-    console.log("QUE PASA ");
     const response = await getDeposits();
 
     event.reply("response-get-deposits", response);
@@ -927,7 +916,5 @@ ipcMain.on("clear-cache", (event) => {
       event.reply("cache-cleared", { success: false, error: error.message });
     });
 });
-
-
 
 ///////////////////////

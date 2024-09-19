@@ -5,6 +5,9 @@ import Export from "../buttons/Export";
 import StockList from "./StockList";
 import Buscador from "../../../buscador/Buscador";
 import { useSelector } from "react-redux";
+import Deposits from "./Deposits/Deposits";
+import SubNav from "./SubNav";
+import Suppliers from "./Suppliers/Suppliers";
 
 // Define el tipo para los artículos basado en el tipo articleData que espera StockList
 interface ArticleData {
@@ -53,7 +56,10 @@ interface StockProps {
 }
 
 const Stock: React.FC<StockProps> = () => {
-  const articles = useSelector((state: { articleState: ArticleData[] }) => state.articleState);
+  const articles = useSelector(
+    (state: { articleState: ArticleData[] }) => state.articleState
+  );
+  const [router, setRouter] = useState<string>("ARTICLES");
 
   const [filters, setFilters] = useState<Filters>({
     brand: "",
@@ -66,6 +72,10 @@ const Stock: React.FC<StockProps> = () => {
     results: [],
   });
 
+  //
+  const changeMainContent = (e: string) => {
+    setRouter(e);
+  };
   //
   function getResults(e: object[]) {
     let object: any;
@@ -87,12 +97,19 @@ const Stock: React.FC<StockProps> = () => {
       </div>
       <div className="flex flex-col pb-5 row-start-2 row-end-7">
         <div className="flex flex-row flex-1 overflow-auto">
-          <AsideMain isActive={false} />
-          <div className="w-full px-5 relative">
-            <StockList
-              searchActived={searchActived}
-              filtersActived={filters}
-            />
+          <div className="w-full flex-1 px-5 space-y-5">
+            <SubNav changeMainContent={changeMainContent} router={router} />
+            {/* <Deposits /> */}
+            {router === "ARTICLES" ? (
+              <StockList
+                searchActived={searchActived}
+                filtersActived={filters}
+              />
+            ) : router === "DEPOSITS" ? (
+              <Deposits />
+            ) : router === "SUPPLIERS" ? (
+              <Suppliers />
+            ) : null}
           </div>
         </div>
       </div>

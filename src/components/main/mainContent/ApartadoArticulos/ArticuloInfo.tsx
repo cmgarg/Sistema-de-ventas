@@ -179,6 +179,10 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
                 <div>
                   <p>Direccion: {dep.address || "PITOLOCO"}</p>
                 </div>
+                <div>
+                  Cantidad: {dep.sector.amount.value}{" "}
+                  <span className="text-xs">{dep.sector.amount.saveCount}</span>
+                </div>
               </div>
             ))}
           </div>
