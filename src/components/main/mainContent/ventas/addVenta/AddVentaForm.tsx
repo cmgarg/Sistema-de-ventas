@@ -37,7 +37,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
           name: "",
           email: "",
           address: "",
-          _id: "",
+          _id: "", // Asegúrate de incluir _id aquí
           phone: "",
           dni: "",
         },
@@ -55,6 +55,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
     billData: { billType: "" },
     sold: 0,
   });
+  
   const [userData, setUserData] = useState<any>({});
   const [facturaOk, setFacturaOk] = useState<boolean>(false);
   const [pMOk, setpMOk] = useState<boolean>(false);
