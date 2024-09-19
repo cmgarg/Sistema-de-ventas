@@ -167,3 +167,19 @@ input[type="checkbox"]:checked::before {
   }
 }
 
+
+
+/* Clase para el fondo resaltado */
+.bg-highlight {
+  background-color: rgb(69, 69, 68); /* Color de fondo resaltado */
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.blink-animation {
+  animation: blink 1s linear infinite;
+}

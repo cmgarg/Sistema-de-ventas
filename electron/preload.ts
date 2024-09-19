@@ -152,6 +152,8 @@ contextBridge.exposeInMainWorld("api", {
       //EVENTOS CUENTAS
       "save-accountToPay",
       "get-accountToPay",
+      "get-accountToPay2",
+      "get-accountToPay3",
       "actualizar-estado-pagado",
       "solicitar-estado-pagado-inicial",
       "eliminar-cuenta",
@@ -197,6 +199,7 @@ contextBridge.exposeInMainWorld("api", {
       "get-disabled-notification-types",
       "delete-old-notifications",
       "update-supplier",
+      "actualizar-senotifico",
       //DEPOSITOS
       "get-deposits",
       "edit-sector-in-deposit",
@@ -214,7 +217,10 @@ contextBridge.exposeInMainWorld("api", {
       "remove-pay-method",
       //COMPRAS
       "clear-cache",
-      "START_NOTIFICATION_SERVICE",
+      "guardar-historial-cuenta",
+      "save-accountToPayeditar",
+      "get-historial-cuenta",
+      
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -240,6 +246,8 @@ contextBridge.exposeInMainWorld("api", {
       "article-foundById",
       "article-foundByName",
       "response-get-accountToPay",
+      "response-get-accountToPay2",
+      "response-get-accountToPay3",
       "response-get-categoryAndBrand",
       "response-get-sales-stats",
       "response-sale-process",
@@ -290,10 +298,10 @@ contextBridge.exposeInMainWorld("api", {
       "response-update-pay-method",
       "response-add-pay-method",
       "response-remove-pay-method",
-      "NOTIFICATION_SERVICE_STARTED",
-      "NOTIFICATION_SERVICE_ERROR",
-      "NOTIFICATION_RECEIVED",
-      "TOKEN_UPDATED",
+      "account-saved",
+      "accounts-updated",
+      "respuesta-historial-cuenta",
+
     ];
 
     if (canalesPermitidos.includes(canal)) {

@@ -85,6 +85,7 @@ export type dataToEditArticle = {
 //// TYPES VENTAS
 
 export type saleData = {
+  _id: Key;
   articles: {
     name: string;
     code: string;

@@ -1,1 +1,3 @@
 {"nombre":"Mami","password":"$2b$10$5GQa1RvYT2CCVlD83Hvo5.cfj4SImSt7GtUwndYH8H.umTv6wolGe","imageUrl":"/imagen-usuario/user-1.jpg","permisos":{"gerente":false,"logistica":false,"ventas":true,"stock":false},"esusuario":true,"_id":"JlFmEknOeLmkyYA4"}
+{"nombre":"222222","password":"$2b$10$5BopI5L10MN6GRU6KU6rL.8uJDgGdCyMMwTkFD3Jn/C.ac/ziIKM2","imageUrl":"assets/imagen-usuario/user-2.jpg","permisos":{"gerente":true,"logistica":false,"ventas":false,"stock":false},"esusuario":true,"_id":"gghS1bT0lfHwvwAk"}
+{"nombre":"asd","password":"$2b$10$A5qyvA0g81qdlrgQhzy2ZuYNWj1cKZ9cVWiqslPhR9Jax9RKn1JTq","imageUrl":"/imagen-usuario/user-1.jpg","permisos":{"gerente":false,"logistica":false,"ventas":true,"stock":false},"esusuario":true,"_id":"sBBBT2QR8WlqRvUt"}

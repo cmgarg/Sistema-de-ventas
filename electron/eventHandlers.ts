@@ -69,6 +69,12 @@ import {
   addPayMethod,
   removePayMethod,
   updatePayMethod,
+  actualizarSenotifico,
+  getAccountsToPay20,
+  saveHistorialCuenta,
+  getAccountsToPay20editar,
+  updateAccountInDb,
+  getHistorialCuentaPorId,
 } from "./databaseOperations";
 import { verificarToken } from "./vFunctions";
 import { articleData, IUser } from "../types/types";
@@ -748,8 +754,98 @@ export const loadEvents = () => {
     }
   });
 
-  ipcMain.on("save-accountToPay", async (_event, account) => {
-    await accountToPay(account);
+  ipcMain.on("get-accountToPay2", async (event) => {
+    try {
+      const accountsToPay = await getAccountsToPay();
+      event.reply("response-get-accountToPay2", accountsToPay);
+    } catch (error) {
+      event.reply("response-get-accountToPay2", []);
+    }
+  });
+
+  ipcMain.on("get-accountToPay3", async (event) => {
+    try {
+      const accountsToPay = await getAccountsToPay();
+      event.reply("response-get-accountToPay3", accountsToPay);
+    } catch (error) {
+      event.reply("response-get-accountToPay3", []);
+    }
+  });
+
+  ipcMain.on(
+    "actualizar-senotifico",
+    async (event, { idCuenta, estadoSenotifico }) => {
+      try {
+        await actualizarSenotifico(idCuenta, estadoSenotifico);
+        event.reply("senotifico-actualizado", { exitoso: true, idCuenta });
+      } catch (error) {
+        event.reply("senotifico-actualizado", {
+          exitoso: false,
+          error: onmessage,
+        });
+      }
+    }
+  );
+
+  ipcMain.on("save-accountToPayeditar", async (event, account) => {
+    try {
+      // Actualizar la cuenta en la base de datos
+      await updateAccountInDb(account._id, account);
+
+      // Obtener todas las cuentas actualizadas de la base de datos
+      const updatedAccounts = await getAccountsToPay20editar();
+
+      // Enviar las cuentas actualizadas al frontend
+      event.reply("accounts-updated", updatedAccounts);
+    } catch (error) {
+      console.error("Error al actualizar la cuenta:", error);
+      event.reply("accounts-updated-error", { success: false });
+    }
+  });
+
+  ipcMain.on("save-accountToPay", async (event, account) => {
+    try {
+      // Guardar la cuenta nueva en la base de datos y obtener la cuenta guardada con su ID generado
+      const savedAccount = await accountToPay(account);
+
+      // Obtener la fecha y la hora actuales en la zona horaria de Argentina
+      const fechaActual = new Date();
+      const fecha_edicion = fechaActual
+        .toLocaleDateString("es-AR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+        .split("/")
+        .reverse()
+        .join("-");
+
+      const fecha_edicionHora = fechaActual.toLocaleTimeString("es-AR", {
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+
+      // Crear historial de la cuenta recién creada utilizando los datos devueltos por la inserción
+      await saveHistorialCuenta({
+        cuenta: savedAccount, // Guardar la cuenta completa con su nuevo ID
+        fecha_edicion, // Fecha de creación (solo fecha)
+        fecha_edicionHora, // Hora de creación (solo hora)
+      });
+
+      // Obtener todas las cuentas actualizadas de la base de datos
+      const updatedAccounts = await getAccountsToPay20();
+
+      // Enviar las cuentas actualizadas al frontend
+      event.reply("accounts-updated", updatedAccounts);
+    } catch (error) {
+      console.error(
+        "Error al guardar la cuenta o al crear el historial",
+        error
+      );
+      event.reply("error-save-account", { success: false });
+    }
   });
 
   ipcMain.on("actualizar-cuenta", async (event, { id, updatedAccount }) => {
@@ -787,7 +883,8 @@ const validateNotificationData = (data: { nota: any } | null) => {
 };
 
 // Guardar una notificación y enviarla a todas las ventanas
-ipcMain.on("send-notification", async (_event, data) => {
+// Guardar una notificación y enviarla a todas las ventanas
+ipcMain.on("send-notification", async (event, data) => {
   if (validateNotificationData(data)) {
     try {
       // Obtener los tipos de notificación desactivados
@@ -801,11 +898,23 @@ ipcMain.on("send-notification", async (_event, data) => {
         return;
       }
 
+      // Guardar la notificación
       const savedNotification = await saveNotification(data);
+
+      // Enviar la notificación a todas las ventanas abiertas
       const windows = BrowserWindow.getAllWindows();
       windows.forEach((window) => {
         window.webContents.send("notification", savedNotification);
       });
+
+      // Obtener y enviar todas las notificaciones actuales
+      try {
+        const notifications = await getNotifications();
+        event.reply("response-get-notifications", notifications);
+      } catch (error) {
+        console.error("Error al obtener las notificaciones:", error);
+        event.reply("response-get-notifications", []);
+      }
     } catch (error) {
       console.error("Error al guardar la notificación:", error);
     }
@@ -915,6 +1024,38 @@ ipcMain.on("clear-cache", (event) => {
       console.error("Error al limpiar la caché:", error);
       event.reply("cache-cleared", { success: false, error: error.message });
     });
+});
+
+/////////guarda la edicion de las cuentas para el hisrial
+// Evento para guardar historial de cuentas
+ipcMain.on("guardar-historial-cuenta", async (event, cuentaHistorial) => {
+  try {
+    // Llamar a la función para guardar el historial, pasando la cuenta completa
+    await saveHistorialCuenta({
+      cuenta: cuentaHistorial.cuenta, // Cuenta completa
+      fecha_edicion: cuentaHistorial.fecha_edicion, // Fecha de edición (solo la fecha)
+      fecha_edicionHora: cuentaHistorial.fecha_edicionHora, // Hora de edición (solo la hora)
+    });
+    event.reply("historial-guardado", { success: true });
+  } catch (error) {
+    console.error("Error al guardar historial de cuenta:", error);
+    event.reply("historial-guardado", { success: false });
+  }
+});
+
+ipcMain.on("get-historial-cuenta", async (event, idCuenta) => {
+  try {
+    // Obtener el historial de la cuenta usando el idCuenta
+    const historial = await getHistorialCuentaPorId(idCuenta);
+
+    // Responder al frontend con el historial obtenido
+    event.reply("respuesta-historial-cuenta", historial);
+  } catch (error) {
+    console.error("Error al obtener el historial de la cuenta:", error);
+    event.reply("respuesta-historial-cuenta", {
+      error: "Error al obtener el historial",
+    });
+  }
 });
 
 ///////////////////////

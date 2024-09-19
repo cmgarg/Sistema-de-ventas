@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import ReactSwitch from "react-switch";
 
 interface Cuenta {
   meses: number; // asegúrate de que 'meses' sea siempre un número
@@ -10,19 +11,18 @@ interface Cuenta {
   descripcion: string;
   pagado: boolean;
   _id: string;
+  notifiacion: boolean;
 }
 
 interface EditarCuentaProps {
   onChangeModal: (p: boolean) => void;
-  cuentaSeleccionada: Cuenta | null;
-  updateAccount: (id: string, updatedAccount: Partial<Cuenta>) => void;
+  cuentaSeleccionada: any;
   getAccountsToPay: () => void;
 }
 
 const EditarCuenta: React.FC<EditarCuentaProps> = ({
   onChangeModal,
   cuentaSeleccionada,
-  updateAccount,
   getAccountsToPay,
 }) => {
   const [accountData, setAccountData] = useState<Cuenta>(
@@ -35,6 +35,7 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
       pagado: false,
       meses: 1,
       _id: "",
+      notifiacion: cuentaSeleccionada.notifiacion,
     }
   );
 
@@ -51,6 +52,36 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
     }));
   }
 
+  async function guardarHistorialCuenta(cuentaActualizada: Cuenta) {
+    const fechaActual = new Date();
+  
+    // Obtener la fecha en formato "YYYY-MM-DD"
+    const fecha_edicion = fechaActual.toLocaleDateString('es-AR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).split('/').reverse().join('-');
+  
+    // Obtener la hora exacta en formato "HH:MM:SS"
+    const fecha_edicionHora = fechaActual.toLocaleTimeString('es-AR', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+  
+    // Crear el objeto historial con la fecha y la hora separadas
+    const historial = {
+      fecha_edicion, // Fecha de edición actual (solo la fecha)
+      fecha_edicionHora, // Hora de edición actual (solo la hora)
+      cuenta: { ...cuentaActualizada }, // Guardar toda la cuenta actualizada dentro del objeto 'cuenta'
+    };
+  
+    // Enviar el evento para guardar el historial
+    window.api.enviarEvento("guardar-historial-cuenta", historial);
+  }
+  
+  
   function validateAndSubmit() {
     const { tipodegasto, date, pay, descripcion } = accountData;
     if (!tipodegasto || !date || pay <= 0 || !descripcion) {
@@ -62,24 +93,31 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
       });
       return;
     }
-
+  
     if (cuentaSeleccionada) {
-      console.log("Datos a enviar para actualizar:", accountData);
-      updateAccount(cuentaSeleccionada._id, accountData);
+      // Aquí llamamos al evento save-accountToPay para actualizar la cuenta en la base de datos
+      window.api.enviarEvento("save-accountToPayeditar", accountData);
+  
       onChangeModal(false);
+  
+      // Mostrar mensaje de éxito
       Swal.fire({
         title: "¡Éxito!",
         text: "La cuenta ha sido editada correctamente.",
         icon: "success",
         confirmButtonText: "Ok",
       });
+  
+      // Refrescar las cuentas después de actualizar
+      getAccountsToPay();
     } else {
       console.error("No hay cuenta seleccionada para actualizar");
     }
-
-    getAccountsToPay();
+  
+    // Guardar el historial de la cuenta editada
+    guardarHistorialCuenta(accountData);
   }
-
+  
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 w-full h-full">
       <div className="absolute top-0 right-0 bottom-0 left-0 bg-black opacity-60"></div>
@@ -139,6 +177,28 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
               onChange={(e) => {
                 setChangeData("date", e.target.value as string);
               }}
+            />
+          </div>
+          <div className="flex-1 flex items-center h-14 rounded-md bg-slate-900 border-slate-900 m-3">
+            <label htmlFor="notifiacion" className="text-xl p-2 pl-4">
+              Notificarme el dia de vencimiento
+            </label>
+            <ReactSwitch
+              id="notifiacion"
+              checked={accountData.notifiacion}
+              onChange={(checked) => {
+                setChangeData("notifiacion", checked);
+              }}
+              onColor="#86d3ff"
+              onHandleColor="#2693e6"
+              handleDiameter={30}
+              uncheckedIcon={false}
+              checkedIcon={false}
+              boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+              activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+              height={20}
+              width={48}
+              className="ml-10"
             />
           </div>
           <div className="flex flex-col">

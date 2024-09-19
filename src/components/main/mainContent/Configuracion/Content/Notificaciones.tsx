@@ -12,7 +12,7 @@ import NotifConfiguracion from "./Componentes-Notificaciones/NotifConfiguracion"
 
 export default function Notificaciones() {
   return (
-    <div className="flex flex-1 text-white bg-gray-800 rounded-lg shadow-2xl  h-[56.9rem] shadow-black overflow-auto">
+    <div className="flex flex-1 text-white rounded-lg  h-[56.9rem] shadow-[0_2px_5px_rgba(0,0,0,0.50)]  overflow-auto bg-[#2f2f2fff]">
       <div className="flex flex-1 flex-col mr-16 ml-16">
         <div className="flex  pt-16 pb-10 text-2xl h-1/4 border-gray-700 border-b-2 ">
           <div className="flex flex-1 flex-col">

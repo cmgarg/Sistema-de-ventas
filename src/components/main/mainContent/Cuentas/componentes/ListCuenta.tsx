@@ -5,6 +5,7 @@ import EditarCuenta from "./EditarCuenta";
 import Swal from "sweetalert2";
 import { MdCheckCircleOutline } from "react-icons/md";
 import { LuCalendarDays } from "react-icons/lu";
+import InformacionCuentas from "./InformacionCuentas";
 
 interface Cuenta {
   [x: string]: any;
@@ -24,6 +25,7 @@ interface ListCuentaProps {
   filtroActivo: string;
   orden: "asc" | "desc";
   getAccountsToPay: () => void;
+  idcuenta: string;
 }
 
 const ListCuenta: React.FC<ListCuentaProps> = ({
@@ -31,6 +33,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
   filtroActivo,
   orden,
   getAccountsToPay,
+  idcuenta,
 }) => {
   const [fechaActual, setFechaActual] = useState<Date>(new Date());
   const [divExpandido, setDivExpandido] = useState<string>("");
@@ -53,6 +56,25 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
   const [editar, setEditar] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const divRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const [inforamcionCuentas, setInforamcionCuentas] = useState(false);
+
+  // Estado para la animación de resaltado de la cuenta
+  const [highlightedCuenta, setHighlightedCuenta] = useState<string | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (idcuenta) {
+      setHighlightedCuenta(idcuenta);
+
+      // Remover el resaltado después de 5 segundos
+      const timer = setTimeout(() => {
+        setHighlightedCuenta(null);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [idcuenta]);
 
   useEffect(() => {
     setCuentasActualizadas(cuentas);
@@ -73,9 +95,11 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
     }, 0);
   };
 
-  const formatDate = (date: string) => {
-    if (!date) return "";
-    return format(new Date(date), "dd/MM/yyyy", { locale: es });
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+    const localDate = new Date(date.getTime() + userTimezoneOffset);
+    return format(localDate, "dd/MM/yyyy", { locale: es });
   };
 
   useEffect(() => {
@@ -148,6 +172,15 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
       );
     };
   }, [cuentas]);
+
+  const filtrarCuentasPorFecha = (fecha: Date) => {
+    const mesReferencia = getMonth(fecha) + 1;
+    const anioReferencia = getYear(fecha);
+    return cuentasActualizadas.filter((cuenta) => {
+      const [anioCuenta, mesCuenta] = cuenta.date.split("-").map(Number);
+      return anioCuenta === anioReferencia && mesCuenta === mesReferencia;
+    });
+  };
 
   useEffect(() => {
     const manejarEstadoPagadoActualizado = ({
@@ -222,15 +255,6 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
   const esDivVisible = (divId: string) =>
     divExpandido === "" || divExpandido === divId;
 
-  const filtrarCuentasPorFecha = (fecha: Date) => {
-    const mesReferencia = getMonth(fecha) + 1;
-    const anioReferencia = getYear(fecha);
-    return cuentasActualizadas.filter((cuenta) => {
-      const [anioCuenta, mesCuenta] = cuenta.date.split("-").map(Number);
-      return anioCuenta === anioReferencia && mesCuenta === mesReferencia;
-    });
-  };
-
   const ordenarCuentas = (
     cuentas: Cuenta[],
     tipo: string,
@@ -262,9 +286,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
         });
       case "monto":
         return sortedCuentas.sort((a, b) =>
-          orden === "asc"
-            ? a.pay - b.pay
-            : b.pay - a.pay
+          orden === "asc" ? a.pay - b.pay : b.pay - a.pay
         );
       case "pagado":
         return sortedCuentas.sort((a, b) => {
@@ -281,8 +303,14 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
 
   const togglePagado = (id: string) => {
     const now = new Date();
-    const fecha = now.toISOString().split("T")[0];
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const fecha = `${year}-${month}-${day}`;
+
     const hora = now.toTimeString().split(" ")[0];
+
     setEstadosPagados((prevEstados) => {
       const updatedEstados = { ...prevEstados, [id]: !prevEstados[id] };
       window.api.enviarEvento("actualizar-estado-pagado", {
@@ -341,17 +369,9 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
     event.preventDefault();
     setCuentaSeleccionada(cuenta);
     setMostrarOpciones(true);
-    const offsetX = 0; // Desplazamiento horizontal
-    const offsetY = -40; // Desplazamiento vertical
+    const offsetX = 0;
+    const offsetY = -40;
     setPosicionMenu({ x: event.pageX + offsetX, y: event.pageY + offsetY });
-  };
-
-  const updateAccount = (id: string, updatedAccount: Partial<Cuenta>) => {
-    setCuentasActualizadas((prevCuentas) =>
-      prevCuentas.map((cuenta) =>
-        cuenta._id === id ? { ...cuenta, ...updatedAccount } : cuenta
-      )
-    );
   };
 
   const cuentasPorFecha = [
@@ -362,23 +382,67 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
   const cuentasFiltradas = cuentasPorFecha.map((fecha) =>
     filtrarCuentasPorFecha(fecha)
   );
-  const cuentasOrdenadas = cuentasFiltradas.map((cuentas) =>
-    ordenarCuentas(cuentas, filtroActivo, orden)
+
+  const cuentasOrdenadas = cuentasFiltradas.map((cuentasMes) =>
+    ordenarCuentas(cuentasMes, filtroActivo, orden)
   );
+
   const getMes = (fecha: Date) =>
     format(fecha, "MMMM yyyy", { locale: es }).charAt(0).toUpperCase() +
     format(fecha, "MMMM yyyy", { locale: es }).slice(1);
 
+  useEffect(() => {
+    // Definir la función listener para el evento
+    const manejarAccountsUpdated = (updatedAccounts) => {
+      setCuentasActualizadas(updatedAccounts); // Actualizar el estado con las cuentas nuevas
+    };
+
+    // Escuchar el evento
+    window.api.recibirEvento("accounts-updated", manejarAccountsUpdated);
+
+    // Limpiar el listener cuando se desmonte el componente
+    return () => {
+      window.api.removeListener("accounts-updated", manejarAccountsUpdated);
+    };
+  }, []);
+
+  const toggleInformacionCuentas = () => {
+    setInforamcionCuentas((prevState) => !prevState);
+  };
+
+  // Función para sumar el total de cuentas pagadas
+  const sumaCuentasPagadas = (cuentas: Cuenta[]) => {
+    return cuentas
+      .filter((cuenta) => cuenta.pagado === true) // Filtrar cuentas pagadas
+      .reduce((acumulador, cuenta) => acumulador + cuenta.pay, 0); // Sumar el valor de pay
+  };
+
+  // Función para sumar el total de cuentas no pagadas
+  const sumaCuentasNoPagadas = (cuentas: Cuenta[]) => {
+    return cuentas
+      .filter((cuenta) => cuenta.pagado === false) // Filtrar cuentas no pagadas
+      .reduce((acumulador, cuenta) => acumulador + cuenta.pay, 0); // Sumar el valor de pay
+  };
+
   return (
-    <div onWheel={handleWheel} className="flex flex-col h-[60.5rem]">
+    <div
+      onWheel={inforamcionCuentas ? null : handleWheel}
+      className="flex flex-col h-[60.5rem]"
+    >
       {editar && cuentaSeleccionada && (
         <EditarCuenta
           onChangeModal={setEditar}
           cuentaSeleccionada={cuentaSeleccionada}
-          updateAccount={updateAccount}
           getAccountsToPay={getAccountsToPay}
         />
       )}
+      {inforamcionCuentas ? (
+        <InformacionCuentas
+          cierre={toggleInformacionCuentas}
+          idCuenta={cuentaSeleccionada._id}
+          cuentas={cuentasActualizadas}
+        />
+      ) : null}
 
       {mostrarOpciones && cuentaSeleccionada && (
         <div
@@ -391,6 +455,15 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
             backgroundColor: "rgba(30, 41, 59)",
           }}
         >
+          <button
+            className="p-2 border-b-1 border-gray-600 hover:bg-gray-700"
+            onClick={() => {
+              toggleInformacionCuentas();
+              setMostrarOpciones(false);
+            }}
+          >
+            Informacion
+          </button>
           <button
             className="p-2 border-b-1 border-gray-600 hover:bg-gray-700"
             onClick={() => {
@@ -425,12 +498,21 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
               onClick={() => expandirDiv(`div${index + 1}`)}
             >
               <LuCalendarDays className="w-[8rem] h-[8rem]" color="white" />
-              <div className="pt-3">
+              <div className="pt-1">
                 {getMes(addMonths(fechaActual, index))}
               </div>
-              <div className="pt-16 flex flex-col items-center justify-center">
+              <div className="flex flex-col items-center justify-center">
+                <div className="text-green-600">
+                  
+                  {formatNumber(sumaCuentasPagadas(cuentasMes))}
+                </div>
+                <div className="text-red-600">
+                  
+                  {formatNumber(sumaCuentasNoPagadas(cuentasMes))}
+                </div>
+
                 <div>Total:</div>
-                <div>{totales[index]}</div>
+                <div>{formatNumber(totales[index])}</div>
               </div>
             </div>
             <div
@@ -449,38 +531,47 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
                 {cuentasMes.map((cuenta) => (
                   <div
                     key={cuenta._id}
-                    className={`flex h-[3rem] flex-row`}
+                    className={`flex h-[3rem] flex-row ${
+                      highlightedCuenta === cuenta._id
+                        ? "bg-highlight blink-animation"
+                        : ""
+                    }`}
                     onContextMenu={(event) => manejarClicDerecho(cuenta, event)}
                   >
-                    <div className="flex-1 flex h-[3rem] w-[14rem] text-white justify-center items-center border-b-1 border-gray-600">
+                    <div className="flex h-[3rem] w-full text-white items-center border-b-1 border-gray-600 pl-6">
                       {cuenta.tipodegasto}
                     </div>
-                    <div className="flex-1 flex h-[3rem] w-[14rem] text-white justify-center items-center border-b-1 border-gray-600">
+                    <div className="flex h-[3rem] w-full text-white items-center border-b-1 border-gray-600 pl-6">
                       {cuenta.descripcion}
                     </div>
-                    <div className="flex-1 flex h-[3rem] w-[14rem] text-white justify-center items-center border-b-1 border-gray-600">
+                    <div className="flex h-[3rem] w-full text-white items-center border-b-1 border-gray-600 pl-6">
                       <div className="flex justify-center pr-3">
                         {formatDate(cuenta.date)}
                       </div>
-                      <div className="flex justify-center border-l-2 pl-3 border-gray-600">
-                        {cuenta.time}
-                      </div>
                     </div>
-                    <div className="flex-1 flex h-[3rem] w-[14rem] text-white justify-center items-center border-b-1 border-gray-600">
+                    <div className="flex h-[3rem] w-full  text-white items-center border-b-1 border-gray-600 pl-6">
                       $ {formatNumber(cuenta.pay)}
                     </div>
-                    <div className="flex-1 relative flex h-[3rem] w-[14rem] text-white justify-center items-center border-b-1 border-gray-600">
-                      <div className="flex flex-1 flex-col">
-                        <div className="flex flex-1 pl-5">
-                          <div className="pr-3 border-r-2 border-gray-600">
-                            {cuenta.pagado2 && formatDate(cuenta.pagado2)}
+                    <div className="flex h-[3rem] w-full text-white justify-center items-center border-b-1 border-gray-600 pl-6">
+                      <div className="flex justify-center w-full flex-col">
+                        <div className="flex flex-col border-r-2 border-gray-600 ">
+                          <div
+                            className={`flex  items-center pr-1 ${
+                              cuenta.pagado2
+                                ? "h-full w-full"
+                                : "h-[3rem] w-[5rem]"
+                            }`}
+                          >
+                            {cuenta.pagado2
+                              ? formatDate(cuenta.pagado2)
+                              : "Pago pendiente"}
                           </div>
-                          <div className="pl-3">{cuenta.pagado3}</div>
+                          <div className="pl-1">{cuenta.pagado3}</div>
                         </div>
                       </div>
                       <div
                         onClick={() => togglePagado(cuenta._id)}
-                        className="flex flex-1 w-[4rem] justify-end pr-5"
+                        className="flex w-full items-center justify-center "
                       >
                         <div className="">
                           <MdCheckCircleOutline

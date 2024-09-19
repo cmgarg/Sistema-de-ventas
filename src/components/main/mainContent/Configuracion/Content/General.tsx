@@ -59,7 +59,7 @@ export default function General() {
   console.log(datosUsuarioRedux, "datos del usuariooooooooooooooooo");
 
   return (
-    <div className="flex flex-1 text-white bg-gray-800 rounded-lg shadow-2xl shadow-black">
+    <div className="flex flex-1 text-white rounded-lg shadow-[0_2px_5px_rgba(0,0,0,0.50)]  bg-[#2f2f2fff]">
       <div className="flex flex-1 flex-col">
         <div className="flex flex-col">
           <div className="h-12 text-lg p-3">Cuenta Administradora</div>
