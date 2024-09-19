@@ -1,3 +1,5 @@
+import { Key } from "react";
+
 //types ARTICULOS
 export type articleData = {
   article: {
