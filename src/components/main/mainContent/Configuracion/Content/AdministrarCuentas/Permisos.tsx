@@ -111,12 +111,12 @@ const Permisos: React.FC<PermisosProps> = ({ usuarios, usuarioSeleccionado, setU
         <div className="p-4 text-lg">
           Configuración por defecto: solo se puede seleccionar una categoría.
         </div>
-        <div className="flex flex-wrap text-white justify-around p-5 border-b border-t border-gray-600 gap-4">
+        <div className="flex flex-wrap text-white justify-around p-5 border-b border-t border-gray-600 gap-4 ">
           {cargos.map((cargo) => (
             <div
               key={cargo.key}
-              className={`flex flex-col border border-gray-600 rounded-lg flex-grow w-full sm:w-1/5 min-w-[10rem] max-w-[15rem] h-60 hover:bg-gray-900 shadow-md shadow-slate-950 ${
-                cargoSelec === cargo.key ? "bg-gray-900" : ""
+              className={`bg-gradient-to-b from-gray-800 via-gray-800 to-gray-700 flex flex-col rounded-lg flex-grow w-full sm:w-1/5 min-w-[10rem] max-w-[15rem] h-60 shadow-[0_2px_5px_rgba(0,0,0,0.50)] ${
+                cargoSelec === cargo.key ? "bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-600" : ""
               }`}
               onClick={() => handleSelect(cargo.key)}
             >

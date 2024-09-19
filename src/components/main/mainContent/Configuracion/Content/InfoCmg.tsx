@@ -17,7 +17,7 @@ export default function InfoCmg() {
   };
 
   return (
-    <div className="flex flex-1 text-white bg-gray-800 rounded-lg shadow-2xl shadow-black">
+    <div className="flex flex-1 text-white rounded-lg shadow-[0_2px_5px_rgba(0,0,0,0.50)]  bg-[#2f2f2fff]">
       <div className="flex flex-1 flex-col">
         <div
           className="flex h-36 w-full  items-center pl-6 border-b border-gray-600"

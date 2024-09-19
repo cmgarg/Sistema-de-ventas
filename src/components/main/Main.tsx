@@ -136,13 +136,15 @@ export const sendNotification = (
   titulo: string,
   nota: string,
   icono: number,
-  tipo: string
+  tipo: string,
+  idcuenta: string,
 ) => {
   const notificationData = {
     titulo: titulo,
     nota: nota,
     icono: icono, // Aquí puedes usar el nombre del icono que deseas
     tipo: tipo, //////// stock, actualizacion, caja,
+    idcuenta: idcuenta,
     fechaHora: new Date().toISOString(),
     visto: false,
     ocualta: false,

@@ -107,7 +107,7 @@ const Buscador = <T extends object>({
       <ButtonR
         borderSize="border-b-[4px]"
         textSize="text-lg"
-        bgIconColor="bg-gray-700"
+        bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
         height="h-10"
         width="w-10"
       >

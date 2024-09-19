@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from "react";
 import CustomAlert from "./CustomAlert"; // Importa tu componente de alerta personalizado
+import ReactSwitch from "react-switch";
 
 interface AddAccountToPayProps {
   onChangeModal: (p: boolean) => void;
   addAccountToPay: (account: {
     date: string;
+    dateTime: string;
     tipodegasto: string;
     descripcion: string;
     pay: number;
     pagado: boolean;
     pagado2?: string;
     pagado3?: string;
+    notifiacion?: boolean;
+    senotifico?: boolean; // Agregamos la propiedad aquí
   }) => void;
 }
 
@@ -21,22 +25,28 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
   type accountObject = {
     tipodegasto: string;
     date: string;
-    pay: string; // keep as string for internal state
+    dateTime: string;
+    pay: string; // Mantener como string para el estado interno
     descripcion: string;
     pagado: boolean;
     meses: number;
     time?: string;
     pagado2?: string;
     pagado3?: string;
+    notifiacion?: boolean;
+    senotifico?: boolean;
   };
 
   const [accountData, setAccountData] = useState<accountObject>({
     tipodegasto: "",
     date: "",
+    dateTime: "",
     pay: "",
     descripcion: "",
     pagado: false,
     meses: 1,
+    notifiacion: false,
+    senotifico: false,
   });
 
   const [showAlert, setShowAlert] = useState(false);
@@ -69,22 +79,30 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
     };
   }, [accountData]);
 
+
   function subirArticulo() {
     const now = new Date();
     const time = now.toTimeString().split(" ")[0];
+    const dateTime = new Date().toLocaleTimeString('es-AR', { hour12: false });
+    const dateDay = now.toISOString().split("T")[0];
     const date = now.toISOString().split("T")[0];
     const pagado2 = accountData.pagado ? date : "";
     const pagado3 = accountData.pagado ? time : "";
-    const newAccountData = { ...accountData, time, pagado2, pagado3 };
+    const newAccountData = { ...accountData, time, dateTime, dateDay, pagado2, pagado3 };
+    
 
     const newAccount = {
       date: newAccountData.date,
+      dateTime: newAccountData.dateTime,
+      dateDay: newAccountData.dateDay, // Añadir `dateDay` aquí
       tipodegasto: newAccountData.tipodegasto,
       descripcion: newAccountData.descripcion,
-      pay: parseFloat(newAccountData.pay), // convert pay to number
+      pay: parseFloat(newAccountData.pay.replace(/,/g, "")), // Convertir `pay` a número
       pagado: newAccountData.pagado,
       pagado2: newAccountData.pagado2,
-      pagado3: newAccountData.pagado3
+      pagado3: newAccountData.pagado3,
+      notifiacion: newAccountData.notifiacion,
+      senotifico: newAccountData.senotifico, // Aseguramos que senotifico se incluya
     };
 
     if (accountData.tipodegasto === "Vencimiento Mensual") {
@@ -92,12 +110,9 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
         const accountWithDate = {
           ...newAccount,
           date: new Date(
-            new Date(accountData.date).setMonth(
-              new Date(accountData.date).getMonth() + i
-            )
-          )
-            .toISOString()
-            .split("T")[0],
+            new Date(accountData.date).setMonth(new Date(accountData.date).getMonth() + i)
+          ).toISOString().split("T")[0],
+          dateTime: i === 0 ? dateTime : "", // Solo asignar `dateTime` en la primera cuenta
         };
         window.api.enviarEvento("save-accountToPay", accountWithDate);
         addAccountToPay(accountWithDate);
@@ -106,16 +121,21 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
       window.api.enviarEvento("save-accountToPay", newAccount);
       addAccountToPay(newAccount);
     }
+    // Reiniciar los valores
     setAccountData({
       tipodegasto: "",
       date: "",
+      dateTime: "",
       pay: "",
       descripcion: "",
       pagado: false,
       meses: 1,
+      notifiacion: false,
+      senotifico: false, // Reiniciar la propiedad
     });
     onChangeModal(false);
   }
+  
 
   function validateAndSubmit() {
     const { tipodegasto, date, pay, descripcion } = accountData;
@@ -131,10 +151,12 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
   }
 
   const formatNumber = (value: string) => {
-    if (!value) return '';
-    const [integerPart, decimalPart] = value.split('.');
-    const formattedIntegerPart = parseInt(integerPart).toLocaleString('en-US');
-    return decimalPart !== undefined ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
+    if (!value) return "";
+    const [integerPart, decimalPart] = value.split(".");
+    const formattedIntegerPart = parseInt(integerPart).toLocaleString("en-US");
+    return decimalPart !== undefined
+      ? `${formattedIntegerPart}.${decimalPart}`
+      : formattedIntegerPart;
   };
 
   const handlePayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,6 +257,29 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
             />
           </div>
 
+          <div className="flex-1 flex items-center h-14 rounded-md bg-slate-900 border-slate-900 m-3">
+            <label htmlFor="notifiacion" className="text-xl p-2 pl-4">
+              Notificarme el dia de vencimiento
+            </label>
+            <ReactSwitch
+              id="notifiacion"
+              checked={accountData.notifiacion}
+              onChange={(checked) => {
+                setChangeData("notifiacion", checked);
+              }}
+              onColor="#86d3ff"
+              onHandleColor="#2693e6"
+              handleDiameter={30}
+              uncheckedIcon={false}
+              checkedIcon={false}
+              boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+              activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+              height={20}
+              width={48}
+              className="ml-10"
+            />
+          </div>
+
           <div className="flex flex-col">
             <label htmlFor="pay" className="text-xl p-2 pl-4">
               Monto
@@ -243,7 +288,7 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
               type="text"
               name="pay"
               className="outline-none h-14 px-2 rounded-md bg-slate-900 border-slate-900 mr-3 ml-3"
-              value={formatNumber(accountData.pay)}
+              value={accountData.pay}
               onChange={handlePayChange}
               onBlur={handlePayBlur}
             />

@@ -57,6 +57,10 @@ const db = {
     filename: "database/payMethod.db",
     autoload: true,
   }),
+  cuentasHistorial: new Datastore({
+    filename: "database/cuentasHistorial.db",
+    autoload: true,
+  }),
 };
 console.log("databaseOperations Se esta ejecutanado...");
 
@@ -1011,15 +1015,18 @@ export const obtenerEstadoPagado = (idCuenta: any) => {
   });
 };
 
-export const accountToPay = (account: object) => {
-  db.accounts.insert(account, (err, _newDoc) => {
-    if (err) {
-      // Manejar el error
-    } else {
-      // Objeto guardado con éxito
-    }
+export const accountToPay = async (account: object) => {
+  return new Promise((resolve, reject) => {
+    db.accounts.insert(account, (err, newDoc) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(newDoc); // Devolver la cuenta guardada con su nuevo ID y datos completos
+      }
+    });
   });
 };
+
 
 export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
   if (idCuenta == null || datosActualizados == null) {
@@ -1483,6 +1490,71 @@ export const eliminarCuenta = async (id: any) => {
   });
 };
 
+
+
+//actualiza senotifico para no volver a notificarle varias veses la misma cuenta
+export const actualizarSenotifico = (idCuenta: any, estadoSenotifico: any) => {
+  return new Promise((resolve, reject) => {
+    db.accounts.update(
+      { _id: idCuenta },
+      { $set: { senotifico: estadoSenotifico } },
+      {},
+      (err, numUpdated) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(numUpdated);
+        }
+      }
+    );
+  });
+};
+
+export async function getAccountsToPay20() {
+  return new Promise((resolve, reject) => {
+    db.accounts.find({}, (err: any, docs: unknown) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(docs);
+      }
+    });
+  });
+}
+
+// Función para actualizar una cuenta en la base de datos
+export const updateAccountInDb = async (id: any, updatedAccount: any) => {
+  return new Promise((resolve, reject) => {
+    db.accounts.update(
+      { _id: id },  // Condición para encontrar la cuenta por su _id
+      { $set: updatedAccount },  // Actualización de la cuenta
+      {},
+      (err, numReplaced) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(numReplaced);  // Devolver el número de documentos actualizados
+        }
+      }
+    );
+  });
+};
+
+// Función para obtener todas las cuentas actualizadas
+export async function getAccountsToPay20editar() {
+  return new Promise((resolve, reject) => {
+    db.accounts.find({}, (err: any, docs: unknown) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(docs);  // Devolver todas las cuentas
+      }
+    });
+  });
+}
+
+
+
 // Guardar una nueva notificación
 export const saveNotification = async (data: any) => {
   try {
@@ -1569,3 +1641,51 @@ export const deleteOldNotifications = async (thresholdDate: any) => {
     throw error;
   }
 };
+
+
+///////////////////////funcion que guarda la eicion de las cuneta para el histial
+export const saveHistorialCuenta = async (historialData: { cuenta: any; fecha_edicion: any; fecha_edicionHora: any; }) => {
+  try {
+
+
+    await db.cuentasHistorial.insertAsync({
+      fecha_edicion: historialData.fecha_edicion, // Fecha de edición (solo la fecha)
+      fecha_edicionHora: historialData.fecha_edicionHora, // Hora de edición (solo la hora)
+      cuenta: historialData.cuenta, // Guardar la cuenta completa anidada
+    });
+
+   
+  } catch (error) {
+    console.error("Error al guardar historial de cuenta:", error);
+    throw error;
+  }
+};
+
+
+export const getAccountById = async (id: string) => {
+  return new Promise((resolve, reject) => {
+    db.accounts.findOne({ _id: id }, (err, doc) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(doc);
+      }
+    });
+  });
+};
+
+
+// Función para obtener el historial de una cuenta por su ID
+
+export const getHistorialCuentaPorId = async (idCuenta: string) => {
+  return new Promise((resolve, reject) => {
+    db.cuentasHistorial.find({ "cuenta._id": idCuenta }, (err: any, docs: unknown) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(docs); // Devuelve todas las coincidencias con el idCuenta
+      }
+    });
+  });
+};
+

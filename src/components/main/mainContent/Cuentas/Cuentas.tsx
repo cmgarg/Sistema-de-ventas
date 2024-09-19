@@ -8,11 +8,13 @@ import ListCuenta from "./componentes/ListCuenta";
 import { format } from "date-fns";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
-import { v4 as uuidv4 } from "uuid"; // Import UUID for generating unique IDs
+import { v4 as uuidv4 } from "uuid";
 import ButtonR from "../buttons/ButtonR";
-import { MdMore } from "react-icons/md";
 import { IoAdd } from "react-icons/io5";
 import { BiExport } from "react-icons/bi";
+import { sendNotification } from "../../Main";
+import { useLocation } from "react-router-dom";
+
 
 interface Cuenta {
   _id: string;
@@ -34,6 +36,15 @@ const Cuentas: React.FC = () => {
     format(new Date(), "yyyy-MM-dd")
   );
 
+  ///id cuenta a actualizar
+  // Obtener parámetros de la URL
+  ///id cuenta a actualizar
+  // Obtener parámetros de la URL
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search); // Asegúrate de usar correctamente URLSearchParams
+  const cuentaId = queryParams.get("idcuenta"); // Usamos "idcuenta" como nombre de parámetro en la URL
+  console.log(cuentaId,"este es el id de la cuenta de notificacionQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ")
+  //////
   const onChangeModal = (p: boolean) => {
     setActiveModalForm(p);
   };
@@ -49,12 +60,11 @@ const Cuentas: React.FC = () => {
   }) => {
     const newAccount: Cuenta = {
       ...e,
-      _id: uuidv4(), // Generate a unique ID
-      time: new Date().toISOString().split("T")[1].split(".")[0], // Generate current time
-      meses: 1, // Set default value for meses or adjust as necessary
+      _id: uuidv4(),
+      time: new Date().toISOString().split("T")[1].split(".")[0],
+      meses: 1,
     };
     setAccountToPay((prev) => [...prev, newAccount]);
-    getAccountsToPay();
   };
 
   const getAccountsToPay = () => {
@@ -62,18 +72,23 @@ const Cuentas: React.FC = () => {
   };
 
   useEffect(() => {
+    // Solicitar cuentas cada vez que el componente se monta
     getAccountsToPay();
 
     const recibirCuentas = (accounts: Cuenta[]) => {
-      setAccountToPay(accounts);
+      console.log("Cuentas recibidas desde el backend:", accounts);
+      setAccountToPay([...accounts]);
     };
 
+    // Configurar el listener para recibir las cuentas
     window.api.recibirEvento("response-get-accountToPay", recibirCuentas);
 
     return () => {
+      // Eliminar el listener cuando el componente se desmonta
+      console.log("Eliminando listener para 'response-get-accountToPay'");
       window.api.removeListener("response-get-accountToPay", recibirCuentas);
     };
-  }, []);
+  }, []); // Se elimina accountToPay de las dependencias para evitar bucles
 
   const cambiarFiltro = (tipo: string) => {
     if (filtroActivo === tipo) {
@@ -88,18 +103,23 @@ const Cuentas: React.FC = () => {
     (state: RootState) => state.estadoTipoDeUser.datosUsuario
   );
 
-  console.log(
-    datosUsuarioRedux,
-    "estos son los datos del usuario iniciaado --------------ppppppppppppppp"
-  );
+  const formatNumber = (num: number | string) => {
+    const number = typeof num === "number" ? num : parseFloat(num);
+    if (isNaN(number)) {
+      return "0.00";
+    }
+    return number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,");
+  };
+
+
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col flex-1 mt-2">
       <NavMain title="Cuentas" setLoginUser={""}>
         <ButtonR
           borderSize="border-b-[4px]"
           textSize="text-lg"
           onClick={onChangeModal}
-          bgIconColor="bg-gray-700"
+          bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
           height="h-10"
           width="w-10"
         >
@@ -109,7 +129,7 @@ const Cuentas: React.FC = () => {
           borderSize="border-b-[4px]"
           textSize="text-lg"
           onClick={onChangeModal}
-          bgIconColor="bg-gray-700"
+          bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
           height="h-10"
           width="w-10"
         >
@@ -165,23 +185,25 @@ const Cuentas: React.FC = () => {
               <div className="flex absolute right-3"></div>
             </div>
           </div>
-
-          <ListCuenta
+          <div className=" w-full h-full">
+            <ListCuenta
             cuentas={accountToPay}
             filtroActivo={filtroActivo}
             orden={orden}
             getAccountsToPay={getAccountsToPay}
-          />
+            idcuenta={cuentaId}
+            />
+          </div>
         </div>
 
-        <div className="flex h-[90vh] text-white justify-start flex-col mt-2 mr-3 rounded-lg  ">
+        <div className="flex h-[90vh] text-white justify-start flex-col mt-2 mr-3 rounded-lg">
           <div className="flex h-[21rem] mb-3">
             <Calendar
               diaSeleccionado={diaSeleccionado}
               setDiaSeleccionado={setDiaSeleccionado}
             />
           </div>
-          <div className="flex flex-col h-[58vh] ">
+          <div className="flex flex-col h-[58vh]">
             <div className="pb-3">
               <div className="flex border-gray-600 border mb-2 rounded-lg p-2 items-center justify-center">
                 <p className="pl-3">Vencimiento Mensual</p>
@@ -201,7 +223,7 @@ const Cuentas: React.FC = () => {
                       >
                         <div className="flex">
                           <p className="flex-1 pl-1">{cuenta.descripcion}</p>
-                          <p className="flex-1">${cuenta.pay}</p>
+                          <p className="flex-1 ">${formatNumber(cuenta.pay)}</p>
                         </div>
                       </div>
                     ))}
@@ -227,7 +249,7 @@ const Cuentas: React.FC = () => {
                       >
                         <div className="flex">
                           <p className="flex-1 pl-1">{cuenta.descripcion}</p>
-                          <p className="flex-1 ">${cuenta.pay}</p>
+                          <p className="flex-1 ">${formatNumber(cuenta.pay)}</p>
                         </div>
                       </div>
                     ))}

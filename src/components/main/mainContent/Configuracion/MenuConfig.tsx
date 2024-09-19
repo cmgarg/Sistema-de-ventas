@@ -17,7 +17,7 @@ const MenuConfig: React.FC<MenuConfigProps> = ({ estado, setEstado }) => {
   const dispatch = useDispatch();
 
   return (
-    <div className="flex flex-1 flex-col bg-gray-900 rounded-lg shadow-xl shadow-black">
+    <div className="flex flex-1 flex-col bg-[#2f2f2fff] rounded-lg shadow-[0_2px_5px_rgba(0,0,0,0.50)] ">
       <div className="flex flex-1 flex-col">
         <div
           className={`flex w-full h-16 text-white relative hover:bg-black hover:bg-opacity-10 ${
@@ -67,7 +67,7 @@ const MenuConfig: React.FC<MenuConfigProps> = ({ estado, setEstado }) => {
       </div>
 
       <div
-        className={`h-20 flex flex-col hover:bg-gray-800 ${
+        className={`h-20 flex flex-col hover:bg-zinc-800 ${
           estado === "general-6" ? "border-l-8 bg-black bg-opacity-25" : null
         }`}
         onClick={() => setEstado("general-6")}

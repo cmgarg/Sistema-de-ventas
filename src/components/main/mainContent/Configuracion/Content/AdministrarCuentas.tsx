@@ -12,7 +12,7 @@ interface Usuario {
   _id: string;
   nombre: string;
   imageUrl: string;
-  password: string;  // Asegúrate de incluir 'password'
+  password: string; // Asegúrate de incluir 'password'
   permisos: {
     gerente: boolean;
     logistica: boolean;
@@ -30,16 +30,14 @@ interface Response {
   imageUrl?: string;
 }
 
-
-
-
-
 export default function AdministrarCuentas() {
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<string>("");
-  const [usuarioParaEditar, setUsuarioParaEditar] = useState<Usuario | null>(null);
+  const [usuarioParaEditar, setUsuarioParaEditar] = useState<Usuario | null>(
+    null
+  );
   const [changeImageVisible, setChangeImageVisible] = useState(false);
   const [selectedImagee, setSelectedImagee] = useState<string | null>(null);
   const imageRef = useRef<HTMLDivElement | null>(null);
@@ -60,16 +58,19 @@ export default function AdministrarCuentas() {
     window.api.enviarEvento("cargar-todos-usuarios");
 
     // Escuchar la respuesta del backend
-    window.api.recibirEvento("respuesta-cargar-todos-usuarios", (response: Response) => {
-      if (response.exito) {
-        setUsuarios(response.usuarios);
-        if (response.usuarios.length > 0) {
-          setUsuarioSeleccionado(response.usuarios[0]._id);
+    window.api.recibirEvento(
+      "respuesta-cargar-todos-usuarios",
+      (response: Response) => {
+        if (response.exito) {
+          setUsuarios(response.usuarios);
+          if (response.usuarios.length > 0) {
+            setUsuarioSeleccionado(response.usuarios[0]._id);
+          }
+        } else {
+          console.error("Error al cargar usuarios:", response.error);
         }
-      } else {
-        console.error("Error al cargar usuarios:", response.error);
       }
-    });
+    );
 
     // Escuchar la respuesta de la actualización de la imagen del subusuario
     window.api.recibirEvento(
@@ -95,14 +96,17 @@ export default function AdministrarCuentas() {
     );
 
     // Escuchar la respuesta de la actualización del usuario
-    window.api.recibirEvento("respuesta-guardar-usuario-editado", (response: Response) => {
-      if (response.exito) {
-        // Solicitar nuevamente la carga de todos los usuarios para reflejar los cambios
-        window.api.enviarEvento("cargar-todos-usuarios");
-      } else {
-        console.error("Error al guardar el usuario:", response.mensaje);
+    window.api.recibirEvento(
+      "respuesta-guardar-usuario-editado",
+      (response: Response) => {
+        if (response.exito) {
+          // Solicitar nuevamente la carga de todos los usuarios para reflejar los cambios
+          window.api.enviarEvento("cargar-todos-usuarios");
+        } else {
+          console.error("Error al guardar el usuario:", response.mensaje);
+        }
       }
-    });
+    );
 
     // Limpiar los listeners al desmontar el componente
     return () => {
@@ -179,7 +183,6 @@ export default function AdministrarCuentas() {
       setChangeImageVisible(false);
     }
   };
-  
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -199,9 +202,9 @@ export default function AdministrarCuentas() {
   }
 
   return (
-    <div className="flex flex-1 text-white bg-gray-800 rounded-lg shadow-2xl shadow-black space-x-2 overflow-hidden">
-      <div className="flex flex-col w-1/4 border border-gray-600 rounded-lg overflow-hidden">
-        <div className="h-12 flex justify-between pl-1 items-center border border-gray-600 rounded-lg">
+    <div className="flex flex-1 text-white rounded-lg shadow-[0_2px_5px_rgba(0,0,0,0.50)]  space-x-2 overflow-hidden bg-[#2f2f2fff]">
+      <div className="flex flex-col w-1/4 rounded-lg overflow-hidden">
+        <div className="h-12 flex justify-between pl-1 items-center  rounded-lg">
           <div className="text-2xl select-none pl-1">Usuarios</div>
           <div className="flex items-center">
             <Tooltip content="Editar Usuario">
@@ -233,15 +236,15 @@ export default function AdministrarCuentas() {
               <div
                 key={usuario._id}
                 onClick={() => handleMenuClick(usuario._id)}
-                className={`relative flex flex-1 w-full border-b-2 border-gray-600 p-3 justify-between items-center ${
+                className={`relative flex flex-1 w-full border-b-2 border-black p-3 justify-between items-center ${
                   usuarioSeleccionado === usuario._id
-                    ? "border-l-8 border-white border-b-none border-b-gray-600 bg-gradient-to-r from-gray-800 to-gray-950 transition rounded-l-lg duration-300 ease-in-out"
-                    : "bg-gray-950"
+                    ? "  border-b-none border-b-gray-600 bg-gradient-to-bl from-yellow-800 via-yellow-700 to-yellow-500 transition rounded-l-lg duration-300 ease-in-out"
+                    : "bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
                 }`}
               >
                 <div className="text-2xl">{usuario.nombre}</div>
                 <div
-                  className="relative hover:bg-gray-700 p-2 rounded-full cursor-pointer menu-container"
+                  className="relative rounded-full cursor-pointer menu-container shadow-lg shadow-black"
                   ref={ref}
                   onClick={() => handleImageClick(ref)} // Evento de clic para mostrar el modal
                 >
@@ -255,7 +258,7 @@ export default function AdministrarCuentas() {
           })}
         </div>
       </div>
-      <div className="flex flex-1 border border-gray-600 rounded-lg flex-col overflow-auto">
+      <div className="flex flex-1 border-l border-gray-600  flex-col overflow-auto">
         <Permisos
           usuarios={usuarios}
           usuarioSeleccionado={usuarioSeleccionado}
@@ -264,7 +267,7 @@ export default function AdministrarCuentas() {
       </div>
       {changeImageVisible && imageRef.current && (
         <div
-          className="absolute w-48 bg-gray-800 border border-gray-600 shadow-lg rounded-lg py-4 z-50 image-menu-container"
+          className="absolute w-48 bg-gray-800 shadow-lg rounded-lg py-4 z-50 image-menu-container"
           style={{
             top: imageRef.current.getBoundingClientRect().top + window.scrollY,
             left: imageRef.current.getBoundingClientRect().right + 10,

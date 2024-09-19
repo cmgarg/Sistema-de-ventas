@@ -102,20 +102,20 @@ const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta, setShowLoadi
 
   return (
     <div
-      className={`flex flex-1 items-center justify-center text-white ${
+      className={`flex flex-1 items-center justify-center text-[#fff8dcff]  ${
         showRecovery.show
-          ? "bg-gradient-to-b to-blue-950 from-slate-800 bg-opacity-10"
-          : "bg-gradient-to-b to-blue-950 from-slate-800"
+          ? "bg-gradient-to-t from-[#262626] via-[#2f2f2fff] to-[#000000] bg-opacity-10"
+          : "bg-gradient-to-t from-[#262626] via-[#2f2f2fff] to-[#000000]"
       }`}
     >
-      <div className="flex flex-col items-center justify-center border border-slate-900 rounded-lg w-1/5 h-1/2 pt-5 bg-black bg-opacity-20">
+      <div className="flex flex-col items-center justify-center shadow-[0_2px_5px_rgba(0,0,0,0.50)] rounded-lg w-1/5 h-1/2 pt-5 bg-black bg-opacity-20">
         <h1 className=" p-5 text-2xl">Punto De Venta CMG</h1>
         <p>Iniciar Sección</p>
 
         <div className=" flex flex-col p-5 w-full h-full">
           <label htmlFor="username" className='text-xl'>Usuario</label>
           <input
-            className="outline-none h-14 px-2 rounded-md bg-slate-900 border-slate-900 m-3 p-1"
+            className="outline-none h-14 px-2 rounded-md bg-[#404040ff] m-3 p-1"
             id="username"
             placeholder="Usuario"
             type="text"
@@ -127,7 +127,7 @@ const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta, setShowLoadi
           />
           <label htmlFor="password" className='text-xl'>Contraseña</label>
           <input
-            className="outline-none h-14 px-2 rounded-md bg-slate-900 border-slate-900 m-3 p-1"
+            className="outline-none h-14 px-2 rounded-md bg-[#404040ff] m-3 p-1"
             type="password"
             id="password"
             placeholder="*********"
@@ -156,7 +156,7 @@ const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta, setShowLoadi
             </>
           )}
           <button
-            className="relative overflow-hidden h-10 p-2 bg-cyan-700 justify-center hover:bg-cyan-800 outline-none rounded-lg mt-10"
+            className="relative overflow-hidden h-10 p-2 bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-500 justify-center hover:bg-cyan-800 outline-none rounded-lg mt-10"
             type="button"
             onClick={(event) => {
               handleRippleEffect(event);

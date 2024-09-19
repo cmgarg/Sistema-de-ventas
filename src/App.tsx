@@ -185,22 +185,10 @@ function App() {
   console.log(datosUsuarioRedux, "Estos son los datos del usuario que inicio");
 
 
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/firebase-messaging-sw.js')
-        .then((registration) => {
-          console.log('Service Worker registrado con éxito:', registration.scope);
-        }).catch((err) => {
-          console.log('Error al registrar el Service Worker:', err);
-        });
-    }
-  }, []);
-
-
   
 
   return (
-    <div className="w-full h-screen grid grid-cmg-program bg-gradient-to-t from-[#262626] via-[#2f2f2fff] to-[#000000] font-medium overflow-hidden box-border">
+    <div className="w-full h-screen grid grid-cmg-program bg-gradient-to-t from-[#262626] via-[#2f2f2fff] to-[#000000] font-medium overflow-hidden box-border text-[#fff8dcff]">
       <Header />
       <div className="flex flex-row row-start-2 row-end-7 relative">
         <Router>{renderContent()}</Router>

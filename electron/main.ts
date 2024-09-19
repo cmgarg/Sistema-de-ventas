@@ -27,23 +27,29 @@ function createWindow() {
     titleBarStyle: "hidden",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
     },
   });
   if (!isDev) {
     win.removeMenu(); // Esto remueve el menú que incluye la opción de abrir DevTools
   }
+
+
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    const csp = isDev
+      ? "default-src 'self' 'unsafe-inline'; connect-src 'self' ws://localhost:4500 ws://vps-4260176-x.dattaweb.com; style-src 'self' 'unsafe-inline';"
+      : "default-src 'self'; connect-src 'self' ws://vps-4260176-x.dattaweb.com;";
+      
     callback({
-      responseHeaders: Object.assign(
-        {
-          "Content-Security-Policy": [
-            "default-src 'self' 'unsafe-eval' 'unsafe-inline' blob: data: filesystem:; connect-src 'self' https: wss:; frame-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:;",
-          ],
-        },
-        details.responseHeaders
-      ),
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': [csp],
+      },
     });
   });
+  
+
 
   win.on("maximize", () => {
     win?.webContents.send("window-state", "maximized");

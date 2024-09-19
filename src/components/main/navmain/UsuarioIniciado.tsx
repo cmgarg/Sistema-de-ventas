@@ -200,47 +200,37 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
       </div>
       <div className="relative cursor-pointer">
         <div
-          className="flex flex-row rounded-lg menu-container group relative pt-1 pb-1 p"
+          className="flex flex-row rounded-lg menu-container group relative pt-1 pb-1  hover:bg-gray-600"
           onClick={toggleMenu}
         >
-          <div className="flex items-center justify-center text-2xl text-white pr-3 pl-3 select-none">
+          <div className="flex items-center justify-center text-2xl text-white pr-3 pl-3 select-none ">
             {datosUsuario ? datosUsuario.username || datosUsuario.nombre : ""}
           </div>
 
           <div
-            className="w-11 h-11 bg-cover bg-center rounded-full cursor-pointer border mr-2"
+            className="w-11 h-11 bg-cover bg-center rounded-full cursor-pointer border mr-2 "
             style={{ backgroundImage: `url(${selectedImage})` }}
           />
-          {/* TOP */}
-          <span className="absolute left-0 top-0 h-[2px] w-0 bg-sky-700 transition-all duration-100 group-hover:w-full rounded-t-lg" />
-
-          {/* RIGHT */}
-          <span className="absolute right-0 top-0 h-0 w-[2px] bg-sky-700 transition-all delay-100 duration-100 group-hover:h-full rounded-r-lg" />
-
-          {/* BOTTOM */}
-          <span className="absolute bottom-0 right-0 h-[2px] w-0 bg-sky-700 transition-all delay-200 duration-100 group-hover:w-full rounded-b-lg" />
-
-          {/* LEFT */}
-          <span className="absolute bottom-0 left-0 h-0 w-[2px] bg-sky-700 transition-all delay-300 duration-100 group-hover:h-full rounded-l-lg" />
+          
         </div>
 
         {menuVisible && (
-          <div className="absolute right-0 top-full w-48 bg-gray-800 shadow-lg border border-gray-600 rounded-lg text-white py-2 z-50 menu-container select-none">
+          <div className="absolute right-0 top-full w-48 bg-[#2f2f2fff]  shadow-lg border border-gray-600 rounded-lg text-white py-2 z-50 menu-container select-none">
             <div
-              className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
+              className="px-4 py-2 hover:bg-gray-600 cursor-pointer"
               onClick={toggleChangeImage}
             >
               Cambiar imagen
             </div>
             <div
-              className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
+              className="px-4 py-2 hover:bg-gray-600 cursor-pointer"
               onClick={abrirConfiguracion}
             >
               Configuración
             </div>
             <div
               onClick={handleLogout}
-              className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
+              className="px-4 py-2 hover:bg-gray-600 cursor-pointer"
             >
               Cerrar sesión
             </div>
@@ -248,13 +238,13 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
         )}
 
         {changeImageVisible && (
-          <div className="absolute right-0 w-48 bg-gray-800 border border-gray-600 shadow-lg rounded-lg py-4 z-50 image-menu-container">
+          <div className="absolute right-0 w-48 bg-[#2f2f2fff]  border border-gray-600 shadow-lg rounded-lg py-4 z-50 image-menu-container">
             <div className="flex flex-wrap justify-between px-2 py-2">
               {images.map((image, index) => (
                 <div
                   key={index}
                   className={`w-12 h-12 bg-cover bg-center rounded-full cursor-pointer m-1 ${
-                    selectedImage === image ? "ring-2 ring-blue-500" : ""
+                    selectedImage === image ? "ring-2 ring-[#ffd700ff]" : ""
                   }`}
                   onClick={() => handleImageSelect(index)}
                   style={{ backgroundImage: `url(${image})` }}

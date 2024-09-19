@@ -63,7 +63,7 @@ const SalesList: React.FC<SalesListProps> = ({
 
     setTotalCantidad(totalVentas || 0);
 
-    window.api.enviarEvento("get-accountToPay");
+    window.api.enviarEvento("get-accountToPay2");
 
     const handleAccounts = (accounts: Cuenta[]) => {
       const cuentasFiltrada = filtrarCuentasPorFecha(accounts, fecha);
@@ -77,10 +77,10 @@ const SalesList: React.FC<SalesListProps> = ({
       setTotalCuentas(totalcuentas);
     };
 
-    window.api.recibirEvento("response-get-accountToPay", handleAccounts);
+    window.api.recibirEvento("response-get-accountToPay2", handleAccounts);
 
     return () => {
-      window.api.removeListener("response-get-accountToPay", handleAccounts);
+      window.api.removeListener("response-get-accountToPay2", handleAccounts);
     };
   }, [ventas, fecha, setTotalCantidad, setTotalCuentas, setCuentasP, sales]);
 
