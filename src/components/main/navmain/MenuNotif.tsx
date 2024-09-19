@@ -13,6 +13,8 @@ import { TbFileDollar } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { IconType } from "react-icons";
 import { FcOvertime } from "react-icons/fc";
+import { getToken, onMessage } from "@firebase/messaging";
+import { messaging } from "../../../main";
 
 interface Notification {
   [x: string]: any;
@@ -70,6 +72,42 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
   const [notifiacionRecibida, setNotifiacionRecibida] = useState();
 
   const navigate = useNavigate();
+  ///////////////////////////////nuevo codigo ne notificaaciones
+  window.api.enviarEvento("START_NOTIFICATION_SERVICE", {
+    appId: "1:206948296278:web:6a2348d8e8e2ea75743df7",
+    apiKey: "AIzaSyDS_IAVmdRNa8pfv7c8L0KJeSfdVBDFdqU",
+    projectId: "cmg-company",
+    vapidKey:
+      "BIkvNP1qaD2seOcMvFGtW5nvQ6ENnrfZx32ziVaec9_VnkrDLh2hZxv47Ka2eWVPH-Ztc4snHrYYS7cJbP7Ici4",
+  });
+
+  // src/index.tsx
+
+  // Obtener el token de FCM
+  getToken(messaging, {
+    vapidKey:
+      "BI0FaUPg2jSE45iQrUc9yTjpT2M_ivWL3SOau0nzIFhbAddeecGUQi2DHmK_TJa-n-4Xh-0zjr-eW7JIKvHsSzQ",
+  })
+    .then((currentToken) => {
+      if (currentToken) {
+        console.log("Token de FCM:", currentToken);
+        // Aquí puedes enviar el token a tu servidor backend si es necesario
+      } else {
+        console.warn("No se pudo obtener el token de registro.");
+      }
+    })
+    .catch((err) => {
+      console.error("Error al obtener el token de FCM:", err);
+    });
+
+  // Escuchar los mensajes entrantes
+  onMessage(messaging, (payload) => {
+    console.log("Mensaje recibido:", payload);
+    // Muestra la notificación
+    new Notification(payload.notification.title, {
+      body: payload.notification.body,
+    });
+  });
 
   useEffect(() => {
     window.api.enviarEvento("get-disabled-notification-types");
@@ -98,10 +136,7 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
     return () => clearInterval(intervalId);
   }, [setNotifications]);
 
-  const handleMoreClick = (
-    notificationId: string,
-    event: React.MouseEvent
-  ) => {
+  const handleMoreClick = (notificationId: string, event: React.MouseEvent) => {
     event.stopPropagation(); // Detiene la propagación del clic para evitar la redirección
     setMenuVisible((prevVisible) => {
       if (prevVisible && selectedNotificationId === notificationId) {
@@ -283,9 +318,7 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
                         <p className=" font-light">{notification.nota}</p>
                       </div>
                       <div className="text-sm text-gray-500">
-                        {customFormatDistance(
-                          new Date(notification.fechaHora)
-                        )}
+                        {customFormatDistance(new Date(notification.fechaHora))}
                       </div>
                     </div>
                     <div

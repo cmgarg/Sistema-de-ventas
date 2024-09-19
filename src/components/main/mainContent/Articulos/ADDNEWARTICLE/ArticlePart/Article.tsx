@@ -99,6 +99,8 @@ const Article: React.FC<ArticleProps> = ({
           <p className="select-none">Descripción</p>
           <textarea
             value={stateArticle.article.description}
+            autoCorrect={""}
+            spellCheck={false}
             onChange={(e) => {
               dispatch({ type: "SET_DESCRIPTION", payload: e.target.value });
             }}

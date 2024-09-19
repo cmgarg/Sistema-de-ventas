@@ -271,18 +271,37 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
   };
   const [stateArticle, dispatch] = useReducer(articleReducer, initialState);
   //ESTADO DE DEPOSITOS
-  type initialStateType = {
+  type Deposit = {
     idObject: string;
     name: string;
     depositId: string;
     address: string;
-    sector: { name: string; sectorId: string };
-  }[];
+    sector: {
+      name: string;
+      sectorId: string;
+      amount: {
+        value: number;
+        saveCount: string;
+      };
+    };
+  };
+  type initialStateType = Deposit[];
   const initialStateDeposit: initialStateType = [];
-  const depositReducer = (
-    state: initialStateType,
-    action: { type: string; payload: any }
-  ) => {
+
+  type ActionType =
+    | { type: "SET_DEPOSITS"; payload: Deposit[] }
+    | { type: "ADD_DEPOSIT"; payload: Deposit }
+    | { type: "EDIT_DEPOSIT"; payload: Deposit }
+    | { type: "DELETE_DEPOSIT"; payload: string }
+    | { type: "SET_DEPOSIT"; payload: { idObject: string; deposit: Deposit } }
+    | {
+        type: "SET_DEPOSIT_SECTOR";
+        payload: {
+          idObject: string;
+          sector: { name: string; sectorId: string };
+        };
+      };
+  const depositReducer = (state: initialStateType, action: ActionType) => {
     switch (action.type) {
       case "SET_DEPOSITS":
         return [...action.payload];
@@ -480,6 +499,7 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
             onChangeModal={onChangeModal}
             errorIn={errorIn}
             setErrorIn={setErrorIn}
+            depositState={depositState}
             stateArticle={stateArticle}
           />
         </div>

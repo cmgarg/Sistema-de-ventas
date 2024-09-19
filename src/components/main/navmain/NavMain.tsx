@@ -20,13 +20,11 @@ const NavMain: React.FC<MainContentProps> = ({
           <p className="text-4xl">{title}</p>
         </div>
       </div>
-      <div className="flex justify-center">
+      <div className="flex justify-center flex-1">
         <div className="flex flex-row space-x-5">{children}</div>
       </div>
-      <div className=" flex-1 flex">
-        <div className="flex justify-center items-center">
-
-        </div>
+      <div className="flex">
+        <div className="flex justify-center items-center"></div>
       </div>
     </div>
   );

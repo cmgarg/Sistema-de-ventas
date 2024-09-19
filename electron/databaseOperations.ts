@@ -12,6 +12,7 @@ import {
 import Datastore from "@seald-io/nedb";
 import { getDate } from "./vFunctions";
 import jwt from "jsonwebtoken";
+import { isArray } from "lodash";
 const db = {
   clients: new Datastore({ filename: "database/clients.db", autoload: true }),
   articles: new Datastore({
@@ -139,19 +140,25 @@ export const generateCodeArticle = (category: string, brand: string) => {
   return uniqueCode;
 };
 
-export const saveArticle = async (a: articleData) => {
+export const saveArticle = async (e: {
+  depositState: any[];
+  articleToSave: articleData;
+}) => {
   const date = getDate();
 
-  const code = generateCodeArticle(a.category.value, a.brand.value);
+  const code = generateCodeArticle(
+    e.articleToSave.category.value,
+    e.articleToSave.brand.value
+  );
 
   const articleToSave = {
-    ...a,
+    ...e.articleToSave,
     code: code,
     sales: [],
     dateToRegister: date,
   };
-
-  db.articles
+  addProductInDeposits({ ...e, articleToSave: articleToSave });
+  await db.articles
     .insertAsync(articleToSave)
     .then((_res) => {})
     .catch((_err) => {});
@@ -515,7 +522,7 @@ export const saleProcess = async (venta: saleData) => {
 
   return {
     type: "success save sale",
-    success: (await resultToProcess).save,
+    success: resultToProcess.save,
     message: "Stock insuficiente de",
     adjunt: verifStock.insufficientItems,
   };
@@ -847,6 +854,22 @@ export const getDeposits = async () => {
     });
 };
 
+const transferArticles = async (e: {
+  fromDeposit: string;
+  fromSector: string;
+  article: articleData;
+  amount: number;
+  destiny: {
+    depositId: string;
+    sectorId: string;
+  };
+}) => {
+  const fromDeposit = await getDepositById(e.fromDeposit);
+  const fromSector = fromDeposit.sectors.find(
+    (sec) => sec.sectorId === e.fromSector
+  );
+};
+
 export const getDepositById = async (id: string): Promise<depositType> => {
   return await db.deposits.findOneAsync({ _id: id });
 };
@@ -871,39 +894,64 @@ export const createDeposit = async (newDeposit: depositType) => {
 };
 
 export const updateDeposit = async (depositToUpdate: depositType) => {
-  return await db.deposits.updateAsync(
-    { _id: depositToUpdate._id },
-    { $set: { ...depositToUpdate } }
-  );
-};
-export const addProductInDeposit = async (
-  depositId: string,
-  sectorId: any,
-  productToAdd: articleData
-) => {
-  const depositToAddProduct = await getDepositById(depositId);
-  console.log(depositToAddProduct);
+  const deposit = { ...depositToUpdate };
+  const sectorsVerifId = [...deposit.sectors];
+  sectorsVerifId.map((sec) => {
+    if (sec.sectorId === "") {
+      sec.sectorId = crypto.randomBytes(4).toString("hex");
+    }
+  });
+  deposit.sectors = sectorsVerifId;
 
-  if (!depositToAddProduct) {
-    console.log("No se encontro el deposito");
-    return {
-      message: "No se encontro el deposito",
-      value: false,
-    };
-  } else {
-    const res = depositToAddProduct.sectors.map((e) => {
-      if (e.sectorId === sectorId) {
-        e.products.push(productToAdd);
-        return `"Producto añadido al sector" ${e.name}`;
-      } else {
-        return `"Sector no encontrado"`;
-      }
+  return await db.deposits
+    .updateAsync({ _id: depositToUpdate._id }, { $set: { ...deposit } })
+    .then((res) => {
+      return { succes: true, depositUpdated: deposit, res };
+    })
+    .catch((err) => {
+      return { succes: false, depositUpdated: deposit, err };
     });
-    console.log(
-      res,
-      "RESPUESTA AL AÑADIR EL PRODUCTO AL SECTOR CORRESPONDIENTE"
+};
+// {
+//   idObject: string;
+//   name: string;
+//   depositId: string;
+//   address: string;
+//   sector: { name: string; sectorId: string; amount: number };
+// }
+export const addProductInDeposits = async (e: {
+  depositState: any[];
+  articleToSave: articleData;
+}) => {
+  console.log(
+    "SE RECIBE ESTE DEPOSIT STATE AL QUERER AÑADIR PRODUCTOS EN DEPOSITOS",
+    e.depositState
+  );
+  e.depositState.map(async (dep: any) => {
+    const deposit = await getDepositById(dep.depositId);
+    const [sectorToUpdate] = deposit.sectors.filter(
+      (sec) => sec.sectorId === dep.sector.sectorId
     );
-  }
+    const sectorsFilter = deposit.sectors.filter(
+      (sector) => sector.sectorId !== sectorToUpdate.sectorId
+    );
+    let sectorUpdate = {
+      ...sectorToUpdate,
+      products: [
+        ...sectorToUpdate.products,
+        { article: e.articleToSave, amount: dep.sector.amount },
+      ],
+    };
+    const depositUpdate = {
+      ...deposit,
+      sectors: [...sectorsFilter, sectorUpdate],
+    };
+
+    await db.deposits.updateAsync(
+      { _id: deposit._id },
+      { $set: { ...depositUpdate } }
+    );
+  });
 };
 
 export const createSectorInDeposit = async (
@@ -911,7 +959,13 @@ export const createSectorInDeposit = async (
   sectorinfo: {
     name: string;
     sectorId: string;
-    products: articleData[];
+    products: {
+      article: articleData;
+      amount: {
+        value: number;
+        saveCount: string;
+      };
+    }[];
   }
 ) => {
   const sectorToAdd = {
@@ -965,7 +1019,13 @@ export const editSectorInDeposit = async (
   newSector: {
     name: string;
     sectorId: string;
-    products: articleData[];
+    products: {
+      article: articleData;
+      amount: {
+        value: number;
+        saveCount: string;
+      };
+    }[];
   }
 ) => {
   const deposit = await getDepositById(depositId);

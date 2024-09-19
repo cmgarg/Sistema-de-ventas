@@ -61,7 +61,7 @@ const SelectM: React.FC<SelectProps> = ({
   }, []);
 
   return (
-    <div className="z-40 text-slate-50 max-w-full min-w-full">
+    <div className="z-40 max-w-full min-w-full">
       <Select
         onValueChange={(e) => {
           if (e === "todos") {
@@ -75,7 +75,7 @@ const SelectM: React.FC<SelectProps> = ({
           className={
             className
               ? className
-              : `${backGround || `bg-slate-950`} max-w-full min-w-full ${
+              : `${backGround || `bg-slate-950`} max-w-full  min-w-full ${
                   border ? "border border-red-600" : "border-none"
                 }`
           }

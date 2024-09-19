@@ -26,6 +26,10 @@ type propsInput = {
     sector: {
       name: string;
       sectorId: string;
+      amount: {
+        value: number;
+        saveCount: string;
+      };
     };
   }[];
   dispatchDeposit: React.Dispatch<Action>;
@@ -92,7 +96,7 @@ const StockArticleForm = ({
   }, [unitsArticleForm]);
 
   return (
-    <div className="flex w-full h-full flex-col relative">
+    <div className="flex w-full h-full flex-col">
       {/* stock y peso */}
       <div className="flex space-x-2 rounded-md relative p-2 w-full border-b border-slate-700">
         <div className="flex space-x-2">

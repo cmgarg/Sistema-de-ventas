@@ -51,7 +51,7 @@ import {
   updateSuppliers,
   createDeposit,
   updateDeposit,
-  addProductInDeposit,
+  addProductInDeposits,
   deleteSector,
   editSectorInDeposit,
   getDeposits,
@@ -78,11 +78,6 @@ import {
 } from "./databaseOperations";
 import { verificarToken } from "./vFunctions";
 import { articleData, IUser } from "../types/types";
-
-
-
-
-
 
 export const loadEvents = () => {
   console.log("eventHandlers Se esta Ejecutando...");
@@ -143,45 +138,50 @@ export const loadEvents = () => {
   });
 
   // Artículos
-  ipcMain.on("save-article", async (event, articuloAGuardar) => {
-    const categoryAndBrands = await getCategoryAndBrand();
-    const { brand, category } = articuloAGuardar;
-    const categorys = categoryAndBrands.categorys;
-    const brands = categoryAndBrands.brands;
-    const categoryString = categorys.map((cat) => cat.value.toLowerCase());
-    const brandString = brands.map((br) => br.value.toLowerCase());
-    const categoryExist = categoryString.includes(category.value.toLowerCase());
-    const brandExist = brandString.includes(brand.value.toLowerCase());
+  ipcMain.on(
+    "save-article",
+    async (event, a: { articleToSave: articleData; depositState: any }) => {
+      const categoryAndBrands = await getCategoryAndBrand();
+      const { brand, category } = a.articleToSave;
+      const categorys = categoryAndBrands.categorys;
+      const brands = categoryAndBrands.brands;
+      const categoryString = categorys.map((cat) => cat.value.toLowerCase());
+      const brandString = brands.map((br) => br.value.toLowerCase());
+      const categoryExist = categoryString.includes(
+        category.value.toLowerCase()
+      );
+      const brandExist = brandString.includes(brand.value.toLowerCase());
 
-    if (categoryExist && brandExist) {
-      await saveArticle(articuloAGuardar);
-      const articles = await findArticles();
-      event.reply("response-get-articles", articles);
-      event.reply("error-save-article", {
-        message: "",
-        type: "",
-        active: false,
-      });
-    } else if (!brandExist && !categoryExist) {
-      event.reply("error-save-article", {
-        message: "no registrada",
-        type: "all",
-        active: true,
-      });
-    } else if (!categoryExist) {
-      event.reply("error-save-article", {
-        message: "no registrada",
-        type: "category",
-        active: true,
-      });
-    } else if (!brandExist) {
-      event.reply("error-save-article", {
-        message: "no registrada",
-        type: "brand",
-        active: true,
-      });
+      if (categoryExist && brandExist) {
+        await saveArticle(a);
+        const articles = await findArticles();
+        event.reply("response-get-articles", articles);
+        event.reply("error-save-article", {
+          message: "",
+          type: "",
+          active: false,
+        });
+      } else if (!brandExist && !categoryExist) {
+        event.reply("error-save-article", {
+          message: "no registrada",
+          type: "all",
+          active: true,
+        });
+      } else if (!categoryExist) {
+        event.reply("error-save-article", {
+          message: "no registrada",
+          type: "category",
+          active: true,
+        });
+      } else if (!brandExist) {
+        event.reply("error-save-article", {
+          message: "no registrada",
+          type: "brand",
+          active: true,
+        });
+      }
     }
-  });
+  );
 
   ipcMain.on("get-articleByCode", async (event, articleCode) => {
     const article = await getArticleByCode(articleCode);
@@ -366,22 +366,12 @@ export const loadEvents = () => {
   });
   //AÑADIR PRODUCTO A DEPOSITO
   ipcMain.on(
-    "add-product-in-Deposit",
-    async (
-      event,
-      {
-        deposit_id,
-        sector,
-        productToAdd,
-      }: { deposit_id: string; sector: number; productToAdd: articleData }
-    ) => {
-      const response = await addProductInDeposit(
-        deposit_id,
-        sector,
-        productToAdd
-      );
+    "add-product-in-Deposits",
+    async (event, e: { depositState: any[]; articleToSave: articleData }) => {
+      console.log("EVENTITOLOCO", e);
+      const response = await addProductInDeposits(e);
 
-      event.reply("response-add-product-in-Deposit", response);
+      event.reply("response-add-product-in-Deposits", response);
     }
   );
   //ELIMINAR SECTOR DE DEPOSITO
@@ -430,7 +420,6 @@ export const loadEvents = () => {
   );
   //OBTENER DEPOSITOS
   ipcMain.on("get-deposits", async (event) => {
-    console.log("QUE PASA ");
     const response = await getDeposits();
 
     event.reply("response-get-deposits", response);
@@ -764,7 +753,7 @@ export const loadEvents = () => {
       event.reply("response-get-accountToPay", []);
     }
   });
-  
+
   ipcMain.on("get-accountToPay2", async (event) => {
     try {
       const accountsToPay = await getAccountsToPay();
@@ -783,75 +772,81 @@ export const loadEvents = () => {
     }
   });
 
-
-  ipcMain.on("actualizar-senotifico", async (event, { idCuenta, estadoSenotifico }) => {
-    try {
-      await actualizarSenotifico(idCuenta, estadoSenotifico);
-      event.reply("senotifico-actualizado", { exitoso: true, idCuenta });
-    } catch (error) {
-      event.reply("senotifico-actualizado", { exitoso: false, error: onmessage });
+  ipcMain.on(
+    "actualizar-senotifico",
+    async (event, { idCuenta, estadoSenotifico }) => {
+      try {
+        await actualizarSenotifico(idCuenta, estadoSenotifico);
+        event.reply("senotifico-actualizado", { exitoso: true, idCuenta });
+      } catch (error) {
+        event.reply("senotifico-actualizado", {
+          exitoso: false,
+          error: onmessage,
+        });
+      }
     }
-  });
+  );
 
-  
   ipcMain.on("save-accountToPayeditar", async (event, account) => {
     try {
       // Actualizar la cuenta en la base de datos
       await updateAccountInDb(account._id, account);
-  
+
       // Obtener todas las cuentas actualizadas de la base de datos
       const updatedAccounts = await getAccountsToPay20editar();
-  
+
       // Enviar las cuentas actualizadas al frontend
       event.reply("accounts-updated", updatedAccounts);
     } catch (error) {
       console.error("Error al actualizar la cuenta:", error);
-      event.reply("accounts-updated-error", { success: false, });
+      event.reply("accounts-updated-error", { success: false });
     }
   });
-
 
   ipcMain.on("save-accountToPay", async (event, account) => {
     try {
       // Guardar la cuenta nueva en la base de datos y obtener la cuenta guardada con su ID generado
       const savedAccount = await accountToPay(account);
-  
+
       // Obtener la fecha y la hora actuales en la zona horaria de Argentina
       const fechaActual = new Date();
-      const fecha_edicion = fechaActual.toLocaleDateString('es-AR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }).split('/').reverse().join('-');
-  
-      const fecha_edicionHora = fechaActual.toLocaleTimeString('es-AR', {
+      const fecha_edicion = fechaActual
+        .toLocaleDateString("es-AR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+        .split("/")
+        .reverse()
+        .join("-");
+
+      const fecha_edicionHora = fechaActual.toLocaleTimeString("es-AR", {
         hour12: false,
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
       });
-  
+
       // Crear historial de la cuenta recién creada utilizando los datos devueltos por la inserción
       await saveHistorialCuenta({
         cuenta: savedAccount, // Guardar la cuenta completa con su nuevo ID
         fecha_edicion, // Fecha de creación (solo fecha)
         fecha_edicionHora, // Hora de creación (solo hora)
       });
-  
+
       // Obtener todas las cuentas actualizadas de la base de datos
       const updatedAccounts = await getAccountsToPay20();
-  
+
       // Enviar las cuentas actualizadas al frontend
       event.reply("accounts-updated", updatedAccounts);
     } catch (error) {
-      console.error("Error al guardar la cuenta o al crear el historial", error);
+      console.error(
+        "Error al guardar la cuenta o al crear el historial",
+        error
+      );
       event.reply("error-save-account", { success: false });
     }
   });
-  
-  
-  
-  
 
   ipcMain.on("actualizar-cuenta", async (event, { id, updatedAccount }) => {
     try {
@@ -920,7 +915,6 @@ ipcMain.on("send-notification", async (event, data) => {
         console.error("Error al obtener las notificaciones:", error);
         event.reply("response-get-notifications", []);
       }
-
     } catch (error) {
       console.error("Error al guardar la notificación:", error);
     }
@@ -1032,7 +1026,6 @@ ipcMain.on("clear-cache", (event) => {
     });
 });
 
-
 /////////guarda la edicion de las cuentas para el hisrial
 // Evento para guardar historial de cuentas
 ipcMain.on("guardar-historial-cuenta", async (event, cuentaHistorial) => {
@@ -1050,7 +1043,6 @@ ipcMain.on("guardar-historial-cuenta", async (event, cuentaHistorial) => {
   }
 });
 
-
 ipcMain.on("get-historial-cuenta", async (event, idCuenta) => {
   try {
     // Obtener el historial de la cuenta usando el idCuenta
@@ -1060,11 +1052,10 @@ ipcMain.on("get-historial-cuenta", async (event, idCuenta) => {
     event.reply("respuesta-historial-cuenta", historial);
   } catch (error) {
     console.error("Error al obtener el historial de la cuenta:", error);
-    event.reply("respuesta-historial-cuenta", { error: "Error al obtener el historial" });
+    event.reply("respuesta-historial-cuenta", {
+      error: "Error al obtener el historial",
+    });
   }
 });
-
-
-
 
 ///////////////////////

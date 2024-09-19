@@ -1,5 +1,9 @@
-import { articleData, depositType } from "../../../../../../../../../types/types";
+import {
+  articleData,
+  depositType,
+} from "../../../../../../../../../types/types";
 import React, { useEffect, useState } from "react";
+import ButtonR from "../../../../../buttons/ButtonR";
 
 type CreateSectorProps = {
   onChangeCreateSector: (e: boolean) => void; // Define tus props aquí
@@ -8,7 +12,13 @@ type CreateSectorProps = {
     e: {
       name: string;
       sectorId: string;
-      products: articleData[];
+      products: {
+        article: articleData;
+        amount: {
+          value: number;
+          saveCount: string;
+        };
+      }[];
     }[]
   ) => void;
 };
@@ -21,18 +31,41 @@ const CreateSector: React.FC<CreateSectorProps> = ({
   const [sectorData, setSectorData] = useState<{
     name: string;
     sectorId: string;
-    products: articleData[];
+    products: {
+      article: articleData;
+      amount: {
+        value: number;
+        saveCount: string;
+      };
+    }[];
   }>({
     name: "",
     sectorId: "",
     products: [],
   });
-
+  const [errorShow, setErrorShow] = useState<{
+    active: boolean;
+    errors: string[];
+  }>({
+    active: false,
+    errors: [],
+  });
   const createSector = () => {
-    window.api.enviarEvento("create-sector-in-deposit", {
-      deposit_id: depositSelect._id,
-      sector: sectorData,
-    });
+    const errors = [];
+    if (!sectorData.name) {
+      errors.push("SECTOR-NAME");
+    }
+    if (errors.length > 0) {
+      setErrorShow({
+        active: true,
+        errors: errors,
+      });
+    } else {
+      window.api.enviarEvento("create-sector-in-deposit", {
+        deposit_id: depositSelect._id,
+        sector: sectorData,
+      });
+    }
   };
 
   const setChangeData = (f: string, v: string) => {
@@ -58,7 +91,13 @@ const CreateSector: React.FC<CreateSectorProps> = ({
         content: {
           name: string;
           sectorId: string;
-          products: articleData[];
+          products: {
+            article: articleData;
+            amount: {
+              value: number;
+              saveCount: string;
+            };
+          }[];
         }[];
         value: true;
         message: "Se creo el sector correctamente.";
@@ -76,37 +115,57 @@ const CreateSector: React.FC<CreateSectorProps> = ({
     );
   }, []);
   useEffect(() => {
-    console.log(sectorData);
-  }, [sectorData]);
+    if (errorShow.active) {
+      setTimeout(() => {
+        setErrorShow({
+          active: false,
+          errors: [],
+        });
+      }, 3000);
+    }
+  }, [errorShow]);
 
   return (
     <div className="absolute top-0 right-0 bottom-0 left-0 z-50 flex justify-center items-center rounded-lg backdrop-brightness-50">
-      <div className="w-2/6 h-3/4 rounded-lg flex flex-col bg-gradient-to-t from-blue-950 to-blue-900 border border-slate-700 ">
-        <div className="flex-1 p-2">
-          <label htmlFor="sector" className="font-semibold">
-            Sector
-          </label>
+      <div className="w-64 p-2 space-y-2 rounded-lg flex flex-col bg-[#2f2f2fff] border border-slate-700 ">
+        <div className="flex-1">
+          <div className="flex w-full justify-between">
+            <label htmlFor="sector" className="font-semibold">
+              Sector
+            </label>
+            <div className="pr-2 text-red-400 text-xs font-thin">
+              {errorShow.active ? (
+                <p>
+                  {errorShow.errors.includes("SECTOR-NAME")
+                    ? "Nombre no establecido."
+                    : null}
+                </p>
+              ) : null}
+            </div>
+          </div>
           <input
             type="text"
             name="sector"
             onChange={(e) => setChangeData("name", e.target.value)}
             value={sectorData.name}
-            className="h-10 w-full bg-slate-800 rounded-lg px-2 border border-slate-600"
+            className="h-10 w-full bg-[#707070ff] rounded-lg px-2 outline-none  border border-slate-600"
           />
         </div>
-        <div className="flex space-x-2 p-2">
-          <button
+        <div className="flex space-x-2 justify-end">
+          <ButtonR
             onClick={() => onChangeCreateSector(false)}
-            className="h-8 flex-1 text-sm font-semibold bg-red-500 rounded-lg"
-          >
-            Cancelar
-          </button>
-          <button
+            width="w-24"
+            height="h-7"
+            bgColor="bg-gradient-to-l from-gray-800 via-gray-700 shadow-[0_2px_5px_rgba(0,0,0,0.50)] to-gray-500 text-sm"
+            title="Cancelar"
+          ></ButtonR>
+          <ButtonR
             onClick={createSector}
-            className="h-8 flex-1 text-sm font-semibold bg-green-500 rounded-lg"
-          >
-            Crear
-          </button>
+            width="w-24"
+            height="h-7"
+            bgColor="bg-gradient-to-l from-yellow-800 via-yellow-700 shadow-[0_2px_5px_rgba(0,0,0,0.50)] to-yellow-500 text-sm"
+            title="Crear"
+          ></ButtonR>
         </div>
       </div>
     </div>

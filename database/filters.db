@@ -1,3 +1,10 @@
 {"value":"alimentos","label":"Alimentos","typeFilter":"category","_id":"8LZPEJKhZeF9wLVS"}
 {"value":"china","label":"China","typeFilter":"subCategory","_id":"D0MffdYpwI5f9L3q"}
+{"value":"samsung","label":"Samsung","typeFilter":"brand","_id":"KYoDMXt6t9m4BMng"}
+{"value":"bebidas","label":"Bebidas","typeFilter":"category","_id":"OAFAZmHMBSabPxOq"}
+{"value":"lucchetti","label":"Lucchetti","typeFilter":"brand","_id":"ceaY2XvcaBfcUYZm"}
+{"value":"cocacola","label":"Cocacola","typeFilter":"brand","_id":"iGb8b7dNg4tYaAkY"}
+{"value":"fideos","label":"Fideos","typeFilter":"subCategory","_id":"iHTzxOd8cK5E6wQx"}
+{"value":"tecnologia","label":"Tecnologia","typeFilter":"category","_id":"pQSWRwf9CvZLbu1b"}
+{"value":"celulares","label":"Celulares","typeFilter":"subCategory","_id":"rKLnie7Gdy13BAMj"}
 {"value":"marolio","label":"Marolio","typeFilter":"brand","_id":"vpEWlWXv51KjYoBF"}

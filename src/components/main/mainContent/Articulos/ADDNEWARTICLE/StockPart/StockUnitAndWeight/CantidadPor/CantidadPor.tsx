@@ -30,7 +30,7 @@ const CantidadPor: React.FC<CantidadPorProps> = ({
                   type="text"
                   name="palette"
                   className={
-                    "bg-[#808080ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] outline-none h-10 w-full rounded-l-md  border border-slate-800 px-2"
+                    "bg-[#707070ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] outline-none h-10 w-full rounded-l-md  border border-slate-800 px-2"
                   }
                   value={
                     stateArticle.article.pallet.active
@@ -79,7 +79,7 @@ const CantidadPor: React.FC<CantidadPorProps> = ({
                 type="text"
                 name="bulk"
                 className={
-                  "bg-[#808080ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] outline-none h-10 w-full rounded-l-md  border border-slate-800 px-2"
+                  "bg-[#707070ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] outline-none h-10 w-full rounded-l-md  border border-slate-800 px-2"
                 }
                 value={
                   stateArticle.article.forBulk.active

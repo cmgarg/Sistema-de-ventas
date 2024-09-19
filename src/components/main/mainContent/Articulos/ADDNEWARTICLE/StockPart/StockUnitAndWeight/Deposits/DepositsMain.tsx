@@ -7,11 +7,15 @@ import {
 } from "../../../../../../../../../types/types";
 import CreateDeposit from "./CreateDeposit";
 import EstablishDeposit from "./EstablishDeposit";
-import { RiDeleteBin5Fill, RiEdit2Fill } from "react-icons/ri";
-import EditDepositEstablished from "./EditDepositEstablished";
+import {
+  RiDeleteBin2Fill,
+  RiDeleteBin5Fill,
+  RiEdit2Fill,
+} from "react-icons/ri";
 import ButtonR from "../../../../../buttons/ButtonR";
 import { PiHandDeposit } from "react-icons/pi";
 import { IoAdd, IoAddCircle } from "react-icons/io5";
+import { TbTrash } from "react-icons/tb";
 
 type DepositsMainProps = {
   stateArticle: articleData;
@@ -26,6 +30,10 @@ type DepositsMainProps = {
     sector: {
       name: string;
       sectorId: string;
+      amount: {
+        value: number;
+        saveCount: string;
+      };
     };
   }[];
   dispatchDeposit: React.Dispatch<Action>;
@@ -38,28 +46,6 @@ const DepositsMain: React.FC<DepositsMainProps> = ({
   dispatchMain,
 }) => {
   const [depositCreateForm, setDepositCreateForm] = useState<boolean>(false);
-  const [depositEditForm, setDepositEditForm] = useState<{
-    active: boolean;
-    depositToEdit: {
-      idObject: string;
-      name: string;
-      depositId: string;
-      address: string;
-      sector: {
-        name: string;
-        sectorId: string;
-      };
-    };
-  }>({
-    active: false,
-    depositToEdit: {
-      name: "",
-      address: "",
-      sector: { sectorId: "", name: "" },
-      idObject: "",
-      depositId: "",
-    },
-  });
 
   const [deposits, setDeposits] = useState<depositType[]>([]);
   const [establishDeposit, setestablishDeposit] = useState(false);
@@ -69,26 +55,7 @@ const DepositsMain: React.FC<DepositsMainProps> = ({
   const alternEstablishDepositForm = (e: boolean) => {
     setestablishDeposit(e);
   };
-  const alternEditDepositEstablished = (e: {
-    active: boolean;
-    depositToEdit: {
-      idObject: string;
-      name: string;
-      depositId: string;
-      address: string;
-      sector: {
-        name: string;
-        sectorId: string;
-      };
-    };
-  }) => {
-    let state = depositEditForm;
-    if (e.active) {
-      setDepositEditForm(e);
-    } else {
-      setDepositEditForm({ ...state, active: false });
-    }
-  };
+
   const deleteDeposit = (id: string) => {
     dispatchDeposit({ type: "DELETE_DEPOSIT", payload: id });
   };
@@ -105,7 +72,7 @@ const DepositsMain: React.FC<DepositsMainProps> = ({
   }, []);
 
   return (
-    <div className="flex-1 flex flex-col relative">
+    <div className="flex-1 flex flex-col">
       {depositCreateForm && (
         <CreateDeposit onChangeCreateDeposit={onChangeCreateDeposit} />
       )}
@@ -113,21 +80,14 @@ const DepositsMain: React.FC<DepositsMainProps> = ({
         <EstablishDeposit
           deposits={deposits}
           alternEstablishDepositForm={alternEstablishDepositForm}
+          stateArticle={stateArticle}
+          depositState={depositState}
           dispatchDeposit={dispatchDeposit}
-          onChangeCreateDeposit={onChangeCreateDeposit}
-        />
-      )}
-      {depositEditForm.active && (
-        <EditDepositEstablished
-          deposits={deposits}
-          alternEditDepositEstablished={alternEditDepositEstablished}
-          dispatchDeposit={dispatchDeposit}
-          depositToEdit={depositEditForm.depositToEdit}
           onChangeCreateDeposit={onChangeCreateDeposit}
         />
       )}
 
-      <div className="w-full font-bold px-2 text-2xl flex space-x-2 justify-between border-t-8 border-slate-800 mt-2 rounded-t-lg">
+      <div className="w-full font-bold px-2 text-2xl flex space-x-2 justify-between border-t-2 border-gray-700 mt-2 rounded-t-lg">
         <div className="flex-1 flex space-x-5 h-full items-center">
           <p className="text-2xl">Depositos</p>
           <AiFillAppstore size={30} className="text-amber-300" />
@@ -160,43 +120,44 @@ const DepositsMain: React.FC<DepositsMainProps> = ({
         </div>
       </div>
       <div
-        className={`w-full bg-slate-950 flex flex-wrap overflow-x-hidden overflow-auto ${
+        className={`w-full flex flex-wrap overflow-x-hidden overflow-auto ${
           depositState.length > 2 ? "justify-between" : ""
         }`}
       >
         {depositState.map((deposit) => (
-          <div className="flex flex-col w-1/4 h-52 m-2 bg-slate-900 rounded-lg border border-slate-700 p-2 relative">
-            <div className="w-full flex border-b border-slate-700 justify-center text-xl">
-              <p className="font-bold">{deposit.name}</p>
+          <div className="flex flex-col w-52 font-normal m-2 shadow-[0_2px_5px_rgba(0,0,0,0.50)] text-sm bg-gradient-to-b  from-gray-800 via-gray-800 to-gray-700 rounded-lg border border-slate-700 p-2 relative">
+            <div className="w-full flex border-b border-slate-700 justify-center">
+              <p>{deposit.name}</p>
             </div>
-            <div className="w-full flex-1 flex flex-col text-normal">
-              <div className="flex flex-1 flex-col">
-                <p>Direccion</p>
-                <p className="font-medium text-2xl">{deposit.address}</p>
+            <div className="w-full flex-1 flex flex-col text-normal space-y-2">
+              <div className="flex flex-1 flex-col border-b border-gray-700">
+                <p className="text-xs font-thin">Direccion</p>
+                <p className="text-sm">{deposit.address}</p>
               </div>
               <div className="flex flex-1 flex-col">
-                <p>Sector</p>
-                <p className="font-medium text-2xl">{deposit.sector.name}</p>
+                <p className="text-xs font-thin">Sector</p>
+                <p className="text-sm">{deposit.sector.name}</p>
+              </div>
+              <div className="flex space-x-2">
+                <p>{deposit.sector.amount.value}</p>
+                <p>
+                  {deposit.sector.amount.saveCount === "xPalet"
+                    ? "Palets"
+                    : deposit.sector.amount.saveCount === "xBulk"
+                    ? "Bultos"
+                    : stateArticle.article.stock.unit.label}
+                </p>
               </div>
             </div>
             <div className="absolute right-0 bottom-0 flex flex-col space-y-2 p-2">
-              <button
-                className="w-7 h-7 flex items-center justify-center bg-black border border-red-500 rounded-full hover:bg-red-500"
+              <ButtonR
                 onClick={() => deleteDeposit(deposit.idObject)}
+                bgIconColor="bg-gradient-to-tl  from-red-950 via-red-950 to-red-700"
+                width="w-5"
+                height="h-5"
               >
-                <RiDeleteBin5Fill className="w-4" />
-              </button>
-              <button
-                className="w-7 h-7 flex items-center justify-center bg-black border border-green-500 rounded-full hover:bg-green-500"
-                onClick={() =>
-                  alternEditDepositEstablished({
-                    active: true,
-                    depositToEdit: deposit,
-                  })
-                }
-              >
-                <RiEdit2Fill className="w-4" />
-              </button>
+                <TbTrash size={15} className=" text-red-500" />
+              </ButtonR>
             </div>
           </div>
         ))}

@@ -57,7 +57,11 @@ export type articleData = {
     name: string;
     depositId: string;
     address: string;
-    sector: { name: string; sectorId: string };
+    sector: {
+      name: string;
+      sectorId: string;
+      amount: { value: number; saveCount: string };
+    };
   }[];
 };
 
@@ -206,7 +210,13 @@ export type depositType = {
   sectors: {
     name: string;
     sectorId: string;
-    products: articleData[];
+    products: {
+      article: articleData;
+      amount: {
+        value: number;
+        saveCount: string;
+      };
+    }[];
   }[];
   _id?: string;
 };
@@ -234,4 +244,3 @@ export interface IUser {
   esAdmin: boolean;
   _id: string;
 }
-
