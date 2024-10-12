@@ -8,11 +8,13 @@ type CantidadPorProps = {
   stateArticle: articleData;
   dispatch: React.Dispatch<Action>;
   errorIn: string[];
+  inputStyle?: string;
 };
 
 const CantidadPor: React.FC<CantidadPorProps> = ({
   stateArticle,
   dispatch,
+  inputStyle,
 }) => {
   return (
     <div className="flex flex-col">
@@ -21,7 +23,7 @@ const CantidadPor: React.FC<CantidadPorProps> = ({
           <div className="relative space-y-1">
             <div className="flex flex-1 h-5">
               <label htmlFor="costo" className="select-none">
-                x PALETTE
+                x PALET
               </label>
             </div>
             {stateArticle.article.pallet.active ? (

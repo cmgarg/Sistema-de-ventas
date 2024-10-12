@@ -324,7 +324,7 @@ const EstablishDeposit: React.FC<EstablishDepositProps> = ({
 
   //TERMINAR DE SUMAR LA CANTIDAD DE USADO EN STOCK DE DEPOSITOS DALEEEE
   useEffect(() => {
-    if (stateArticle.deposits.length > 0) {
+    if (depositState.length > 0) {
       let totalUsed = 0;
 
       depositState.map((dep) => {

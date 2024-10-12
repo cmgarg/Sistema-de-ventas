@@ -80,14 +80,19 @@ const StockArticleForm = ({
     setUnitSelect(abrevUnit);
   }
   const loadUnits = () => {
-    const allUnits = [...optionsUnits, ...unitsArticleForm];
+    const allUnits = [
+      { value: "cajas", label: "Cajas", abrevUnit: "Caj" },
+      { value: "paquetes", label: "Paquetes", abrevUnit: "Paq" },
+      { value: "unidades", label: "Unidades", abrevUnit: "Ud" },
+      { value: "litros", label: "Litros", abrevUnit: "L" },
+      { value: "kilogramos", label: "Kilogramos", abrevUnit: "Kg" },
+      ,
+      ...unitsArticleForm,
+    ];
 
     setOptionsUnits(allUnits);
   };
   useEffect(() => {
-    console.log("STOCK ARTRICLE FORM ARTICLE STATE", stateArticle);
-    console.log(unitsArticleForm, "CAGADA");
-
     loadUnits();
   }, []);
 

@@ -61,6 +61,7 @@ const DepositDetails: React.FC<DepositDetailsProps> = ({
       fromDeposit: string;
       fromSector: string;
       articleToTransfer: string;
+      saveCountUsed: string;
     };
   }>({
     active: false,
@@ -68,6 +69,7 @@ const DepositDetails: React.FC<DepositDetailsProps> = ({
       fromDeposit: depositData._id ? depositData._id : depositData.name,
       fromSector: sectorSelected.sectorId,
       articleToTransfer: "",
+      saveCountUsed: "",
     },
   });
   const onTransferArticle = (e: {
@@ -76,6 +78,7 @@ const DepositDetails: React.FC<DepositDetailsProps> = ({
       fromDeposit: string;
       fromSector: string;
       articleToTransfer: string;
+      saveCountUsed: string;
     };
   }) => {
     console.log(e, "INFORMACION PARA TRANSFERIR");
@@ -176,7 +179,7 @@ const DepositDetails: React.FC<DepositDetailsProps> = ({
   }, [depositData]);
 
   useEffect(() => {
-    console.log("FALOPA");
+    console.log("FALOPA", depositData.sectors);
     window.api.recibirEvento("response-update-deposit", (res: any) => {
       console.log("SE ACTUALIZO?", res);
       if (res.succes) {
@@ -200,6 +203,7 @@ const DepositDetails: React.FC<DepositDetailsProps> = ({
         {transferArticle.active ? (
           <TransferArticles
             informationToTransfer={transferArticle}
+            onTransferArticle={onTransferArticle}
             onTransfer={() => {}}
           />
         ) : null}
@@ -326,6 +330,7 @@ const DepositDetails: React.FC<DepositDetailsProps> = ({
                                 fromDeposit: depositData._id,
                                 articleToTransfer: prod.article.code,
                                 fromSector: sectorSelected.sectorId,
+                                saveCountUsed: prod.amount.saveCount,
                               },
                             });
                           }}

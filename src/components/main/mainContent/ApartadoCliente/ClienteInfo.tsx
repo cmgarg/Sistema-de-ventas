@@ -50,7 +50,7 @@ const ClienteInfo: React.FC<ClienteInfoProps> = () => {
         </NavMain>
       </div>
       <div className="flex-1 flex flex-col space-y-5">
-        <div className="bg-[#222] flex">
+        <div className=" flex">
           <div className="flex-1 border-r-2 border-slate-700">
             <div className="flex-1 h-20 text-2xl text-center flex justify-start text-gray-200 pl-5 items-center border-b-2 border-slate-700">
               <p>
@@ -80,20 +80,20 @@ const ClienteInfo: React.FC<ClienteInfoProps> = () => {
             </div>
           </div>
         </div>
-        <div className="flex-1 bg-slate-900 p-1">
+        <div className="flex-1 p-1">
           <div className="w-full text-3xl bg-slate-900">
             <h1>Compras</h1>
           </div>
           <div className="flex-1">
             <TableMain>
               <TableHead>
-                <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
+                <div className="flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
                   <p className="text-center">Articulo</p>
                 </div>
-                <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
+                <div className="flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
                   <p className="text-center">Cantidad</p>
                 </div>
-                <div className="bg-slate-600 flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
+                <div className="flex-1 pl-2 rounded-tl-lg flex items-center justify-center">
                   <p className="text-center">Fecha</p>
                 </div>
               </TableHead>

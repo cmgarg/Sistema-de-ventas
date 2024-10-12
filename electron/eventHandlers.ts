@@ -76,6 +76,8 @@ import {
   updateAccountInDb,
   getHistorialCuentaPorId,
   saveNotificationn,
+  transferArticles,
+  updateArticle,
 } from "./databaseOperations";
 import { verificarToken } from "./vFunctions";
 import { articleData, IUser } from "../types/types";
@@ -183,7 +185,10 @@ export const loadEvents = () => {
       }
     }
   );
-
+  ipcMain.on("update-article", async (event, a) => {
+    const res = await updateArticle(a);
+    event.reply("response-update-article", res);
+  });
   ipcMain.on("get-articleByCode", async (event, articleCode) => {
     const article = await getArticleByCode(articleCode);
     event.reply("response-get-articleByCode", article);
@@ -397,6 +402,29 @@ export const loadEvents = () => {
       const response = await createSectorInDeposit(deposit_id, sector);
 
       event.reply("response-create-sector-in-deposit", response);
+    }
+  );
+  //
+  ipcMain.on(
+    "transfer-article",
+    async (
+      event,
+      e: {
+        fromDeposit: string;
+        fromSector: string;
+        article: articleData;
+        amount: number;
+        unitType: "unit" | "xPalet" | "xBulk";
+        saveCountUsed: string;
+        destiny: {
+          depositId: string;
+          sectorId: string;
+        };
+      }
+    ) => {
+      const response = await transferArticles(e);
+
+      event.reply("response-transfer-article", response);
     }
   );
   //EDITAR UN SECTOR EN DEPOSITO

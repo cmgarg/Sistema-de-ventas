@@ -137,7 +137,7 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
               categorys={categorys}
               brands={brands}
               articles={articles}
-              articleToEdit={articleToEdit.articleToEdit} 
+              articleToEdit={articleToEdit.articleToEdit}
             ></EditArticleForm>
           )}
           <ArticleList

@@ -244,7 +244,7 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
 
   return (
     <div>
-      <div className="absolute right-0 top-full w-[30rem] h-[50rem] bg-[#2f2f2fff] shadow-lg border border-gray-600 rounded-lg text-white py-2 z-50 menu-container select-none ">
+      <div className="absolute right-0 top-full w-[30rem] h-[50rem] bg-[#2f2f2fff] shadow-lg border border-gray-600 rounded-lg text-white py-2 z-30 menu-container select-none ">
         <div className="flex flex-col">
           <div className="flex w-full h-12 justify-between items-center border-b border-gray-600">
             <div className="text-xl pl-4">Notificaciones</div>

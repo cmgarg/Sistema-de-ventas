@@ -342,7 +342,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
   const estilosInput = "outline-none px-2";
 
   return (
-    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center p-2 backdrop-blur-lg z-50 app-region-no-drag">
+    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center backdrop-blur-lg z-50 app-region-no-drag">
       {showOkSignal.show &&
         (!facturaOk ? (
           <Factura
@@ -386,7 +386,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
           </div>
         </div>
       )}
-      <div className="w-full h-full bg-slate-900  text-slate-50 rounded-lg overflow-hidden flex relative">
+      <div className="w-4/5 h-4/5 bg-[#2f2f2fff]  text-slate-50 rounded-lg overflow-hidden flex relative pt-2">
         <AsideForm
           subirVenta={subirVenta}
           onChangeModal={onChangeModal}

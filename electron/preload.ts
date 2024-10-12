@@ -134,6 +134,7 @@ contextBridge.exposeInMainWorld("api", {
       "edit-article",
       "delete-article",
       "get-articleByCode",
+      "update-article",
       "get-articleByName",
       //EVENTOS DE CLIENTES
       "save-client",
@@ -208,6 +209,7 @@ contextBridge.exposeInMainWorld("api", {
       "response-get-deposits",
       "create-deposit",
       "add-product-in-Deposits",
+      "transfer-article",
       //IMPRESORA PRUEBA
       "imprimir-pa",
       //METODOS DE PAGO
@@ -235,6 +237,7 @@ contextBridge.exposeInMainWorld("api", {
       "response-edit-article",
       "response-delete-article",
       "response-get-articleByCode",
+      "response-update-article",
       /////
       //RESPUESTAS CLIENTES
       "response-update-client",
@@ -286,6 +289,7 @@ contextBridge.exposeInMainWorld("api", {
       "response-create-deposit",
       "response-create-sector-in-deposit",
       "response-add-product-in-Deposits",
+      "response-transfer-article",
       //IMPRESORA
       "response-imprimir-pa",
       //NOTIFICACIONES
@@ -302,7 +306,6 @@ contextBridge.exposeInMainWorld("api", {
       "account-saved",
       "accounts-updated",
       "respuesta-historial-cuenta",
-
     ];
 
     if (canalesPermitidos.includes(canal)) {

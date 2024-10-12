@@ -13,7 +13,8 @@ import { useSelector } from "react-redux";
 import ButtonR from "../../../../buttons/ButtonR";
 import { IoAdd } from "react-icons/io5";
 import Biñeta from "../../../../Biñeta/Biñieta";
-
+import Tooltip from "@mui/material/Tooltip";
+import { Button, ButtonBase } from "@mui/material";
 interface CategoryAndBrandProps {
   errorToSave: { active: boolean; type: string; message: string };
   setAddBrandInput: (e: boolean) => void;
@@ -40,59 +41,78 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
     (state: storeType) => state.subCategoryState
   );
   return (
-    <div className="flex w-full items-start space-x-2 px-2">
-      <div className="flex flex-col flex-1 w-full relative ">
-        <div className="absolute -top-2 right-0 text-green-300 z-40 hover:text-green-200 flex space-x-2">
+    <div className="flex flex-1 items-center space-x-2 px-2 ">
+      <div className="flex flex-col relative space-y-2">
+        <div className="w-full text-green-300 z-40 hover:text-green-200 flex justify-end">
           {errorToSave.active &&
             (errorToSave.type == "all" || errorToSave.type == "brand") && (
               <div className="flex items-center">
                 <p className="text-red-200 text-xs">{errorToSave.message}</p>
               </div>
             )}
-          <Biñeta title="Crear marca">
-            <ButtonR
-              height="h-6"
+          {/* <Biñeta title="Crear marca">
+            
+          </Biñeta> */}
+          {/* <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ButtonR
+                  height="h-6"
+                  onClick={() => {
+                    setAddBrandInput(true);
+                  }}
+                  width="w-6"
+                  textSize="text-xs"
+                  bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
+                >
+                  <IoAdd size={20} className="text-[#ffd700ff] " />
+                </ButtonR>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Add to library</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider> */}
+          <Tooltip title="Crear marca">
+            <button
               onClick={() => {
                 setAddBrandInput(true);
               }}
-              width="w-6"
-              textSize="text-xs"
-              bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
+              className="shadow-[0_2px_5px_rgba(0,0,0,0.50)] bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff] text-xs rounded-full h-6 w-6 flex justify-center items-center"
             >
-              <IoAdd size={20} className="text-[#ffd700ff] " />
-            </ButtonR>
-          </Biñeta>
+              <IoAdd size={25} className="text-[#ffd700ff] " />
+            </button>
+          </Tooltip>
         </div>
-        <InputBrand
-          errorIn={errorIn}
-          stateArticle={stateArticle}
-          style={inputStyle}
-          dispatch={dispatch}
-          brands={brands}
-          brandError={errorToSave}
-          value={stateArticle.brand.label}
-        />
+        <div className="flex-1">
+          <InputBrand
+            errorIn={errorIn}
+            stateArticle={stateArticle}
+            style={inputStyle}
+            dispatch={dispatch}
+            brands={brands}
+            brandError={errorToSave}
+            value={stateArticle.brand.label}
+          />
+        </div>
       </div>
-      <div className="flex-1 relative w-full">
-        <div className="absolute -top-2 right-0 text-green-300 z-40 hover:text-green-200 flex space-x-2">
+      <div className="flex flex-col relative space-y-2">
+        <div className=" text-green-300 z-40 hover:text-green-200 flex space-x-2 w-full justify-end">
           {errorToSave.active && (errorToSave.type == "all" || "category") && (
             <div className="flex items-center">
               <p className="text-red-200 text-xs">{errorToSave.message}</p>
             </div>
           )}
-          <Biñeta title="Crear categoria">
-            <ButtonR
-              height="h-6"
+          <Tooltip title="Crear categoria">
+            <button
               onClick={() => {
                 setAddCategoryInput(true);
               }}
-              width="w-6"
-              textSize="text-xs"
-              bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
+              className="shadow-[0_2px_5px_rgba(0,0,0,0.50)] bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff] text-xs rounded-full h-6 w-6 flex justify-center items-center"
             >
-              <IoAdd size={20} className="text-[#ffd700ff] " />
-            </ButtonR>
-          </Biñeta>
+              <IoAdd size={25} className="text-[#ffd700ff] " />
+            </button>
+          </Tooltip>
         </div>
         <InputCategory
           errorIn={errorIn}
@@ -104,26 +124,23 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
           categoryError={errorToSave}
         />
       </div>
-      <div className="flex-1 relative w-full">
-        <div className="absolute -top-2 right-0 text-green-300 z-40 hover:text-green-200 flex space-x-2">
+      <div className="flex flex-col relative space-y-2">
+        <div className="text-green-300 z-40 hover:text-green-200 flex space-x-2 w-full justify-end">
           {errorToSave.active && (errorToSave.type == "all" || "category") && (
             <div className="flex items-center">
               <p className="text-red-200 text-xs">{errorToSave.message}</p>
             </div>
           )}
-          <Biñeta title="Crear sub categoria">
-            <ButtonR
-              height="h-6"
+          <Tooltip title="Crear sub categoria">
+            <button
               onClick={() => {
                 setAddSubCategoryInput(true);
               }}
-              width="w-6"
-              textSize="text-xs"
-              bgIconColor="bg-gradient-to-l  from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
+              className="shadow-[0_2px_5px_rgba(0,0,0,0.50)] bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff] text-xs rounded-full h-6 w-6 flex justify-center items-center"
             >
-              <IoAdd size={20} className="text-[#ffd700ff] " />
-            </ButtonR>
-          </Biñeta>
+              <IoAdd size={25} className="text-[#ffd700ff] " />
+            </button>
+          </Tooltip>
         </div>
         <InputSubCategory
           errorIn={errorIn}

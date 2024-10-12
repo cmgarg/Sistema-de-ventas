@@ -33,12 +33,12 @@ const AsideForm: React.FC<AsideForm> = ({
   }, [userData]);
 
   return (
-    <div className="flex flex-col w-72 items-start  relative ">
+    <div className="flex flex-col w-52 items-start relative border-r border-gray-600">
       <div className="flex flex-1 w-full">
-        <div className="flex flex-1 flex-col w-full px-2 font-bold py-2 space-y-2">
+        <div className="flex flex-1 flex-col w-full font-bold">
           <button
             onClick={() => onClickBuyer(true)}
-            className={`flex flex-col border-b-1 bg-slate-950 border border-slate-800 relative flex-1 w-full items-center justify-center rounded-lg hover:bg-slate-700 ${
+            className={`flex flex-col border-b-1 bg-gradient-to-tl from-gray-700 via-gray-700 to-gray-500 border border-slate-800 relative flex-1 w-full items-center justify-center hover:brightness-125  ${
               showError.in === "all" || showError.in === "buyer"
                 ? "shadow-inset-cmg"
                 : null
@@ -47,13 +47,13 @@ const AsideForm: React.FC<AsideForm> = ({
             <div
               className={`flex flex-1 w-full flex-col items-center space-y-2 relative z-40`}
             >
-              <div className="absolute top-0 text-3xl italic text-slate-300">
+              <div className="absolute top-0 text-lg italic text-slate-300">
                 <p>COMPRADOR</p>
               </div>
 
               {saleData.buyer.client.active ? (
                 <div className="flex flex-1 items-center justify-center w-full flex-col space-y-2">
-                  <FcBusinessman size={150}></FcBusinessman>
+                  <FcBusinessman size={100}></FcBusinessman>
                   <p className="text-teal-500">
                     {saleData.buyer.client.active
                       ? saleData.buyer.client.clientData.name
@@ -62,26 +62,26 @@ const AsideForm: React.FC<AsideForm> = ({
                 </div>
               ) : saleData.buyer.finalConsumer.active ? (
                 <div className="flex flex-1 items-center justify-center w-full flex-col space-y-2">
-                  <FaBasketShopping size={140} className="text-rose-500" />
+                  <FaBasketShopping size={100} className="text-rose-500" />
 
                   <p className="text-teal-500">Consumidor final</p>
                 </div>
               ) : (
                 <div className="flex flex-1 items-center justify-center w-full flex-col space-y-2">
-                  <FaQuestion size={150} />
+                  <FaQuestion size={100} />
                 </div>
               )}
             </div>
           </button>
           <button
             onClick={() => onClickSeller(true)}
-            className="flex flex-col flex-1 w-full items-center bg-slate-950 justify-center rounded-md hover:bg-slate-700"
+            className="flex flex-col flex-1 w-full items-center bg-gradient-to-tl from-gray-700 via-gray-700 to-gray-500 justify-center hover:brightness-125"
           >
-            <div className="flex flex-1 border border-slate-800 rounded-lg w-full flex-col justify-center items-center space-y-2 relative z-40">
-              <div className="absolute top-0 text-3xl italic text-slate-300">
+            <div className="flex flex-1 border border-slate-800 w-full flex-col justify-center items-center space-y-2 relative z-40">
+              <div className="absolute top-0 text-lg italic text-slate-300">
                 <p>VENDEDOR</p>
               </div>
-              <div className="rounded-full h-24 w-24 border-2 ">
+              <div className="rounded-full h-20 w-20 border-2 ">
                 {saleData.seller.image ? (
                   <img
                     src={saleData.seller.image}

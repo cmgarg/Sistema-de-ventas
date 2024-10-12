@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import { Action, articleData } from "../../../../../../../types/types";
 import Impuestos from "./Impuestos";
+import ButtonR from "../../../buttons/ButtonR";
+import { IoIosArrowDown, IoIosArrowDropright } from "react-icons/io";
+import { MdArrowForwardIos } from "react-icons/md";
 
 type saleAndCost = {
   inputStyle: string;
@@ -23,7 +26,7 @@ const SaleAndCost: React.FC<saleAndCost> = ({
   }, [finalPrice]);
 
   return (
-    <div className="flex flex-col space-x-2 border-t border-slate-700 p-2">
+    <div className="flex flex-col space-x-2 border-t border-slate-700 p-2 flex-1">
       <div className="flex space-x-2">
         <div className="flex flex-col flex-1">
           <div className="flex space-x-2">
@@ -92,6 +95,7 @@ const SaleAndCost: React.FC<saleAndCost> = ({
           stateArticle={stateArticle}
           dispatch={dispatch}
           errorIn={errorIn}
+          className="flex-1 h-52 w-full"
         />
       </div>
     </div>
@@ -186,32 +190,60 @@ const PriceOfArticle: React.FC<priceOfArticle> = ({
   const onChangeExpand = (e: boolean) => {
     setExpand(e);
   };
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const finalPrice = applyTaxes(costo, percentajeToSale);
     console.log("PRECIO FINAL LOQUITO", finalPrice);
     setFinalPrice(finalPrice);
   }, [costo, percentajeToSale, articleState.taxes]);
+  useEffect(() => {
+    // Función que se ejecuta cuando se hace clic fuera del componente
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        onChangeExpand(false); // Llamamos a la función que maneja el evento de clic afuera
+      }
+    };
 
+    // Agregamos el event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Limpiamos el event listener cuando el componente se desmonte
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   return (
     <div
-      className={`${
+      ref={ref}
+      className={`mt-2 ${
         expand ? "flex flex-col text-sm font-thin rounded-sm" : ""
-      }`}
+      } relative flex flex-col text-sm font-thin rounded-sm`}
     >
-      <div className="flex text-xs w-full border-gray-700 border-b">
-        <h3
-          className="font-bold cursor-pointer"
+      <div className="flex text-xs w-full border-gray-700 border-b space-x-2">
+        <ButtonR
+          bgColor={`font-bold cursor-pointer select-none text-[10px] hover:text-blue-500  px-2 ${
+            expand
+              ? "bg-gradient-to-l from-blue-700 via-blue-700 to-blue-500 "
+              : "bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 "
+          }`}
+          width="w-44"
+          height="h-5"
           onClick={() => onChangeExpand(!expand)}
+          title="Cálculo Detallado"
         >
-          Cálculo Detallado |
-        </h3>
+          {expand ? (
+            <IoIosArrowDown size={15} className="-rotate-180" />
+          ) : (
+            <IoIosArrowDown size={15} />
+          )}
+        </ButtonR>
         <p>
           Precio Base (Costo): <span className="font-bold">${costo}</span>
         </p>
       </div>
       {expand ? (
-        <div className="flex  border-gray-700">
+        <div className="flex  border-gray-700 pl-2 absolute top-full mt-2 bg-gradient-to-b  from-gray-800 via-gray-800 to-gray-700 z-50 left-0 -right-48 rounded-lg shadow-[0_2px_5px_rgba(0,0,0,0.50)]">
           <div className="flex flex-col space-y-1 border-r flex-1 font-medium border-gray-700">
             <p className="font-thin">
               Impuestos sobre el Costo:{" "}
@@ -232,7 +264,7 @@ const PriceOfArticle: React.FC<priceOfArticle> = ({
               </span>
             </p>
           </div>
-          <div className="flex flex-col border-r flex-1 border-cyan-700 pl-2">
+          <div className="flex flex-col flex-1 pl-2">
             {/* OPERACION */}
             <p className="italic text-yellow-300 text-xs">
               Agregando impuesto sobre el costo.
@@ -295,7 +327,7 @@ const PriceOfArticle: React.FC<priceOfArticle> = ({
               )}`}</span>
               <span className="text-gray-400">{`x (1 + `}</span>
               <span className="text-sky-300">
-                ${toShowOperation.percentaje}%
+                {toShowOperation.percentaje}%
               </span>
               <span>{`/ 100) =`}</span>
               <span className="text-violet-300">{`${formatMoney(

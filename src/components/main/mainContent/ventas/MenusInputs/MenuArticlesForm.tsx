@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import Downshift from "downshift";
 import { NumericFormat } from "react-number-format";
 import SelectM from "../../Select/Select";
+import ButtonR from "../../buttons/ButtonR";
+import SelectDefinitive from "../../Select/SelectDefinitive";
 
 type propsInput = {
   style: string;
@@ -74,15 +76,20 @@ const MenuArticlesForm = ({
       let totalAmount;
       totalAmount = Number(amountArticle) * Number(price);
 
-      if (optionXSelect === "palette") {
+      let labelUnit = "";
+      if (optionXSelect === "xPalet") {
+        labelUnit = "Palets";
         totalAmount =
           Number(amountArticle) * amountOptions.palette.amount * Number(price);
-      }
-      if (optionXSelect === "bulk") {
+      } else if (optionXSelect === "xBulto") {
+        labelUnit = "Bultos";
+        console.log("SE CUMPLE BULTOS ACATAMBIEN");
         totalAmount =
           Number(amountArticle) * amountOptions.forBulk.amount * Number(price);
+      } else {
+        labelUnit = articleToSend.article.stock.unit.abrevUnit;
       }
-
+      console.log(labelUnit, optionXSelect);
       const articleForList = {
         name: articleToSend.article.name,
         code: articleToSend.code,
@@ -90,17 +97,9 @@ const MenuArticlesForm = ({
         amount: {
           value: `${amountArticle}`,
           unit: {
-            label: `${
-              optionXSelect === "palette"
-                ? "Palette"
-                : optionXSelect === "unit"
-                ? "Ud"
-                : optionXSelect === "bulk"
-                ? "Bulto"
-                : articleToSend.article.stock.unit.label
-            }`,
-            palette: optionXSelect === "palette" ? true : false,
-            bulk: optionXSelect === "bulk" ? true : false,
+            label: labelUnit,
+            palette: optionXSelect === "XPalet" ? true : false,
+            bulk: optionXSelect === "XBulto" ? true : false,
           },
         },
       };
@@ -192,22 +191,22 @@ const MenuArticlesForm = ({
     let optionsToEstablish = [];
     if (amountOptions.palette.active) {
       optionsToEstablish.push({
-        label: "xPalette",
-        value: "palette",
+        label: "Palets",
+        value: "xPalet",
       });
     }
     if (amountOptions.forBulk.active) {
       optionsToEstablish.push({
-        label: "xBulto",
-        value: "bulk",
+        label: "Bultos",
+        value: "xBulto",
       });
     }
     if (optionsToEstablish) {
       setOptionsAmountSelect([
         ...optionsToEstablish,
         {
-          label: `x${articleSelect?.article.stock.unit.label}`,
-          value: `${articleSelect?.article.stock.unit.value}`,
+          label: `${articleSelect?.article.stock.unit.abrevUnit}`,
+          value: `${articleSelect?.article.stock.unit.abrevUnit}`,
         },
       ]);
     }
@@ -257,10 +256,10 @@ const MenuArticlesForm = ({
     let amount = amountArticle;
     let amountX;
 
-    if (option === "palette") {
+    if (option === "xPalet") {
       amountX = amountOptions.palette.amount;
     }
-    if (option === "bulk") {
+    if (option === "xBulto") {
       amountX = amountOptions.forBulk.amount;
     }
 
@@ -302,68 +301,70 @@ const MenuArticlesForm = ({
         getLabelProps,
         getRootProps,
       }) => (
-        <div className="relative flex flex-col flex-1 h-12 bg-slate-800 rounded-lg text-lg">
-          <div className="absolute h-12 right-0 top-0 rounded-md  items-center flex">
-            <div className="flex h-full flex-1 p-1 relative rounded-lg ">
-              <div className="flex w-32 h-full border border-slate-600 rounded-l-lg relative items-center justify-center">
-                <div className="flex-1 w-full h-full">
-                  <input
-                    type="text"
-                    name="amount"
-                    placeholder="0"
-                    onChange={(e) => {
-                      console.log(/^[0-9]*$/.test(e.target.value));
-                      if (/^[0-9]*$/.test(e.target.value)) {
-                        setAmountArticle(e.target.value);
-                      }
-                    }}
-                    value={amountArticle}
-                    className={`w-16 h-full outline-none rounded-l-lg pl-3 bg-black ${
-                      errorShowAmount && " shadow-inset-cmg"
-                    }`}
+        <div className="relative flex flex-col flex-1 h-10 rounded-sm text-sm justify-center">
+          <div
+            {...getRootProps({}, { suppressRefError: true })}
+            className="flex-1 h-full rounded-sm flex items-center"
+          >
+            <div className="flex-1 h-full">
+              <input
+                placeholder="Añadir articulo"
+                {...getInputProps()}
+                className={`${style} rounded-sm rounded-r-none ${
+                  isOpen ? "rounded-b-none" : ""
+                } w-full h-full bg-[#707070ff] ${
+                  errorShowArticle && "shadow-inset-cmg"
+                }`}
+              />
+            </div>
+            <div className="text-sm h-full rounded-md items-center flex space-x-2 pr-2">
+              <div className="flex h-full flex-1 relative rounded-lg items-center">
+                <div className="flex w-32 h-full border border-slate-600 rounded-l-lg relative items-center justify-center">
+                  <div className="flex-1 w-full h-full">
+                    <input
+                      type="text"
+                      name="amount"
+                      placeholder="0"
+                      onChange={(e) => {
+                        console.log(/^[0-9]*$/.test(e.target.value));
+                        if (/^[0-9]*$/.test(e.target.value)) {
+                          setAmountArticle(e.target.value);
+                        }
+                      }}
+                      value={amountArticle}
+                      className={`w-16 h-full outline-none rounded-l-lg pl-3 bg-[#404040ff] focus:bg-[#909090ff] ${
+                        errorShowAmount && " shadow-inset-cmg"
+                      }`}
+                    />
+                  </div>
+                  <p className="absolute">=</p>
+                  <div className="flex pl-3 h-full flex-1 items-center bg-[#707070ff] select-none">
+                    <p> {getTotalUnit()}</p>
+                  </div>
+                </div>
+                <div className="w-24 h-full flex items-center border border-slate-600 bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 rounded-r-lg">
+                  <SelectM
+                    onChangeSelection={selectionXAmount}
+                    options={optionsAmountSelect}
+                    className="h-full flex-1 rounded-r-lg rounded-l-none border-none bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500"
+                    placeholder=""
+                    slice={-1}
+                    todos={false}
+                    value={optionXSelect}
                   />
                 </div>
-                <p className="absolute">=</p>
-                <div className="flex pl-3 h-full flex-1 items-center bg-black select-none">
-                  <p> {getTotalUnit()}</p>
-                </div>
+                <p className="absolute bottom-1 right-1 text-slate-400 text-xs select-none flex-1">
+                  {articleSelect?.article.stock.unit.abrevUnit}
+                </p>
               </div>
-              <div className="flex-1 h-full flex items-center border border-slate-600 rounded-r-lg">
-                <SelectM
-                  onChangeSelection={selectionXAmount}
-                  options={optionsAmountSelect}
-                  className="h-full flex-1 rounded-r-lg rounded-l-none border-none"
-                  placeholder=""
-                  slice={-1}
-                  todos={false}
-                  value={optionXSelect}
-                />
-              </div>
-              <p className="absolute bottom-1 right-1 text-slate-400 text-xs select-none flex-1">
-                {articleSelect?.article.stock.unit.abrevUnit}
-              </p>
+              <ButtonR
+                title="Añadir"
+                width="w-24"
+                height="h-7"
+                bgColor="bg-gradient-to-l from-yellow-700 via-yellow-700 to-yellow-500 text-sm"
+                onClick={() => sendArticle(true, true)}
+              ></ButtonR>
             </div>
-            <button
-              className="flex h-full w-24 justify-center items-center rounded-lg border border-slate-800 px-2 bg-green-500  hover:bg-green-600"
-              onClick={() => sendArticle(true, true)}
-            >
-              <p>AÑADIR</p>
-            </button>
-          </div>
-          <div
-            style={{ display: "inline-block" }}
-            {...getRootProps({}, { suppressRefError: true })}
-            className="w-full h-full"
-          >
-            <input
-              placeholder="Añadir articulo"
-              {...getInputProps()}
-              className={`${style} ${
-                isOpen ? "rounded-b-none" : "rounded-r-md"
-              } w-full h-full bg-teal-950 ${
-                errorShowArticle && "shadow-inset-cmg"
-              }`}
-            />
           </div>
           <ul
             {...getMenuProps()}

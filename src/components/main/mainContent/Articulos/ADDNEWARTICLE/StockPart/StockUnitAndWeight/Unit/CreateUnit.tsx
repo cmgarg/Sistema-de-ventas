@@ -1,5 +1,6 @@
 import { CheckCircledIcon } from "@radix-ui/react-icons";
 import React, { useEffect, useState } from "react";
+import ButtonR from "../../../../../buttons/ButtonR";
 
 type CreateUnitProps = {
   setCreateUnitForm: (e: boolean) => void;
@@ -22,7 +23,9 @@ const CreateUnit: React.FC<CreateUnitProps> = ({ setCreateUnitForm }) => {
     setNameUnit(e);
   };
   const onChangeAbrevUnit = (e: string) => {
-    setAbrevUnit(e);
+    if (e.length < 5) {
+      setAbrevUnit(e);
+    }
   };
 
   const createNewUnit = () => {
@@ -53,8 +56,8 @@ const CreateUnit: React.FC<CreateUnitProps> = ({ setCreateUnitForm }) => {
   }, []);
 
   return (
-    <div className="absolute backdrop-blur-sm top-0 left-0 right-0 bottom-0 flex justify-center items-center">
-      <div className="flex flex-col h-72 w-96 bg-slate-950 border text-white border-slate-500 z-50 rounded-lg ">
+    <div className="absolute backdrop-brightness-50 top-0 left-0 right-0 bottom-0 flex justify-center items-center z-50">
+      <div className="flex flex-col h-52 bg-[#2f2f2fff] border border-gray-600 z-50 rounded-lg text-xs p-2">
         {showCorrectlytUpdate && (
           <div className="absolute h-72 w-96 bg-slate-800 z-50 flex flex-col rounded-lg">
             <div className="flex-1 flex justify-center flex-col items-center p-2">
@@ -77,41 +80,52 @@ const CreateUnit: React.FC<CreateUnitProps> = ({ setCreateUnitForm }) => {
             </button>
           </div>
         )}
-        <div className="flex-1 p-6 flex flex-col justify-between relative">
-          <div className="absolute h-5 w-full text-xs text-red-500 left-1 top-1">
+        <div className="flex-1 px-2 flex flex-col justify-between relative w-full">
+          <div className="absolute h-5 w-full text-[10px] text-red-500 justify-end flex pr-5">
             <p>{errorShow.active ? errorShow.message : ""}</p>
           </div>
-          <label htmlFor="nameunit">Nombre unidad</label>
-          <input
-            name="nameunit"
-            type="text"
-            onChange={(e) => onChangeNameUnit(e.target.value)}
-            value={nameUnit}
-            className="bg-slate-900 rounded-lg h-12 w-full outline-none border border-slate-800 pl-2"
-          />
-          <label htmlFor="abrevunit">Abreviado max 4 caracteres</label>
+          <div className="flex flex-1 flex-col">
+            <label htmlFor="nameunit">Nombre unidad</label>
+            <input
+              name="nameunit"
+              type="text"
+              onChange={(e) => onChangeNameUnit(e.target.value)}
+              value={nameUnit}
+              className="bg-[#707070ff] rounded-lg h-10 w-52 outline-none border border-slate-800 pl-2 focus:bg-[#909090ff]"
+            />
+          </div>
+          <div className="flex flex-1 flex-col">
+            <label htmlFor="abrevunit" className="flex space-x-2">
+              <p>Abreviado</p>{" "}
+              <p className="text-[10px] h-full flex justify-start items-end text-gray-400">
+                (max 4 caracteres)
+              </p>
+            </label>
 
-          <input
-            name="abrevunit"
-            type="text"
-            onChange={(e) => onChangeAbrevUnit(e.target.value)}
-            className="bg-slate-900 rounded-lg h-12 w-full outline-none border border-slate-800 pl-2"
-            value={abrevUnit}
-          />
+            <input
+              name="abrevunit"
+              type="text"
+              onChange={(e) => onChangeAbrevUnit(e.target.value)}
+              className="bg-[#707070ff] rounded-lg h-10 w-32 outline-none border border-slate-800 pl-2 focus:bg-[#909090ff]"
+              value={abrevUnit}
+            />
+          </div>
         </div>
-        <div className="flex">
-          <button
+        <div className="flex w-full justify-end space-x-2">
+          <ButtonR
+            title="Cancelar"
             onClick={() => setCreateUnitForm(false)}
-            className="w-1/2 h-12 flex-1 bg-red-800 hover:bg-red-900 rounded-bl-lg"
-          >
-            Cancelar
-          </button>
-          <button
+            bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff] text-xs"
+            height="h-6"
+            width=" w-20"
+          />
+          <ButtonR
+            title="Crear"
             onClick={createNewUnit}
-            className="w-1/2 h-12 flex-1 bg-green-800 hover:bg-green-900 rounded-br-lg"
-          >
-            Crear
-          </button>
+            bgColor="bg-gradient-to-l from-yellow-700 via-yellow-700 to-yellow-500 text-[#fff8dcff] text-xs"
+            height="h-6"
+            width="w-24"
+          />
         </div>
       </div>
     </div>

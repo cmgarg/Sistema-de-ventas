@@ -5,7 +5,23 @@ import {
   categoryType,
 } from "../../../../../../../../../types/types";
 import React, { useEffect, useState } from "react";
-import Downshift from "downshift";
+import { cn } from "../../../../../../../../../lib/utils";
+import { Button } from "../../../../../../../../../components/app/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../../../../../../../../../components/app/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../../../../../../../../components/app/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { isEqual } from "lodash";
 
 type propsInput = {
   style: string;
@@ -25,6 +41,7 @@ const InputBrand = ({
   stateArticle,
   value,
 }: propsInput) => {
+  const [open, setOpen] = React.useState(false);
   const onChangeNewValue = (newValue: string) => {
     if (/^[a-zA-Z]*$/.test(newValue)) {
       dispatch({
@@ -53,97 +70,67 @@ const InputBrand = ({
   };
 
   return (
-    <Downshift
-      onChange={(selection) => {
-        onChangeNewValue(selection || "teta");
-      }}
-      inputValue={value}
-      itemToString={(item) =>
-        item
-          ? compareSelectItemWithInputValue(item.label)
-          : stateArticle.brand.label
-      }
-      onInputValueChange={(e, stateAndHelpers) => {
-        onChangeNewValue(e);
-      }}
-      onSelect={(selectedItem) => {
-        onChangeNewValue(selectedItem || "teta");
-      }}
-    >
-      {({
-        getInputProps,
-        getItemProps,
-        getMenuProps,
-        isOpen,
-        inputValue,
-        highlightedIndex,
-        selectedItem,
-        getLabelProps,
-        getRootProps,
-      }) => (
-        <div className="flex-1 flex flex-col">
-          <label {...getLabelProps()} className="select-none">
-            Marca
-          </label>
-          <div
-            style={{ display: "inline-block" }}
-            {...getRootProps({}, { suppressRefError: true })}
-          >
-            <input
-              {...getInputProps()}
-              className={`${style} ${isOpen ? "rounded-b-none" : ""} w-full ${
-                errorIn.includes("BRAND")
-                  ? "overline outline-red-500 outline-2"
-                  : ""
-              }`}
-            />
-          </div>
-          <ul
-            {...getMenuProps()}
-            className="w-full absolute top-full rounded-b-sm"
-          >
-            {isOpen
-              ? brands
-                  .filter(
-                    (item) =>
-                      !inputValue ||
-                      item.label
-                        .toLowerCase()
-                        .includes(inputValue.toLowerCase())
-                  )
-                  .map((item, index) => (
-                    <li
-                      {...getItemProps({
-                        key: item.label,
-                        index,
-                        item,
-                        style: {
-                          border: selectedItem === item ? "2px blue" : "normal",
-                          paddingLeft: "0.250rem",
-                        },
-                      })}
-                      className={`${
-                        highlightedIndex === index
-                          ? "bg-teal-900"
-                          : "bg-teal-950"
-                      } ${
-                        highlightedIndex === index
-                          ? "text-slate-50"
-                          : "text-slate-200"
-                      }${
-                        highlightedIndex === index
-                          ? "bg-red-200"
-                          : "font-normal"
-                      }`}
-                    >
-                      {item.label}
-                    </li>
-                  ))
-              : null}
-          </ul>
-        </div>
-      )}
-    </Downshift>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        asChild
+        className="bg-gradient-to-l from-gray-800 via-gray-800 to-gray-700 border border-gray-600 flex hover:text-yellow-500 shadow-[0_1px_5px_rgba(0,0,0,0.50)]"
+      >
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className=" justify-between w-52"
+        >
+          {stateArticle.brand.label
+            ? brands.find(
+                (framework) => framework.value === stateArticle.brand.value
+              )?.label
+            : "Selecciona marca"}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-52 p-0  border border-gray-600 bg-black ">
+        <Command className="bg-gray-800 text-white">
+          <CommandInput placeholder="Buscando marca..." />
+          <CommandList className="bg-slate-950 ">
+            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandGroup>
+              {brands.map((framework) => (
+                <CommandItem
+                  key={framework.value}
+                  value={framework.value}
+                  className={`${
+                    framework.value === stateArticle.brand.value
+                      ? "bg-yellow-400"
+                      : "text-white font-semibold"
+                  }  
+                              `}
+                  onSelect={(currentValue) => {
+                    dispatch({
+                      type: "SET_BRAND",
+                      payload: isEqual(framework, stateArticle.brand)
+                        ? { label: "", value: "" }
+                        : framework,
+                    });
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4 text-black",
+                      stateArticle.brand.value === framework.value
+                        ? "opacity-100 text-white"
+                        : "opacity-0"
+                    )}
+                  />
+                  {framework.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 };
 
