@@ -75,6 +75,7 @@ import {
   getAccountsToPay20editar,
   updateAccountInDb,
   getHistorialCuentaPorId,
+  saveNotificationn,
 } from "./databaseOperations";
 import { verificarToken } from "./vFunctions";
 import { articleData, IUser } from "../types/types";
@@ -922,6 +923,45 @@ ipcMain.on("send-notification", async (event, data) => {
     console.error("Datos de notificación no válidos:", data);
   }
 });
+
+
+//////guardar notiufiaciones que vienne desde el servidor
+ipcMain.on("save-notification", async (event, notificationData) => {
+  try {
+    const data = notificationData.message ? notificationData.message : notificationData;
+
+    // Validar los datos de la notificación
+    const { titulo, tipo, nota, icono } = data;
+    if (!titulo || !tipo || !nota || !icono) {
+      throw new Error("Datos de notificación no válidos");
+    }
+
+    // Crear el objeto de la notificación para guardar en la base de datos
+    const newNotification = {
+      titulo,
+      tipo,
+      nota,
+      icono,
+      fechaHora: new Date().toISOString(),
+      visto: false,
+      oculta: false,
+    };
+
+    // Guardar la notificación en la base de datos
+    const savedNotification = await saveNotificationn(newNotification);
+
+    // Después de guardar, obtener todas las notificaciones actualizadas
+    const notifications = await getNotifications();
+
+    // Enviar las notificaciones actualizadas al frontend
+    event.reply("response-get-notifications", notifications);
+  } catch (error) {
+    console.error("Error al guardar la notificación:", error);
+    event.reply("notification-error", { error: error });
+  }
+});
+
+
 
 // Obtener todas las notificaciones
 ipcMain.on("get-notifications", async (event) => {

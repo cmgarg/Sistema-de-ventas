@@ -220,6 +220,7 @@ contextBridge.exposeInMainWorld("api", {
       "guardar-historial-cuenta",
       "save-accountToPayeditar",
       "get-historial-cuenta",
+      "save-notification",
       
     ];
     if (canalesPermitidos.includes(canal)) {

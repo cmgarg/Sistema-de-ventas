@@ -13,6 +13,8 @@ import { TbFileDollar } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { IconType } from "react-icons";
 import { FcOvertime } from "react-icons/fc";
+import { io, Socket } from "socket.io-client";
+import payIcon from "../../../assets/pay.png";
 
 interface Notification {
   [x: string]: any;
@@ -32,12 +34,13 @@ interface MenuNotifProps {
   closeMenu: () => void;
 }
 
-const iconMap: { [key: number]: IconType } = {
+const iconMap: { [key: number]: IconType | string } = {
   1: PiBoxArrowDown,
   2: GrUpdate,
   3: TbFileDollar,
   4: LiaCashRegisterSolid,
   5: FcOvertime,
+  6: payIcon,  // Esto es una imagen
 };
 
 const customFormatDistance = (date: Date): string => {
@@ -67,9 +70,19 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
   const moreButtonRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const loadingRef = useRef(false);
-  const [notifiacionRecibida, setNotifiacionRecibida] = useState();
 
   const navigate = useNavigate();
+  ///////////////////////////////////
+
+  const socket = io("http://localhost:4500");
+
+  socket.emit("register_as_program_2");
+
+  socket.on("receive_notification", (data) => {
+    console.log("Notificación recibida:", data);
+  });
+
+  ////////////////////////////////////////////////
 
   useEffect(() => {
     window.api.enviarEvento("get-disabled-notification-types");
@@ -98,10 +111,7 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
     return () => clearInterval(intervalId);
   }, [setNotifications]);
 
-  const handleMoreClick = (
-    notificationId: string,
-    event: React.MouseEvent
-  ) => {
+  const handleMoreClick = (notificationId: string, event: React.MouseEvent) => {
     event.stopPropagation(); // Detiene la propagación del clic para evitar la redirección
     setMenuVisible((prevVisible) => {
       if (prevVisible && selectedNotificationId === notificationId) {
@@ -210,7 +220,6 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
             notification.idcuenta,
             "este es el id de la cuenta de la notificacion"
           );
-          // Asegúrate de que el idcuenta existe y se pasa correctamente en la URL
           navigate(`/Cuentas?idcuenta=${notification.idcuenta}`);
         } else {
           console.log("El ID de la cuenta no está presente en la notificación");
@@ -263,7 +272,7 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
                 <div
                   key={notification._id}
                   className="relative w-full h-40 hover:bg-gray-700 flex justify-between items-center"
-                  onClick={() => handleNotificationClick(notification)} // Agrega esta línea
+                  onClick={() => handleNotificationClick(notification)}
                   onMouseEnter={() => handleMouseEnter(notification._id)}
                 >
                   {!notification.visto && (
@@ -272,7 +281,13 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
                   <div className="flex flex-1 h-full p-3 pt-6 pb-6">
                     <div className="flex justify-center items-center">
                       <div className="flex bg-slate-950 p-4 m-2 rounded-full">
-                        {IconComponent && (
+                        {typeof IconComponent === "string" ? (
+                          <img
+                            src={IconComponent}
+                            alt="Notification Icon"
+                            style={{ width: 40, height: 40 }}
+                          />
+                        ) : (
                           <IconComponent size={40} className="text-slate-300" />
                         )}
                       </div>

@@ -21,7 +21,7 @@ function createWindow() {
     width: 1100,
     height: 1800,
     minWidth: 1100,
-    icon: path.join(__dirname, "../src/assets/favicon.ico"), // Asegúrate de que esta ruta sea correcta
+    icon: path.join(__dirname, "../src/assets/favicon.ico"),
     title: "Punto de Ventas",
     minHeight: 600,
     titleBarStyle: "hidden",
@@ -32,19 +32,19 @@ function createWindow() {
     },
   });
   if (!isDev) {
-    win.removeMenu(); // Esto remueve el menú que incluye la opción de abrir DevTools
+    win.removeMenu();
   }
 
 
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     const csp = isDev
-      ? "default-src 'self' 'unsafe-inline'; connect-src 'self' ws://localhost:4500 ws://vps-4260176-x.dattaweb.com; style-src 'self' 'unsafe-inline';"
+      ? "default-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:4500 ws://localhost:4500 ws://vps-4260176-x.dattaweb.com; style-src 'self' 'unsafe-inline';"
       : "default-src 'self'; connect-src 'self' ws://vps-4260176-x.dattaweb.com;";
-      
+
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        'Content-Security-Policy': [csp],
+        "Content-Security-Policy": [csp],
       },
     });
   });
@@ -77,20 +77,7 @@ function createWindow() {
   globalShortcut.register("CommandOrControl+Shift+I", () => {
     win?.webContents.openDevTools();
   });
-
-  win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    const csp = isDev
-      ? "default-src 'self' 'unsafe-inline'; connect-src 'self' ws://vps-4260176-x.dattaweb.com; style-src 'self' 'unsafe-inline';"
-      : "default-src 'self'; connect-src 'self' ws://vps-4260176-x.dattaweb.com;";
-
-    callback({
-      responseHeaders: {
-        ...details.responseHeaders,
-        "Content-Security-Policy": [csp],
-      },
-    });
-  });
-
+  
   loadEvents();
 }
 

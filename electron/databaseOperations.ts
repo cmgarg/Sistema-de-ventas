@@ -1685,6 +1685,23 @@ export const getDisabledNotificationTypes = async () => {
   }
 };
 
+
+
+/////funcion que guarda notifiaciones del servidor
+export const saveNotificationn = async (notificationn: any) => {
+  try {
+    // Utilizamos db.notifications que ya tienes configurada con @seald-io/nedb
+    const result = await db.notifications.insertAsync(notificationn);
+    return result; // Devuelve la notificación guardada
+  } catch (error) {
+    console.error("Error al guardar la notificación en la base de datos:", error);
+    throw new Error("No se pudo guardar la notificación");
+  }
+};
+
+
+
+
 // Función para eliminar notificaciones antiguas mas de 30 dias
 export const deleteOldNotifications = async (thresholdDate: any) => {
   try {
@@ -1748,4 +1765,8 @@ export const getHistorialCuentaPorId = async (idCuenta: string) => {
     });
   });
 };
+
+function getDatabasee() {
+  throw new Error("Function not implemented.");
+}
 

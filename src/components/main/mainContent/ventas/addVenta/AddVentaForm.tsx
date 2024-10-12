@@ -28,6 +28,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
   formatMony,
 }) => {
   //DATOS USUARIOS
+  //@ts-ignore 
   const [saleData, setSaleData] = useState<saleData>({
     articles: [],
     buyer: {
@@ -270,6 +271,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
         setpMOk(false);
         setFacturaOk(false);
         setSaveSaleExit(true);
+        //@ts-ignore 
         setSaleData({
           articles: [],
           buyer: {

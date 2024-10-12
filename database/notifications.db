@@ -3,10 +3,23 @@
 {"titulo":"Cuentas","nota":"Tu cuenta [object Object] ha vencido. Si ya realizaste el pago, márcala para evitar confusiones o posibles recargos.","icono":5,"tipo":"cuentas","idcuenta":"BUXsCcHDFC3oEGtG","fechaHora":"2024-09-09T23:55:38.091Z","visto":true,"ocualta":false,"_id":"DfK6Pn2ojSyiKM4D","oculta":true}
 {"titulo":"Cuentas","nota":"Tu cuenta \"Cuenta de prueba\" ha vencido. Si ya realizaste el pago, márcala para evitar confusiones o posibles recargos.","icono":5,"tipo":"cuentas","idcuenta":"OcSj6PfrP8kSS20f","fechaHora":"2024-09-11T23:31:32.006Z","visto":true,"ocualta":false,"_id":"FQIfhopFXfKZwg5q"}
 {"titulo":"Cuentas","nota":"Tu cuenta \"Tv\" ha vencido. Si ya realizaste el pago, márcala para evitar confusiones o posibles recargos.","icono":5,"tipo":"cuentas","idcuenta":"oTZutBiG1vvo3s7L","fechaHora":"2024-09-14T21:28:08.395Z","visto":true,"ocualta":false,"_id":"Ld7JXOBqFyIhFeYa"}
+{"titulo":"pago","tipo":"pago","nota":"el pago travezti 2.0","icono":"6","fechaHora":"2024-10-07T23:15:48.115Z","visto":true,"oculta":false,"_id":"PPb0LJU6jG1Of1VY"}
 {"titulo":"Cuentas","nota":"Tu cuenta [object Object] ha vencido. Si ya realizaste el pago, márcala para evitar confusiones o posibles recargos.","icono":5,"tipo":"cuentas","idcuenta":"BUXsCcHDFC3oEGtG","fechaHora":"2024-09-09T23:55:38.092Z","visto":true,"ocualta":false,"_id":"RUROi48XXdKxfxdO","oculta":true}
 {"titulo":"Cuentas","nota":"Tu cuenta <strong>'asdasdasd'</strong> ha vencido. Si ya realizaste el pago, márcala para evitar confusiones o posibles recargos.","icono":5,"tipo":"cuentas","idcuenta":"BUXsCcHDFC3oEGtG","fechaHora":"2024-09-09T23:55:38.090Z","visto":true,"ocualta":false,"_id":"ZRM0j30G6LqzBe2i","oculta":true}
 {"titulo":"Cuentas","nota":"Tu cuenta 'www' ha vencido. Si ya realizaste el pago, márcala para evitar confusiones o posibles recargos.","icono":5,"tipo":"cuentas","idcuenta":"R3kUx81wXwliliwC","fechaHora":"2024-09-09T23:48:24.043Z","visto":true,"ocualta":false,"_id":"dwXTCsGcwUMmoD1J"}
 {"titulo":"Cuentas","nota":"Tu cuenta '6262' ha vencido. Si ya realizaste el pago, márcala para evitar confusiones o posibles recargos.","icono":5,"tipo":"cuentas","idcuenta":"y9Kuz6sl3dbAGim8","fechaHora":"2024-09-09T23:57:45.800Z","visto":true,"ocualta":false,"_id":"fxtdht55AhVE4mOC"}
 {"titulo":"Cuentas","nota":"Tu cuenta 'asdasdasd' ha vencido. Si ya realizaste el pago, márcala para evitar confusiones o posibles recargos.","icono":5,"tipo":"cuentas","idcuenta":"BUXsCcHDFC3oEGtG","fechaHora":"2024-09-09T23:55:38.089Z","visto":true,"ocualta":false,"_id":"iNGbuUcGsSRf8vmX"}
 {"titulo":"Cuentas","nota":"Tu cuenta [object Object] ha vencido. Si ya realizaste el pago, márcala para evitar confusiones o posibles recargos.","icono":5,"tipo":"cuentas","idcuenta":"BUXsCcHDFC3oEGtG","fechaHora":"2024-09-09T23:55:38.091Z","visto":true,"ocualta":false,"_id":"m46TigEhDhrUattl","oculta":true}
-{"titulo":"Cuentas","nota":"Tu cuenta \"Nafta\" ha vencido. Si ya realizaste el pago, márcala para evitar confusiones o posibles recargos.","icono":5,"tipo":"cuentas","idcuenta":"m3q3MDq17u1F5ZLt","fechaHora":"2024-09-14T21:29:31.972Z","visto":true,"ocualta":false,"_id":"qDMJ68P39DBoYL6x"}
+{"titulo":"Cuentas","nota":"Tu cuenta \"Nafta\" ha vencido. Si ya realizaste el pago, márcala para evitar confusiones o posibles recargos.","icono":6,"tipo":"cuentas","idcuenta":"m3q3MDq17u1F5ZLt","fechaHora":"2024-09-14T21:29:31.972Z","visto":true,"ocualta":false,"_id":"qDMJ68P39DBoYL6x"}
+{"titulo":"pago","tipo":"pago","nota":"estas atrazado travezti","icono":"5","fechaHora":"2024-10-07T22:49:43.741Z","visto":true,"oculta":false,"_id":"rFKg3zuKm3ryQUfk"}
+{"titulo":"Cuentas","nota":"Tu cuenta \"Tv\" ha vencido. Si ya realizaste el pago, márcala para evitar confusiones o posibles recargos.","icono":5,"tipo":"cuentas","idcuenta":"yZ4LjEkucLfubs4f","fechaHora":"2024-10-12T14:03:29.137Z","visto":false,"ocualta":false,"_id":"rNej1a1xBRRzNZYn"}
+{"$$deleted":true,"_id":"3t9TZRDerfz9HlCg"}
+{"$$deleted":true,"_id":"DfK6Pn2ojSyiKM4D"}
+{"$$deleted":true,"_id":"FQIfhopFXfKZwg5q"}
+{"$$deleted":true,"_id":"RUROi48XXdKxfxdO"}
+{"$$deleted":true,"_id":"ZRM0j30G6LqzBe2i"}
+{"$$deleted":true,"_id":"dwXTCsGcwUMmoD1J"}
+{"$$deleted":true,"_id":"fxtdht55AhVE4mOC"}
+{"$$deleted":true,"_id":"iNGbuUcGsSRf8vmX"}
+{"$$deleted":true,"_id":"m46TigEhDhrUattl"}
+{"titulo":"Cuentas","nota":"Tu cuenta \"Tv\" ha vencido. Si ya realizaste el pago, márcala para evitar confusiones o posibles recargos.","icono":5,"tipo":"cuentas","idcuenta":"yZ4LjEkucLfubs4f","fechaHora":"2024-10-12T14:03:29.137Z","visto":true,"ocualta":false,"_id":"rNej1a1xBRRzNZYn"}
