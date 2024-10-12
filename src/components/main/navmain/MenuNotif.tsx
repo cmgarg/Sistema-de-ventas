@@ -98,7 +98,10 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
     return () => clearInterval(intervalId);
   }, [setNotifications]);
 
-  const handleMoreClick = (notificationId: string, event: React.MouseEvent) => {
+  const handleMoreClick = (
+    notificationId: string,
+    event: React.MouseEvent
+  ) => {
     event.stopPropagation(); // Detiene la propagación del clic para evitar la redirección
     setMenuVisible((prevVisible) => {
       if (prevVisible && selectedNotificationId === notificationId) {
@@ -280,7 +283,9 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
                         <p className=" font-light">{notification.nota}</p>
                       </div>
                       <div className="text-sm text-gray-500">
-                        {customFormatDistance(new Date(notification.fechaHora))}
+                        {customFormatDistance(
+                          new Date(notification.fechaHora)
+                        )}
                       </div>
                     </div>
                     <div

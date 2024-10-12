@@ -61,6 +61,7 @@ const Factura: React.FC<FacturaProps> = ({
         image: "",
       },
       sold: 0,
+      _id: ""
     },
   });
   return (

@@ -1,3 +1,5 @@
+import { Key } from "react";
+
 //types ARTICULOS
 export type articleData = {
   article: {
@@ -38,6 +40,7 @@ export type articleData = {
           email: string;
           address: string;
           phone: string;
+          _id?: string; 
         };
       };
       finalConsumer: { active: boolean; cae: string };
