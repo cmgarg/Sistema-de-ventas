@@ -15,9 +15,10 @@ type propsInput = {
   stateArticle: articleData;
   errorIn: string[];
   dispatch: React.Dispatch<Action>;
+  className?: string;
 };
 
-const Impuestos = ({ stateArticle, dispatch }: propsInput) => {
+const Impuestos = ({ stateArticle, dispatch, className }: propsInput) => {
   const [addImpuesto, setAddImpuesto] = useState(false);
 
   const deleteTax = (id: number) => {
@@ -26,7 +27,7 @@ const Impuestos = ({ stateArticle, dispatch }: propsInput) => {
   useEffect(() => {}, []);
 
   return (
-    <div className="w-1/3 h-52 flex flex-col ">
+    <div className={`${className ? className : "w-1/3 h-52 flex flex-col "}`}>
       {addImpuesto && (
         <AddTax
           setAddImpuesto={setAddImpuesto}

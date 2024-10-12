@@ -70,7 +70,6 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
       email: "",
     },
     taxes: [],
-    deposits: [],
   };
   type Action = { type: string; payload: any };
   const articleReducer = (state: articleData, action: Action) => {
@@ -259,11 +258,6 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
           supplier: {
             ...supp[0],
           },
-        };
-      case "SET_DEPOSITS":
-        return {
-          ...state,
-          deposits: [...action.payload],
         };
       default:
         return { ...state };
@@ -469,7 +463,7 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
   }, [barcode]);
   return (
     <div className="absolute right-0 top-0 bottom-0 left-0 overflow-hidden backdrop-brightness-50 flex flex-col justify-center items-center z-40 text-[#fff8dcff]">
-      <div className="flex h-5/6 w-11/12 flex-col text-sm relative bg-[#2f2f2fff] z-50 rounded-lg">
+      <div className="flex h-5/6 w-11/12 flex-col text-sm relative bg-[#2f2f2fff] z-50 rounded-lg border border-gray-600">
         <div className="flex-1 app-region-no-drag overflow-auto custom-scrollbar">
           <Article
             stateArticle={stateArticle}

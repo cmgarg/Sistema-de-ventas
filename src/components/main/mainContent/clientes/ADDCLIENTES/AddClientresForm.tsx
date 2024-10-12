@@ -85,69 +85,71 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
     });
   }
   //ESTILOS INPUT
-  const estilosInput = "outline-none h-12 bg-slate-600 px-2 rounded-md ";
+  const estilosInput = "outline-none h-10 bg-slate-600 px-2 rounded-md ";
 
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center text-lg z-50 backdrop-brightness-50">
-      <div className="w-2/4 bg-[#2f2f2fff] p-2 font-mono text-[#fff8dcff] space-y-5 rounded-md relative">
-        <div className="flex flex-row space-x-1 p-2">
+      <div className="w-2/5 bg-[#2f2f2fff] p-2 space-y-5 rounded-md relative text-sm">
+        <div className="flex space-x-2">
           <div className="flex-1 flex flex-col">
             <label htmlFor="nombre">Nombre</label>
             <input
               type="text"
               name="nombre"
-              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-12 rounded-md outline-none pl-2`}
+              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff]`}
               value={clienteData.name}
               onChange={(e) => {
                 setChangeData("name", e.target.value);
               }}
             />
           </div>
-        </div>
-        <div className="flex flex-col p-2">
-          <label htmlFor="address">Direccion</label>
-          <input
-            type="text"
-            name="address"
-            className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-12 rounded-md outline-none pl-2`}
-            value={clienteData.address}
-            onChange={(e) => {
-              setChangeData("address", e.target.value);
-            }}
-          />
+          <div className="flex flex-1 flex-col">
+            <label htmlFor="address">Direccion</label>
+            <input
+              type="text"
+              name="address"
+              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff]`}
+              value={clienteData.address}
+              onChange={(e) => {
+                setChangeData("address", e.target.value);
+              }}
+            />
+          </div>
         </div>
 
-        <div className="flex flex-col p-2">
-          <label htmlFor="email">Email</label>
-          <input
-            type="text"
-            name="email"
-            className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-12 rounded-md outline-none pl-2`}
-            value={clienteData.email}
-            onChange={(e) => {
-              setChangeData("email", e.target.value);
-            }}
-          />
-        </div>
-        <div className="flex w-full space-x-1 p-2">
+        <div className="flex flex-1 space-x-2">
+          <div className="flex flex-1 flex-col">
+            <label htmlFor="email">Email</label>
+            <input
+              type="text"
+              name="email"
+              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff]`}
+              value={clienteData.email}
+              onChange={(e) => {
+                setChangeData("email", e.target.value);
+              }}
+            />
+          </div>
           <div className="flex flex-1 flex-col">
             <label htmlFor="fechaNacimiento">Nacimiento</label>
             <input
               type="date"
               name="fechaNacimiento"
-              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-12 rounded-md outline-none pl-2`}
+              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff]`}
               value={clienteData.birthdate}
               onChange={(e) => {
                 setChangeData("birthdate", e.target.value);
               }}
             />
           </div>
+        </div>
+        <div className="flex w-full space-x-2">
           <div className="flex flex-1 flex-col">
             <label htmlFor="telefono">Telefono</label>
             <input
               type="text"
               name="phone"
-              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-12 rounded-md outline-none pl-2`}
+              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff]`}
               value={clienteData.phone}
               onChange={(e) => {
                 setChangeData("phone", e.target.value);
@@ -159,7 +161,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             <input
               type="text"
               name="dni"
-              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-12 rounded-md outline-none pl-2 `}
+              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff] `}
               value={clienteData.DNI}
               onChange={(e) => {
                 setChangeData("DNI", e.target.value);
@@ -167,15 +169,15 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
             />
           </div>
         </div>
-        <div className="flex flex-row w-full px-2 space-x-2 justify-end">
+        <div className="flex flex-row w-full px-2 space-x-2 justify-end text-xs">
           <ButtonR
             textSize="text-lg"
             onClick={() => {
               onChangeModal(false);
             }}
-            bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
-            height="h-10"
-            width="w-32"
+            bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff] text-sm"
+            height="h-7"
+            width="w-24"
             title="Cancelar"
           ></ButtonR>
           <ButtonR
@@ -184,8 +186,8 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
               subirUsuario();
               onChangeModal(false);
             }}
-            bgColor="bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-500 text-[#fff8dcff]"
-            height="h-10"
+            bgColor="bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-500 text-[#fff8dcff] text-sm"
+            height="h-7"
             width="w-32"
             title="Añadir"
           ></ButtonR>

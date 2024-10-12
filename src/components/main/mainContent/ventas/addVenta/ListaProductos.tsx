@@ -70,8 +70,8 @@ const ListaProductos: React.FC<ListaProductos> = ({
     return abreviation;
   };
   return (
-    <div className="flex-1 overflow-hidden flex flex-col">
-      <div className="bg-slate-950 border-b-1 border-l-1 border-gray-600">
+    <div className="flex-1 overflow-hidden flex flex-col space-y-2">
+      <div className="">
         <MenuArticlesForm
           style={estilosInput}
           articles={articles}
@@ -85,32 +85,32 @@ const ListaProductos: React.FC<ListaProductos> = ({
             : null
         }`}
       >
-        <li className="w-full flex flex-row h-12 text-2xl bg-teal-900 sticky top-0 z-40">
-          <div className="flex-1 flex justify-center h-full items-center">
+        <li className="w-full rounded-t-md flex flex-row h-10 text-xl bg-gradient-to-l from-gray-800 via-gray-700 to-gray-700 border-b border-gray-600 sticky top-0 z-40 px-2">
+          <div className="flex-1 flex justify-start h-full items-center">
             <p>Articulo</p>
           </div>
-          <div className="flex-1 flex justify-center h-full items-center">
+          <div className="flex-1 flex justify-start h-full items-center">
             <p>Cantidad</p>
           </div>
-          <div className="flex-1 flex justify-center h-full items-center">
+          <div className="flex-1 flex justify-start h-full items-center">
             <p>Total</p>
           </div>
         </li>
         {listProduct.map((e, i) => (
-          <li className="w-full flex h-12 text-2xl bg-teal-950 items-center relative">
+          <li className="w-full flex h-10 text-sm bg-black items-center relative">
             <div className="flex-1  flex justify-start pl-2 items-center">
               <p>{e.name}</p>
             </div>
-            <div className="flex-1  flex justify-center">
-              <div className="flex">
+            <div className="flex-1  flex justify-start">
+              <div className="flex space-x-2">
                 <p>{e.amount.value}</p>
-                <div className="text-sm flex items-end">
+                <div className="text-sm flex items-end text-green-400">
                   <p>{e.amount.unit.label}</p>
                 </div>
               </div>
             </div>
 
-            <div className="flex-1  text-cyan-300 flex justify-center ">
+            <div className="flex-1  text-cyan-300 flex justify-start ">
               <NumericFormat
                 allowLeadingZeros
                 allowedDecimalSeparators={[".", "."]}
@@ -127,7 +127,7 @@ const ListaProductos: React.FC<ListaProductos> = ({
               className="absolute right-2 cursor-pointer"
               onClick={() => deleteOfList(i)}
             >
-              <TrashIcon className="h-7 w-7 bg-slate-950 border border-red-500 text-red-500 hover:text-red-200 hover:bg-red-500 rounded-full p-[2px]" />
+              <TrashIcon className="h-6 w-6 bg-slate-950 border border-red-500 text-red-500 hover:text-red-200 hover:bg-red-500 rounded-full p-[2px]" />
             </div>
           </li>
         ))}

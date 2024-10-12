@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -47,7 +47,7 @@ const SelectUnitForm: React.FC<SelectProps> = ({
 }) => {
   const [selected, setSelected] = useState(value);
   const [menu, setMenu] = useState(false);
-
+  const ref = useRef<HTMLDivElement>(null);
   const onUnitForm = () => {
     setUnitForm(true);
     setMenu(false);
@@ -67,7 +67,6 @@ const SelectUnitForm: React.FC<SelectProps> = ({
 
     onChangeSelection(e);
   };
-
   return (
     <div className="text-slate-50 max-w-full min-w-full">
       <Select
@@ -81,6 +80,7 @@ const SelectUnitForm: React.FC<SelectProps> = ({
           className={`${backGround || `bg-slate-950`} max-w-full min-w-full ${
             border ? "border border-red-600" : "border-none"
           }`}
+          onClick={onChangeMenu}
         >
           <div>
             {(slice && selected) || (

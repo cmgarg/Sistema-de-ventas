@@ -50,17 +50,6 @@ export type articleData = {
     percentage: number;
     type: { costPrice: boolean; finalPrice: boolean };
   }[];
-  deposits: {
-    idObject: string;
-    name: string;
-    depositId: string;
-    address: string;
-    sector: {
-      name: string;
-      sectorId: string;
-      amount: { value: number; saveCount: string };
-    };
-  }[];
 };
 
 export type dataToDeleteArticle = {
@@ -85,7 +74,7 @@ export type dataToEditArticle = {
 //// TYPES VENTAS
 
 export type saleData = {
-  _id: Key;
+  _id?: string;
   articles: {
     name: string;
     code: string;

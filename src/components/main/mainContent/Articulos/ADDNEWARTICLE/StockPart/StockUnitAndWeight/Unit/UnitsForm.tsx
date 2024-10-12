@@ -4,6 +4,8 @@ import EditUnit from "./EditUnit";
 import CreateUnit from "./CreateUnit";
 import { IoAdd, IoClose, IoCreate } from "react-icons/io5";
 import { BiEdit, BiTrash } from "react-icons/bi";
+import ButtonR from "../../../../../buttons/ButtonR";
+import { CgClose } from "react-icons/cg";
 
 type UnitsFormProps = {
   units: unitType[];
@@ -39,52 +41,55 @@ const UnitsForm: React.FC<UnitsFormProps> = ({ units, onUnitForm }) => {
   }, []);
   return (
     <div className="absolute backdrop-brightness-50 top-0 bottom-0 left-0 right-0 flex justify-center items-center z-50">
-      <div className="flex flex-col h-2/3 w-3/4 bg-zinc-950 border text-white border-gray-600 rounded-lg ">
+      <div className="flex flex-col h-2/3 w-3/4 bg-[#2f2f2fff] border text-white border-gray-600 rounded-lg ">
         {editUnitForm && (
           <EditUnit setEditUnitForm={setEditUnitForm} unitToEdit={unitToEdit} />
         )}
         {createUnitForm && <CreateUnit setCreateUnitForm={setCreateUnitForm} />}
-        <div className="text-3xl flex justify-between rounded-lg h-10 pl-2 font-bold">
+        <div className="text-2xl flex justify-between rounded-lg h-10 pl-2 items-end font-bold">
           <p>UNIDADES DE USUARIO</p>
-          <div className="flex space-x-5">
-            <button
+          <div className="flex space-x-5 h-full items-center pr-2">
+            <ButtonR
               onClick={() => {
                 setCreateUnitForm(true);
               }}
-              className="text-green-50 bg-gray-600 shadow-sm shadow-gray-100 rounded-full p-2 h-8 flex items-center justify-between"
+              height="h-7"
+              width="w-32"
+              bgColor="bg-gradient-to-l from-yellow-700 via-yellow-700 to-yellow-500"
+              textSize="text-xs"
+              title="Crean unidad"
             >
-              <p className="text-xs">Crear unidad</p>
-              <IoAdd className="w-7 h-7 text-gray-200" />
-            </button>
-            <button
+              <IoAdd size={20} className=" text-gray-200" />
+            </ButtonR>
+            <ButtonR
               onClick={() => {
                 onUnitForm(false);
               }}
-              className="h-10 text-red-50 relative"
+              height="h-7"
+              width="w-8"
+              bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500"
+              textSize="text-xs"
+              bgIconColor="bg-gray-700"
             >
-              <div className="relative right-1 bg-gray-600 rounded-full w-7 h-7 shadow-sm shadow-gray-100 justify-center  flex items-center">
-                <IoClose className="w-7 h-7 text-red-200" />
-              </div>
-            </button>
+              <CgClose size={20} />
+            </ButtonR>
           </div>
         </div>
-        <div className="w-full justify-start flex flex-col flex-1 overflow-auto space-y">
-          <div className="w-full flex h-10 justify-between items-center border-y border-slate-800">
+        <div className="w-full justify-start flex flex-col flex-1 overflow-auto space-y bg-[#2f2f2fff]">
+          <div className="w-full flex h-10 justify-between items-center border-b border-gray-600">
             <div className="flex-1 flex justify-start pl-2">
               <p>Unidad</p>
             </div>
             <div className="flex-1 flex justify-center">
               <p>Abreviado</p>
             </div>
-            <div className="w-32 h-full"></div>
-            <div className="w-32 h-full"></div>
           </div>
           <div className="flex-1 w-full overflow-auto">
             {units.map((unit) => {
               return (
                 unit._id && (
-                  <div className="flex h-10 justify-between items-center border-y border-slate-800">
-                    <div className="flex-1 text-slate-50 h-full bg-indigo-950 flex justify-around pl-2">
+                  <div className="flex h-10 justify-between items-center border-y border-slate-800 relative z-10">
+                    <div className="flex-1 text-slate-50 h-full bg-[#425461ff] flex justify-around pl-2">
                       <p className="flex-1 text-center flex items-center h-full">
                         {unit.label}
                       </p>
@@ -92,23 +97,28 @@ const UnitsForm: React.FC<UnitsFormProps> = ({ units, onUnitForm }) => {
                         {unit.abrevUnit}
                       </p>
                     </div>
-                    <button
-                      onClick={() => {
-                        onEditUnit(unit);
-                      }}
-                      className="text-teal-50 bg-teal-600 p-1 h-full rounded-l-lg"
-                    >
-                      <BiEdit size={20} />
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        onUnitDelete(unit);
-                      }}
-                      className="text-teal-950 border-l border-slate-800 bg-rose-500 p-1 h-full"
-                    >
-                      <BiTrash size={20} className="text-teal-50" />
-                    </button>
+                    <div className="absolute right-0 flex h-full items-center space-x-2 pr-2">
+                      <ButtonR
+                        onClick={() => {
+                          onEditUnit(unit);
+                        }}
+                        bgIconColor="bg-gradient-to-l from-teal-700 via-teal-700 to-teal-500"
+                        width="w-7"
+                        height="h-7"
+                      >
+                        <BiEdit size={15} />
+                      </ButtonR>
+                      <ButtonR
+                        onClick={() => {
+                          onUnitDelete(unit);
+                        }}
+                        bgIconColor="bg-gradient-to-l from-rose-700 via-rose-700 to-rose-500"
+                        width="w-7"
+                        height="h-7"
+                      >
+                        <BiTrash size={15} className="text-teal-50" />
+                      </ButtonR>
+                    </div>
                   </div>
                 )
               );

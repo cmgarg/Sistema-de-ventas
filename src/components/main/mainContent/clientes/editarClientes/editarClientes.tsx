@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { clientData } from "../../../../../../types/types";
 import { editClient } from "../../../../../../src/redux/estados/clientesState";
+import ButtonR from "../../buttons/ButtonR";
 
 interface EditarClienteProps {
   clienteAeditarOff: () => void;
@@ -67,12 +68,12 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
 
   //ESTILOS INPUT
   const estilosInput =
-    "outline-none h-9 w-full bg-slate-600 px-2 rounded-md text-slate-50";
+    "outline-none h-10 w-full px-2 rounded-md text-slate-50 bg-[#707070ff] focus:bg-[#909090ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] ";
 
   return (
-    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50">
-      <div className="flex flex-col p-5 space-y-5 bg-slate-50 w-96 justify-center rounded-xl relative items-center">
-        <div className="flex flex-row space-x-1 w-full">
+    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 backdrop-brightness-50">
+      <div className="flex flex-col p-5 space-y-5 bg-[#2f2f2fff] w-2/5 text-sm justify-center rounded-xl relative items-center border border-gray-600">
+        <div className="flex flex-row space-x-2 w-full">
           <div className="flex-1 w-full">
             <label htmlFor="name">Nombre</label>
             <input
@@ -85,73 +86,92 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
               className={estilosInput}
             />
           </div>
+          <div className="flex-1">
+            <label htmlFor="address">Direccion</label>
+            <input
+              type="text"
+              name="address"
+              value={clientData.address}
+              onChange={(e) => {
+                setChangeData("address", e.target.value);
+              }}
+              className={estilosInput}
+            />
+          </div>
         </div>
 
-        <div className="w-full">
-          <label htmlFor="address">Direccion</label>
-          <input
-            type="text"
-            name="address"
-            value={clientData.address}
-            onChange={(e) => {
-              setChangeData("address", e.target.value);
-            }}
-            className={estilosInput}
-          />
+        <div className="flex w-full flex-1 space-x-2">
+          <div className="flex-1">
+            <label htmlFor="phone">Telefono</label>
+            <input
+              type="text"
+              name="phone"
+              value={clientData.phone}
+              onChange={(e) => {
+                setChangeData("phone", e.target.value);
+              }}
+              className={estilosInput}
+            />
+          </div>
+
+          <div className="flex flex-1 flex-col">
+            <label htmlFor="fechaNacimiento">Nacimiento</label>
+            <input
+              type="date"
+              name="fechaNacimiento"
+              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff]`}
+              value={clientData.birthdate}
+              onChange={(e) => {
+                setChangeData("birthdate", e.target.value);
+              }}
+            />
+          </div>
         </div>
-        <div className="w-full">
-          <label htmlFor="phone">Telefono</label>
-          <input
-            type="text"
-            name="phone"
-            value={clientData.phone}
-            onChange={(e) => {
-              setChangeData("phone", e.target.value);
-            }}
-            className={estilosInput}
-          />
+        <div className="flex flex-1 w-full space-x-2">
+          <div className="flex-1">
+            <label htmlFor="dni">Dni</label>
+            <input
+              type="text"
+              name="dni"
+              value={clientData.DNI}
+              onChange={(e) => {
+                setChangeData("DNI", e.target.value);
+              }}
+              className={estilosInput}
+            />
+          </div>
+          <div className="flex-1">
+            <label htmlFor="email">Email</label>
+            <input
+              type="text"
+              name="email"
+              value={clientData.email}
+              onChange={(e) => {
+                setChangeData("email", e.target.value);
+              }}
+              className={estilosInput}
+            />
+          </div>
         </div>
-        <div className="w-full">
-          <label htmlFor="email">Email</label>
-          <input
-            type="text"
-            name="email"
-            value={clientData.email}
-            onChange={(e) => {
-              setChangeData("email", e.target.value);
-            }}
-            className={estilosInput}
-          />
-        </div>
-        <div className="w-full">
-          <label htmlFor="dni">Dni</label>
-          <input
-            type="text"
-            name="dni"
-            value={clientData.DNI}
-            onChange={(e) => {
-              setChangeData("DNI", e.target.value);
-            }}
-            className={estilosInput}
-          />
-        </div>
-        <div className="flex flex-row space-x-5 w-full">
-          <button
-            className="w-52 h-10 bg-red-400 rounded-md text-slate-50"
+        <div className="flex flex-row space-x-5 w-full justify-end">
+          <ButtonR
+            width="w-24"
+            height="h-7"
+            bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff] text-sm"
+            title="Cancelar"
             onClick={() => {
               clienteAeditarOff();
             }}
-          >
-            Cancelar
-          </button>
-          <button
-            className="w-52 h-10 bg-green-400 rounded-md text-slate-50"
+          ></ButtonR>
+          <ButtonR
+            bgColor="bg-gradient-to-l from-yellow-700 via-yellow-700 to-yellow-500 text-[#fff8dcff] text-sm"
+            width="w-32"
+            height="h-7"
             onClick={() => {
               saveClientEdit();
             }}
-          >
-            Guardar
-          </button>
+            title="Guardar"
+          ></ButtonR>
         </div>
 
         {mensajeTrueFalse.seGuardo === 1 && mensajeTrueFalse.value ? (
@@ -182,14 +202,15 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
               <p>Hubo un error.</p>
             </div>
             <div className="bg-red-400 w-full flex justify-center rounded-b-xl text-slate-50">
-              <button
+              <ButtonR
                 onClick={() => {
                   clienteAeditarOff();
                 }}
-                className="w-full"
-              >
-                Aceptar
-              </button>
+                width="w-full"
+                height="h-10"
+                title="Aceptar"
+                bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
+              ></ButtonR>
             </div>
           </div>
         ) : null}

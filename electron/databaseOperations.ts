@@ -12,7 +12,7 @@ import {
 import Datastore from "@seald-io/nedb";
 import { getDate } from "./vFunctions";
 import jwt from "jsonwebtoken";
-import { isArray } from "lodash";
+import { find, isArray, isEqual } from "lodash";
 const db = {
   clients: new Datastore({ filename: "database/clients.db", autoload: true }),
   articles: new Datastore({
@@ -207,6 +207,23 @@ export const editArticle = async (articleEdit: dataToEditArticle) => {
     return false;
   }
 };
+//ACTUALIZAR ARTTICULO
+export const updateArticle = async (article: articleData) => {
+  try {
+    // Intentar realizar la actualización del artículo en la base de datos
+    const result = await db.articles.updateAsync(
+      { code: article.code }, // Criterio de búsqueda por código
+      { $set: { ...article } } // Actualizar los campos con el nuevo artículo
+    );
+
+    return result; // Devuelve el resultado de la actualización
+  } catch (error) {
+    // Captura y maneja cualquier error que ocurra durante la operación
+    console.error("Error al actualizar el artículo:", error);
+    throw error; // Relanza el error para manejarlo si es necesario
+  }
+};
+
 export const findArticles = async (): Promise<articleData[]> => {
   return await db.articles
     .findAsync({})
@@ -853,23 +870,268 @@ export const getDeposits = async () => {
       };
     });
 };
+////TRANSFERENCIA DE ARRTICULOS LOQUETE
+// GENERADOR DE ID
+//TRANSFERENCIA DE ARTÍCULOS
+// GENERADOR DE ID
+const generateId = () => {
+  return `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+};
 
-const transferArticles = async (e: {
+type informationToTransfer = {
   fromDeposit: string;
   fromSector: string;
   article: articleData;
   amount: number;
+  unitType: "unit" | "xPalet" | "xBulk"; // Tipo de unidad (unidad, palet o bulto)
+  saveCountUsed: string;
   destiny: {
     depositId: string;
     sectorId: string;
   };
-}) => {
-  const fromDeposit = await getDepositById(e.fromDeposit);
-  const fromSector = fromDeposit.sectors.find(
-    (sec) => sec.sectorId === e.fromSector
-  );
 };
 
+export const transferArticles = async (e: informationToTransfer) => {
+  try {
+    // Obtener depósito de origen y destino
+    const fromDeposit = await getDepositById(e.fromDeposit);
+    if (!fromDeposit) throw new Error("Depósito de origen no encontrado");
+
+    const destinyDeposit = await getDepositById(e.destiny.depositId);
+    if (!destinyDeposit) throw new Error("Depósito de destino no encontrado");
+
+    const destinySector = destinyDeposit.sectors.find(
+      (sector) => sector.sectorId === e.destiny.sectorId
+    );
+    if (!destinySector) throw new Error("Sector de destino no encontrado");
+
+    // Mantener la cantidad original (sin conversión para el depósito de origen)
+    const originalAmount = e.amount;
+
+    // Restar del depósito de origen sin convertir (ej. 1 palet o 1 bulto)
+    let saveCountUsed = handleFromDeposit(fromDeposit, {
+      ...e,
+      amount: originalAmount,
+    });
+
+    // Modificar la propiedad "deposits" dentro del artículo
+    const article = e.article;
+
+    handleDestinyDeposit(destinyDeposit, e, saveCountUsed, article);
+    // Actualizar los depósitos en el artículo
+    // Guardar cambios en la base de datos de artículos
+
+    // Guardar cambios en los depósitos
+    await updateDeposit(fromDeposit);
+    await updateDeposit(destinyDeposit);
+
+    return {
+      message: "Transferencia completada y depósitos actualizados",
+      value: true,
+    };
+  } catch (error) {
+    console.error("Error al transferir artículos:", error);
+  }
+};
+
+// Función para convertir la cantidad según el tipo de unidad seleccionada en el origen
+const convertAmountByUnit = (
+  article: articleData,
+  amount: number,
+  unitType: string
+) => {
+  let convertedAmount = amount;
+
+  if (unitType === "xPalet") {
+    convertedAmount = amount * article.article.pallet.value; // Si es palet, multiplica por la cantidad de unidades por palet
+  } else if (unitType === "xBulk") {
+    convertedAmount = amount * article.article.forBulk.value; // Si es bulto, multiplica por la cantidad de unidades por bulto
+  }
+
+  return convertedAmount;
+};
+
+// Función para convertir la cantidad en el depósito destino
+const convertAmountForDestination = (
+  article: articleData,
+  amount: number,
+  destination: {
+    depositId: string;
+    sector: {
+      name: string;
+      sectorId: string;
+      amount: {
+        value: number;
+        saveCount: string;
+      };
+    };
+  }
+) => {
+  const { pallet, forBulk } = article.article;
+
+  // Realizamos la conversión de acuerdo al tipo de almacenamiento en el destino
+  if (destination.sector.amount.saveCount === "xPalet") {
+    return amount * pallet.value; // Convertir de palets a unidades
+  } else if (destination.sector.amount.saveCount === "xBulk") {
+    return amount * forBulk.value; // Convertir de bultos a unidades
+  }
+
+  // Si ya está en unidades, no se convierte
+  return amount;
+};
+
+const handleFromDeposit = (
+  fromDeposit: depositType,
+  e: {
+    fromDeposit: string;
+    fromSector: string;
+    article: articleData;
+    amount: number;
+    unitType: "unit" | "xPalet" | "xBulk"; // Tipo de unidad
+    destiny: {
+      depositId: string;
+      sectorId: string;
+    };
+  }
+) => {
+  let saveCountUsed = "";
+  const { pallet, forBulk } = e.article.article;
+
+  for (const sector of fromDeposit.sectors) {
+    if (sector.sectorId === e.fromSector) {
+      for (const product of sector.products) {
+        if (product.article.code === e.article.code) {
+          // Verificar si el producto está almacenado en unidades, palets o bultos
+          let unitNecessary = 0;
+          let unitsOfProductInUnits = 0;
+          //palets y bultos a transferir
+          let paletsOfTransfer = 0;
+          let bulksOfTransfer = 0;
+          //palets y bultos disponibles para transferir
+          let paletsOfProductInSector = 0;
+          let bulksOfProductInSector = 0;
+          //
+          if (e.unitType === "xBulk") {
+            unitNecessary = e.amount * forBulk.value;
+          } else if (e.unitType === "xPalet") {
+            unitNecessary = e.amount * pallet.value;
+          } else {
+            unitNecessary = e.amount; // No convertir si es unidad. La conversión solo debe hacerse si se almacena en otra unidad
+          }
+          if (product.amount.saveCount === "xPalet") {
+            unitsOfProductInUnits = product.amount.value * pallet.value; // Convertir a unidades según los palets
+          } else if (product.amount.saveCount === "xBulk") {
+            unitsOfProductInUnits = product.amount.value * forBulk.value; // Convertir a unidades según los bultos
+          } else {
+            unitsOfProductInUnits = product.amount.value; // Si está en unidades, no convertir
+          }
+          //
+          paletsOfTransfer = unitNecessary / pallet.value;
+          bulksOfTransfer = unitNecessary / forBulk.value;
+          //
+          paletsOfProductInSector = unitsOfProductInUnits / pallet.value;
+          bulksOfProductInSector = unitsOfProductInUnits / forBulk.value;
+
+          // Aquí se usa la cantidad original (sin conversión) para verificar si hay suficiente stock
+          let requiredAmount = e.amount; // No convertir si es unidad. La conversión solo debe hacerse si se almacena en otra unidad
+
+          // Verificar si hay suficientes unidades disponibles para transferir
+          if (unitsOfProductInUnits >= unitNecessary) {
+            saveCountUsed = product.amount.saveCount;
+            if (product.amount.saveCount === "xBulk") {
+              product.amount.value -= bulksOfTransfer;
+            } else if (product.amount.saveCount === "xPalet") {
+              product.amount.value -= paletsOfTransfer;
+            } else {
+              product.amount.value -= requiredAmount;
+            } // Actualizar la cantidad sin convertirla nuevamente en el depósito de origen
+
+            if (product.amount.value === 0) {
+              sector.products = sector.products.filter(
+                (prod) => prod.article.code !== e.article.code
+              );
+            }
+            break;
+          } else {
+            throw new Error(
+              `La cantidad a transferir excede el stock disponible. Disponible: ${unitsOfProductInUnits}, Requerido: ${requiredAmount}`
+            );
+          }
+        }
+      }
+      break;
+    }
+  }
+  return saveCountUsed;
+};
+
+const handleDestinyDeposit = (
+  destinyDeposit: depositType,
+  e: informationToTransfer,
+  saveCountUsed: string,
+  article: articleData
+) => {
+  const { forBulk, pallet } = article.article;
+  let amountOfArticle = 0;
+  let inComingPalets = 0;
+  let inComingBulks = 0;
+  if (e.unitType === "xBulk") {
+    amountOfArticle = e.amount * forBulk.value;
+  } else if (e.unitType === "xPalet") {
+    amountOfArticle = e.amount * pallet.value;
+  } else {
+    amountOfArticle = e.amount; // No convertir si es unidad. La conversión solo debe hacerse si se almacena en otra unidad
+  }
+  inComingPalets = amountOfArticle / pallet.value;
+  inComingBulks = amountOfArticle / forBulk.value;
+  for (const sector of destinyDeposit.sectors) {
+    if (sector.sectorId === e.destiny.sectorId) {
+      const existProductInSector = sector.products.find(
+        (prod) => prod.article.code === e.article.code
+      );
+
+      // Si el producto no existe en este sector, lo agregamos directamente
+      if (!existProductInSector) {
+        sector.products.push({
+          article: e.article,
+          amount: {
+            value: e.amount,
+            saveCount:
+              e.unitType === "unit"
+                ? article.article.stock.unit.abrevUnit
+                : e.unitType,
+          },
+        });
+      } else {
+        let unitsInSector = 0;
+        let paletsInSector = 0;
+        let bulksInSector = 0;
+
+        if (existProductInSector.amount.saveCount === "xPalet") {
+          unitsInSector = existProductInSector.amount.value * pallet.value;
+        } else if (existProductInSector.amount.saveCount === "xBulk") {
+          unitsInSector = existProductInSector.amount.value * forBulk.value;
+        } else {
+          unitsInSector = existProductInSector.amount.value; // Si está en unidades, no convertir
+        }
+        paletsInSector = unitsInSector / pallet.value;
+        bulksInSector = unitsInSector / forBulk.value;
+        // Si existe y tienen el mismo tipo de unidad (ej: ambos en "xPalet" o "xBulk"), simplemente sumamos la cantidad
+        if (existProductInSector.amount.saveCount === "xBulk") {
+          existProductInSector.amount.value += inComingBulks;
+        } else if (existProductInSector.amount.saveCount === "xPalet") {
+          existProductInSector.amount.value += inComingPalets;
+        } else {
+          existProductInSector.amount.value += amountOfArticle; // Si está en unidades, no convertir
+        }
+      }
+
+      break; // Salimos del bucle una vez que procesamos el sector
+    }
+  }
+};
+
+////////////FIN DE TRANSFERENCIA DE ARTICULOS y//////////////
 export const getDepositById = async (id: string): Promise<depositType> => {
   return await db.deposits.findOneAsync({ _id: id });
 };
@@ -1086,7 +1348,6 @@ export const accountToPay = async (account: object) => {
     });
   });
 };
-
 
 export const actualizarCuenta = (idCuenta: string, datosActualizados: any) => {
   if (idCuenta == null || datosActualizados == null) {
@@ -1550,8 +1811,6 @@ export const eliminarCuenta = async (id: any) => {
   });
 };
 
-
-
 //actualiza senotifico para no volver a notificarle varias veses la misma cuenta
 export const actualizarSenotifico = (idCuenta: any, estadoSenotifico: any) => {
   return new Promise((resolve, reject) => {
@@ -1586,14 +1845,14 @@ export async function getAccountsToPay20() {
 export const updateAccountInDb = async (id: any, updatedAccount: any) => {
   return new Promise((resolve, reject) => {
     db.accounts.update(
-      { _id: id },  // Condición para encontrar la cuenta por su _id
-      { $set: updatedAccount },  // Actualización de la cuenta
+      { _id: id }, // Condición para encontrar la cuenta por su _id
+      { $set: updatedAccount }, // Actualización de la cuenta
       {},
       (err, numReplaced) => {
         if (err) {
           reject(err);
         } else {
-          resolve(numReplaced);  // Devolver el número de documentos actualizados
+          resolve(numReplaced); // Devolver el número de documentos actualizados
         }
       }
     );
@@ -1607,13 +1866,11 @@ export async function getAccountsToPay20editar() {
       if (err) {
         reject(err);
       } else {
-        resolve(docs);  // Devolver todas las cuentas
+        resolve(docs); // Devolver todas las cuentas
       }
     });
   });
 }
-
-
 
 // Guardar una nueva notificación
 export const saveNotification = async (data: any) => {
@@ -1702,25 +1959,23 @@ export const deleteOldNotifications = async (thresholdDate: any) => {
   }
 };
 
-
 ///////////////////////funcion que guarda la eicion de las cuneta para el histial
-export const saveHistorialCuenta = async (historialData: { cuenta: any; fecha_edicion: any; fecha_edicionHora: any; }) => {
+export const saveHistorialCuenta = async (historialData: {
+  cuenta: any;
+  fecha_edicion: any;
+  fecha_edicionHora: any;
+}) => {
   try {
-
-
     await db.cuentasHistorial.insertAsync({
       fecha_edicion: historialData.fecha_edicion, // Fecha de edición (solo la fecha)
       fecha_edicionHora: historialData.fecha_edicionHora, // Hora de edición (solo la hora)
       cuenta: historialData.cuenta, // Guardar la cuenta completa anidada
     });
-
-   
   } catch (error) {
     console.error("Error al guardar historial de cuenta:", error);
     throw error;
   }
 };
-
 
 export const getAccountById = async (id: string) => {
   return new Promise((resolve, reject) => {
@@ -1734,18 +1989,19 @@ export const getAccountById = async (id: string) => {
   });
 };
 
-
 // Función para obtener el historial de una cuenta por su ID
 
 export const getHistorialCuentaPorId = async (idCuenta: string) => {
   return new Promise((resolve, reject) => {
-    db.cuentasHistorial.find({ "cuenta._id": idCuenta }, (err: any, docs: unknown) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(docs); // Devuelve todas las coincidencias con el idCuenta
+    db.cuentasHistorial.find(
+      { "cuenta._id": idCuenta },
+      (err: any, docs: unknown) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(docs); // Devuelve todas las coincidencias con el idCuenta
+        }
       }
-    });
+    );
   });
 };
-

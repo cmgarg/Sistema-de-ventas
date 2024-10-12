@@ -4,6 +4,10 @@ import TableHead from "../../../tablaMain/TableHead";
 import TableMain from "../../../tablaMain/TableMain";
 import TableRow from "../../../tablaMain/TableRow";
 import DepositDetails from "./DepositDetails";
+import ButtonR from "../../buttons/ButtonR";
+import { BiAddToQueue } from "react-icons/bi";
+import { IoAdd } from "react-icons/io5";
+import CreateDeposit from "./CreateDeposit";
 
 type DepositsProps = {
   // Define tus props aquí
@@ -23,6 +27,8 @@ const Deposits: React.FC<DepositsProps> = (props) => {
     },
   });
   //
+  const [onCreateDeposit, setOnCreateDeposit] = useState<boolean>(false);
+  //
   const onChangeModalDepositToSee = (e: {
     active: boolean;
     deposit: depositType;
@@ -31,6 +37,10 @@ const Deposits: React.FC<DepositsProps> = (props) => {
   };
   const getDeposits = () => {
     window.api.enviarEvento("get-deposits");
+  };
+
+  const onChangeCreateDeposit = (e: boolean) => {
+    setOnCreateDeposit(e);
   };
   useEffect(() => {
     getDeposits();
@@ -55,6 +65,20 @@ const Deposits: React.FC<DepositsProps> = (props) => {
           onChangeModalDepositToSee={onChangeModalDepositToSee}
         />
       ) : null}
+      {onCreateDeposit && (
+        <CreateDeposit onChangeCreateDeposit={onChangeCreateDeposit} />
+      )}
+      <div className="w-full mb-2">
+        <ButtonR
+          title="Crear nuevo deposito"
+          bgColor="bg-gradient-to-l from-green-800 via-green-700 to-green-500 text-xs"
+          width="w-44"
+          height="h-8"
+          onClick={() => onChangeCreateDeposit(true)}
+        >
+          <IoAdd size={20} />
+        </ButtonR>
+      </div>
       <TableMain>
         <TableHead>
           <div className="flex-1 flex justify-start items-center">Nombre</div>
