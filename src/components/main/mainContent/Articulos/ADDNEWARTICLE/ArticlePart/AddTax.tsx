@@ -104,7 +104,7 @@ const AddTax: React.FC<AddTaxProps> = ({ dispatch, setAddImpuesto }) => {
   };
   return (
     <div className="absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center z-50 backdrop-brightness-50">
-      <div className="flex flex-col w-96 relative bg-[#2f2f2fff] rounded-lg">
+      <div className="flex flex-col w-80 relative bg-[#2f2f2fff] rounded-lg">
         {showError.active && (
           <div className="absolute top-0 right-0 bottom-0 left-0 bg-slate-950 z-50 flex flex-col rounded-lg">
             <div className="flex-1 flex justify-center flex-col items-center p-2 text-red-500 font-mono text-3xl">
@@ -119,7 +119,7 @@ const AddTax: React.FC<AddTaxProps> = ({ dispatch, setAddImpuesto }) => {
           </div>
         )}
         <div className="flex flex-col">
-          <div className="text-3xl w-full flex justify-center font-bold p-2">
+          <div className="text-xs bg-gradient-to-l from-gray-900 via-gray-800 to-gray-600 w-full flex rounded-t-lg justify-center font-bold">
             <p>AGREGANDO IMPUESTO</p>
           </div>
           <div className="flex flex-col space-y-2 pl-2 pr-2 relative">
@@ -155,7 +155,7 @@ const AddTax: React.FC<AddTaxProps> = ({ dispatch, setAddImpuesto }) => {
               type="text"
               onChange={(e) => onChangeTaxName(e.target.value)}
               value={taxData.name}
-              className="bg-[#707070ff] outline-none h-12 rounded-lg  border border-slate-800 px-2"
+              className="bg-[#707070ff] outline-none h-10 rounded-lg  border border-slate-800 px-2"
             />
           </div>
           <div className="flex flex-col">
@@ -165,7 +165,7 @@ const AddTax: React.FC<AddTaxProps> = ({ dispatch, setAddImpuesto }) => {
               type="text"
               onChange={(e) => onChangeTaxPercentage(e.target.value)}
               value={taxData.percentage}
-              className="bg-[#707070ff] outline-none h-12 rounded-lg  border border-slate-800 px-2"
+              className="bg-[#707070ff] outline-none h-10 rounded-lg  border border-slate-800 px-2"
             />
           </div>
         </div>
@@ -173,17 +173,17 @@ const AddTax: React.FC<AddTaxProps> = ({ dispatch, setAddImpuesto }) => {
           <ButtonR
             bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
             onClick={() => setAddImpuesto(false)}
-            width="w-28"
-            textSize="text-xs"
-            height="h-8"
+            width="w-24"
+            textSize="text-sm"
+            height="h-7"
             title="Cancelar"
           ></ButtonR>
           <ButtonR
             bgColor="bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-500 text-[#fff8dcff]"
             onClick={() => addNewTax()}
             width="w-28"
-            textSize="text-xs"
-            height="h-8"
+            textSize="text-sm"
+            height="h-7"
             title="Añadir"
           ></ButtonR>
         </div>

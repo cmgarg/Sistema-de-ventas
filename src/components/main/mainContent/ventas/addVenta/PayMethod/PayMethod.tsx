@@ -3,12 +3,23 @@ import { pmType } from "../../../../../../../types/types";
 import CreatePayMethod from "./CreatePayMethod";
 import { IoAdd } from "react-icons/io5";
 import { MdPayments } from "react-icons/md";
+import ButtonR from "../../../buttons/ButtonR";
 type PayMethodProps = {
-  setChangeData: (e: string, value: any) => void; // Define tus props aquí
-  pMOk: (e: boolean) => void;
+  dispatch: (action: {
+    type:
+      | "ARTICLES"
+      | "SOLD"
+      | "BUYER"
+      | "SELLER"
+      | "PAY_METHOD"
+      | "BILL_TYPE"
+      | "DELETE_ARTICLE";
+    payload: any;
+  }) => void;
+  setCurrentStage: (e: "factura" | "payMethod" | "saleEnd" | "close") => void;
 };
 
-const PayMethod: React.FC<PayMethodProps> = ({ setChangeData, pMOk }) => {
+const PayMethod: React.FC<PayMethodProps> = ({ dispatch, setCurrentStage }) => {
   const [payMethodProps, setPayMethodProps] = useState<pmType[]>([]);
   const [createPayMethod, setCreatePayMethod] = useState(false);
   const [responseToCreateNewPm, setResponseToCreateNewPm] = useState<{
@@ -27,8 +38,8 @@ const PayMethod: React.FC<PayMethodProps> = ({ setChangeData, pMOk }) => {
   };
   const acceptPm = () => {
     if (pmSelect) {
-      setChangeData("payMethod", pmSelect?.name);
-      pMOk(true);
+      dispatch({ type: "PAY_METHOD", payload: pmSelect?.name });
+      setCurrentStage("saleEnd");
       console.log("EJECUTADO");
     }
   };
@@ -77,24 +88,29 @@ const PayMethod: React.FC<PayMethodProps> = ({ setChangeData, pMOk }) => {
             <p>Error al crear el metodo</p>
           </div>
         ))}
-      <div className="flex w-1/2 h-1/2 bg-slate-950 border border-slate-700 flex-col px-2 rounded-lg">
-        <div className="w-full h-12 flex justify-between items-center text-2xl">
+      <div className="flex w-1/2 h-1/2 bg-[#2f2f2fff] border border-gray-600 flex-col rounded-lg">
+        <div className="w-full h-12 flex justify-between items-center text-2xl px-2">
           <p>METODO DE PAGO </p>
-          <button
+          <ButtonR
             onClick={() => onCreatePm(true)}
-            className="w-7 h-7 rounded-full bg-teal-500 flex justify-center items-center"
-          >
-            <IoAdd size={30} />
-          </button>
+            height="h-7"
+            width="w-32"
+            bgColor="bg-gradient-to-l from-green-700 via-green-700 to-green-500"
+            title="Crear metodo"
+          ></ButtonR>
         </div>
-        <div className="flex flex-col w-full flex-1 space-y-2 font-thin cursor-pointer">
-          {payMethodProps.map((pm) => (
+        <div className="flex flex-col w-full max-h-full overflow-auto flex-1 font-thin cursor-pointer custom-scrollbar">
+          {payMethodProps.map((pm, index) => (
             <div
               onClick={() => pmSelected(pm)}
-              className={`h-7 flex justify-between items-center rounded-lg px-2 bg-slate-800 text-slate-50 ${
+              className={`h-7 flex justify-between items-center border-gray-600 px-2 bg-black ${
+                index === 0 ? "rounded-t-lg" : ""
+              } ${
+                index < payMethodProps.length - 1 ? "border-b" : ""
+              } text-slate-50 ${
                 pmSelect?.name === pm.name
-                  ? "outline outline-2 outline-amber-500"
-                  : ""
+                  ? "bg-gradient-to-l from-yellow-700 via-yellow-700 to-yellow-500"
+                  : "bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500"
               }`}
             >
               <p>{pm.name || "pene"}</p>
@@ -102,13 +118,21 @@ const PayMethod: React.FC<PayMethodProps> = ({ setChangeData, pMOk }) => {
             </div>
           ))}
         </div>
-        <div className="h-12 w-full flex justify-end items-center">
-          <button
-            className="bg-green-500 rounded-lg border border-slate-700 p-1"
+        <div className="h-12 w-full flex justify-end items-center pr-2 space-x-2">
+          <ButtonR
+            bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500"
+            height="h-7"
+            width="w-24"
+            title="Volver"
+            onClick={() => setCurrentStage("factura")}
+          ></ButtonR>
+          <ButtonR
+            bgColor="bg-gradient-to-l from-yellow-700 via-yellow-700 to-yellow-500"
+            height="h-7"
+            width="w-32"
+            title="Aceptar"
             onClick={acceptPm}
-          >
-            <p>Aceptar</p>
-          </button>
+          ></ButtonR>
         </div>
       </div>
     </div>

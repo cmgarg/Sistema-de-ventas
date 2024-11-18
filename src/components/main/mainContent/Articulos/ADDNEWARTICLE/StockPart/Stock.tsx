@@ -3,7 +3,6 @@ import StockArticleForm from "./StockUnitAndWeight/StockArticleForm";
 import {
   Action,
   articleData,
-  depositType,
   subCategoryType,
   supplierType,
   unitType,
@@ -13,22 +12,6 @@ import Supplier from "./StockUnitAndWeight/Supplier/Supplier";
 
 type StockProps = {
   stateArticle: articleData;
-  deposits: depositType[];
-  depositState: {
-    idObject: string;
-    name: string;
-    depositId: string;
-    address: string;
-    sector: {
-      name: string;
-      sectorId: string;
-      amount: {
-        value: number;
-        saveCount: string;
-      };
-    };
-  }[];
-  dispatchDeposit: React.Dispatch<Action>;
   suppliers: supplierType[];
   setSuppliers: (e: supplierType[]) => void;
   router: string;
@@ -42,10 +25,7 @@ type StockProps = {
 
 const Stock: React.FC<StockProps> = ({
   stateArticle,
-  dispatchDeposit,
-  depositState,
   suppliers,
-  deposits,
   inputValueSupplierInput,
   setInputValueSupplierInput,
   setSuppliers,
@@ -89,9 +69,6 @@ const Stock: React.FC<StockProps> = ({
         stateArticle={stateArticle}
         setInputValueSupplierInput={setInputValueSupplierInput}
         setSupplierForm={setSupplierForm}
-        depositState={depositState}
-        dispatchDeposit={dispatchDeposit}
-        deposits={deposits}
         inputValueSupplierInput={inputValueSupplierInput}
         errorIn={errorIn}
         inputStyle={inputStyle}

@@ -8,9 +8,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../../../app/ui/select";
+import { AnyARecord, AnyCnameRecord } from "node:dns";
+import { AnyAction } from "@reduxjs/toolkit";
 interface SelectProps {
-  options: { value: string; label: string }[];
-  onChangeSelection: (value: string, f?: string) => void;
+  options: any[];
+  onChangeSelection: (value: any, f?: string) => void;
   abreviationUnit?: (v: string, u?: string) => string;
   placeholder: string;
   slice: number;
@@ -18,7 +20,7 @@ interface SelectProps {
   backGround2?: string;
   className?: string;
   classNameDeploy?: string;
-  value: string;
+  value: any;
   filter?: string;
   functionLastOption?: () => void;
   label?: string;
@@ -45,7 +47,7 @@ const SelectM: React.FC<SelectProps> = ({
   backGround,
   label,
 }) => {
-  const [selected, setSelected] = useState(value);
+  const [selected, setSelected] = useState<any>(value);
   const [menu, setMenu] = useState(false);
 
   function onChangeMenu() {
@@ -82,7 +84,9 @@ const SelectM: React.FC<SelectProps> = ({
         >
           <div>
             {(slice && value) || (
-              <SelectValue placeholder={placeholder}></SelectValue>
+              <SelectValue placeholder={placeholder}>
+                <p>{selected.abrevUnit}</p>
+              </SelectValue>
             )}
           </div>
         </SelectTrigger>
@@ -98,10 +102,10 @@ const SelectM: React.FC<SelectProps> = ({
             {options.map((e, i) => {
               return (
                 <SelectItem
-                  value={e.value}
+                  value={e}
                   className="flex-1 h-10 hover:bg-slate-700"
                 >
-                  <p>{e.label}</p>
+                  <p>{e.label || "poronga"}</p>
                 </SelectItem>
               );
             })}

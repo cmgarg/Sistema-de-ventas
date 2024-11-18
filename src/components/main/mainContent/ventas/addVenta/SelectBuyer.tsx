@@ -3,14 +3,15 @@ import MenuClientsForm from "../MenusInputs/MenuClientsForm";
 import { clientData, saleData } from "../../../../../../types/types";
 import { FaBasketShopping } from "react-icons/fa6";
 import { FcBusinessman } from "react-icons/fc";
+import ButtonR from "../../buttons/ButtonR";
 type SelectBuyerProps = {
   clients: clientData[]; // Define tus props aquí
   clientData: clientData;
-  saleData: saleData;
   setClientData: (e: clientData) => void;
   estilosInput: string;
   loadClient: () => void;
   loadBuyer: (e: string) => void;
+  setShowModalBuyer: (e: boolean) => void;
 };
 
 const SelectBuyer: React.FC<SelectBuyerProps> = ({
@@ -20,122 +21,168 @@ const SelectBuyer: React.FC<SelectBuyerProps> = ({
   loadClient,
   loadBuyer,
   clientData,
-  saleData,
+  setShowModalBuyer,
 }) => {
+  const [buyer, setBuyer] = useState<clientData>();
   const [showClientForm, setShowClientForm] = useState(false);
-  useEffect(() => {
-    if (clientData.name) {
+  const [optionSelect, setOptionSelect] = useState<
+    "finalConsumer" | "client" | ""
+  >("");
+
+  const onSelectOption = (e: "finalConsumer" | "client" | "") => {
+    setOptionSelect(e);
+  };
+
+  const acceptButton = () => {
+    if (optionSelect === "finalConsumer") {
+      console.log("SE CUMPLE CONDICION 1");
+      loadBuyer("finalConsumer");
+    } else if (optionSelect === "client") {
+      console.log("SE CUMPLE CONDICION 2");
       setShowClientForm(true);
+
+      if (buyer.name && showClientForm) {
+        loadClient();
+        setOptionSelect("");
+      }
     }
-  }, []);
+
+    // Se cierra el modal en ambas ramas
+    setShowModalBuyer(false);
+  };
+
+  const acceptBuyer = () => {
+    if (buyer.name) {
+      loadClient();
+    }
+  };
+
+  useEffect(() => {
+    setClientData(buyer);
+  }, [buyer]);
 
   return (
     <div className="flex justify-center items-center flex-1 z-50 backdrop-brightness-50 absolute top-0 bottom-0 right-0 left-0">
-      <div className="h-3/5 w-3/5 flex border rounded-md border-slate-800 relative">
-        <div className="absolute bottom-full text-4xl font-bold italic text-slate-50">
+      <div className="h-80 w-3/5 bg-[#2f2f2fff] flex border rounded-md border-gray-600 relative flex-col">
+        <div className="pl-2 pt-2 text-2xl  italic text-slate-50">
           <p>COMPRADOR</p>
         </div>
-        {showClientForm && (
-          <div className="flex flex-1 bg-slate-900 rounded-md rounded-bl-md bg-gradient-to-t from-slate-950 to-blue-950 flex-col">
-            <MenuClientsForm
-              style={estilosInput}
-              ////clients={clients}
-              setClientData={setClientData} clients={[]} ></MenuClientsForm>
+        {showClientForm ? (
+          <div className="flex flex-1 rounded-md rounded-bl-md flex-col">
+            <div className="h-12 flex justify-start pl-2">
+              <MenuClientsForm
+                style={estilosInput}
+                ////clients={clients}
+                setBuyer={setBuyer}
+                buyer={buyer}
+                clients={clients}
+              ></MenuClientsForm>
+            </div>
             <div className="flex flex-1">
-              <div className="flex flex-col border-r border-slate-800">
-                <div className="flex-1 flex justify-center items-center">
-                  <FcBusinessman size={250} />
-                </div>
-                <div className="flex w-full justify-start">
-                  <button
-                    onClick={() => {
-                      setShowClientForm(false);
-                      setClientData({
-                        name: "",
-                        email: "",
-                        address: "",
-                        phone: 0,
-                        DNI: 0,
-                        birthdate: "",
-                        shopping: [],
-                      });
-                    }}
-                    className={`bg-blue-500 text-xl w-32 h-10 rounded-bl-md`}
-                  >
-                    Volver
-                  </button>
-                  <button
-                    onClick={() => {
-                      loadClient();
-                    }}
-                    className="bg-green-500 text-xl w-32 h-10"
-                  >
-                    Aceptar
-                  </button>
-                </div>
-              </div>
-              <div className="flex-1 flex flex-col text-lg justify-around">
-                <div className="flex flex-col flex-1">
-                  <p className="border-b-2 border-slate-800 pl-2 text-sm font-bold">
-                    Nombre
+              <div className="flex-1 flex flex-col text-sm justify-around bg-black rounded-lg">
+                <div className="flex flex-1 border-b-2 border-gray-600 items-center">
+                  <div className="w-32 flex items-center justify-start pl-4 border-r border-gray-600 h-full">
+                    <p className="pl-2 ">Nombre</p>
+                  </div>
+                  <p className="flex-1 pl-2 font-thin">
+                    {buyer ? buyer.name : ""}
                   </p>
-                  <p className="pl-2 font-thin">{clientData.name}</p>
                 </div>
-                <div className="flex flex-col flex-1">
-                  <p className="border-b-2 border-slate-800 pl-2 text-sm font-bold">
-                    CUIT
+                <div className="flex flex-1 items-center border-b-2 border-gray-600">
+                  <div className="w-32 flex items-center justify-start pl-4 border-r border-gray-600 h-full">
+                    <p className="pl-2 ">DNI</p>
+                  </div>
+                  <p className="pl-2 font-thin flex-1">
+                    {buyer ? buyer.DNI : ""}
                   </p>
-                  <p className="pl-2 font-thin">{clientData.DNI}</p>
                 </div>
-                <div className="flex flex-col flex-1">
-                  <p className="border-b-2 border-slate-800 pl-2 text-sm font-bold">
-                    Direccion
-                  </p>
-                  <p className="pl-2 font-thin">{clientData.address}</p>
+                <div className="flex flex-1 border-b-2 border-gray-600 items-center">
+                  <div className="w-32 flex items-center justify-start pl-4 border-r border-gray-600 h-full">
+                    <p className="pl-2 ">Email</p>
+                  </div>
+                  <p className="pl-2 font-thin">{buyer ? buyer.email : ""}</p>
                 </div>
-                <div className="flex flex-col flex-1">
-                  <p className="border-b-2 border-slate-800 pl-2 text-sm font-bold">
-                    Correo electronico
-                  </p>
-                  <p className="pl-2 font-thin">{clientData.email}</p>
+
+                <div className="flex flex-1 items-center border-b-2 border-gray-600">
+                  <div className="w-32 flex items-center justify-start pl-4 border-r border-gray-600 h-full">
+                    <p className="pl-2">Direccion</p>
+                  </div>
+                  <p className="pl-2 font-thin">{buyer ? buyer.address : ""}</p>
                 </div>
-                <div className="flex flex-col flex-1">
-                  <p className="border-b-2 border-slate-800 pl-2 text-sm font-bold">
-                    Telefono
-                  </p>
-                  <p className="pl-2 font-thin">{clientData.phone}</p>
+
+                <div className="flex flex-1 border-l border-gray-600 items-center">
+                  <div className="w-32 flex items-center justify-start pl-4 border-r border-gray-600 h-full">
+                    <p className="pl-2 ">Telefono</p>
+                  </div>
+                  <p className="pl-2 font-thin">{buyer ? buyer.phone : ""}</p>
                 </div>
               </div>
             </div>
           </div>
-        )}
-        {!showClientForm && (
+        ) : (
           <div className="flex flex-1 relative p-2 space-x-2">
             <button
-              onClick={() => loadBuyer("finalConsumer")}
-              className="h-full flex-1 flex flex-col items-center border border-slate-700 text-lg font-bold justify-center hover:shadow-transparent bg-gradient-to-t from-slate-950 to-slate-800 rounded-md hover:to-teal-900"
+              onClick={() => {
+                if (optionSelect !== "finalConsumer") {
+                  onSelectOption("finalConsumer");
+                } else {
+                  onSelectOption("");
+                }
+              }}
+              className={`h-full flex-1 flex flex-col items-center border border-slate-700 text-lg  justify-evenly bg-gradient-to-br ${
+                optionSelect === "finalConsumer"
+                  ? " from-yellow-700 via-yellow-500 to-yellow-500"
+                  : " from-gray-700 via-gray-500 to-gray-500"
+              } rounded-md shadow-[0_2px_5px_rgba(0,0,0,0.50)] hover:brightness-125`}
             >
               <FaBasketShopping
                 size={140}
                 className="text-rose-500"
               ></FaBasketShopping>
-              <div className="absolute bottom-5">
+              <div>
                 <p>CONSUMIDOR FINAL</p>
               </div>
             </button>
             <button
               onClick={() => {
-                setShowClientForm(true);
+                if (optionSelect !== "client") {
+                  onSelectOption("client");
+                } else {
+                  onSelectOption("");
+                }
               }}
-              className="h-full flex flex-1 flex-col items-center border border-slate-700 text-lg font-bold justify-center bg-gradient-to-t from-slate-950 to-slate-800 rounded-md hover:to-teal-900"
+              className={`h-full flex-1 flex flex-col items-center border border-slate-700 text-lg  justify-evenly bg-gradient-to-tl ${
+                optionSelect === "client"
+                  ? " from-yellow-700 via-yellow-500 to-yellow-500"
+                  : " from-gray-700 via-gray-500 to-gray-500"
+              } rounded-md shadow-[0_2px_5px_rgba(0,0,0,0.50)] hover:brightness-125`}
             >
               <FcBusinessman size={150}></FcBusinessman>
-              <div className="absolute bottom-5">
+              <div>
                 <p>CLIENTE</p>
               </div>
             </button>
           </div>
         )}
+        <div className="w-full flex justify-end space-x-2 mt-2 pr-2 pb-2">
+          <ButtonR
+            title="Cancelar"
+            height="h-8"
+            width="w-32"
+            bgColor={`bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500`}
+            onClick={() => {
+              setShowModalBuyer(false);
+            }}
+          />
+          <ButtonR
+            title="Aceptar"
+            onClick={acceptButton}
+            height="h-8"
+            width="w-32"
+            bgColor="bg-gradient-to-l from-yellow-700 via-yellow-700 to-yellow-500"
+            disabled={optionSelect === ""}
+          />
+        </div>
       </div>
     </div>
   );

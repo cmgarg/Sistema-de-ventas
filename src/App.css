@@ -15,9 +15,9 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #a0a0a0; /* Color del thumb */
+  background-color: #a16207; /* Color del thumb */
   border-radius: 6px; /* Bordes redondeados */
-  border: 3px solid #f0f0f0; /* Borde en el thumb con el mismo color que el track para dar efecto de 'margen' */
+  border: 3px solid #fff; /* Borde en el thumb con el mismo color que el track para dar efecto de 'margen' */
 }
 
 .mi-altura {

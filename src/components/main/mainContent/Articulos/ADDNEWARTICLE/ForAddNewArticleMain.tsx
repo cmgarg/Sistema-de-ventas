@@ -5,7 +5,6 @@ import Head from "./Head";
 import Modals from "./Modals";
 import {
   articleData,
-  depositType,
   supplierType,
   unitType,
 } from "../../../../../../types/types";
@@ -20,7 +19,6 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
   const [router, setRouter] = useState<string>("article");
   const [suppliers, setSuppliers] = useState<supplierType[]>([]);
 
-  const [deposits, setDeposits] = useState<depositType[]>([]);
   const [inputValueSupplierInput, setInputValueSupplierInput] =
     useState<string>("");
 
@@ -50,10 +48,6 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
         active: false,
         value: 0,
       },
-      quantityperunit: {
-        active: false,
-        value: 0,
-      },
       description: "",
     },
     brand: { value: "", label: "" },
@@ -70,6 +64,8 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
       email: "",
     },
     taxes: [],
+    batches: [],
+    history: [],
   };
   type Action = { type: string; payload: any };
   const articleReducer = (state: articleData, action: Action) => {
@@ -110,8 +106,60 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
           ...state,
           article: {
             ...state.article,
-            stock: { ...state.article.stock, amount: action.payload },
+            stock: {
+              ...state.article.stock,
+              amount: action.payload,
+            },
           },
+        };
+      case "SET_BATCHE":
+        const existBatcheIndex = state.batches.findIndex(
+          (batche) => batche.lotNumber === action.payload.lotNumber
+        );
+
+        if (existBatcheIndex !== -1) {
+          // Si el lote ya existe, actualizamos las cantidades correspondientes
+          const updatedBatches = state.batches.map((batche, index) => {
+            if (index === existBatcheIndex) {
+              return {
+                ...batche,
+                quantity: batche.quantity + Number(action.payload.quantity),
+                quantityBulk:
+                  batche.quantityBulk + Number(action.payload.quantityBulk),
+                quantityPallet:
+                  batche.quantityPallet + Number(action.payload.quantityPallet),
+              };
+            }
+            return batche;
+          });
+
+          return {
+            ...state,
+            batches: updatedBatches,
+          };
+        } else {
+          // Si el lote no existe, añadimos el nuevo lote con las cantidades proporcionadas
+          const newBatch = {
+            ...action.payload,
+            quantity: action.payload.quantity,
+            quantityBulk: action.payload.quantityBulk,
+            quantityPallet: action.payload.quantityPallet,
+          };
+
+          return {
+            ...state,
+            batches: [...state.batches, newBatch],
+          };
+        }
+
+      case "DELETE_BATCHE":
+        return {
+          ...state,
+          batches: [
+            ...state.batches.filter((batche) => {
+              return batche.lotNumber !== action.payload;
+            }),
+          ],
         };
       case "SET_STOCK_UNIT":
         return {
@@ -235,133 +283,17 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
             },
           },
         };
-      case "SET_QUANTITYPERUNITVALUE":
-        return {
-          ...state,
-          article: {
-            ...state.article,
-            quantityperunit: {
-              ...state.article.quantityperunit,
-              value: action.payload,
-            },
-          },
-        };
 
       case "SET_SUPPLIER":
-        const supp = suppliers.filter((e: supplierType) => {
-          return e.name
-            .toLowerCase()
-            .includes(action.payload.name || action.payload);
-        });
         return {
           ...state,
-          supplier: {
-            ...supp[0],
-          },
+          supplier: action.payload,
         };
       default:
         return { ...state };
     }
   };
   const [stateArticle, dispatch] = useReducer(articleReducer, initialState);
-  //ESTADO DE DEPOSITOS
-  type Deposit = {
-    idObject: string;
-    name: string;
-    depositId: string;
-    address: string;
-    sector: {
-      name: string;
-      sectorId: string;
-      amount: {
-        value: number;
-        saveCount: string;
-      };
-    };
-  };
-  type initialStateType = Deposit[];
-  const initialStateDeposit: initialStateType = [];
-
-  type ActionType =
-    | { type: "SET_DEPOSITS"; payload: Deposit[] }
-    | { type: "ADD_DEPOSIT"; payload: Deposit }
-    | { type: "EDIT_DEPOSIT"; payload: Deposit }
-    | { type: "DELETE_DEPOSIT"; payload: string }
-    | { type: "SET_DEPOSIT"; payload: { idObject: string; deposit: Deposit } }
-    | {
-        type: "SET_DEPOSIT_SECTOR";
-        payload: {
-          idObject: string;
-          sector: { name: string; sectorId: string };
-        };
-      };
-  const depositReducer = (state: initialStateType, action: ActionType) => {
-    switch (action.type) {
-      case "SET_DEPOSITS":
-        return [...action.payload];
-      case "ADD_DEPOSIT":
-        const newValue = [...state, action.payload];
-
-        return newValue;
-      case "EDIT_DEPOSIT":
-        console.log("EDITANDO", action.payload);
-        const newStateWithUpdatedDeposit = state.map((d) => {
-          console.log();
-          if (d.idObject === action.payload.idObject) {
-            d = action.payload;
-          }
-          console.log(d, "OBJETO ACUALIZADO");
-          return d;
-        });
-        return newStateWithUpdatedDeposit;
-      case "DELETE_DEPOSIT":
-        const newState = state.filter((d) => {
-          return d.idObject !== action.payload;
-        });
-        console.log(
-          state,
-          "ESTADO ANTESD DE ELIMINAR el deposito",
-          action.payload
-        );
-        console.log(
-          "NUEVO ESTADOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO AL ELIMINAR",
-          newState
-        );
-        return newState;
-      case "SET_DEPOSIT":
-        const newStateWithUpdatedName = state.map((d) => {
-          if (d.idObject === action.payload.idObject) {
-            return { ...d, deposit: { ...action.payload.deposit } };
-          }
-          return d;
-        });
-        console.log("MODIFICANDO depositState", newStateWithUpdatedName);
-        return [...newStateWithUpdatedName];
-      case "SET_DEPOSIT_SECTOR":
-        const newStateWithUpdatedSector = state.map((d) => {
-          if (d.idObject === action.payload.idObject) {
-            return {
-              ...d,
-              deposit: {
-                ...d,
-                sector: {
-                  name: action.payload.sector.name,
-                  sectorId: action.payload.sector.sectorId,
-                },
-              },
-            };
-          }
-          return d;
-        });
-        return [...newStateWithUpdatedSector];
-      default:
-        return state;
-    }
-  };
-  const [depositState, dispatchDeposit] = useReducer(
-    depositReducer,
-    initialStateDeposit
-  );
 
   const [unitsArticleForm, setUnitsArticleForm] = useState<unitType[]>([]);
 
@@ -374,16 +306,6 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
     type: "",
     active: false,
   });
-  const loadDeposits = () => {
-    return window.api.recibirEvento("response-get-deposits", (res) => {
-      if (res) {
-        console.log("ESTO RESPONDE EL BACKEND AL PEDIR DEPOSITOS", res);
-        setDeposits([...res]);
-      }
-      console.log("respuesta bakend", res);
-    }); // Aquí puedes cargar tus datos de depositos
-    // setDeposits(dataDeposits);
-  };
   const loadSuppliers = () => {
     window.api.enviarEvento("get-suppliers");
     window.api.recibirEvento("response-get-suppliers", (res) => {
@@ -393,7 +315,6 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
     });
   };
   useEffect(() => {
-    loadDeposits();
     loadSuppliers();
     window.api.recibirEvento("error-save-article", (error) => {
       console.log("GONZALO FIJATE ACA", error);
@@ -409,16 +330,13 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
       setUnitsArticleForm(unitsAll);
     });
     return () => {
-      window.api.removeAllListeners("response-get-deposits");
+      window.api.removeAllListeners("response-get-unitsArticleForm");
     };
   }, []);
   useEffect(() => {
     console.log(stateArticle, "AVEREEE||||||||||||||||||||||||");
   }, [stateArticle]);
-  useEffect(() => {
-    console.log(depositState, "DEPOSITSSELECTS");
-    dispatch({ type: "SET_DEPOSITS", payload: depositState });
-  }, [depositState]);
+
   const [barcode, setBarcode] = useState("");
   const [inputValue, setInputValue] = useState("");
 
@@ -475,9 +393,6 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
           <Stock
             stateArticle={stateArticle}
             inputValueSupplierInput={inputValueSupplierInput}
-            deposits={deposits}
-            depositState={depositState}
-            dispatchDeposit={dispatchDeposit}
             setInputValueSupplierInput={setInputValueSupplierInput}
             router={router}
             errorIn={errorIn}
@@ -493,7 +408,6 @@ const ForAddNewArticle: React.FC<ForAddNewArticleProps> = ({
             onChangeModal={onChangeModal}
             errorIn={errorIn}
             setErrorIn={setErrorIn}
-            depositState={depositState}
             stateArticle={stateArticle}
           />
         </div>

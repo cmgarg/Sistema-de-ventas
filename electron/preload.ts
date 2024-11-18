@@ -136,6 +136,7 @@ contextBridge.exposeInMainWorld("api", {
       "get-articleByCode",
       "update-article",
       "get-articleByName",
+      "article_restock",
       //EVENTOS DE CLIENTES
       "save-client",
       "get-clients",
@@ -201,15 +202,6 @@ contextBridge.exposeInMainWorld("api", {
       "delete-old-notifications",
       "update-supplier",
       "actualizar-senotifico",
-      //DEPOSITOS
-      "get-deposits",
-      "edit-sector-in-deposit",
-      "create-sector-in-deposit",
-      "update-deposit",
-      "response-get-deposits",
-      "create-deposit",
-      "add-product-in-Deposits",
-      "transfer-article",
       //IMPRESORA PRUEBA
       "imprimir-pa",
       //METODOS DE PAGO
@@ -223,7 +215,6 @@ contextBridge.exposeInMainWorld("api", {
       "save-accountToPayeditar",
       "get-historial-cuenta",
       "save-notification",
-      
     ];
     if (canalesPermitidos.includes(canal)) {
       ipcRenderer.send(canal, data);
@@ -238,6 +229,7 @@ contextBridge.exposeInMainWorld("api", {
       "response-delete-article",
       "response-get-articleByCode",
       "response-update-article",
+      "response-restock-article",
       /////
       //RESPUESTAS CLIENTES
       "response-update-client",
@@ -283,13 +275,6 @@ contextBridge.exposeInMainWorld("api", {
       "response-delete-supplier",
       "response-get-suppliers",
       "response-update-supplier",
-      //DEPOSITOS RESPONSE
-      "response-get-deposits",
-      "response-update-deposit",
-      "response-create-deposit",
-      "response-create-sector-in-deposit",
-      "response-add-product-in-Deposits",
-      "response-transfer-article",
       //IMPRESORA
       "response-imprimir-pa",
       //NOTIFICACIONES

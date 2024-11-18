@@ -1,43 +1,20 @@
 import React, { useEffect, useState } from "react";
-import AsideMain from "../../asidemain/AsideMain";
 import NavMain from "../../navmain/NavMain";
 import Export from "../buttons/Export";
 import StockList from "./StockList";
 import Buscador from "../../../buscador/Buscador";
 import { useSelector } from "react-redux";
-import Deposits from "./Deposits/Deposits";
-import SubNav from "./SubNav";
-import Suppliers from "./Suppliers/Suppliers";
+import ButtonR from "../buttons/ButtonR";
+import { CgAdd, CgMore } from "react-icons/cg";
+import { GrAdd, GrMoreVertical } from "react-icons/gr";
+import { MdMore, MdMoreTime } from "react-icons/md";
+import { IoAdd } from "react-icons/io5";
+import VirtualizedTable from "../../tablaMain/VirtualizedTable";
+import SelectArticle from "../ventas/MenusInputs/SelectArticle";
+import { articleData } from "../../../../../types/types";
+import RestockForm from "./forms/RestockForm";
 
 // Define el tipo para los artículos basado en el tipo articleData que espera StockList
-interface ArticleData {
-  article: {
-    name: string;
-    costo: number;
-    venta: number;
-    stock: {
-      amount: number;
-      unit: {
-        abrevUnit: string;
-      };
-    };
-  };
-  code: string;
-  barcode: string;
-  subCategory: {
-    value: string;
-    label: string;
-  };
-  brand: {
-    value: string;
-    label: string;
-  };
-  category: {
-    value: string;
-    label: string;
-  };
-  dateToRegister: string;
-}
 
 // Define el tipo para los filtros
 interface Filters {
@@ -48,7 +25,7 @@ interface Filters {
 // Define el tipo para los resultados de búsqueda
 interface SearchState {
   actived: boolean;
-  results: ArticleData[];
+  results: articleData[];
 }
 
 interface StockProps {
@@ -57,7 +34,7 @@ interface StockProps {
 
 const Stock: React.FC<StockProps> = () => {
   const articles = useSelector(
-    (state: { articleState: ArticleData[] }) => state.articleState
+    (state: { articleState: articleData[] }) => state.articleState
   );
   const [router, setRouter] = useState<string>("ARTICLES");
 
@@ -65,7 +42,10 @@ const Stock: React.FC<StockProps> = () => {
     brand: "",
     category: "",
   });
-
+  const [reStock, setReStock] = useState<boolean>(false);
+  const onChangeReStockForm = () => {
+    setReStock(!reStock);
+  };
   //BUSCADOR ESTADOS
   const [searchActived, setSearchActived] = useState<SearchState>({
     actived: false,
@@ -73,9 +53,6 @@ const Stock: React.FC<StockProps> = () => {
   });
 
   //
-  const changeMainContent = (e: string) => {
-    setRouter(e);
-  };
   //
   function getResults(e: object[]) {
     let object: any;
@@ -88,29 +65,32 @@ const Stock: React.FC<StockProps> = () => {
   }
 
   return (
-    <div className="h-full w-full grid-cmg-program">
-      <div className="row-start-1 row-end-2 pb-5">
+    <div className="h-full w-full">
+      {reStock ? <RestockForm setReStock={setReStock} /> : null}
+      <div className="absolute top-0 right-[339px] left-44 h-10 z-30 app-region-drag  ">
         <NavMain title="Stock" setLoginUser={""}>
           <Export />
           <Buscador searchIn={articles} functionReturn={getResults} />
+          <ButtonR
+            bgColor="bg-yellow-700"
+            textSize="text-sm"
+            title="Reponer stock"
+            borderSize="border-x-2 border-gray-600"
+            bgIconColor="bg-gray-700 text-[#fff8dcff]"
+            width="w-44"
+            onClick={onChangeReStockForm}
+            height="h-8"
+          >
+            <IoAdd size={25} />
+          </ButtonR>
         </NavMain>
       </div>
-      <div className="flex flex-col pb-5 row-start-2 row-end-7">
-        <div className="flex flex-row flex-1 overflow-auto">
-          <div className="w-full flex-1 px-5 space-y-5">
-            <SubNav changeMainContent={changeMainContent} router={router} />
-            {/* <Deposits /> */}
-            {router === "ARTICLES" ? (
-              <StockList
-                searchActived={searchActived}
-                filtersActived={filters}
-              />
-            ) : router === "DEPOSITS" ? (
-              <Deposits />
-            ) : router === "SUPPLIERS" ? (
-              <Suppliers />
-            ) : null}
-          </div>
+
+      <div className="flex flex-col h-full overflow-auto space-y-5">
+        <div className="flex flex-1">
+          {router === "ARTICLES" ? (
+            <StockList searchActived={searchActived} filtersActived={filters} />
+          ) : null}
         </div>
       </div>
     </div>

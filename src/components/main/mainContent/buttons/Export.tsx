@@ -11,7 +11,7 @@ const Export: React.FC<ExportProps> = ({}) => {
   }
   return (
     <div
-      className="w-10 h-10 bg-gray-700 rounded-full flex justify-center items-center select-none cursor-pointer relative"
+      className="w-10 h-full rounded-full bg-gray-700 border-x border-gray-600  flex justify-center items-center select-none cursor-pointer relative app-region-no-drag"
       onMouseEnter={() => {
         setTooltipActive(true);
       }}
@@ -20,7 +20,7 @@ const Export: React.FC<ExportProps> = ({}) => {
       }}
     >
       <Biñeta title="Exportar">
-      <CgExport size={25} color="white" />
+        <CgExport size={20} color="white" />
       </Biñeta>
     </div>
   );

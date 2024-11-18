@@ -40,7 +40,7 @@ const iconMap: { [key: number]: IconType | string } = {
   3: TbFileDollar,
   4: LiaCashRegisterSolid,
   5: FcOvertime,
-  6: payIcon,  // Esto es una imagen
+  6: payIcon, // Esto es una imagen
 };
 
 const customFormatDistance = (date: Date): string => {
@@ -74,13 +74,13 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
   const navigate = useNavigate();
   ///////////////////////////////////
 
-  const socket = io("http://localhost:4500");
+  // const socket = io("http://localhost:4500");
 
-  socket.emit("register_as_program_2");
+  // socket.emit("register_as_program_2");
 
-  socket.on("receive_notification", (data) => {
-    console.log("Notificación recibida:", data);
-  });
+  // socket.on("receive_notification", (data) => {
+  //   console.log("Notificación recibida:", data);
+  // });
 
   ////////////////////////////////////////////////
 
@@ -298,9 +298,7 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
                         <p className=" font-light">{notification.nota}</p>
                       </div>
                       <div className="text-sm text-gray-500">
-                        {customFormatDistance(
-                          new Date(notification.fechaHora)
-                        )}
+                        {customFormatDistance(new Date(notification.fechaHora))}
                       </div>
                     </div>
                     <div

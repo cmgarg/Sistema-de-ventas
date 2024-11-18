@@ -85,34 +85,41 @@ const Buscador = <T extends object>({
 
   return (
     <div
-      className={`justify-center rounded-full flex items-center ${
-        (ActivarBuscador && "bg-gray-600") || "bg-gray-700"
-      } flex-row relative h-10 ${(ActivarBuscador && "w-auto pl-5") || "w-10"}`}
+      className={`justify-center flex rounded-full shadow-[0_2px_5px_rgba(0,0,0,0.50)] transition-all border-x-2 border-gray-600 items-center relative app-region-no-drag ${
+        (ActivarBuscador && "bg-gray-600 rounded-l-full") || "bg-gray-700"
+      } flex-row relative transition h-full ${
+        (ActivarBuscador && "w-52") || "w-10"
+      }`}
       onClick={() => {
         setActivarBuscador(true);
       }}
       ref={searchRef}
     >
-      {ActivarBuscador && (
-        <input
-          className={`outline-none bg-transparent text-slate-50 placeholder-slate-50`}
-          placeholder=" Buscador..."
-          onChange={(e) => {
-            onChangeInput(e.target.value);
-          }}
-          value={inputValue}
-          type="text"
-        ></input>
-      )}
-      <ButtonR
-        borderSize="border-b-[4px]"
-        textSize="text-lg"
-        bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
-        height="h-10"
-        width="w-10"
-      >
-        <BiSearch size={20} className="text-white" />
-      </ButtonR>
+      <div className="flex-1 h-full">
+        {ActivarBuscador && (
+          <input
+            className={`outline-none w-full h-full pl-2 bg-transparent text-slate-50 placeholder-slate-50`}
+            placeholder="Buscador..."
+            onChange={(e) => {
+              onChangeInput(e.target.value);
+            }}
+            value={inputValue}
+            type="text"
+          ></input>
+        )}
+      </div>
+      <div className="w-10">
+        <ButtonR
+          textSize="text-lg"
+          bgIconColor="bg-transparent text-[#fff8dcff] shadow-none"
+          height="h-8"
+          shadow={false}
+          rounded={false}
+          width="w-10"
+        >
+          <BiSearch size={19} className="text-white" />
+        </ButtonR>
+      </div>
     </div>
   );
 };

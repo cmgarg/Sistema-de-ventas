@@ -14,19 +14,16 @@ const NavMain: React.FC<MainContentProps> = ({
   setLoginUser,
 }) => {
   return (
-    <div className="flex-1 text-white flex flex-row h-[3rem] items-center justify-center relative">
-      <div className="absolute left-4">
+    <div className="flex-1 text-white flex flex-row h-full items-center justify-center relative">
+      <div className="absolute h-full flex items-center left-2">
         <div className=" flex justify-start items-center">
-          <p className="text-4xl">{title}</p>
+          <p className="text-xl">{title}</p>
         </div>
       </div>
-      <div className="flex justify-center flex-1">
-        <div className="flex flex-1 flex-row justify-center space-x-5">
+      <div className="flex justify-center">
+        <div className="flex flex-1 flex-row justify-center space-x-2 items-center">
           {children}
         </div>
-      </div>
-      <div className="flex">
-        <div className="flex justify-center items-center"></div>
       </div>
     </div>
   );

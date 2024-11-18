@@ -3,7 +3,7 @@ import { IoMdNotifications, IoMdNotificationsOutline } from "react-icons/io";
 import MenuNotif from "./MenuNotif";
 import Biñeta from "../mainContent/Biñeta/Biñieta";
 import { sendNotification } from "../Main";
-import { io, Socket } from 'socket.io-client';
+import { io, Socket } from "socket.io-client";
 
 interface Notification {
   _id: string;
@@ -24,29 +24,25 @@ const Notificaciones: React.FC = () => {
 
   ///////////////////////////////////
 
-  const socket = io("http://localhost:4500");
+  // const socket = io("http://localhost:4500");
 
-  socket.emit('register_as_program_2');
-  
-  socket.on('receive_notification', (data) => {
-    console.log('Notificación recibida:', data);
+  // socket.emit("register_as_program_2");
 
-      // Enviar la notificación al backend para ser guardada
-  saveNotificationToDatabase(data);
+  // socket.on("receive_notification", (data) => {
+  //   console.log("Notificación recibida:", data);
 
-  });
-  // Función para enviar la notificación al backend
-const saveNotificationToDatabase = async (notificationData: any) => {
-  try {
-    window.api.enviarEvento("save-notification", notificationData);
-    console.log("Notificación enviada al backend para ser guardada");
-  } catch (error) {
-    console.error("Error al enviar la notificación al backend:", error);
-  }
-};
-
-
-
+  //   // Enviar la notificación al backend para ser guardada
+  //   saveNotificationToDatabase(data);
+  // });
+  // // Función para enviar la notificación al backend
+  // const saveNotificationToDatabase = async (notificationData: any) => {
+  //   try {
+  //     window.api.enviarEvento("save-notification", notificationData);
+  //     console.log("Notificación enviada al backend para ser guardada");
+  //   } catch (error) {
+  //     console.error("Error al enviar la notificación al backend:", error);
+  //   }
+  // };
 
   ////////////////////////////////////////////////
 
@@ -54,9 +50,15 @@ const saveNotificationToDatabase = async (notificationData: any) => {
     const handleNotification = (data: Notification) => {
       if (data && data.nota) {
         setNotifications((prevNotifications) => {
-          const exists = prevNotifications.some((notification) => notification._id === data._id);
+          const exists = prevNotifications.some(
+            (notification) => notification._id === data._id
+          );
           if (!exists) {
-            return [data, ...prevNotifications].sort((a, b) => new Date(b.fechaHora).getTime() - new Date(a.fechaHora).getTime());
+            return [data, ...prevNotifications].sort(
+              (a, b) =>
+                new Date(b.fechaHora).getTime() -
+                new Date(a.fechaHora).getTime()
+            );
           }
           return prevNotifications;
         });
@@ -68,17 +70,26 @@ const saveNotificationToDatabase = async (notificationData: any) => {
     const handleGetNotifications = (data: Notification[]) => {
       console.log(data, "esto se recibe del backend");
       if (Array.isArray(data)) {
-        setNotifications(data.sort((a, b) => new Date(b.fechaHora).getTime() - new Date(a.fechaHora).getTime()));
-        setUnreadCount(data.filter((notification) => !notification.visto).length);
+        setNotifications(
+          data.sort(
+            (a, b) =>
+              new Date(b.fechaHora).getTime() - new Date(a.fechaHora).getTime()
+          )
+        );
+        setUnreadCount(
+          data.filter((notification) => !notification.visto).length
+        );
       } else {
         console.error("Datos de notificación no válidos:", data);
       }
     };
 
     window.api.recibirEvento("notification", handleNotification);
-    window.api.recibirEvento("response-get-notifications", handleGetNotifications);
+    window.api.recibirEvento(
+      "response-get-notifications",
+      handleGetNotifications
+    );
     window.api.enviarEvento("get-notifications");
-
   }, []);
 
   const handleIconClick = () => {
@@ -99,13 +110,14 @@ const saveNotificationToDatabase = async (notificationData: any) => {
   }, []);
 
   useEffect(() => {
-    setUnreadCount(notifications.filter((notification) => !notification.visto).length);
+    setUnreadCount(
+      notifications.filter((notification) => !notification.visto).length
+    );
   }, [notifications]);
 
   const closeMenu = () => {
     setIsClicked(false);
   };
-
 
   //////////////////////Notificaciones predeterminadas
   ///////////////
@@ -120,7 +132,10 @@ const saveNotificationToDatabase = async (notificationData: any) => {
 
   const updateNotificationStatus = (accountId) => {
     // Enviar el evento al backend para actualizar el estado de 'senotifico' a true
-    window.api.enviarEvento("actualizar-senotifico", { idCuenta: accountId, estadoSenotifico: true });
+    window.api.enviarEvento("actualizar-senotifico", {
+      idCuenta: accountId,
+      estadoSenotifico: true,
+    });
   };
 
   const isSameOrBeforeToday = (accountDate) => {
@@ -133,10 +148,14 @@ const saveNotificationToDatabase = async (notificationData: any) => {
 
   const filterAndNotifyAccounts = (accounts) => {
     // Filtra las cuentas cuya fecha es igual o anterior a hoy y aún no han sido notificadas
-    accounts.forEach(account => {
+    accounts.forEach((account) => {
       const accountDate = account.date;
 
-      if (account.notifiacion && !account.senotifico && isSameOrBeforeToday(accountDate)) {
+      if (
+        account.notifiacion &&
+        !account.senotifico &&
+        isSameOrBeforeToday(accountDate)
+      ) {
         if (!notifiedAccounts.has(account._id)) {
           // Si la cuenta no ha sido notificada aún, enviamos la notificación y actualizamos
           sendNotification(
@@ -144,7 +163,7 @@ const saveNotificationToDatabase = async (notificationData: any) => {
             `Tu cuenta "${account.descripcion}" ha vencido. Si ya realizaste el pago, márcala para evitar confusiones o posibles recargos.`,
             5,
             "cuentas",
-            `${account._id}`,
+            `${account._id}`
           );
 
           // Actualizar el estado de 'senotifico' a true para no volver a notificar
@@ -179,8 +198,7 @@ const saveNotificationToDatabase = async (notificationData: any) => {
     };
   }, []); // Se elimina accountToPay de las dependencias para evitar bucles
 
-
-  console.log(cuentas2, "ESTAS SON LAS CUENTAS ACTUALIZADAS CON LA AGREGADA")
+  console.log(cuentas2, "ESTAS SON LAS CUENTAS ACTUALIZADAS CON LA AGREGADA");
 
   return (
     <div className="relative cursor-pointer">
@@ -190,7 +208,7 @@ const saveNotificationToDatabase = async (notificationData: any) => {
       >
         {!isClicked && (
           <Biñeta title={"Notificaciones"}>
-            <IoMdNotificationsOutline size={30} color="white" />
+            <IoMdNotificationsOutline size={25} color="white" />
           </Biñeta>
         )}
         {isClicked && <IoMdNotifications size={29} color="white" />}

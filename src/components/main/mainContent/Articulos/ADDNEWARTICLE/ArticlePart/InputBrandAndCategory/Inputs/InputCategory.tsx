@@ -82,9 +82,9 @@ const InputCategory = ({
           aria-expanded={open}
           className=" justify-between w-52"
         >
-          {stateArticle.brand.label
+          {stateArticle.category.label
             ? categorys.find(
-                (framework) => framework.value === stateArticle.brand.value
+                (framework) => framework.value === stateArticle.category.value
               )?.label
             : "Selecciona categoria"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -101,15 +101,15 @@ const InputCategory = ({
                   key={framework.value}
                   value={framework.value}
                   className={`${
-                    framework.value === stateArticle.brand.value
+                    framework.value === stateArticle.category.value
                       ? "bg-yellow-400"
                       : "text-white font-semibold"
                   }  
                               `}
                   onSelect={(currentValue) => {
                     dispatch({
-                      type: "SET_BRAND",
-                      payload: isEqual(framework, stateArticle.brand)
+                      type: "SET_CATEGORY",
+                      payload: isEqual(framework, stateArticle.category)
                         ? { label: "", value: "" }
                         : framework,
                     });
@@ -119,7 +119,7 @@ const InputCategory = ({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4 text-black",
-                      stateArticle.brand.value === framework.value
+                      stateArticle.category.value === framework.value
                         ? "opacity-100 text-white"
                         : "opacity-0"
                     )}

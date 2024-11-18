@@ -9,6 +9,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { articleData, storeType } from "../../../../../types/types";
 import EditArticleForm from "./EDITARTICLE/EditArticleForm";
 import ForAddNewArticle from "./ADDNEWARTICLE/ForAddNewArticleMain";
+import ButtonR from "../buttons/ButtonR";
+import { BiExport } from "react-icons/bi";
+import Biñeta from "../Biñeta/Biñieta";
+import { MdAdd } from "react-icons/md";
 
 interface ArticulosProps {}
 
@@ -117,14 +121,25 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
 
   return (
     <div className="h-full w-full grid-cmg-program">
-      <div className="row-start-1 row-end-2">
+      <div className="absolute top-0 right-[339px] left-44 h-10 z-30 app-region-drag">
         <NavMain title="Articulos" setLoginUser={""}>
           <Buscador
             searchIn={articles}
             functionReturn={resultFindArticles}
           ></Buscador>
           <Export></Export>
-          <Agregar title="Articulo" onChangeModal={onChangeModal}></Agregar>
+          <ButtonR
+            borderSize="border-x border-gray-600"
+            textSize="text-sm"
+            bgIconColor="bg-gray-700 text-[#fff8dcff]"
+            bgColor="bg-yellow-700"
+            height="h-8"
+            width="w-44"
+            onClick={onChangeModal}
+            title="Agregar articulo"
+          >
+            <MdAdd size={25} color="white" />
+          </ButtonR>
         </NavMain>
       </div>
       <div className="flex flex-row pb-5 row-start-2 row-end-7">

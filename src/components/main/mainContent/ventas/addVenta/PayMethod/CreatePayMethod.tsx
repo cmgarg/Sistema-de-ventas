@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import ButtonR from "../../../buttons/ButtonR";
 
 type CreatePayMethodProps = {
   onCreatePm: (e: boolean) => void;
@@ -23,7 +24,7 @@ const CreatePayMethod: React.FC<CreatePayMethodProps> = ({ onCreatePm }) => {
 
   return (
     <div className="absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center">
-      <div className="w-64 flex flex-col h-52 bg-slate-900 rounded-lg overflow-hidden border border-slate-700">
+      <div className="w-64 flex flex-col h-36 bg-[#2f2f2fff] rounded-lg overflow-hidden border border-slate-600">
         <div className="w-full flex-1 p-2 flex flex-col">
           <label htmlFor="pmName" className="font-semibold">
             Nombre
@@ -33,22 +34,24 @@ const CreatePayMethod: React.FC<CreatePayMethodProps> = ({ onCreatePm }) => {
             type="text"
             value={pmName}
             onChange={onChangeValue}
-            className="h-12 w-full bg-slate-950 pl-5 rounded-lg border border-slate-700 outline-none"
+            className="h-10 w-full bg-[#707070ff] pl-5 rounded-lg border border-slate-700 outline-none"
           />
         </div>
-        <div className="w-full h-8 flex space-x-2 p-1">
-          <button
+        <div className="w-full h-8 justify-end flex space-x-2 p-1">
+          <ButtonR
             onClick={() => onCreatePm(false)}
-            className="flex-1 h-full bg-red-500 flex justify-center items-center text-xl rounded-lg"
-          >
-            <p>Cancelar</p>
-          </button>
-          <button
+            title="Cancelar"
+            bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-sm"
+            height="h-6"
+            width="w-20"
+          ></ButtonR>
+          <ButtonR
+            height="h-6"
+            width="w-24"
+            bgColor="bg-gradient-to-l from-yellow-700 via-yellow-700 to-yellow-500 text-sm"
             onClick={addNewPm}
-            className="flex-1 h-full bg-green-500 flex justify-center items-center text-xl rounded-lg"
-          >
-            <p>Crear</p>
-          </button>
+            title="Aceptar"
+          ></ButtonR>
         </div>
       </div>
     </div>

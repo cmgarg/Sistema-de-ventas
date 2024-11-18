@@ -6,9 +6,23 @@ import {
   supplierType,
 } from "../../../../../../../../../types/types";
 import React, { useEffect, useState } from "react";
-import Downshift from "downshift";
-import { TbTruckDelivery } from "react-icons/tb";
-import ButtonR from "../../../../../buttons/ButtonR";
+import { cn } from "../../../../../../../../../lib/utils";
+import { Button } from "../../../../../../../../../components/app/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../../../../../../../../../components/app/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../../../../../../../../components/app/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { isEqual } from "lodash";
 
 type propsInput = {
   style: string;
@@ -28,134 +42,73 @@ const InputSupplier = ({
   setSupplierForm,
   inputValueSupplierInput,
   setInputValueSupplierInput,
+  stateArticle,
   suppliers,
   value,
 }: propsInput) => {
-  const onChangeNewValue = (newValue: string) => {
-    if (/^[a-zA-Z0-9]*$/.test(newValue)) {
-      setInputValueSupplierInput(newValue);
-      dispatch({ type: "SET_SUPPLIER", payload: newValue.toLowerCase() });
-      console.log("ENVIANDO A DISPATCH", newValue);
-    }
-  };
+  const [open, setOpen] = React.useState(false);
 
-  const compareSelectItemWithInputValue = (i: string): string => {
-    const inputLength = inputValueSupplierInput.length;
-    const itemValue = i;
-
-    if (inputValueSupplierInput) {
-      return itemValue.toLowerCase().slice(0, inputLength) ===
-        inputValueSupplierInput.toLowerCase()
-        ? itemValue
-        : inputValueSupplierInput;
-    } else {
-      return itemValue;
-    }
+  const onChangeNewValue = (sup: supplierType) => {
+    dispatch({ type: "SET_SUPPLIER", payload: sup });
   };
 
   return (
-    <Downshift
-      onChange={(selection) => {
-        onChangeNewValue(selection || "teta");
-        console.log("AJAM", selection);
-      }}
-      inputValue={inputValueSupplierInput}
-      itemToString={(item) =>
-        item
-          ? compareSelectItemWithInputValue(item.name)
-          : inputValueSupplierInput
-      }
-      onInputValueChange={(e, stateAndHelpers) => {
-        onChangeNewValue(e);
-      }}
-      onSelect={(selectedItem) => {
-        onChangeNewValue(selectedItem || "teta");
-      }}
-    >
-      {({
-        getInputProps,
-        getItemProps,
-        getMenuProps,
-        isOpen,
-        inputValue,
-        highlightedIndex,
-        selectedItem,
-        getLabelProps,
-        getRootProps,
-      }) => (
-        <div className="flex w-80 flex-col relative">
-          <div className="flex space-x-5 mb-2 w-full justify-between">
-            <label
-              {...getLabelProps()}
-              className="select-none h-full flex items-center justify-center"
-            >
-              <p>Proveedor</p>
-            </label>
-            <ButtonR
-              onClick={() => setSupplierForm(true)}
-              bgColor="bg-gradient-to-l text-[#ffd700ff]  from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff] text-xs"
-              height="h-6"
-              width="w-32"
-              bgIconColor="bg-gray-700"
-              title="Proveedores"
-            >
-              <TbTruckDelivery size={20} />
-            </ButtonR>
-          </div>
-          <div
-            style={{ display: "inline-block" }}
-            {...getRootProps({}, { suppressRefError: true })}
-          >
-            <input
-              {...getInputProps()}
-              className={`${style} ${isOpen ? "rounded-b-none" : ""} w-full `}
-            />
-          </div>
-          <ul
-            {...getMenuProps()}
-            className="w-full absolute top-full rounded-b-sm z-50"
-          >
-            {isOpen
-              ? suppliers
-                  .filter(
-                    (item) =>
-                      !inputValue ||
-                      item.name.toLowerCase().includes(inputValue.toLowerCase())
-                  )
-                  .map((item, index) => (
-                    <li
-                      {...getItemProps({
-                        key: item._id,
-                        index,
-                        item,
-                        style: {
-                          border: selectedItem === item ? "2px blue" : "normal",
-                          paddingLeft: "0.250rem",
-                        },
-                      })}
-                      className={`${
-                        highlightedIndex === index
-                          ? "bg-teal-900"
-                          : "bg-teal-950"
-                      } ${
-                        highlightedIndex === index
-                          ? "text-slate-50"
-                          : "text-slate-200"
-                      }${
-                        highlightedIndex === index
-                          ? "bg-red-200"
-                          : "font-normal"
-                      } flex px-2 text-xl`}
-                    >
-                      <p className="flex-1 text-left">{item.name}</p>
-                      <p className="flex-1 text-right">{item.phoneNumber}</p>
-                    </li>
-                  ))
-              : null}
-          </ul>
-        </div>
-      )}
-    </Downshift>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        asChild
+        className="bg-gradient-to-l from-gray-800 via-gray-800 to-gray-700 border border-gray-600 flex hover:text-yellow-500 shadow-[0_1px_5px_rgba(0,0,0,0.50)]"
+      >
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className=" justify-between w-52"
+        >
+          {stateArticle.supplier.name
+            ? suppliers.find(
+                (framework) => framework.name === stateArticle.supplier.name
+              )?.name
+            : "Selecciona categoria"}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-52 p-0  border border-gray-600 bg-black ">
+        <Command className="bg-gray-800 text-white">
+          <CommandInput placeholder="Buscando categoria..." />
+          <CommandList className="bg-slate-950 ">
+            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandGroup>
+              {suppliers.map((framework) => (
+                <CommandItem
+                  key={framework.name}
+                  value={framework.name}
+                  className={`${
+                    framework.name === stateArticle.supplier.name
+                      ? "bg-yellow-400"
+                      : "text-white font-semibold"
+                  }  
+                            `}
+                  onSelect={(currentValue) => {
+                    onChangeNewValue(framework);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4 text-black",
+                      stateArticle.supplier.name === framework.name
+                        ? "opacity-100 text-white"
+                        : "opacity-0"
+                    )}
+                  />
+                  {framework.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 };
 

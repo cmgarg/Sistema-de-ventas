@@ -49,13 +49,6 @@ import {
   deleteSupplier,
   getSuppliers,
   updateSuppliers,
-  createDeposit,
-  updateDeposit,
-  addProductInDeposits,
-  deleteSector,
-  editSectorInDeposit,
-  getDeposits,
-  createSectorInDeposit,
   saveNotification,
   getNotifications,
   deleteNotification,
@@ -76,11 +69,11 @@ import {
   updateAccountInDb,
   getHistorialCuentaPorId,
   saveNotificationn,
-  transferArticles,
   updateArticle,
+  reStock,
 } from "./databaseOperations";
 import { verificarToken } from "./vFunctions";
-import { articleData, IUser } from "../types/types";
+import { articleData, IUser, unitType } from "../types/types";
 
 export const loadEvents = () => {
   console.log("eventHandlers Se esta Ejecutando...");
@@ -143,7 +136,7 @@ export const loadEvents = () => {
   // Artículos
   ipcMain.on(
     "save-article",
-    async (event, a: { articleToSave: articleData; depositState: any }) => {
+    async (event, a: { articleToSave: articleData }) => {
       const categoryAndBrands = await getCategoryAndBrand();
       const { brand, category } = a.articleToSave;
       const categorys = categoryAndBrands.categorys;
@@ -209,42 +202,22 @@ export const loadEvents = () => {
     e.reply("response-delete-article", result);
   });
 
-  // Ventas
-  ipcMain.on("get-sales-stats", async (event) => {
-    const statsSales = await getStats();
-    event.reply("response-get-sales-stats", statsSales);
-  });
+  ipcMain.on(
+    "article_restock",
+    async (
+      event,
+      e: {
+        articleCode: string;
+        amount: { value: number; unit: unitType };
+        batch: string;
+        expirationDate: string;
+      } // Parámetro para la fecha de caducidad
+    ) => {
+      const res = await reStock(e);
 
-  ipcMain.on("sale-process", async (event, venta) => {
-    const res = await saleProcess(venta);
-    event.reply("response-sale-process", res);
-  });
-
-  ipcMain.on("get-sales", async (event) => {
-    const ventas = await findSales();
-
-    event.reply("response-get-sales", ventas);
-  });
-
-  ipcMain.on("delete-sale", (_e, ventaAEliminar) => {
-    deleteSales(ventaAEliminar);
-  });
-  ipcMain.on("guardar-usuario-admin", async (event, usuarioAdmin) => {
-    try {
-      const usuarioConPasswordEncriptado = await guardarUsuarioAdmin(
-        usuarioAdmin
-      );
-      event.reply("respuesta-guardar-usuario-admin", {
-        exito: true,
-        usuarioAdmin: usuarioConPasswordEncriptado,
-      });
-    } catch (error: any) {
-      event.reply("respuesta-guardar-usuario-admin", {
-        exito: false,
-        error: error.message,
-      });
+      event.reply("response-restock-article", res);
     }
-  });
+  );
 
   ipcMain.on("verificar-admin-existente", async (event) => {
     try {
@@ -256,37 +229,8 @@ export const loadEvents = () => {
     }
   });
 
-  ipcMain.on("iniciar-sesion", async (event, credentials) => {
-    try {
-      const response = await iniciarSesion(credentials);
-      event.reply("respuesta-iniciar-sesion", response);
-    } catch (error: any) {
-      event.reply("respuesta-iniciar-sesion", {
-        exito: false,
-        mensaje: error.message,
-      });
-    }
-  });
-
   //   event.reply("article-foundByName", article);
   // });
-  ipcMain.on("get-articles", async (event) => {
-    const articulos = await findArticles();
-
-    event.reply("response-get-articles", articulos); //TRATANDO QUE SE ACTUALICE CUANDO HAY UN CLIENTE NUEVO REGISTRADO
-  });
-
-  ipcMain.on("edit-article", async (e, articleEdit) => {
-    const articleEditResult = await editArticle(articleEdit);
-
-    e.reply("response-edit-article", articleEditResult);
-  });
-
-  ipcMain.on("delete-article", async (e, articuloAEliminar) => {
-    const result = await deleteArticle(articuloAEliminar);
-
-    e.reply("response-delete-article", result);
-  });
   ///
   //ESCUCHAS DE EVENTOS DE GUARDADO DE VENTAS
   //
@@ -357,102 +301,6 @@ export const loadEvents = () => {
     event.reply("response-remove-unitsArticleForm", response);
   });
 
-  //ALMACENES
-  //CREAR DEPOSITO
-  ipcMain.on("create-deposit", async (event, newDeposit) => {
-    const response = await createDeposit(newDeposit);
-
-    event.reply("response-create-deposit", response);
-  });
-  //AACTUALIZAR DEPOSITO
-  ipcMain.on("update-deposit", async (event, depositToUpdate) => {
-    const response = await updateDeposit(depositToUpdate);
-
-    event.reply("response-update-deposit", response);
-  });
-  //AÑADIR PRODUCTO A DEPOSITO
-  ipcMain.on(
-    "add-product-in-Deposits",
-    async (event, e: { depositState: any[]; articleToSave: articleData }) => {
-      console.log("EVENTITOLOCO", e);
-      const response = await addProductInDeposits(e);
-
-      event.reply("response-add-product-in-Deposits", response);
-    }
-  );
-  //ELIMINAR SECTOR DE DEPOSITO
-  ipcMain.on(
-    "deposit-delete-sector",
-    async (
-      event,
-      { deposit_id, sectorId }: { deposit_id: string; sectorId: string }
-    ) => {
-      const response = await deleteSector(deposit_id, sectorId);
-
-      event.reply("response-deposit-delete-sector", response);
-    }
-  );
-  //AÑADIR UN SECTOR EN DEPOSITO
-  ipcMain.on(
-    "create-sector-in-deposit",
-    async (
-      event,
-      { deposit_id, sector }: { deposit_id: string; sector: any }
-    ) => {
-      const response = await createSectorInDeposit(deposit_id, sector);
-
-      event.reply("response-create-sector-in-deposit", response);
-    }
-  );
-  //
-  ipcMain.on(
-    "transfer-article",
-    async (
-      event,
-      e: {
-        fromDeposit: string;
-        fromSector: string;
-        article: articleData;
-        amount: number;
-        unitType: "unit" | "xPalet" | "xBulk";
-        saveCountUsed: string;
-        destiny: {
-          depositId: string;
-          sectorId: string;
-        };
-      }
-    ) => {
-      const response = await transferArticles(e);
-
-      event.reply("response-transfer-article", response);
-    }
-  );
-  //EDITAR UN SECTOR EN DEPOSITO
-  ipcMain.on(
-    "edit-sector-in-deposit",
-    async (
-      event,
-      {
-        deposit_id,
-        sectorToEdit,
-        sectorUpdate,
-      }: { deposit_id: string; sectorToEdit: string; sectorUpdate: any }
-    ) => {
-      const response = await editSectorInDeposit(
-        deposit_id,
-        sectorToEdit,
-        sectorUpdate
-      );
-
-      event.reply("response-edit-sector-in-deposit", response);
-    }
-  );
-  //OBTENER DEPOSITOS
-  ipcMain.on("get-deposits", async (event) => {
-    const response = await getDeposits();
-
-    event.reply("response-get-deposits", response);
-  });
   //PAY METHOD
   ipcMain.on("get-pay-methods", async (event) => {
     const pM = await getPayMethods();
@@ -479,15 +327,6 @@ export const loadEvents = () => {
       exito: true,
       usuarioAdmin: usuarioConPasswordEncriptado,
     });
-  });
-
-  ipcMain.on("verificar-admin-existente", async (event) => {
-    try {
-      const adminInfo = await verificarAdminExistente();
-      event.reply("respuesta-verificar-admin", adminInfo);
-    } catch (error) {
-      event.reply("respuesta-verificar-admin", { existeAdmin: false });
-    }
   });
 
   ipcMain.on("iniciar-sesion", async (event, credentials) => {
@@ -889,18 +728,6 @@ export const loadEvents = () => {
       });
     }
   });
-
-  ipcMain.on("obtener-admin", async (event) => {
-    try {
-      const adminData = await obtenerAdmin();
-      event.reply("respuesta-obtener-admin", adminData);
-    } catch (error: any) {
-      event.reply("respuesta-obtener-admin", {
-        exito: false,
-        error: error.message,
-      });
-    }
-  });
 };
 
 // Guardar una notificación y enviarla a todas las ventanas
@@ -913,7 +740,7 @@ const validateNotificationData = (data: { nota: any } | null) => {
 
 // Guardar una notificación y enviarla a todas las ventanas
 // Guardar una notificación y enviarla a todas las ventanas
-ipcMain.on("send-notification", async (event, data) => {
+ipcMain.on("obtener-admin", async (event, data) => {
   if (validateNotificationData(data)) {
     try {
       // Obtener los tipos de notificación desactivados
@@ -952,11 +779,12 @@ ipcMain.on("send-notification", async (event, data) => {
   }
 });
 
-
 //////guardar notiufiaciones que vienne desde el servidor
 ipcMain.on("save-notification", async (event, notificationData) => {
   try {
-    const data = notificationData.message ? notificationData.message : notificationData;
+    const data = notificationData.message
+      ? notificationData.message
+      : notificationData;
 
     // Validar los datos de la notificación
     const { titulo, tipo, nota, icono } = data;
@@ -988,8 +816,6 @@ ipcMain.on("save-notification", async (event, notificationData) => {
     event.reply("notification-error", { error: error });
   }
 });
-
-
 
 // Obtener todas las notificaciones
 ipcMain.on("get-notifications", async (event) => {
