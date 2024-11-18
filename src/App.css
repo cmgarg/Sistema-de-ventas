@@ -178,3 +178,10 @@ input[type="checkbox"]:checked::before {
 .blink-animation {
   animation: blink 1s linear infinite;
 }
+
+
+.t-100 {
+  position: absolute !important;
+  z-index: 10000000 !important;
+  background: #ee0909 !important;
+}

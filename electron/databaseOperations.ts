@@ -1472,6 +1472,7 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 export const guardarUsuarioAdmin = async (usuarioAdmin: { password: any }) => {
+  console.log(usuarioAdmin)
   try {
     const hashedPassword = await bcrypt.hash(usuarioAdmin.password, saltRounds);
     const usuarioConPasswordEncriptado = {
@@ -1503,6 +1504,7 @@ export const verificarAdminExistente = () => {
         resolve({
           existeAdmin: true,
           recuperacioncuenta: admin.recuperacioncuenta,
+          faltapago: admin.faltapago
         });
       } else {
         resolve({ existeAdmin: false });
@@ -2022,6 +2024,26 @@ export const getHistorialCuentaPorId = async (idCuenta: string) => {
     );
   });
 };
+
+export const actualizarUsuariosAdmin = async (camposActualizados: any) => {
+  return new Promise((resolve, reject) => {
+    db.usuariosAdmin.update(
+      { esAdmin: true },
+      { $set: camposActualizados },
+      { multi: true },
+      (err, numUpdated) => {
+        if (err) {
+          console.error("Error al actualizar los usuarios admin:", err);
+          reject(err);
+        } else {
+          resolve(numUpdated > 0);
+        }
+      }
+    );
+  });
+};
+
+
 
 function getDatabasee() {
   throw new Error("Function not implemented.");

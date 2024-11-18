@@ -80,6 +80,7 @@
     "tailwindcss-animate": "^1.0.7",
     "typeface-nunito": "^1.1.13",
     "typeface-roboto": "^1.1.13",
+    "uuid": "^10.0.0",
     "victory": "^37.0.2"
   },
   "devDependencies": {

@@ -298,6 +298,7 @@ contextBridge.exposeInMainWorld("api", {
       "disable-notification-type",
       "response-get-disabled-notification-types",
       "cache-cleared",
+      "actualizarEstadoNoPago",
       //METODOS DE PAGO
       "response-get-pay-methods",
       "response-update-pay-method",
@@ -306,6 +307,7 @@ contextBridge.exposeInMainWorld("api", {
       "account-saved",
       "accounts-updated",
       "respuesta-historial-cuenta",
+      "datos-usuario-obtenidoss",
     ];
 
     if (canalesPermitidos.includes(canal)) {

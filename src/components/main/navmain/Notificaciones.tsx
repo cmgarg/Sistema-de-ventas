@@ -24,26 +24,26 @@ const Notificaciones: React.FC = () => {
 
   ///////////////////////////////////
 
-  const socket = io("http://localhost:4500");
+//    const socket = io("http://localhost:4500");
 
-  socket.emit('register_as_program_2');
+//   socket.emit('register_as_program_2');
   
-  socket.on('receive_notification', (data) => {
-    console.log('Notificación recibida:', data);
+//   socket.on('receive_notification', (data) => {
+//     console.log('Notificación recibida:', data);
 
-      // Enviar la notificación al backend para ser guardada
-  saveNotificationToDatabase(data);
+//       // Enviar la notificación al backend para ser guardada
+//   saveNotificationToDatabase(data);
 
-  });
-  // Función para enviar la notificación al backend
-const saveNotificationToDatabase = async (notificationData: any) => {
-  try {
-    window.api.enviarEvento("save-notification", notificationData);
-    console.log("Notificación enviada al backend para ser guardada");
-  } catch (error) {
-    console.error("Error al enviar la notificación al backend:", error);
-  }
-};
+//   });
+//   // Función para enviar la notificación al backend
+// const saveNotificationToDatabase = async (notificationData: any) => {
+//   try {
+//     window.api.enviarEvento("save-notification", notificationData);
+//     console.log("Notificación enviada al backend para ser guardada");
+//   } catch (error) {
+//     console.error("Error al enviar la notificación al backend:", error);
+//   }
+// };
 
 
 

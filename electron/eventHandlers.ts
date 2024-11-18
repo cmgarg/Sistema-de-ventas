@@ -78,6 +78,7 @@ import {
   saveNotificationn,
   transferArticles,
   updateArticle,
+  actualizarUsuariosAdmin,
 } from "./databaseOperations";
 import { verificarToken } from "./vFunctions";
 import { articleData, IUser } from "../types/types";
@@ -528,11 +529,21 @@ export const loadEvents = () => {
           imageUrl: usuario.imageUrl,
           esAdmin: usuario.esAdmin,
           _id: usuario._id,
+          uuid: usuario.uuid
         };
+  
+        // Primera respuesta
         event.reply("datos-usuario-obtenidos", {
           success: true,
           data: userData,
         });
+  
+        // Segunda respuesta
+        event.reply("datos-usuario-obtenidoss", {
+          success: true,
+          data: userData,
+        });
+  
       } else {
         event.reply("datos-usuario-obtenidos", {
           success: false,
@@ -546,6 +557,7 @@ export const loadEvents = () => {
       });
     }
   });
+  
 
   function isIUser(obj: unknown): obj is IUser {
     return (
@@ -954,6 +966,7 @@ ipcMain.on("send-notification", async (event, data) => {
 
 
 //////guardar notiufiaciones que vienne desde el servidor
+
 ipcMain.on("save-notification", async (event, notificationData) => {
   try {
     const data = notificationData.message ? notificationData.message : notificationData;
@@ -964,30 +977,37 @@ ipcMain.on("save-notification", async (event, notificationData) => {
       throw new Error("Datos de notificación no válidos");
     }
 
-    // Crear el objeto de la notificación para guardar en la base de datos
-    const newNotification = {
-      titulo,
-      tipo,
-      nota,
-      icono,
-      fechaHora: new Date().toISOString(),
-      visto: false,
-      oculta: false,
-    };
+    // Verificar el tipo de notificación y actualizar todos los usuarios admin si es necesario
+    if (tipo === "suspencion") {
+      await actualizarUsuariosAdmin({ faltapago: true });
+      event.reply("actualizarEstadoNoPago", true); // Notifica al frontend sobre el estado de noPago
+    } else if (tipo === "habilitar") {
+      await actualizarUsuariosAdmin({ faltapago: false });
+      event.reply("actualizarEstadoNoPago", false); // Notifica al frontend sobre el desbloqueo
+    } else {
+      // Guardar la notificación en la base de datos si no es de tipo "suspencion" o "habilitar"
+      const newNotification = {
+        titulo,
+        tipo,
+        nota,
+        icono,
+        fechaHora: new Date().toISOString(),
+        visto: false,
+        oculta: false,
+      };
+      await saveNotificationn(newNotification);
+    }
 
-    // Guardar la notificación en la base de datos
-    const savedNotification = await saveNotificationn(newNotification);
-
-    // Después de guardar, obtener todas las notificaciones actualizadas
+    // Obtener todas las notificaciones actualizadas para enviar al frontend
     const notifications = await getNotifications();
-
-    // Enviar las notificaciones actualizadas al frontend
     event.reply("response-get-notifications", notifications);
   } catch (error) {
-    console.error("Error al guardar la notificación:", error);
-    event.reply("notification-error", { error: error });
+    console.error("Error al procesar la notificación:", error);
+    event.reply("notification-error", { error: onmessage });
   }
 });
+
+
 
 
 
@@ -1125,5 +1145,9 @@ ipcMain.on("get-historial-cuenta", async (event, idCuenta) => {
     });
   }
 });
+
+
+
+
 
 ///////////////////////

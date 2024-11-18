@@ -1,4 +1,5 @@
-import React, { useState, ChangeEvent, MouseEvent } from "react";
+import React, { useState, ChangeEvent } from "react";
+import { v4 as uuidv4 } from 'uuid'; // Importa la función para generar UUID
 
 interface CrearUsuarioAdminProps {
   setAdminExists: (exists: boolean) => void;
@@ -15,6 +16,7 @@ interface FormData {
   imageUrl: string;
   recuperacioncuenta: string;
   bloqueo: string;
+  faltapago: boolean;
 }
 
 const CrearUsuarioAdmin: React.FC<CrearUsuarioAdminProps> = ({ setAdminExists }) => {
@@ -29,6 +31,7 @@ const CrearUsuarioAdmin: React.FC<CrearUsuarioAdminProps> = ({ setAdminExists })
     imageUrl: "/imagen-usuario/user-1.jpg",
     recuperacioncuenta: "3",
     bloqueo: "CMG2024-Company",
+    faltapago: false,
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -37,7 +40,7 @@ const CrearUsuarioAdmin: React.FC<CrearUsuarioAdminProps> = ({ setAdminExists })
   };
 
   const handleSubmit = () => {
-    // Envía los datos del formulario al backend
+    // Envía los datos del formulario al backend, incluyendo el UUID
     window.api.enviarEvento("guardar-usuario-admin", formData);
     setAdminExists(true);
   };
@@ -164,10 +167,10 @@ const CrearUsuarioAdmin: React.FC<CrearUsuarioAdminProps> = ({ setAdminExists })
       </div>
     </div>
   );
-}
+};
 
 export default CrearUsuarioAdmin;
+
 function onAdminCreated(usuarioAdmin: any) {
   throw new Error("Function not implemented.");
 }
-

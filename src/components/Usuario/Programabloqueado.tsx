@@ -5,10 +5,11 @@ import ModalCodigoIncorrecto from "./ModalCodigoIncorrecto";
 
 interface ProgramabloqueadoProps {
   setBloqueoPrograma: (value: boolean) => void;
+  noPago: boolean
 }
 
 const Programabloqueado: React.FC<ProgramabloqueadoProps> = ({
-  setBloqueoPrograma,
+  setBloqueoPrograma, noPago
 }) => {
   const [clickCount, setClickCount] = useState<number>(0);
   const [mostrarModalCodigo, setMostrarModalCodigo] = useState<boolean>(false);
@@ -35,24 +36,28 @@ const Programabloqueado: React.FC<ProgramabloqueadoProps> = ({
       window.api.removeAllListeners("respuesta-verificar-codigo");
     };
   }, [verificarCodigo]);
-
+  
   const handleSVGClick = () => {
-    setClickCount((prevCount) => prevCount + 1);
+    setClickCount((prevCount) => {
+      console.log(prevCount + 1, "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+      return prevCount + 1;
+    });
   };
-
+  
+  useEffect(() => {
+    if (clickCount === 10) {
+      setMostrarModalCodigo(true);
+      setClickCount(0); // Resetea el contador después de mostrar el modal
+    }
+  }, [clickCount]);
+  
   const handleOutsideClick = (event: MouseEvent<HTMLDivElement>) => {
-    if (clickCount > 0 && !event.currentTarget.closest(".svg-container")) {
-      setClickCount(0); // Resetea el contador si el clic es fuera del div del SVG
+    const svgContainer = event.currentTarget.querySelector(".svg-container");
+    if (clickCount > 0 && svgContainer && !svgContainer.contains(event.target as Node)) {
+      setClickCount(0); // Resetea el contador solo si el clic es fuera del SVG y hay clics acumulados
     }
   };
-
-  // Verificar si se alcanzaron los 10 clics
-  if (clickCount === 10) {
-    setMostrarModalCodigo(true);
-    setClickCount(0); // Resetea el contador
-  }
-
-  console.log(verificarCodigo, "codigo ingresado");
+  
 
   return (
     <div
@@ -70,9 +75,15 @@ const Programabloqueado: React.FC<ProgramabloqueadoProps> = ({
       )}
       {autCambioContra && <ModalCambiarContraseña setBloqueoPrograma={setBloqueoPrograma} />}
       <div className="flex flex-1 justify-around items-center flex-col">
+        {noPago ? 
         <h1 className="text-2xl">
+        El programa esta bloqueado por falta de pago.
+      </h1>
+      :<h1 className="text-2xl">
           Por tu seguridad el programa está bloqueado
         </h1>
+      }
+        
         <div
           className="svg-container flex w-96 h-80 select-none" // Clase para identificar el contenedor del SVG
           onClick={handleSVGClick} // Manejador solo para clics dentro del SVG

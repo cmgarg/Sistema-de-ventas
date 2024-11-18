@@ -224,6 +224,7 @@ export type pmType = {
 //TIPOS MARTIN
 
 export interface IUser {
+  uuid: any;
   nombre: string;
   username: string;
   email: string;

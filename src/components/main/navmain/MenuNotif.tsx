@@ -13,8 +13,8 @@ import { TbFileDollar } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { IconType } from "react-icons";
 import { FcOvertime } from "react-icons/fc";
-import { io, Socket } from "socket.io-client";
 import payIcon from "../../../assets/pay.png";
+
 
 interface Notification {
   [x: string]: any;
@@ -35,11 +35,11 @@ interface MenuNotifProps {
 }
 
 const iconMap: { [key: number]: IconType | string } = {
-  1: PiBoxArrowDown,
-  2: GrUpdate,
-  3: TbFileDollar,
-  4: LiaCashRegisterSolid,
-  5: FcOvertime,
+  1: PiBoxArrowDown,   /////// notf stock bajo
+  2: GrUpdate,   ///// actualizacion de programa
+  3: TbFileDollar, 
+  4: LiaCashRegisterSolid, ///icono cierre de caja
+  5: FcOvertime, /// cuentas icono de cuentas
   6: payIcon,  // Esto es una imagen
 };
 
@@ -71,18 +71,10 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
   const moreButtonRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const loadingRef = useRef(false);
 
-  const navigate = useNavigate();
-  ///////////////////////////////////
+  const navigate = useNavigate();  
 
-  const socket = io("http://localhost:4500");
 
-  socket.emit("register_as_program_2");
 
-  socket.on("receive_notification", (data) => {
-    console.log("Notificación recibida:", data);
-  });
-
-  ////////////////////////////////////////////////
 
   useEffect(() => {
     window.api.enviarEvento("get-disabled-notification-types");
@@ -243,8 +235,8 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
   };
 
   return (
-    <div>
-      <div className="absolute right-0 top-full w-[30rem] h-[50rem] bg-[#2f2f2fff] shadow-lg border border-gray-600 rounded-lg text-white py-2 z-30 menu-container select-none ">
+    <div >
+      <div className="absolute z-50 right-0 top-full w-[30rem] h-[50rem] bg-[#2f2f2fff] shadow-lg border border-gray-600 rounded-lg text-white py-2  menu-container select-none ">
         <div className="flex flex-col">
           <div className="flex w-full h-12 justify-between items-center border-b border-gray-600">
             <div className="text-xl pl-4">Notificaciones</div>
@@ -262,6 +254,14 @@ const MenuNotif: React.FC<MenuNotifProps> = ({
             className="w-full h-[46.3rem] rounded-md overflow-y-auto"
           >
             {visibleNotifications.map((notification) => {
+              // Filtrar notificaciones de tipo "suspencion" y "habilitar"
+              if (
+                notification.tipo === "suspencion" ||
+                notification.tipo === "habilitar"
+              ) {
+                return null;
+              }
+
               if (
                 notification.oculta ||
                 disabledTypes.includes(notification.tipo)
