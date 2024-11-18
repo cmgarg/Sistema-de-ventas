@@ -5,16 +5,11 @@ import Buscador from "../../../buscador/Buscador";
 import Agregar from "../buttons/Agregar";
 import AddClientresForm from "./ADDCLIENTES/AddClientresForm";
 import EditarClientes from "./editarClientes/editarClientes";
-import Export from "../buttons/Export";
-import Imprimir from "../buttons/Imprimir";
 import ListClient from "./ListClient";
 import { clientData, storeType } from "../../../../../types/types";
 import { useDispatch, useSelector } from "react-redux";
 import ButtonR from "../buttons/ButtonR";
-import { FaAddressBook } from "react-icons/fa";
-import { MdMore } from "react-icons/md";
 import { IoAdd, IoAddCircle } from "react-icons/io5";
-import { CgClose } from "react-icons/cg";
 import { PiPrinter } from "react-icons/pi";
 import { BiExport } from "react-icons/bi";
 
@@ -82,36 +77,38 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
 
   return (
     <div className="h-full w-full grid-cmg-program">
-      <div className="row-start-1 row-end-2">
+      <div className="absolute top-0 right-[339px] left-44 h-10 z-30 app-region-drag">
         <NavMain title="Clientes" setLoginUser={""}>
           <Buscador searchIn={clients} functionReturn={getResults}></Buscador>
           <ButtonR
-            borderSize="border-b-[4px]"
+            borderSize="border-x border-gray-600"
             textSize="text-lg"
             bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
-            height="h-10"
+            height="h-8"
             width="w-10"
           >
-            <BiExport size={30} className="text-[#E0E0E0]" />
+            <BiExport size={25} className="text-[#E0E0E0]" />
           </ButtonR>
           <ButtonR
-            borderSize="border-b-[4px]"
+            borderSize="border-x border-gray-600"
             textSize="text-lg"
             bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
-            height="h-10"
+            height="h-8"
             width="w-10"
           >
-            <PiPrinter size={30} className="text-[#E0E0E0]" />
+            <PiPrinter size={25} className="text-[#E0E0E0]" />
           </ButtonR>
           <ButtonR
-            borderSize="border-b-[4px]"
-            textSize="text-lg"
-            bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
-            height="h-10"
-            width="w-10"
+            borderSize="border-x border-gray-600"
+            textSize="text-sm"
+            bgIconColor="bg-gray-700 text-[#fff8dcff]"
+            height="h-8"
+            width="w-44"
+            bgColor="bg-yellow-700"
+            title="Agregar client"
             onClick={onChangeModal}
           >
-            <IoAdd size={30} className="text-[#E0E0E0]" />
+            <IoAdd size={25} className="text-[#E0E0E0]" />
           </ButtonR>
         </NavMain>
       </div>

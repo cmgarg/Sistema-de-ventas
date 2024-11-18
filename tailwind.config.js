@@ -108,17 +108,23 @@ module.exports = {
           "grid-template-rows": "minmax(0, auto) repeat(5, minmax(0, 1fr))",
         },
         ".custom-scrollbar::-webkit-scrollbar": {
-          width: "3px" /* Ancho del scrollbar */,
-          "border-radius": "5px",
+          width: "4px" /* Ancho del scrollbar */,
+          "border-radius": "1px",
         },
 
         ".custom-scrollbar::-webkit-scrollbar-track": {
-          background: "#737373" /* Color de fondo del track */,
+          background: "#A16207" /* Color de fondo del track */,
           "border-radius": "5px",
         },
 
         ".custom-scrollbar::-webkit-scrollbar-thumb": {
-          background: "#fff" /* Color del thumb */,
+          background: "#FFD700" /* Color dorado para el thumb */,
+          color: "#FFD700",
+          "border-radius": "1px",
+        },
+
+        ".custom-scrollbar::-webkit-scrollbar-thumb:hover": {
+          background: "#FFC300" /* Color dorado más claro al pasar el mouse */,
           "border-radius": "5px",
         },
 

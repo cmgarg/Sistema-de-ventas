@@ -36,10 +36,10 @@ function Header() {
   }, []);
 
   return (
-    <div className=" bg-[#2f2f2fff] bg row-start-1 row-end-2 h-10 app-region-drag flex justify-end  items-center">
-      <div className="flex-1 justify-between items-baseline">
+    <div className=" bg-[#2f2f2fff] bg row-start-1 row-end-2 h-10 flex justify-between  items-center">
+      <div className="justify-between items-center w-44 flex items">
         <div className="h-10 flex justify-start items-center ">
-          <div className=" flex justify-center items-center w-5 h-5 ml-3 mr-3">
+          <div className=" flex justify-center items-center w-5 h-5 ml-3 mr-3 ">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 139.4 156.4"
@@ -75,39 +75,42 @@ function Header() {
           </div>
           <div className=" text-white">Ventas CMG</div>
         </div>
+        <div className="w-[3px] h-7 bg-gray-600 relative z-50"></div>
       </div>
-      <button
-        className="app-region-no-drag flex items-center hover:bg-gray-700 h-full w-8 justify-center outline-none"
-        onClick={() => {
-          minimizeWindow();
-        }}
-      >
-        <VscChromeMinimize color={"#fff"} size={20} />
-      </button>
-      <button
-        className="app-region-no-drag flex items-center hover:bg-gray-700 h-full w-8 justify-center outline-none"
-        onClick={() => {
-          if (!isMaximized) {
-            maximizeWindow();
-          } else {
-            unmaximizedWindow();
-          }
-        }}
-      >
-        {isMaximized ? (
-          <VscChromeRestore size={20} color="white" />
-        ) : (
-          <VscChromeMaximize color={"#fff"} size={20} />
-        )}
-      </button>
-      <button
-        className="app-region-no-drag items-center flex hover:bg-red-700 h-full w-8 justify-center outline-none"
-        onClick={() => {
-          closeWindow();
-        }}
-      >
-        <VscChromeClose color={"#fff"} size={20} />
-      </button>
+      <div className="h-full w-32 flex justify-end">
+        <button
+          className="app-region-no-drag flex items-center hover:bg-gray-700 h-full w-8 justify-center outline-none"
+          onClick={() => {
+            minimizeWindow();
+          }}
+        >
+          <VscChromeMinimize color={"#fff"} size={20} />
+        </button>
+        <button
+          className="app-region-no-drag flex items-center hover:bg-gray-700 h-full w-8 justify-center outline-none"
+          onClick={() => {
+            if (!isMaximized) {
+              maximizeWindow();
+            } else {
+              unmaximizedWindow();
+            }
+          }}
+        >
+          {isMaximized ? (
+            <VscChromeRestore size={20} color="white" />
+          ) : (
+            <VscChromeMaximize color={"#fff"} size={20} />
+          )}
+        </button>
+        <button
+          className="app-region-no-drag items-center flex hover:bg-red-700 h-full w-8 justify-center outline-none"
+          onClick={() => {
+            closeWindow();
+          }}
+        >
+          <VscChromeClose color={"#fff"} size={20} />
+        </button>
+      </div>
     </div>
   );
 }

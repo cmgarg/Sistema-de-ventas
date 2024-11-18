@@ -3,7 +3,6 @@ import {
   articleData,
   clientData,
   dataToEditArticle,
-  depositType,
   pmType,
   saleData,
   supplierType,
@@ -48,10 +47,6 @@ const db = {
   }),
   notifiDesactivada: new Datastore({
     filename: "database/notifiDesactivada.db",
-    autoload: true,
-  }),
-  deposits: new Datastore({
-    filename: "database/deposits.db",
     autoload: true,
   }),
   payMethod: new Datastore({
@@ -140,10 +135,7 @@ export const generateCodeArticle = (category: string, brand: string) => {
   return uniqueCode;
 };
 
-export const saveArticle = async (e: {
-  depositState: any[];
-  articleToSave: articleData;
-}) => {
+export const saveArticle = async (e: { articleToSave: articleData }) => {
   const date = getDate();
 
   const code = generateCodeArticle(
@@ -157,7 +149,6 @@ export const saveArticle = async (e: {
     sales: [],
     dateToRegister: date,
   };
-  addProductInDeposits({ ...e, articleToSave: articleToSave });
   await db.articles
     .insertAsync(articleToSave)
     .then((_res) => {})
@@ -277,52 +268,97 @@ export async function updatedStockArticles(
     total: number | string;
     amount: {
       value: string;
-      unit: { label: string; palette: boolean; bulk: boolean };
+      unit: unitType;
     };
   }[]
 ) {
   const articlesDB = await findArticles();
 
-  articles.forEach((article) => {
+  // Recorremos los artículos que se quieren vender
+  for (const article of articles) {
+    // Buscamos el artículo en la base de datos
     const articleDBCurrent = articlesDB.find(
       (aDB) => aDB.code === article.code
     );
+
     if (articleDBCurrent) {
-      let amountReal;
-      if (article.amount.unit.bulk) {
-        amountReal =
-          Number(articleDBCurrent.article.forBulk.value) *
-          Number(article.amount.value);
-      } else if (article.amount.unit.palette) {
-        amountReal =
-          Number(articleDBCurrent.article.pallet.value) *
-          Number(article.amount.value);
-      } else {
-        amountReal = Number(article.amount.value);
+      // Cantidad total que se quiere vender
+      let amountReal = Number(article.amount.value);
+
+      // Multiplicamos el valor si es en bultos o palets
+      if (article.amount.unit.value === "xBulk") {
+        amountReal *= Number(articleDBCurrent.article.forBulk.value);
+      } else if (article.amount.unit.value === "xPalet") {
+        amountReal *= Number(articleDBCurrent.article.pallet.value);
       }
-      let newAmount =
+
+      // Ordenamos los lotes por fecha de caducidad más próxima
+      const sortedBatches = [...articleDBCurrent.batches].sort(
+        (a, b) =>
+          new Date(a.expirationDate).getTime() -
+          new Date(b.expirationDate).getTime()
+      );
+
+      // Actualización de lotes considerando la unidad y la fecha de caducidad
+      let remainingAmount = amountReal;
+      const updatedBatches = sortedBatches.map((batch) => {
+        if (remainingAmount > 0) {
+          let batchQuantity =
+            article.amount.unit.value === "xBulk"
+              ? batch.quantityBulk
+              : article.amount.unit.value === "xPalet"
+              ? batch.quantityPallet
+              : batch.quantity;
+
+          if (batchQuantity >= remainingAmount) {
+            // Si el lote actual cubre la cantidad restante
+            if (article.amount.unit.value === "xBulk") {
+              batch.quantityBulk -= remainingAmount;
+            } else if (article.amount.unit.value === "xPalet") {
+              batch.quantityPallet -= remainingAmount;
+            } else {
+              batch.quantity -= remainingAmount;
+            }
+            remainingAmount = 0;
+          } else {
+            // Si el lote actual no cubre toda la cantidad restante
+            remainingAmount -= batchQuantity;
+            if (article.amount.unit.value === "xBulk") {
+              batch.quantityBulk = 0;
+            } else if (article.amount.unit.value === "xPalet") {
+              batch.quantityPallet = 0;
+            } else {
+              batch.quantity = 0;
+            }
+          }
+        }
+        return batch;
+      });
+
+      // Actualizamos la cantidad total en stock y los lotes
+      const newAmount =
         Number(articleDBCurrent.article.stock.amount) - amountReal;
-      //EMITIR NOTI SI EL MONTO RESTANTE ES CERCANO AL MINIMO
-      db.articles
-        .updateAsync(
+
+      try {
+        const res = await db.articles.updateAsync(
           { code: articleDBCurrent.code },
           {
             $set: {
               "article.stock.amount": newAmount,
+              batches: updatedBatches,
             },
           }
-        )
-        .then((res) => {
-          console.log("ARTICULO ACTUALZIADO", res);
-        })
-        .catch((err) => {
-          console.log("NO SE PUDO ACTUALIZAR", err);
-        });
+        );
+        console.log("ARTICULO ACTUALIZADO", res);
+      } catch (err) {
+        console.log("NO SE PUDO ACTUALIZAR", err);
+      }
     } else {
       console.log("No se encontró el artículo en la base de datos", article);
     }
-  });
+  }
 }
+
 export async function updateCountSaleArticle(article: {
   idArticle: string;
   quantity: string;
@@ -350,6 +386,85 @@ export async function updateCountSaleArticle(article: {
     );
   });
 }
+
+export const reStock = async (e: {
+  articleCode: string;
+  amount: { value: number; unit: unitType };
+  batch: string;
+  expirationDate: string;
+}) => {
+  // Obtener el artículo de la base de datos
+  const articleDBCurrent = await getArticleByCode(e.articleCode);
+
+  if (articleDBCurrent) {
+    const actuallyAmount = articleDBCurrent.article.stock.amount;
+    let realAmount = calculateRealAmount(e.amount, articleDBCurrent);
+
+    // Crear el nuevo lote con la cantidad correspondiente
+    const newBatch = {
+      lotNumber: e.batch,
+      quantity: e.amount.unit.value === "unit" ? e.amount.value : 0,
+      quantityBulk: e.amount.unit.value === "xBulk" ? e.amount.value : 0,
+      quantityPallet: e.amount.unit.value === "xPallet" ? e.amount.value : 0,
+      expirationDate: e.expirationDate,
+    };
+
+    // Agregar el lote y actualizar el stock total
+    const newBatches = [...articleDBCurrent.batches, newBatch];
+    const newStockValue = Number(actuallyAmount) + Number(realAmount);
+
+    console.log(articleDBCurrent, "FARLOPEADITOSOSOSOSO");
+
+    const newHistorys = [
+      ...articleDBCurrent.history,
+      {
+        type: "restock",
+        date: new Date().toISOString(),
+        quantity: realAmount,
+        remainingStock: (articleDBCurrent.article.stock.amount += realAmount),
+        message: `Restock de ${e.amount.value} ${e.amount.unit.label} del artículo ${articleDBCurrent.article.name}`,
+      },
+    ];
+
+    // Actualizar en la base de datos
+    try {
+      const res = await db.articles.updateAsync(
+        { code: articleDBCurrent.code },
+        {
+          $set: {
+            "article.stock.amount": newStockValue,
+            batches: newBatches,
+            history: newHistorys,
+          },
+        }
+      );
+      console.log("Artículo actualizado", res);
+    } catch (err) {
+      console.error("No se pudo actualizar el artículo", err);
+    }
+  } else {
+    console.warn("Artículo no encontrado en la base de datos");
+  }
+
+  return true;
+};
+
+// Función para calcular el stock real según el tipo de unidad
+const calculateRealAmount = (
+  amount: { value: number; unit: unitType },
+  article: articleData
+) => {
+  console.log("CANTIDAD", amount, "ARTICLEE", article);
+  switch (amount.unit.value) {
+    case "xBulk":
+      return amount.value * article.article.forBulk.value;
+    case "xPallet":
+      return amount.value * article.article.pallet.value;
+    default:
+      return amount.value;
+  }
+};
+
 ////////////////////////////////////////////////////////////
 ////////FUNCIONES DE METODOS DE PAGO payMethod.db////////
 //////////////////////////////////////////////////////////
@@ -395,14 +510,6 @@ export const updatePayMethod = async (id: string, pmUpdate: pmType) => {
 ////////FUNCIONES DE CLIENTES ARCHIVO ventasFile.js////////
 //////////////////////////////////////////////////////////
 export const saveSale = async (a: saleData) => {
-  const fechaActual = new Date();
-  const año = fechaActual.getFullYear();
-  const mes = fechaActual.getMonth() + 1;
-  const dia = fechaActual.getDate();
-  const hour = fechaActual.getHours();
-  const minutes = fechaActual.getMinutes();
-  const seconds = fechaActual.getSeconds();
-
   const articlesTotalSold = a.articles.map((ar) => ar.total);
   console.log("TOTAL VENDIDO", articlesTotalSold);
   const soldTotal = articlesTotalSold.reduce((acc, ad) => {
@@ -412,14 +519,10 @@ export const saveSale = async (a: saleData) => {
 
   const saleToSave = {
     ...a,
-    dateOfRegister: `${año}-${mes.toString().padStart(2, "0")}-${dia
-      .toString()
-      .padStart(2, "0")}T${hour}:${minutes}:${seconds
-      .toString()
-      .padStart(2, "0")}Z`,
+    dateOfRegister: getCurrentDateAndTime(),
     sold: soldTotal,
   };
-  const resultSave = db.sales
+  const resultSave = await db.sales
     .insertAsync(saleToSave)
     .then((saleResult) => {
       console.log(saleResult, "SE GUARDO CORRECTAMENTE");
@@ -439,44 +542,59 @@ export const verifStockOfArticles = async (
     total: number | string;
     amount: {
       value: string;
-      unit: {
-        label: string;
-        palette: boolean;
-        bulk: boolean;
-      };
+      unit: unitType;
     };
   }[]
 ) => {
   const articles = await findArticles();
 
+  // Resultado inicial para artículos con stock insuficiente
   const insufficientItems: {
     articleCode: string;
     amount: string;
     name: string;
   }[] = [];
+
   articlesOfSale.forEach((article) => {
     const articleToSee = articles.find(
       (articleDB) => articleDB.code === article.code
     );
-    let insufficcient = false;
+
     if (articleToSee) {
-      insufficcient =
-        Number(articleToSee.article.stock.amount) < Number(article.amount);
-    }
-    if (insufficcient) {
-      insufficientItems.push({
-        articleCode: article.code ? article.code : article.name,
-        amount: article.amount.value ? article.amount.value : "no",
-        name: article.name,
-      });
+      const stockAmount = Number(articleToSee.article.stock.amount);
+      const amountNeeded = Number(article.amount.value);
+
+      // Calcular el total necesario basado en la unidad
+      let totalNecesary = amountNeeded;
+      if (
+        article.amount.unit.value === "xPalet" &&
+        articleToSee.article.pallet.active
+      ) {
+        totalNecesary *= articleToSee.article.pallet.value;
+      } else if (
+        article.amount.unit.value === "xBulk" &&
+        articleToSee.article.forBulk.active
+      ) {
+        totalNecesary *= articleToSee.article.forBulk.value;
+      }
+
+      // Verificación de stock insuficiente
+      if (stockAmount < totalNecesary) {
+        insufficientItems.push({
+          articleCode: article.code || article.name,
+          amount: article.amount.value || "no",
+          name: article.name,
+        });
+      }
     }
   });
-  if (insufficientItems.length > 0) {
-    return { value: true, insufficientItems };
-  } else {
-    return { value: false, insufficientItems: [] };
-  }
+
+  return {
+    value: insufficientItems.length > 0,
+    insufficientItems,
+  };
 };
+
 const clientConfirmData = async (e: {
   name: string;
   email: string;
@@ -496,7 +614,19 @@ const clientConfirmData = async (e: {
 const payMethod = (_e: string) => {
   return "PROXIMAMENTE";
 };
+const getCurrentDateAndTime = () => {
+  const date = new Date();
 
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Los meses van de 0 a 11
+  const year = date.getFullYear();
+
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const seconds = date.getSeconds().toString().padStart(2, "0");
+
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+};
 export const saleProcess = async (venta: saleData) => {
   //VERIFICAR STOCK DE ARTICULOS
   const verifStock = await verifStockOfArticles(venta.articles);
@@ -537,12 +667,7 @@ export const saleProcess = async (venta: saleData) => {
 
   const resultToProcess = await saveSale(venta);
 
-  return {
-    type: "success save sale",
-    success: resultToProcess.save,
-    message: "Stock insuficiente de",
-    adjunt: verifStock.insufficientItems,
-  };
+  return resultToProcess;
 };
 export const registBuyInArticle = async (saleInfo: saleData) => {
   const articlesOfSale = [...saleInfo.articles];
@@ -853,467 +978,7 @@ export const updateSuppliers = async (
       };
     });
 };
-//DEPOSITOS
 
-export const getDeposits = async () => {
-  return await db.deposits
-    .findAsync({})
-    .then((deposits) => {
-      console.log("Depositos encontrados", deposits);
-      return deposits;
-    })
-    .catch((err) => {
-      console.log("Error al encotrar los depositos", err);
-      return {
-        message: "Error al encotrar los depositos",
-        value: false,
-      };
-    });
-};
-////TRANSFERENCIA DE ARRTICULOS LOQUETE
-// GENERADOR DE ID
-//TRANSFERENCIA DE ARTÍCULOS
-// GENERADOR DE ID
-const generateId = () => {
-  return `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-};
-
-type informationToTransfer = {
-  fromDeposit: string;
-  fromSector: string;
-  article: articleData;
-  amount: number;
-  unitType: "unit" | "xPalet" | "xBulk"; // Tipo de unidad (unidad, palet o bulto)
-  saveCountUsed: string;
-  destiny: {
-    depositId: string;
-    sectorId: string;
-  };
-};
-
-export const transferArticles = async (e: informationToTransfer) => {
-  try {
-    // Obtener depósito de origen y destino
-    const fromDeposit = await getDepositById(e.fromDeposit);
-    if (!fromDeposit) throw new Error("Depósito de origen no encontrado");
-
-    const destinyDeposit = await getDepositById(e.destiny.depositId);
-    if (!destinyDeposit) throw new Error("Depósito de destino no encontrado");
-
-    const destinySector = destinyDeposit.sectors.find(
-      (sector) => sector.sectorId === e.destiny.sectorId
-    );
-    if (!destinySector) throw new Error("Sector de destino no encontrado");
-
-    // Mantener la cantidad original (sin conversión para el depósito de origen)
-    const originalAmount = e.amount;
-
-    // Restar del depósito de origen sin convertir (ej. 1 palet o 1 bulto)
-    let saveCountUsed = handleFromDeposit(fromDeposit, {
-      ...e,
-      amount: originalAmount,
-    });
-
-    // Modificar la propiedad "deposits" dentro del artículo
-    const article = e.article;
-
-    handleDestinyDeposit(destinyDeposit, e, saveCountUsed, article);
-    // Actualizar los depósitos en el artículo
-    // Guardar cambios en la base de datos de artículos
-
-    // Guardar cambios en los depósitos
-    await updateDeposit(fromDeposit);
-    await updateDeposit(destinyDeposit);
-
-    return {
-      message: "Transferencia completada y depósitos actualizados",
-      value: true,
-    };
-  } catch (error) {
-    console.error("Error al transferir artículos:", error);
-  }
-};
-
-// Función para convertir la cantidad según el tipo de unidad seleccionada en el origen
-const convertAmountByUnit = (
-  article: articleData,
-  amount: number,
-  unitType: string
-) => {
-  let convertedAmount = amount;
-
-  if (unitType === "xPalet") {
-    convertedAmount = amount * article.article.pallet.value; // Si es palet, multiplica por la cantidad de unidades por palet
-  } else if (unitType === "xBulk") {
-    convertedAmount = amount * article.article.forBulk.value; // Si es bulto, multiplica por la cantidad de unidades por bulto
-  }
-
-  return convertedAmount;
-};
-
-// Función para convertir la cantidad en el depósito destino
-const convertAmountForDestination = (
-  article: articleData,
-  amount: number,
-  destination: {
-    depositId: string;
-    sector: {
-      name: string;
-      sectorId: string;
-      amount: {
-        value: number;
-        saveCount: string;
-      };
-    };
-  }
-) => {
-  const { pallet, forBulk } = article.article;
-
-  // Realizamos la conversión de acuerdo al tipo de almacenamiento en el destino
-  if (destination.sector.amount.saveCount === "xPalet") {
-    return amount * pallet.value; // Convertir de palets a unidades
-  } else if (destination.sector.amount.saveCount === "xBulk") {
-    return amount * forBulk.value; // Convertir de bultos a unidades
-  }
-
-  // Si ya está en unidades, no se convierte
-  return amount;
-};
-
-const handleFromDeposit = (
-  fromDeposit: depositType,
-  e: {
-    fromDeposit: string;
-    fromSector: string;
-    article: articleData;
-    amount: number;
-    unitType: "unit" | "xPalet" | "xBulk"; // Tipo de unidad
-    destiny: {
-      depositId: string;
-      sectorId: string;
-    };
-  }
-) => {
-  let saveCountUsed = "";
-  const { pallet, forBulk } = e.article.article;
-
-  for (const sector of fromDeposit.sectors) {
-    if (sector.sectorId === e.fromSector) {
-      for (const product of sector.products) {
-        if (product.article.code === e.article.code) {
-          // Verificar si el producto está almacenado en unidades, palets o bultos
-          let unitNecessary = 0;
-          let unitsOfProductInUnits = 0;
-          //palets y bultos a transferir
-          let paletsOfTransfer = 0;
-          let bulksOfTransfer = 0;
-          //palets y bultos disponibles para transferir
-          let paletsOfProductInSector = 0;
-          let bulksOfProductInSector = 0;
-          //
-          if (e.unitType === "xBulk") {
-            unitNecessary = e.amount * forBulk.value;
-          } else if (e.unitType === "xPalet") {
-            unitNecessary = e.amount * pallet.value;
-          } else {
-            unitNecessary = e.amount; // No convertir si es unidad. La conversión solo debe hacerse si se almacena en otra unidad
-          }
-          if (product.amount.saveCount === "xPalet") {
-            unitsOfProductInUnits = product.amount.value * pallet.value; // Convertir a unidades según los palets
-          } else if (product.amount.saveCount === "xBulk") {
-            unitsOfProductInUnits = product.amount.value * forBulk.value; // Convertir a unidades según los bultos
-          } else {
-            unitsOfProductInUnits = product.amount.value; // Si está en unidades, no convertir
-          }
-          //
-          paletsOfTransfer = unitNecessary / pallet.value;
-          bulksOfTransfer = unitNecessary / forBulk.value;
-          //
-          paletsOfProductInSector = unitsOfProductInUnits / pallet.value;
-          bulksOfProductInSector = unitsOfProductInUnits / forBulk.value;
-
-          // Aquí se usa la cantidad original (sin conversión) para verificar si hay suficiente stock
-          let requiredAmount = e.amount; // No convertir si es unidad. La conversión solo debe hacerse si se almacena en otra unidad
-
-          // Verificar si hay suficientes unidades disponibles para transferir
-          if (unitsOfProductInUnits >= unitNecessary) {
-            saveCountUsed = product.amount.saveCount;
-            if (product.amount.saveCount === "xBulk") {
-              product.amount.value -= bulksOfTransfer;
-            } else if (product.amount.saveCount === "xPalet") {
-              product.amount.value -= paletsOfTransfer;
-            } else {
-              product.amount.value -= requiredAmount;
-            } // Actualizar la cantidad sin convertirla nuevamente en el depósito de origen
-
-            if (product.amount.value === 0) {
-              sector.products = sector.products.filter(
-                (prod) => prod.article.code !== e.article.code
-              );
-            }
-            break;
-          } else {
-            throw new Error(
-              `La cantidad a transferir excede el stock disponible. Disponible: ${unitsOfProductInUnits}, Requerido: ${requiredAmount}`
-            );
-          }
-        }
-      }
-      break;
-    }
-  }
-  return saveCountUsed;
-};
-
-const handleDestinyDeposit = (
-  destinyDeposit: depositType,
-  e: informationToTransfer,
-  saveCountUsed: string,
-  article: articleData
-) => {
-  const { forBulk, pallet } = article.article;
-  let amountOfArticle = 0;
-  let inComingPalets = 0;
-  let inComingBulks = 0;
-  if (e.unitType === "xBulk") {
-    amountOfArticle = e.amount * forBulk.value;
-  } else if (e.unitType === "xPalet") {
-    amountOfArticle = e.amount * pallet.value;
-  } else {
-    amountOfArticle = e.amount; // No convertir si es unidad. La conversión solo debe hacerse si se almacena en otra unidad
-  }
-  inComingPalets = amountOfArticle / pallet.value;
-  inComingBulks = amountOfArticle / forBulk.value;
-  for (const sector of destinyDeposit.sectors) {
-    if (sector.sectorId === e.destiny.sectorId) {
-      const existProductInSector = sector.products.find(
-        (prod) => prod.article.code === e.article.code
-      );
-
-      // Si el producto no existe en este sector, lo agregamos directamente
-      if (!existProductInSector) {
-        sector.products.push({
-          article: e.article,
-          amount: {
-            value: e.amount,
-            saveCount:
-              e.unitType === "unit"
-                ? article.article.stock.unit.abrevUnit
-                : e.unitType,
-          },
-        });
-      } else {
-        let unitsInSector = 0;
-        let paletsInSector = 0;
-        let bulksInSector = 0;
-
-        if (existProductInSector.amount.saveCount === "xPalet") {
-          unitsInSector = existProductInSector.amount.value * pallet.value;
-        } else if (existProductInSector.amount.saveCount === "xBulk") {
-          unitsInSector = existProductInSector.amount.value * forBulk.value;
-        } else {
-          unitsInSector = existProductInSector.amount.value; // Si está en unidades, no convertir
-        }
-        paletsInSector = unitsInSector / pallet.value;
-        bulksInSector = unitsInSector / forBulk.value;
-        // Si existe y tienen el mismo tipo de unidad (ej: ambos en "xPalet" o "xBulk"), simplemente sumamos la cantidad
-        if (existProductInSector.amount.saveCount === "xBulk") {
-          existProductInSector.amount.value += inComingBulks;
-        } else if (existProductInSector.amount.saveCount === "xPalet") {
-          existProductInSector.amount.value += inComingPalets;
-        } else {
-          existProductInSector.amount.value += amountOfArticle; // Si está en unidades, no convertir
-        }
-      }
-
-      break; // Salimos del bucle una vez que procesamos el sector
-    }
-  }
-};
-
-////////////FIN DE TRANSFERENCIA DE ARTICULOS y//////////////
-export const getDepositById = async (id: string): Promise<depositType> => {
-  return await db.deposits.findOneAsync({ _id: id });
-};
-
-export const createDeposit = async (newDeposit: depositType) => {
-  return await db.deposits
-    .insertAsync(newDeposit)
-    .then(() => {
-      console.log("DEPOSITO CREADO CORRECTAMENTE");
-      return {
-        message: "Deposito creado correctamente",
-        value: true,
-      };
-    })
-    .catch(() => {
-      console.log("Error al crear el deposito");
-      return {
-        message: "Error al crear el deposito",
-        value: false,
-      };
-    });
-};
-
-export const updateDeposit = async (depositToUpdate: depositType) => {
-  const deposit = { ...depositToUpdate };
-  const sectorsVerifId = [...deposit.sectors];
-  sectorsVerifId.map((sec) => {
-    if (sec.sectorId === "") {
-      sec.sectorId = crypto.randomBytes(4).toString("hex");
-    }
-  });
-  deposit.sectors = sectorsVerifId;
-
-  return await db.deposits
-    .updateAsync({ _id: depositToUpdate._id }, { $set: { ...deposit } })
-    .then((res) => {
-      return { succes: true, depositUpdated: deposit, res };
-    })
-    .catch((err) => {
-      return { succes: false, depositUpdated: deposit, err };
-    });
-};
-// {
-//   idObject: string;
-//   name: string;
-//   depositId: string;
-//   address: string;
-//   sector: { name: string; sectorId: string; amount: number };
-// }
-export const addProductInDeposits = async (e: {
-  depositState: any[];
-  articleToSave: articleData;
-}) => {
-  console.log(
-    "SE RECIBE ESTE DEPOSIT STATE AL QUERER AÑADIR PRODUCTOS EN DEPOSITOS",
-    e.depositState
-  );
-  e.depositState.map(async (dep: any) => {
-    const deposit = await getDepositById(dep.depositId);
-    const [sectorToUpdate] = deposit.sectors.filter(
-      (sec) => sec.sectorId === dep.sector.sectorId
-    );
-    const sectorsFilter = deposit.sectors.filter(
-      (sector) => sector.sectorId !== sectorToUpdate.sectorId
-    );
-    let sectorUpdate = {
-      ...sectorToUpdate,
-      products: [
-        ...sectorToUpdate.products,
-        { article: e.articleToSave, amount: dep.sector.amount },
-      ],
-    };
-    const depositUpdate = {
-      ...deposit,
-      sectors: [...sectorsFilter, sectorUpdate],
-    };
-
-    await db.deposits.updateAsync(
-      { _id: deposit._id },
-      { $set: { ...depositUpdate } }
-    );
-  });
-};
-
-export const createSectorInDeposit = async (
-  depositId: string,
-  sectorinfo: {
-    name: string;
-    sectorId: string;
-    products: {
-      article: articleData;
-      amount: {
-        value: number;
-        saveCount: string;
-      };
-    }[];
-  }
-) => {
-  const sectorToAdd = {
-    ...sectorinfo,
-    sectorId: crypto.randomBytes(4).toString("hex"),
-  };
-  const depositToAddSector = await getDepositById(depositId);
-
-  if (!depositToAddSector) {
-    console.log("No se encontro el deposito");
-    return {
-      message: "No se encontro el deposito",
-      value: false,
-      content: [],
-    };
-  } else {
-    let sectors = depositToAddSector.sectors;
-    sectors.push(sectorToAdd);
-    let newDepositWithNewSector = {
-      ...depositToAddSector,
-      sectors: [...sectors],
-    };
-    console.log("SE AGREGO EL SECTOR AL DEPOSITO?", newDepositWithNewSector);
-    updateDeposit(newDepositWithNewSector);
-    return {
-      content: sectors,
-      value: true,
-      message: "Se creo el sector correctamente.",
-    };
-  }
-};
-
-export const deleteSector = async (depositId: string, sectorId: string) => {
-  const depositToDeleteSector = await getDepositById(depositId);
-
-  const sectorDelete = depositToDeleteSector.sectors.filter(
-    (e) => e.sectorId !== sectorId
-  );
-
-  const depositWithDeleteSector = {
-    ...depositToDeleteSector,
-    sectors: sectorDelete,
-  };
-
-  return await updateDeposit(depositWithDeleteSector);
-};
-
-export const editSectorInDeposit = async (
-  depositId: string,
-  sectorId: string,
-  newSector: {
-    name: string;
-    sectorId: string;
-    products: {
-      article: articleData;
-      amount: {
-        value: number;
-        saveCount: string;
-      };
-    }[];
-  }
-) => {
-  const deposit = await getDepositById(depositId);
-  const [sectorToEdit] = deposit.sectors.filter((s) => {
-    return s.sectorId === sectorId;
-  });
-
-  if (sectorToEdit) {
-    const depositWithEditSector = {
-      ...deposit,
-      sectors: deposit.sectors.map((s) => {
-        if (s.sectorId === sectorToEdit.sectorId) {
-          return newSector;
-        }
-        return s;
-      }),
-    };
-    return await updateDeposit(depositWithEditSector);
-  } else {
-    console.error(`No se encontró el sector con id ${sectorId}`);
-    return {
-      message: `No se encontró el sector con id ${sectorId}`,
-      value: false,
-    };
-  }
-};
 //SEGUR CON TODO LO DEMAS
 ////////////////////////MARTIN
 
@@ -1944,8 +1609,6 @@ export const getDisabledNotificationTypes = async () => {
   }
 };
 
-
-
 /////funcion que guarda notifiaciones del servidor
 export const saveNotificationn = async (notificationn: any) => {
   try {
@@ -1953,13 +1616,13 @@ export const saveNotificationn = async (notificationn: any) => {
     const result = await db.notifications.insertAsync(notificationn);
     return result; // Devuelve la notificación guardada
   } catch (error) {
-    console.error("Error al guardar la notificación en la base de datos:", error);
+    console.error(
+      "Error al guardar la notificación en la base de datos:",
+      error
+    );
     throw new Error("No se pudo guardar la notificación");
   }
 };
-
-
-
 
 // Función para eliminar notificaciones antiguas mas de 30 dias
 export const deleteOldNotifications = async (thresholdDate: any) => {
@@ -2049,3 +1712,95 @@ function getDatabasee() {
   throw new Error("Function not implemented.");
 }
 
+// Generar datos de ejemplo para 400 artículos
+const generateRandomArticles = async (count: number) => {
+  const articles = [];
+
+  for (let i = 0; i < count; i++) {
+    const categoria = {
+      value: `Categoría ${i % 5}`,
+      label: `Categoría ${i % 5}`,
+    };
+    const marca = { value: `Marca ${i + 1}`, label: `Marca ${i + 1}` };
+    const profit = Math.floor(Math.random() * 101); // Genera un porcentaje entre 0 y 100
+    const cost = Math.round(Math.random() * 100); // Genera un costo aleatorio entre 0 y 100
+    const sale = cost + (cost * profit) / 100; // Calcula el precio de venta sumando el porcentaje de ganancia al costo
+
+    // Generar una fecha aleatoria de hace entre 1 y 365 días
+    const randomPastDate = new Date(
+      Date.now() - Math.floor(Math.random() * 365 * 24 * 60 * 60 * 1000)
+    )
+      .toISOString()
+      .split("T")[0];
+
+    // Generar lotes con fechas de caducidad aleatorias en el futuro
+    const batches = Array.from({ length: 5 }, (_) => ({
+      lotNumber: `Lote${i + 1}`,
+      quantity: Math.floor(Math.random() * 500),
+      quantityBulk: Math.floor(Math.random() * 20),
+      quantityPallet: Math.floor(Math.random() * 5),
+      expirationDate: new Date(
+        Date.now() + Math.floor(Math.random() * 365 * 24 * 60 * 60 * 1000)
+      )
+        .toISOString()
+        .split("T")[0], // Fecha aleatoria en el futuro
+    }));
+
+    const stock = batches.reduce((a, b) => {
+      let be = b.quantity + b.quantityBulk * 10 + b.quantityPallet * 50;
+      return a + be;
+    }, 0);
+
+    const article = {
+      article: {
+        name: `Artículo ${i + 1}`,
+        costo: cost,
+        venta: sale,
+        profit: profit,
+        stock: {
+          amount: stock,
+          unit: { label: "Kilogramos", value: "kilogramos", abrevUnit: "Kg" },
+          minStock: Math.floor(Math.random() * 50),
+        },
+        grossWeight: { value: Math.random() * 10, approx: false },
+        liquidWeight: { value: Math.random() * 8, approx: false },
+        pallet: { active: true, value: 50 },
+        quantityperunit: { active: true, value: 20 },
+        forBulk: { active: true, value: 10 },
+        description: `Descripción del artículo ${i + 1}`,
+      },
+      brand: marca,
+      code: generateCodeArticle(categoria.value, marca.value),
+      barcode: `BARCODE${1000 + i}`,
+      category: categoria,
+      subCategory: {
+        value: `Subcategoría ${i % 3}`,
+        label: `Subcategoría ${i % 3}`,
+      },
+      dateToRegister: randomPastDate,
+      supplier: { name: `Proveedor ${i % 10}`, contact: "contact@example.com" },
+      sales: [],
+      taxes: [
+        {
+          name: "IVA",
+          percentage: 21,
+          type: { costPrice: true, finalPrice: true },
+        },
+      ],
+      batches: batches,
+      history: [
+        {
+          type: "register",
+          date: randomPastDate,
+          quantity: stock,
+          remainingStock: stock,
+          message: `Artículo registrado`,
+        },
+      ],
+    };
+
+    await db.articles.insertAsync(article);
+  }
+};
+// // // Inserta artículos en la base de datos
+generateRandomArticles(400);

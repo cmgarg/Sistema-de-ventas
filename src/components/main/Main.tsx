@@ -106,11 +106,11 @@ const MainContent: React.FC<MainContentProps> = ({}) => {
     window.api.recibirEvento("response-get-categoryAndBrand", (data) => {
       loadCategoryAndBrands(data);
     });
-  });
+  }, []);
 
   // SEGUIR CON LOS ESTADOS.
   return (
-    <div className=" h-full w-full flex flex-col ">
+    <div className="h-full w-full flex flex-col">
       <PanelUsuario />
       <Routes>
         <Route path="/" element={<ClientesContent />} />
@@ -137,7 +137,7 @@ export const sendNotification = (
   nota: string,
   icono: number,
   tipo: string,
-  idcuenta: string,
+  idcuenta: string
 ) => {
   const notificationData = {
     titulo: titulo,

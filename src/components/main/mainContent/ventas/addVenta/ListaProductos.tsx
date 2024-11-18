@@ -13,7 +13,7 @@ interface ListaProductos {
     total: string | number;
     amount: {
       value: string | number;
-      unit: { label: string; palette: boolean; bulk: boolean };
+      unit: { label: string; pallet: boolean; bulk: boolean };
     };
   }[];
   estilosInput: string;
@@ -24,10 +24,14 @@ interface ListaProductos {
     total: string;
     amount: {
       value: string;
-      unit: { label: string; palette: boolean; bulk: boolean };
+      unit: {
+        value: string;
+        label: string;
+        abrevUnit: string;
+      };
     };
   }) => void;
-  showError: { in: string };
+  errors: string[];
 
   formatMony: (m: number) => string;
 }
@@ -39,7 +43,7 @@ const ListaProductos: React.FC<ListaProductos> = ({
   articles,
   addProduct,
   formatMony,
-  showError,
+  errors,
 }) => {
   const abreviationUnit = (unit: string) => {
     let abreviation = "";
@@ -70,8 +74,8 @@ const ListaProductos: React.FC<ListaProductos> = ({
     return abreviation;
   };
   return (
-    <div className="flex-1 overflow-hidden flex flex-col space-y-2">
-      <div className="">
+    <div className="flex-1 overflow-hidden flex flex-col">
+      <div className="bg-gradient-to-l from-gray-800 via-gray-700 to-gray-700 rounded-tr-lg">
         <MenuArticlesForm
           style={estilosInput}
           articles={articles}
@@ -79,8 +83,8 @@ const ListaProductos: React.FC<ListaProductos> = ({
         />
       </div>
       <ul
-        className={`overflow-auto flex-1 relative custom-scrollbar ${
-          showError.in === "all" || showError.in === "articles"
+        className={`overflow-auto flex-1 rounded-b-lg relative custom-scrollbar ${
+          errors.includes("ALL") || errors.includes("ARTICLES")
             ? "shadow-inset-cmg shadow-red-600"
             : null
         }`}
@@ -97,7 +101,11 @@ const ListaProductos: React.FC<ListaProductos> = ({
           </div>
         </li>
         {listProduct.map((e, i) => (
-          <li className="w-full flex h-10 text-sm bg-black items-center relative">
+          <li
+            className={`w-full flex h-10 text-sm bg-black items-center relative ${
+              i < listProduct.length - 1 ? "border-b  border-gray-700" : ""
+            }`}
+          >
             <div className="flex-1  flex justify-start pl-2 items-center">
               <p>{e.name}</p>
             </div>

@@ -13,6 +13,8 @@ import Afip from "../../../../../node_modules/@afipsdk/afip.js";
 import AddAccountToPay2 from "./AgregarCuenta/AddAccountToPay2.js";
 import { TfiPencilAlt } from "react-icons/tfi";
 import Biñeta from "../Biñeta/Biñieta.js";
+import ButtonR from "../buttons/ButtonR.js";
+import { MdAdd } from "react-icons/md";
 
 interface VentastProps {
   //PROPS
@@ -74,24 +76,26 @@ const Ventas: React.FC<VentastProps> = (
 
   return (
     <div className="h-full w-full grid-cmg-program">
-      <div className="flex-1 flex">
-        <NavMain title="Ventas" setLoginUser={""}>
+      <div className="absolute top-0 right-[339px] left-44 h-10 z-30 app-region-drag">
+        <NavMain title={`Ventas (${sales.length})`} setLoginUser={""}>
           <Export></Export>
-          <Biñeta title={`Agregar Cuenta`}>
-            <div
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600"
-              onClick={() => {
-                setEstadoAgregarCuenta(true);
-              }}
-            >
-              <TfiPencilAlt size={19} color={"#fff"} />
-            </div>
-          </Biñeta>
+
           <Buscador
             searchIn={sales}
             functionReturn={getResultsSales}
           ></Buscador>
-          <Agregar title="Venta" onChangeModal={onChangeModal}></Agregar>
+          <ButtonR
+            borderSize="border-x border-gray-600"
+            textSize="text-sm"
+            bgIconColor="bg-gray-700 text-[#fff8dcff]"
+            bgColor="bg-yellow-700"
+            height="h-8"
+            width="w-44"
+            onClick={onChangeModal}
+            title="Agregar venta"
+          >
+            <MdAdd size={25} color="white" />
+          </ButtonR>
         </NavMain>
       </div>
       <div className="flex flex-row pb-5 row-start-2 row-end-7">

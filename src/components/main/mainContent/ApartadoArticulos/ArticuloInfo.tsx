@@ -5,14 +5,12 @@ import Export from "../buttons/Export";
 import TableMain from "../../tablaMain/TableMain";
 import TableHead from "../../tablaMain/TableHead";
 import TableRow from "../../tablaMain/TableRow";
-import { articleData, depositType } from "../../../../../types/types";
-import { isArray } from "lodash";
+import { articleData } from "../../../../../types/types";
 import { PuffLoader } from "react-spinners";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { RiRegisteredLine } from "react-icons/ri";
+import { ArrowBigUp, ArrowUp } from "lucide-react";
+import { IoMdArrowDropleft } from "react-icons/io";
+import { GiArchiveRegister } from "react-icons/gi";
 interface ArticuloInfoProps {}
 
 const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
@@ -48,10 +46,6 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
         active: false,
         value: 0,
       },
-      quantityperunit: {
-        active: false,
-        value: 0,
-      },
       description: "",
     },
     brand: { value: "", label: "" },
@@ -68,18 +62,9 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
     },
     barcode: "",
     taxes: [],
+    batches: [],
+    history: [],
   });
-  const [deposits, setDeposits] = useState<
-    {
-      name: string;
-      address: string;
-      sectors: {
-        nameSector: string;
-        amount: string;
-        saveUnit: string;
-      }[];
-    }[]
-  >([]);
   const { code } = useParams();
 
   const loadArticle = (articleTl: articleData) => {
@@ -89,47 +74,34 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
       "CUANDO ARTICULO ES ",
       article
     );
-    setTimeout(() => setArticle(articleTl), 800);
+    setArticle(articleTl);
   };
 
-  function getClienteInfo() {
+  const getClienteInfo = () => {
     window.api.enviarEvento("get-articleByCode", code);
-  }
-  const loadDeposits = (e: depositType[], article: articleData) => {
-    let array = [];
-    console.log("CARGANDO DEPOSITOPS", e, article);
-    e.forEach((deposit: depositType) => {
-      console.log("INICIANDO BUCLE");
-      let arraySectors = [];
-      let existArticleInDeposit = false;
-      deposit.sectors.forEach((sector) => {
-        sector.products.forEach((product) => {
-          if (product.article.code === article.code) {
-            console.log(
-              "ARTICULO ENTONCTRADO, PROCEDIENDO AL MAPEADO",
-              deposit.name
-            );
-            existArticleInDeposit = true;
-            arraySectors.push({
-              nameSector: sector.name,
-              amount: product.amount.value,
-              saveUnit: product.amount.saveCount,
-            });
-          }
-        });
-      });
-      if (existArticleInDeposit) {
-        array.push({
-          name: deposit.name,
-          address: deposit.address,
-          sectors: [...arraySectors],
-        });
-      }
-    });
-    console.log("CARGANDO ESTADO DEPOSITS CON ", array);
-    setDeposits([...array]);
   };
-  const getDeposits = () => window.api.enviarEvento("get-deposits");
+
+  const getTotalUnitsSale = () => {
+    return article.sales.reduce((total, sale) => {
+      const { value, unit } = sale.amount;
+      const { pallet, forBulk } = article.article;
+
+      const totalUnit = unit.pallet
+        ? value * pallet.value
+        : unit.bulk
+        ? value * forBulk.value
+        : value * 1;
+
+      return total + totalUnit;
+    }, 0);
+  };
+  const getTotalSale = () => {
+    return article.sales.reduce((total, sale) => {
+      const totalUnit = sale.sold * 1;
+
+      return total + totalUnit;
+    }, 0);
+  };
   useEffect(() => {
     getClienteInfo();
 
@@ -138,21 +110,19 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
       console.log(e, "respuesta backend");
       loadArticle(e);
     });
-
-    console.log(article, "papanatas");
   }, []);
   useEffect(() => {
     console.log(article, "CARGADITO EL TOPITO");
-    getDeposits();
 
-    window.api.recibirEvento("response-get-deposits", (response) => {
-      console.log("RESPONDEN DE GET DEPOSITS", response);
-      if (isArray(response)) {
-        console.log("SE LLEGA ACA");
-        loadDeposits(response, article);
-      }
-    });
+    console.log(article, "CARGADITO EL TOPITO");
   }, [article]);
+  useEffect(() => {
+    console.log(
+      article.sales,
+      "FALOPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    );
+  }, [article.sales]);
+
   const formatMony = (n: number) => {
     return formatterCurrency.format(n);
   };
@@ -183,7 +153,7 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
               <div className="flex-1 h-20 text-2xl text-center flex justify-start pl-2 items-center">
                 <div className="flex-1 h-20 flex-col text-2xl border-gray-600 text-center flex justify-center items-center">
                   <span className="font-bold">Costo</span>
-                  <p>{article.article.venta || "nada"}</p>
+                  <p>{article.article.costo || "nada"}</p>
                 </div>
                 <div className="flex-1 h-20 flex-col text-2xl border-l border-gray-600 text-center flex justify-center pl-2 items-center">
                   <span className="font-bold">Venta</span>
@@ -217,87 +187,112 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
                   </div>
                   <div className="flex-1 h-20 flex-col text-2xl text-center flex justify-center pl-2 items-center">
                     <span className="font-bold">Codigo </span>
-                    <p>${article.code || "nada"}</p>
+                    <p>{article.code || "nada"}</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="w-full space-y-2">
-            <div className="text-2xl font-normal">
-              <p>Descripcion</p>
+          <div className="flex w-full space-y-2">
+            <div className="flex-1 flex flex-col space-y-2">
+              <div className="text-2xl font-normal">
+                <p>Descripcion</p>
+              </div>
+              <div className="text-base pl-5">
+                <p>{article.article.description}</p>
+              </div>
             </div>
-            <div className="text-base pl-5">
-              <p>{article.article.description}</p>
-            </div>
-          </div>
-          <div className="w-full px-2">
-            <div className="text-2xl font-bold">
-              <p>Depositos</p>
-            </div>
-            <div className="flex w-full flex-col ">
-              {deposits.map((dep) => (
-                <Accordion
-                  key={dep.name}
-                  slotProps={{ heading: { component: "h4" } }}
-                  className="w-full text-sm border border-gray-600 font-semibold bg-yellow-500"
-                  style={{
-                    background: "#000", // Esto reemplaza "bg-gradient-to-b from-gray-800 via-gray-800 to-gray-700"
-                    color: "white", // Cambia el color del texto
-                    border: "1px solid #4a5568", // Color del borde
-                    margin: 0,
-                  }}
-                >
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon sx={{ color: "#fff" }} />} // Cambiando el color del icono
-                    className="w-full"
-                    aria-controls="panel1-content"
-                    id="panel1-header"
+            <div className="flex-1 flex flex-col space-y-2 border border-gray-600 h-52 pl-2 ">
+              <div className="text-2xl font-normal">
+                <p>Historia</p>
+              </div>
+
+              <div className="flex items-center text-base space-y-2 flex-1 relative">
+                <div className="h-24 w-full  absolute ">
+                  <div className="h-6 w-full bg-gradient-to-l from-yellow-700 via-yellow-700 to-yellow-500 rounded-t-md"></div>
+                </div>
+                {article.history.map((history, index) => (
+                  <div
+                    className={`w-44 h-24 rounded-lg flex flex-col items-center relative justify-start ${
+                      index < 1 ? "mr-5" : "mx-5"
+                    }`}
                   >
-                    <Typography className="flex space-x-5">
-                      <p className="border-r pr-2 border-gray-600">
-                        {dep.name}
-                      </p>
-                      <p className="text-yellow-500">
-                        Direccion: {dep.address}
-                      </p>
-                    </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails className="bg-gray-950 flex flex-col">
-                    <div className="w-full text-xs text-gray-400 border-b border-gray-600 flex">
-                      <div className="flex-1 flex justify-start">
-                        <p>Sector</p>
-                      </div>
-                      <div className="flex-1 flex justify-center">
-                        <p>Cantidad</p>
+                    <div className="h-7 w-full rounded-t-lg flex justify-center items-center relative z-50">
+                      <div className="h-full px-2 flex items-center rounded-r-lg">
+                        <p className="text-xs text-gray-50 font-bold">
+                          {history.date}
+                        </p>
                       </div>
                     </div>
-                    {dep.sectors.map((sector) => (
-                      <div
-                        key={sector.nameSector}
-                        className="w-full flex justify-between"
-                      >
-                        <div className="flex-1 flex justify-start">
-                          <p>{sector.nameSector}</p>
-                        </div>
-                        <div className="flex-1 flex justify-center">
-                          <p>{sector.amount}</p>
-                          <p className="ml-2">
-                            {(sector.saveUnit === "xPalet" && "Palets") ||
-                              (sector.saveUnit === "xBulk" && "Bultos") ||
-                              sector.saveUnit}
+
+                    <div className="flex font-bold flex-col justify-center h-full w-full relative z-50 bg-[#808080ff] rounded-b-lg bg-opacity-45 pt-6">
+                      <div className="absolute z-40 right-0 left-0 top-0 bottom-0 flex items-center justify-center">
+                        <GiArchiveRegister
+                          size={80}
+                          className="text-[#707070ff]"
+                        />
+                      </div>
+                      <div className="h-full flex flex-col px-2 relative z-50 items-center ">
+                        <p className="text-xs">{history.message}</p>
+                        <div className="flex">
+                          <p className="text-xs">
+                            Cantidad: {history.quantity}
+                          </p>
+                          <p className="text-[13px]">
+                            {article.article.stock.unit.abrevUnit.toLowerCase()}
                           </p>
                         </div>
                       </div>
-                    ))}
-                  </AccordionDetails>
-                </Accordion>
-              ))}
+                    </div>
+                  </div>
+                ))}
+
+                <div className="w-44 h-24 rounded-lg flex flex-col items-center relative justify-start">
+                  <div className="h-7 w-full rounded-t-lg flex justify-center items-center relative z-50">
+                    <div className="h-full px-2 flex items-center rounded-r-lg">
+                      <p className="text-xs text-gray-50 font-bold">
+                        2024-09-02
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex font-bold flex-col justify-center h-full w-full relative z-50 bg-[#808080ff] rounded-b-lg bg-opacity-45 pt-6">
+                    <div className="absolute z-40 right-0 left-0 top-0 bottom-0 flex items-center justify-center">
+                      <IoMdArrowDropleft
+                        size={80}
+                        className="text-[#707070ff] rounded-full"
+                      />
+                    </div>
+                    <div className="h-full flex flex-col px-2 relative z-50 items-center ">
+                      <p className="text-xs">Ingreso</p>
+                      <div className="flex">
+                        <p className="text-xs">Cantidad: 520</p>
+                        <p className="text-[13px]">
+                          {article.article.stock.unit.abrevUnit.toLowerCase()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+
           {/* {"SPEARACION"} */}
-          <div className="w-full text-3xl">
-            <h1>Ventas [{article.sales.length || "nada"}]</h1>
+          <div className="w-full text-3xl flex space-x-2">
+            <div className="pr-2 border-r border-gray-600">
+              <h1>Ventas [{article.sales.length || "nada"}]</h1>
+            </div>
+            <div className="flex flex-1 space-x-2 text-sm h-full items-end">
+              <div className="flex space-x-2 border-r border-gray-600 pr-2">
+                <p>{article.article.stock.unit.label} vendidos :</p>
+                <p>{getTotalUnitsSale()}</p>
+              </div>
+              <div className="flex space-x-2">
+                <p>Total vendido :</p>
+                <p>{formatMony(getTotalSale())}</p>
+              </div>
+            </div>
           </div>
 
           <div className="flex-1 h-52 max-h-80  pb-1 space-y-5">
@@ -315,15 +310,9 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
                   </div>
                 </TableHead>
                 {(article.sales &&
-                  article.sales.map((buy) => {
+                  article.sales.map((buy, index) => {
                     return (
-                      <TableRow
-                        key={
-                          buy.buyer.client.active
-                            ? buy.buyer.client.clientData.name
-                            : buy.buyer.finalConsumer.cae
-                        }
-                      >
+                      <TableRow key={index}>
                         <div className="flex justify-start items-center flex-1 pl-2">
                           <p>
                             {buy.buyer.client.active
@@ -333,9 +322,9 @@ const ArticuloInfo: React.FC<ArticuloInfoProps> = ({}) => {
                               : "pepe"}
                           </p>
                         </div>
-                        <div className="flex justify-center items-center flex-1">
+                        <div className="flex justify-center items-center flex-1 space-x-2">
                           <p>{buy.amount.value}</p>
-                          <p className="text-xs">{buy.amount.unit}</p>
+                          <p>{buy.amount.unit.label}</p>
                         </div>
                         <div className="flex justify-end items-center flex-1 pr-2">
                           <p>{formatMony(buy.sold)}</p>

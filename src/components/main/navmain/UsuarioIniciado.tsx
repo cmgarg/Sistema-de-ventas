@@ -194,21 +194,21 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
   };
 
   return (
-    <>
+    <div>
       <div className="flex text-white text-lg items-center justify-center martin">
         <div></div>
       </div>
       <div className="relative cursor-pointer">
         <div
-          className="flex flex-row rounded-lg menu-container group relative pt-1 pb-1  hover:bg-gray-600"
+          className="flex flex-row menu-container group relative  hover:bg-gray-600"
           onClick={toggleMenu}
         >
-          <div className="flex items-center justify-center text-2xl text-white pr-3 pl-3 select-none ">
+          <div className="flex items-center justify-center text-lg text-white pr-3 pl-3 select-none ">
             {datosUsuario ? datosUsuario.username || datosUsuario.nombre : ""}
           </div>
 
           <div
-            className="w-11 h-11 bg-cover bg-center rounded-full cursor-pointer border mr-2 "
+            className="w-16 h-9 bg-cover bg-center cursor-pointer rounded-lg mr-2 "
             style={{ backgroundImage: `url(${selectedImage})` }}
           />
         </div>
@@ -266,7 +266,7 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

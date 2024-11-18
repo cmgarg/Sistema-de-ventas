@@ -31,15 +31,15 @@ const FooterForm: React.FC<FooterFormProps> = ({ cost, sumCost }) => {
     { label: "Contado", value: "contado", abrevUnit: "TB" },
   ];
   return (
-    <div className="flex justify-end space-x-2 h-16">
-      <div className="flex flex-col space-x-2 relative bg-teal-900 rounded-tl-lg p-1 h-full overflow-hidden items-start bg-gradient-to-t to-slate-800 min-w-36 justify-center from-slate-900 border-slate-800">
+    <div className="flex justify-end space-x-2 h-112">
+      <div className="flex flex-col space-x-2 relative bg-teal-900 rounded-tl-lg rounded-br-lg p-1 h-full overflow-hidden items-start bg-gradient-to-t to-slate-800 min-w-36 justify-center from-slate-900 border-slate-800">
         <p
           className="text-slate-300 text-base font-medium w-full text-start absolute top-0 left-2"
           onClick={sumCost}
         >
           Total
         </p>
-        <div className="text-3xl text-green-300 font-bold pt-3">
+        <div className="text-lg text-green-300 font-bold pt-3">
           <NumericFormat
             allowLeadingZeros
             allowedDecimalSeparators={[".", "."]}

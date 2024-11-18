@@ -1,5 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import { clientData, saleData, storeType } from "../../../../../../types/types";
+import React, { useEffect, useReducer, useRef, useState } from "react";
+import {
+  clientData,
+  IUser,
+  saleData,
+  storeType,
+} from "../../../../../../types/types";
 import { useSelector } from "react-redux";
 import ListaProductos from "./ListaProductos";
 import AsideForm from "./AsideForm";
@@ -9,6 +14,8 @@ import SelectSeller from "./SelectSeller";
 import FooterForm from "./FooterForm";
 import PayMethod from "./PayMethod/PayMethod";
 import SaleEnd from "./SaleEnd";
+import ButtonR from "../../buttons/ButtonR";
+import { Route, Router, Routes } from "react-router-dom";
 
 interface AddVentaForm {
   onChangeModal: (p: boolean) => void;
@@ -28,8 +35,9 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
   formatMony,
 }) => {
   //DATOS USUARIOS
-  //@ts-ignore 
-  const [saleData, setSaleData] = useState<saleData>({
+  //@ts-ignore
+
+  const initialState: saleData = {
     articles: [],
     buyer: {
       client: {
@@ -49,26 +57,90 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
       },
     },
     seller: {
-      name: "Admin",
-      id: "admin",
-      image: "admin",
+      username: "",
+      _id: "",
+      imageUrl: "",
+      codigopostal: "",
+      direccion: "",
+      nombre: "",
+      email: "",
+      esAdmin: false,
+      ubicacion: "",
     },
     billData: { billType: "" },
     sold: 0,
-  });
-  
-  const [userData, setUserData] = useState<any>({});
-  const [facturaOk, setFacturaOk] = useState<boolean>(false);
-  const [pMOk, setpMOk] = useState<boolean>(false);
-  const [saleEnd, setSaleEnd] = useState(false);
+  };
+  type Action = {
+    type:
+      | "ARTICLES"
+      | "SOLD"
+      | "BUYER"
+      | "SELLER"
+      | "PAY_METHOD"
+      | "BILL_TYPE"
+      | "DELETE_ARTICLE";
+    payload: any;
+  };
+  const saleDataReducer = (saleDataState: saleData, action: Action) => {
+    const existingAction = [
+      "ARTICLES",
+      "SOLD",
+      "BUYER",
+      "SELLER",
+      "PAY_METHOD",
+      "BILL_TYPE",
+      "DELETE_ARTICLE",
+    ];
+    const { type, payload } = action;
+    if (existingAction.includes(type)) {
+      switch (type) {
+        case "ARTICLES":
+          return {
+            ...saleDataState,
+            articles: [...saleDataState.articles, ...payload],
+          };
+        case "DELETE_ARTICLE":
+          return {
+            ...saleDataState,
+            articles: [...payload],
+          };
+        case "SOLD":
+          return { ...saleDataState, sold: payload };
+        case "BUYER":
+          return { ...saleDataState, buyer: { ...payload } };
+        case "SELLER":
+          return { ...saleDataState, seller: payload };
+        case "BILL_TYPE":
+          return {
+            ...saleDataState,
+            billData: { ...saleDataState.billData, billType: payload },
+          };
+        case "PAY_METHOD":
+          return {
+            ...saleDataState,
+            pM: payload,
+          };
+
+        default:
+          break;
+      }
+    } else {
+      console.log("NO ESTA");
+    }
+  };
+  const [saleState, dispatch] = useReducer(saleDataReducer, initialState);
+  const userLoggin = useSelector((state: storeType) => state.estadoTipoDeUser);
   const clients = useSelector((state: storeType) => state.clientState);
   const articles = useSelector((state: storeType) => state.articleState);
-  const [showOkSignal, setShowOkSignal] = useState<{
-    show: boolean;
-    save: boolean;
-    message: string;
-  }>({ show: false, save: false, message: "" });
-  const [showError, setShowError] = useState<{ in: string }>({ in: "" });
+  const [userData, setUserData] = useState<{
+    userType: string;
+    datosUsuario: IUser;
+  }>();
+  const [currentStage, setCurrentStage] = useState<
+    "factura" | "payMethod" | "saleEnd" | "close"
+  >("close");
+
+  const [errors, setErrors] = useState<string[]>([]);
   const [cost, setCost] = useState<number>(0);
   const [clientData, setClientData] = useState<clientData>({
     name: "",
@@ -94,8 +166,8 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
       loadBuyer("client");
     }
   };
-  const loadSeller = (seller: { name: string; id: string; image: string }) => {
-    setChangeData("seller", seller);
+  const loadSeller = (seller: IUser) => {
+    dispatch({ type: "SELLER", payload: seller });
     onClickSeller(false);
   };
 
@@ -105,24 +177,34 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
     if (buyerType.includes(value)) {
       switch (value) {
         case "finalConsumer":
-          setChangeData("buyer", {
-            client: {
-              active: false,
-              client: { name: "", email: "", address: "", phone: "", dni: "" },
+          dispatch({
+            type: "BUYER",
+            payload: {
+              client: {
+                active: false,
+                client: {
+                  name: "",
+                  email: "",
+                  address: "",
+                  phone: "",
+                  dni: "",
+                },
+              },
+              finalConsumer: { active: true, cae: "2334r12" },
             },
-            finalConsumer: { active: true, cae: "2334r12" },
           });
-          setShowModalBuyer(false);
           break;
         case "client":
-          setChangeData("buyer", {
-            client: {
-              active: true,
-              clientData: { ...clientData },
+          dispatch({
+            type: "BUYER",
+            payload: {
+              client: {
+                active: true,
+                clientData: { ...clientData },
+              },
+              finalConsumer: { active: false, cae: "" },
             },
-            finalConsumer: { active: false, cae: "" },
           });
-          setShowModalBuyer(false);
           break;
 
         default:
@@ -131,11 +213,10 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
     }
   };
 
-  const changeShowError = (e: string) => {
-    setShowError({ in: e });
-    setTimeout(() => {
-      setShowError({ in: "" });
-    }, 3000);
+  const newError = (e: string) => {
+    let oldError = [...errors];
+    oldError.push(e);
+    setErrors(oldError);
   };
 
   const addProduct = (e: {
@@ -144,257 +225,130 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
     total: string;
     amount: {
       value: string;
-      unit: { label: string; palette: boolean; bulk: boolean };
+      unit: {
+        value: string;
+        label: string;
+        abrevUnit: string;
+      };
     };
   }) => {
     const arr = [];
     arr.push(e);
 
-    setChangeData("articles", arr);
+    dispatch({ type: "ARTICLES", payload: arr });
   };
   const sumCost = () => {
-    const arr = saleData.articles.map((product) => product.total);
+    const arr = saleState.articles.map((product) => product.total);
     let suma = 0;
     arr.map((a) => {
       suma += typeof a === "string" ? parseInt(a) : a;
     });
-    setChangeData("sold", suma);
+    dispatch({ type: "SOLD", payload: suma });
     setCost(suma);
   };
   //
 
   const deleteOfList = (id: number) => {
-    console.log("EJECUTANDOOO");
-    const arr = saleData.articles.filter((ar, index) => index !== id);
-    setChangeData("DELETE-ARTICLE", arr);
+    const arr = saleState.articles.filter((ar, index) => index !== id);
+    dispatch({ type: "DELETE_ARTICLE", payload: arr });
   };
 
-  const showOkSaveSignal = (b: {
-    save: boolean;
-    show: boolean;
-    message: string;
-  }) => {
-    setShowOkSignal(b);
-  };
-  function setChangeData(data: string, value: any) {
-    const existingData = [
-      "articles",
-      "sold",
-      "buyer",
-      "seller",
-      "payMethod",
-      "billType",
-      "DELETE-ARTICLE",
-    ];
-    if (existingData.includes(data)) {
-      switch (data) {
-        case "articles":
-          console.log("se cumple esrte");
-          setSaleData({
-            ...saleData,
-            articles: [...saleData.articles, ...value],
-          });
-          break;
-        case "DELETE-ARTICLE":
-          console.log("se cumple esrte");
-          setSaleData({
-            ...saleData,
-            articles: [...value],
-          });
-          break;
-        case "sold":
-          setSaleData({ ...saleData, sold: value });
-          break;
-        case "buyer":
-          console.log("ACA SE LLEGA RICO", value);
-          setSaleData({ ...saleData, buyer: { ...value } });
-          break;
-        case "seller":
-          setSaleData({ ...saleData, seller: value });
-          break;
-        case "billType":
-          setSaleData({
-            ...saleData,
-            billData: { ...saleData.billData, billType: value },
-          });
-          break;
-        case "payMethod":
-          setSaleData({
-            ...saleData,
-            pM: value,
-          });
-          break;
-
-        default:
-          break;
-      }
-    } else {
-      console.log("NO ESTA");
-    }
-  }
-
-  //SUBIR USUARIO A BASE DE DATOS LOCAL
-
-  function subirVenta() {
-    const existArticles = saleData.articles.length > 0;
+  //CHECK SI HAYH ARTICULOS Y SI SE SELECCIONO EL COMPRADOR
+  const checkInformation = () => {
+    const existArticles = saleState.articles.length > 0;
     const existBuyer =
-      saleData.buyer.client.active || saleData.buyer.finalConsumer.active;
+      saleState.buyer.client.active || saleState.buyer.finalConsumer.active;
+
+    return { existArticles, existBuyer };
+  };
+
+  //
+
+  const subirVenta = () => {
+    const { existArticles, existBuyer } = checkInformation();
     if (existArticles && existBuyer) {
-      showOkSaveSignal({
-        show: true,
-        save: true,
-        message: "Verificaciones realizadas",
-      });
+      setCurrentStage("factura");
     } else if (!existArticles && !existBuyer) {
-      changeShowError("all");
+      newError("ALL");
     } else if (!existBuyer) {
-      changeShowError("buyer");
+      newError("BUYER");
     } else if (!existArticles) {
-      changeShowError("articles");
+      newError("ARTICLES");
     }
-  }
+  };
 
   useEffect(() => {
     sumCost();
-  }, [saleData.articles]);
+  }, [saleState.articles]);
 
-  useEffect(() => {
-    window.api.recibirEvento("response-sale-process", (response) => {
-      console.log("SE GUARDO SARPADAMENTE", response);
-      if (response.success) {
-        showOkSaveSignal({
-          show: false,
-          save: false,
-          message: "Venta realizada con éxito",
-        });
-        window.api.enviarEvento("get-articles");
-        setpMOk(false);
-        setFacturaOk(false);
-        setSaveSaleExit(true);
-        //@ts-ignore 
-        setSaleData({
-          articles: [],
-          buyer: {
-            client: {
-              active: false,
-              clientData: {
-                name: "",
-                email: "",
-                address: "",
-                phone: "",
-                dni: "",
-                _id: "",
-              },
-            },
-            finalConsumer: {
-              active: false,
-              cae: "",
-            },
-          },
-          seller: {
-            name: "Admin",
-            id: "admin",
-            image: "admin",
-          },
-          sold: 0,
-        });
-      } else {
-        showOkSaveSignal({
-          show: true,
-          save: false,
-          message: response.message,
-        });
-      }
-    });
-  }, []);
-  //
-  const getUserData = () => {
-    const userId = localStorage.getItem("userId");
-    window.api.enviarEvento("obtener-datos-usuario", userId);
-  }; //
   const printBill = () => {
-    window.api.enviarEvento("imprimir-pa", saleData);
+    window.api.enviarEvento("imprimir-pa", saleState);
   };
   useEffect(() => {
-    getUserData();
-    window.api.recibirEvento("datos-usuario-obtenidos", (e) => {
-      console.log(e.data.username, "ESTO ES GONZA");
-
-      if (e.success) {
-        setUserData(e.data);
-        setChangeData("seller", {
-          name: e.data.username,
-          id: e.data._id,
-          image: e.data.imageUrl,
-        });
-      }
-    });
+    setUserData(userLoggin);
+    dispatch({ type: "SELLER", payload: userLoggin.datosUsuario });
+    console.log("TOROJAAAAAAAAAAAAAA", userLoggin);
   }, []);
   useEffect(() => {
-    if (pMOk && facturaOk) {
-      setSaleEnd(true);
-    } else {
-      setSaleEnd(false);
-    }
-  }, [pMOk, facturaOk]);
+    console.log(saleState, "NARIZLOCAMASSA");
+  }, [saleState]);
 
   //ESTILOS INPUT
   const estilosInput = "outline-none px-2";
 
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center backdrop-blur-lg z-50 app-region-no-drag">
-      {showOkSignal.show &&
-        (!facturaOk ? (
-          <Factura
-            showOkSaveSignal={showOkSaveSignal}
-            subirVenta={subirVenta}
-            setChangeData={setChangeData}
-            setFacturaOk={setFacturaOk}
-            facturaOk={facturaOk}
-            saleData={saleData}
-          />
-        ) : (
-          <PayMethod pMOk={setpMOk} setChangeData={setChangeData} />
-        ))}
-      {saleEnd && (
+      {/*SI SE VERIFICA QUE HAY ARTICULOS SELECCIONADOS PARA LA VENTA Y EL CLIENTE AL QUE SE LE VA A VENDER, PROCEDE AL PROCOSO DE GENERAR, LA FACTURA Y DEMAS. UNA VEZ ELIGE FACTURA, CONTINUA CON LA ELECCION DE MTODO DE PAGO, Y UNA VEZ ELEGIDA EL METODO DE PAGO, SIGUE A LA PARTE FINAL QUE ES DONDE SE MEUSTRA LA INFORMACION COMPLETA DE LA VENTA.*/}
+      {currentStage === "factura" && (
+        <Factura setCurrentStage={setCurrentStage} dispatch={dispatch} />
+      )}
+      {currentStage === "payMethod" && (
+        <PayMethod setCurrentStage={setCurrentStage} dispatch={dispatch} />
+      )}
+
+      {currentStage === "saleEnd" && (
         <SaleEnd
-          setFacturaOk={setFacturaOk}
-          setPMOk={setpMOk}
-          setSaleEnd={setSaleEnd}
-          saleData={saleData}
+          setCurrentStage={setCurrentStage}
+          setSaveSaleExit={setSaveSaleExit}
+          saveSaleExit={saveSaleExit}
+          saleState={saleState}
           addSales={addSales}
         />
       )}
       {saveSaleExit && (
-        <div className="absolute z-50 h-32 w-64 p-2 bg-slate-950 flex flex-col text-slate-50 rounded-lg border border-slate-700">
-          <div className="flex-1 flex justify-center">
-            <p>¿Quieres imprimir la factura?</p>
-          </div>{" "}
-          <div className="w-full h-5 text-xs flex space-x-2">
-            <button
-              onClick={() => onChangeModal(false)}
-              className="flex-1 h-full bg-red-500 rounded-lg"
-            >
-              DESPUES
-            </button>
-            <button
-              onClick={printBill}
-              className="flex-1 h-full bg-green-500 rounded-lg"
-            >
-              IMPRIMIR
-            </button>
+        <div className="absolute top-0 left-0 right-0 bottom-0 backdrop-brightness-50 z-50 flex justify-center items-center">
+          <div className="absolute z-50 h-32 w-64 p-2 bg-[#2f2f2fff] flex flex-col text-slate-50 rounded-lg border border-slate-700">
+            <div className="flex-1 flex justify-center items-center text-lg">
+              <p>¿Quieres imprimir la factura?</p>
+            </div>
+            <div className="w-full h-7 text-xs flex space-x-2">
+              <ButtonR
+                onClick={() => onChangeModal(false)}
+                height="h-7"
+                width="w-32"
+                title="Despues"
+                bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-sm"
+              ></ButtonR>
+              <ButtonR
+                onClick={printBill}
+                height="h-7"
+                width="w-32"
+                bgColor="bg-gradient-to-l from-yellow-700 via-yellow-700 to-yellow-500"
+                title="Imprimir"
+              ></ButtonR>
+            </div>
           </div>
         </div>
       )}
-      <div className="w-4/5 h-4/5 bg-[#2f2f2fff]  text-slate-50 rounded-lg overflow-hidden flex relative pt-2">
+      <div className="w-4/5 h-4/5 bg-[#2f2f2fff]  text-slate-50 rounded-lg flex relative">
         <AsideForm
           subirVenta={subirVenta}
           onChangeModal={onChangeModal}
           onClickBuyer={onClickBuyer}
           onClickSeller={onClickSeller}
           userData={userData}
-          saleData={saleData}
-          showError={showError}
+          saleState={saleState}
+          errors={errors}
         />
 
         {showModalBuyer && (
@@ -402,8 +356,8 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
             clientData={clientData}
             clients={clients}
             loadBuyer={loadBuyer}
+            setShowModalBuyer={setShowModalBuyer}
             estilosInput={estilosInput}
-            saleData={saleData}
             loadClient={loadClient}
             setClientData={setClientData}
           />
@@ -412,7 +366,8 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
           <SelectSeller
             loadSeller={loadSeller}
             estilosInput={estilosInput}
-            saleData={saleData}
+            userLoggin={userData}
+            saleState={saleState}
             onClickSeller={onClickSeller}
           />
         )}
@@ -420,12 +375,12 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
           <div className="flex-1 flex overflow-hidden">
             <ListaProductos
               deleteOfList={deleteOfList}
-              listProduct={saleData.articles}
+              listProduct={saleState.articles}
               articles={articles}
               addProduct={addProduct}
               estilosInput={estilosInput}
               formatMony={formatMony}
-              showError={showError}
+              errors={errors}
             />
           </div>
           <FooterForm cost={cost} sumCost={sumCost} />

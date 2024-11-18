@@ -1,20 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-interface Usuario {
-  username?: string;
-  nombre?: string;
-  email: string;
-  ubicacion: string;
-  direccion: string;
-  codigopostal: string;
-  imageUrl: string;
-  esAdmin: boolean;
-  _id: string;
-}
+import { IUser } from "../../../types/types";
 
 interface EstadoTipoDeUserState {
   userType: string;
-  datosUsuario: Usuario | {}; // Tipo de datosUsuario
+  datosUsuario: IUser | {}; // Tipo de datosUsuario
 }
 
 const initialState: EstadoTipoDeUserState = {
@@ -26,14 +15,23 @@ const estadoTipoDeUser = createSlice({
   name: "estadoTipoDeUser",
   initialState,
   reducers: {
-    cambiar: (state, action: PayloadAction<{ userType: string; datosUsuario: Usuario }>) => {
+    cambiar: (
+      state,
+      action: PayloadAction<{ userType: string; datosUsuario: IUser }>
+    ) => {
       console.log(action.payload, "chotassssssssssssssss");
-      state.userType = action.payload.userType;
-      state.datosUsuario = action.payload.datosUsuario; // Actualiza el estado con los datos del usuario
+      return {
+        userType: action.payload.userType,
+        datosUsuario: action.payload.datosUsuario,
+      }; // Actualiza el estado con los datos del usuario
     },
-    datosUsuario: (state, action: PayloadAction<{ datosUsuario: Usuario }>) => {
+    datosUsuario: (state, action: PayloadAction<{ datosUsuario: IUser }>) => {
       console.log(action.payload, "chotassssssssssssssss");
-      state.datosUsuario = action.payload.datosUsuario; // Actualiza el estado con los datos del usuario
+
+      return {
+        userType: state.userType,
+        datosUsuario: action.payload.datosUsuario,
+      }; // Actualiza el estado con los datos del usuario
     },
   },
 });

@@ -43,7 +43,7 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
   return (
     <div className="flex flex-1 items-center space-x-2 px-2 ">
       <div className="flex flex-col relative space-y-2">
-        <div className="w-full text-green-300 z-40 hover:text-green-200 flex justify-end">
+        <div className="w-full z-40 hover:text-green-200 flex justify-between">
           {errorToSave.active &&
             (errorToSave.type == "all" || errorToSave.type == "brand") && (
               <div className="flex items-center">
@@ -73,6 +73,9 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider> */}
+          <div>
+            <p>Marca</p>
+          </div>
           <Tooltip title="Crear marca">
             <button
               onClick={() => {
@@ -97,12 +100,15 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
         </div>
       </div>
       <div className="flex flex-col relative space-y-2">
-        <div className=" text-green-300 z-40 hover:text-green-200 flex space-x-2 w-full justify-end">
+        <div className=" z-40 hover:text-green-200 flex space-x-2 w-full justify-between">
           {errorToSave.active && (errorToSave.type == "all" || "category") && (
             <div className="flex items-center">
               <p className="text-red-200 text-xs">{errorToSave.message}</p>
             </div>
           )}
+          <div>
+            <p>Categoria</p>
+          </div>
           <Tooltip title="Crear categoria">
             <button
               onClick={() => {
@@ -125,12 +131,15 @@ const CategoryAndBrand: React.FC<CategoryAndBrandProps> = ({
         />
       </div>
       <div className="flex flex-col relative space-y-2">
-        <div className="text-green-300 z-40 hover:text-green-200 flex space-x-2 w-full justify-end">
+        <div className=" z-40 hover:text-green-200 flex space-x-2 w-full justify-between">
           {errorToSave.active && (errorToSave.type == "all" || "category") && (
             <div className="flex items-center">
               <p className="text-red-200 text-xs">{errorToSave.message}</p>
             </div>
           )}
+          <div>
+            <p>Sub categoria</p>
+          </div>
           <Tooltip title="Crear sub categoria">
             <button
               onClick={() => {

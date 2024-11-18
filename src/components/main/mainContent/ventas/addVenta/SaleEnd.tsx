@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { saleData } from "../../../../../../types/types";
 import {
   Table,
@@ -15,68 +15,71 @@ import { FaBasketShopping } from "react-icons/fa6";
 import { FcBusinessman } from "react-icons/fc";
 import { BsBack } from "react-icons/bs";
 import { BiArrowBack } from "react-icons/bi";
+import ButtonR from "../../buttons/ButtonR";
 
 type SaleEndProps = {
-  saleData: saleData;
-  setPMOk: (e: boolean) => void;
-  setSaleEnd: (e: boolean) => void;
-  setFacturaOk: (e: boolean) => void;
+  saleState: saleData;
+  setSaveSaleExit: (e: boolean) => void;
+  setCurrentStage: (e: "factura" | "payMethod" | "saleEnd" | "close") => void;
+  saveSaleExit: boolean;
   addSales: (e: saleData) => void;
 };
 
 const SaleEnd: React.FC<SaleEndProps> = ({
-  saleData,
-  setSaleEnd,
-  setPMOk,
-  setFacturaOk,
+  saleState,
+  setSaveSaleExit,
+  saveSaleExit,
+  setCurrentStage,
   addSales,
 }) => {
   const backClick = () => {
-    setSaleEnd(false);
-    setPMOk(false);
-    setFacturaOk(false);
+    setCurrentStage("payMethod");
   };
 
   const endSale = () => {
-    window.api.enviarEvento("sale-process", saleData);
-
-    addSales(saleData);
+    window.api.enviarEvento("sale-process", saleState);
   };
+  useEffect(() => {
+    window.api.recibirEvento("response-sale-process", (sale) => {
+      if (sale.save) {
+        window.api.enviarEvento("get-sales");
+        setSaveSaleExit(true);
+        setCurrentStage("close");
+      } else {
+        //ACA QUIERO MOSTRAR UN ERROR SI NO SE GENERA LA VENTA PRO X MOTIVOS
+      }
+    });
+  }, []);
+
   return (
     <div className="absolute top-0 bottom-0 right-0 left-0 flex justify-center items-center z-50 backdrop-blur-md">
       <div className="flex relative flex-col h-2/3 w-1/2 bg-slate-950 rounded-lg border border-slate-700 text-slate-50">
         <div className="flex-1 flex-col w-full h-full overflow-auto custom-scrollbar">
-          <div
-            className="absolute bottom-full right-full w-20 h-12 cursor-pointer hover:text-blue-500"
-            onClick={backClick}
-          >
-            <BiArrowBack className="h-full w-full" />
-          </div>
           <div className="flex w-full h-20 justify-between p-2">
             <div className="flex justify-start flex-1 space-x-2">
               <div className="w-14 h-14 overflow-hidden rounded-full">
                 <img
-                  src={saleData.seller.image}
+                  src={saleState.seller.imageUrl}
                   className="object-cover h-full w-full"
                 />
               </div>
               <div className="flex flex-col">
                 <p className="font-thin">Vendedor</p>
-                <p>{saleData.seller.name}</p>
+                <p>{saleState.seller.nombre}</p>
               </div>
             </div>
             <div className="flex-1 flex justify-end">
               <div className="flex flex-col">
                 <p className="font-thin text-right">Comprador</p>
                 <p>
-                  {saleData.buyer.client.active
-                    ? saleData.buyer.client.clientData.name
+                  {saleState.buyer.client.active
+                    ? saleState.buyer.client.clientData.name
                     : "Consumidor final"}
                 </p>
               </div>
               <div>
                 <div className="h-14 w-14 rounded-full overflow-hidden flex justify-center items-center">
-                  {saleData.buyer.client.active ? (
+                  {saleState.buyer.client.active ? (
                     <FcBusinessman
                       size={30}
                       className="text-rose-500 h-full w-full"
@@ -107,7 +110,7 @@ const SaleEnd: React.FC<SaleEndProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {saleData.articles.map((item) => (
+                {saleState.articles.map((item) => (
                   <TableRow key={item.code}>
                     <TableCell colSpan={2} className="text-left">
                       {item.name}
@@ -140,7 +143,7 @@ const SaleEnd: React.FC<SaleEndProps> = ({
                     <NumericFormat
                       allowLeadingZeros
                       allowedDecimalSeparators={[".", "."]}
-                      value={saleData.sold}
+                      value={saleState.sold}
                       decimalScale={2}
                       thousandSeparator=","
                       displayType={"text"}
@@ -155,33 +158,43 @@ const SaleEnd: React.FC<SaleEndProps> = ({
               </TableFooter>
             </Table>
           </div>
-          <div className="w-full flex">
-            <div className="flex-1 flex flex-col items-center h-20">
-              <p className="font-thin">Metodo de pago</p>
-              <div className="flex-1 flex items-center justify-center text-3xl">
-                <p>{saleData.pM}</p>
+          <div className="w-full flex flex-col">
+            <div className="flex justify-evenly flex-1">
+              <div className="w-60 flex flex-col items-center h-24 rounded-lg bg-gradient-to-tl from-gray-700 via-gray-700 to-gray-500">
+                <p className="font-thin">Metodo de pago</p>
+                <div className="flex-1 flex items-center justify-center text-3xl">
+                  <p>{saleState.pM}</p>
+                </div>
+              </div>
+              <div className="w-60 flex flex-col items-center h-24 rounded-lg border bg-gradient-to-br from-gray-700 via-gray-700 to-gray-500 border-gray-600">
+                <p className="font-thin">Tipo de factura</p>
+                <div className="flex-1 flex items-center justify-center text-3xl">
+                  <p>
+                    {saleState.billData?.billType === "TYPEC"
+                      ? "C"
+                      : saleState.billData?.billType === "TYPEA"
+                      ? "A"
+                      : "B"}
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="flex-1 flex flex-col items-center h-20">
-              <p className="font-thin">Tipo de factura</p>
-              <div className="flex-1 flex items-center justify-center text-3xl">
-                <p>
-                  {saleData.billData?.billType === "TYPEC"
-                    ? "C"
-                    : saleData.billData?.billType === "TYPEA"
-                    ? "A"
-                    : "B"}
-                </p>
-              </div>
+            <div className="h-10 w-full pr-2 flex items-center justify-end space-x-2">
+              <ButtonR
+                height="h-7"
+                width="w-24"
+                title="Volver"
+                bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-sm"
+                onClick={backClick}
+              ></ButtonR>
+              <ButtonR
+                onClick={endSale}
+                height="h-7"
+                width="w-32"
+                bgColor="bg-gradient-to-l from-yellow-700 via-yellow-700 to-yellow-500 text-sm"
+                title="Finalizar venta"
+              ></ButtonR>
             </div>
-          </div>
-          <div className="h-12 w-full pt-2 flex justify-end absolute top-full right-0">
-            <button
-              onClick={endSale}
-              className="h-7 bg-green-700 px-2 rounded-lg flex items-center hover:bg-green-600 justify-center"
-            >
-              <p>Finalizar venta</p>
-            </button>
           </div>
         </div>
       </div>

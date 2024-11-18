@@ -101,6 +101,7 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({
       },
       description: "",
     },
+    batches: [],
     brand: { value: "", label: "" },
     code: "",
     category: { value: "", label: "" },
@@ -136,7 +137,11 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({
     | { type: "SET_LIQUID_WEIGHT_APP"; payload: boolean }
     | { type: "SET_NEW_TAX"; payload: any }
     | { type: "DELETE_TAX"; payload: number }
-    | { type: "SET_DESCRIPTION"; payload: string };
+    | { type: "SET_DESCRIPTION"; payload: string }
+    | { type: "SET_PALETTEVALUE"; payload: any }
+    | { type: "SET_PALETTEACTIVE"; payload: boolean }
+    | { type: "SET_BULKVALUE"; payload: any }
+    | { type: "SET_BULKACTIVE"; payload: boolean };
 
   const articleReducer = (state: articleData, action: Action): articleData => {
     switch (action.type) {
@@ -256,6 +261,50 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({
         return {
           ...state,
           article: { ...state.article, description: action.payload },
+        };
+      case "SET_PALETTEVALUE":
+        return {
+          ...state,
+          article: {
+            ...state.article,
+            pallet: {
+              ...state.article.pallet,
+              value: action.payload,
+            },
+          },
+        };
+      case "SET_PALETTEACTIVE":
+        return {
+          ...state,
+          article: {
+            ...state.article,
+            pallet: {
+              value: 0,
+              active: action.payload,
+            },
+          },
+        };
+      case "SET_BULKVALUE":
+        return {
+          ...state,
+          article: {
+            ...state.article,
+            forBulk: {
+              ...state.article.forBulk,
+              value: action.payload,
+            },
+          },
+        };
+      case "SET_BULKACTIVE":
+        return {
+          ...state,
+          article: {
+            ...state.article,
+            forBulk: {
+              value: 0,
+              active: action.payload,
+            },
+          },
         };
       default:
         return state;

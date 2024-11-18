@@ -9,18 +9,25 @@ type ButtonRProps = {
   bgColor?: string;
   textSize?: string;
   bgIconColor?: string;
+  rounded?: boolean;
   width?: string;
   height?: string;
+  disabled?: boolean;
+  shadow?: boolean;
 };
 
 const ButtonR: React.FC<ButtonRProps> = ({
   children,
   onClick,
   title,
+  shadow = true,
+  borderSize,
   textSize,
+  rounded = true,
   bgColor,
   width,
   bgIconColor,
+  disabled,
   height,
 }) => {
   const [borderNone, setBorderNone] = useState<boolean>(false);
@@ -44,9 +51,13 @@ const ButtonR: React.FC<ButtonRProps> = ({
   return (
     <div
       onClick={onClick ? onClick : () => {}}
-      className={`flex ${height ? height : "h-12"} ${
-        width ? width : "w-52"
-      } text-white rounded-full  cursor-pointer overflow-hidden shadow-[0_2px_5px_rgba(0,0,0,0.50)]`}
+      className={`app-region-no-drag ${borderSize ? borderSize : ""} flex ${
+        height ? height : "h-12"
+      } ${width ? width : "w-52"} text-white ${
+        rounded ? "rounded-full" : ""
+      }  relative  ${disabled ? "" : "cursor-pointer"} overflow-hidden ${
+        shadow ? "shadow-[0_2px_5px_rgba(0,0,0,0.50)]" : ""
+      }`}
       onMouseDown={mouseDownEvent}
       onMouseUp={mouseUpEvent}
       onMouseEnter={onMouseEnter}
@@ -55,12 +66,18 @@ const ButtonR: React.FC<ButtonRProps> = ({
       <div
         className={`flex-1 flex justify-center items-center  ${
           textSize ? textSize : "text-base"
-        } select-none rounded-full relative     `}
+        } select-none ${rounded ? "rounded-full" : ""} relative     `}
       >
         <div
-          className={`absolute  ${hoverActive ? "bg-white  opacity-5" : ""} ${
-            borderNone ? "bg-black  opacity-5" : ""
-          } top-0 left-0 z-40 right-0 bottom-0 rounded-full`}
+          className={`${
+            disabled
+              ? "bg-black  opacity-30"
+              : `  ${hoverActive ? "bg-white  opacity-5" : ""} ${
+                  borderNone ? "bg-black  opacity-5" : ""
+                }`
+          } " absolute top-0 left-0 z-40 right-0 bottom-0 ${
+            rounded ? "rounded-full" : ""
+          }"`}
         ></div>
         {title ? (
           <div
@@ -73,7 +90,9 @@ const ButtonR: React.FC<ButtonRProps> = ({
         ) : null}
         {children ? (
           <div
-            className={`${title ? "w-1/4" : "w-full rounded-l-full"} ${
+            className={`${
+              title ? "w-1/4" : `w-full   ${rounded ? "rounded-l-full" : ""}`
+            } ${
               bgIconColor ? bgIconColor : "bg-gray-800"
             } rounded-r-full h-full flex items-center justify-center  text-white `}
           >

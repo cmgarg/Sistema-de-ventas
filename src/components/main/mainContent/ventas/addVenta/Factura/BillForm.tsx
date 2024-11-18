@@ -10,19 +10,27 @@ import {
   TbCircleLetterC,
   TbLetterC,
 } from "react-icons/tb";
+import ButtonR from "../../../buttons/ButtonR";
 type BillFormProps = {
-  saleData: saleData; // Define tus props aquí
   setRoutesBill: (e: string) => void;
-  setChangeData: (data: string, value: any) => void;
-  facturaOk: boolean;
-  setFacturaOk: (e: boolean) => void;
+  dispatch: (action: {
+    type:
+      | "ARTICLES"
+      | "SOLD"
+      | "BUYER"
+      | "SELLER"
+      | "PAY_METHOD"
+      | "BILL_TYPE"
+      | "DELETE_ARTICLE";
+    payload: any;
+  }) => void;
+  setCurrentStage: (e: "factura" | "payMethod" | "saleEnd" | "close") => void;
 };
 
 const BillForm: React.FC<BillFormProps> = ({
-  saleData,
   setRoutesBill,
-  setFacturaOk,
-  setChangeData,
+  setCurrentStage,
+  dispatch,
 }) => {
   const [selectBillType, setSelectBillType] = useState<string>("");
 
@@ -30,11 +38,11 @@ const BillForm: React.FC<BillFormProps> = ({
     setSelectBillType(e);
   };
   const acceptButton = () => {
-    setFacturaOk(true);
-    setChangeData("billType", selectBillType);
+    setCurrentStage("payMethod");
+    dispatch({ type: "BILL_TYPE", payload: selectBillType });
   };
   return (
-    <div className="flex-1 flex-col relative w-full flex justify-center bg-slate-950 rounded-lg border border-slate-800">
+    <div className="flex-1 flex-col relative w-full flex justify-center rounded-lg">
       {/* <div className="flex w-full pl-2 pt-2">
         <div className="w-52 h-12 flex flex-col rounded-lg border border-800 bg-gradient-to-t from-slate-950 to-slate-800 border-slate-800">
           <p className="text-xs pl-2 text-slate-400">Factura tipo:</p>
@@ -52,13 +60,13 @@ const BillForm: React.FC<BillFormProps> = ({
           />
         </div>
       </div> */}
-      <div className="text-3xl">
-        <p>Tipo de factura:</p>
+      <div className="text-lg">
+        <p>Tipo de factura</p>
       </div>
-      <div className="flex flex-1 w-full bg-slate-900 items-center px-2 space-x-2">
+      <div className="flex flex-1 w-full items-center px-2 space-x-2">
         <button
           onClick={() => onSelectBillType("TYPEA")}
-          className={`flex flex-1 border h-36 justify-center items-center rounded-lg text-blue-300 border-slate-700 bg-gradient-to-t to-blue-500 from-blue-950  hover:text-blue-50 ${
+          className={`flex flex-1 border h-36 shadow-[0_2px_5px_rgba(0,0,0,0.50)]  justify-center items-center rounded-lg text-blue-300 border-gray-600 bg-gradient-to-t to-blue-500 from-blue-950 hover:brightness-125  hover:text-yellow-500 ${
             selectBillType === "TYPEA"
               ? "outline outline-4 outline-yellow-500"
               : ""
@@ -70,7 +78,7 @@ const BillForm: React.FC<BillFormProps> = ({
         </button>
         <button
           onClick={() => onSelectBillType("TYPEB")}
-          className={`flex flex-1 border border-slate-700 h-36 justify-center items-center rounded-lg bg-gradient-to-t to-red-500 from-red-950 text-red-300  hover:text-red-50 ${
+          className={`flex flex-1 border border-slate-600 shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-36 justify-center items-center rounded-lg bg-gradient-to-t to-red-500 from-red-950 text-red-300 hover:brightness-125  hover:text-yellow-500 ${
             selectBillType === "TYPEB"
               ? "outline outline-4 outline-yellow-500"
               : ""
@@ -82,7 +90,7 @@ const BillForm: React.FC<BillFormProps> = ({
         </button>
         <button
           onClick={() => onSelectBillType("TYPEC")}
-          className={`flex flex-1 border border-slate-700 h-36 justify-center items-center rounded-lg bg-gradient-to-t to-teal-500 from-teal-950 text-green-300 hover:bg-teal-800 hover:text-green-50 ${
+          className={`flex flex-1 border border-slate-600 h-36 shadow-[0_2px_5px_rgba(0,0,0,0.50)] justify-center items-center rounded-lg bg-gradient-to-t to-teal-500 from-teal-950 text-green-300 hover:brightness-125 hover:bg-teal-800 hover:text-yellow-500 ${
             selectBillType === "TYPEC"
               ? "outline outline-4 outline-yellow-500"
               : ""
@@ -93,22 +101,21 @@ const BillForm: React.FC<BillFormProps> = ({
           </div>
         </button>
       </div>
-      <div className="flex w-full justify-end p-2">
-        <button
-          className="h-7 w-32 bg-green-700 rounded-lg hover:bg-green-600"
+      <div className="flex w-full justify-end p-2 space-x-2">
+        <ButtonR
+          title="Volver"
+          bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500"
+          width="w-24"
+          height="h-7"
+          onClick={() => setRoutesBill("/")}
+        />
+        <ButtonR
+          height="h-7"
+          width="w-32"
+          bgColor="bg-gradient-to-l from-yellow-700 via-yellow-700 to-yellow-500"
           onClick={acceptButton}
-        >
-          Aceptar
-        </button>
-      </div>
-      <div className="absolute bottom-0 left-0 w-32 h-12 flex items-center pl-2">
-        <Biñeta title="Volver" bg="bg-amber-900">
-          <BiArrowBack
-            size={30}
-            className="text-blue-300 hover:text-blue-50 cursor-pointer select-none"
-            onClick={() => setRoutesBill("/")}
-          />
-        </Biñeta>
+          title="Aceptar"
+        ></ButtonR>
       </div>
     </div>
   );

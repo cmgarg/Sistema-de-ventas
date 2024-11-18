@@ -14,10 +14,6 @@ export type articleData = {
       active: boolean;
       value: number;
     };
-    quantityperunit: {
-      active: boolean;
-      value: number;
-    };
     forBulk: {
       active: boolean;
       value: number;
@@ -40,18 +36,35 @@ export type articleData = {
           email: string;
           address: string;
           phone: string;
-          _id?: string; 
+          _id?: string;
         };
       };
       finalConsumer: { active: boolean; cae: string };
     };
-    amount: { value: number; unit: string };
+    amount: {
+      value: number;
+      unit: { label: string; pallet: boolean; bulk: boolean };
+    };
     sold: number;
   }[];
   taxes: {
     name: string;
     percentage: number;
     type: { costPrice: boolean; finalPrice: boolean };
+  }[];
+  batches: {
+    lotNumber: string;
+    quantity: number;
+    quantityBulk: number;
+    quantityPallet: number;
+    expirationDate: string; // Fecha de vencimiento
+  }[];
+  history: {
+    type: "register" | "sale" | "restock" | "adjustment";
+    date: string;
+    quantity: number;
+    remainingStock: number;
+    message: string;
   }[];
 };
 
@@ -84,7 +97,7 @@ export type saleData = {
     total: number | string;
     amount: {
       value: string;
-      unit: { label: string; palette: boolean; bulk: boolean };
+      unit: unitType;
     };
   }[];
   buyer: {
@@ -104,17 +117,14 @@ export type saleData = {
       cae: string;
     };
   };
-  seller: {
-    name: string;
-    id: string;
-    image: string;
-  };
+  seller: IUser;
   sold: number;
   billData?: {
     billType: string;
   };
+
   pM?: string;
-  dateToRegister?: string;
+  dateOfRegister?: string;
   id?: string;
 };
 // venta a eliminar
@@ -167,7 +177,10 @@ export type storeType = {
   subCategoryState: subCategoryType[];
   brandState: brandType[];
   saleState: saleData[];
-  estadoTipoDeUser: any;
+  estadoTipoDeUser: {
+    userType: string;
+    datosUsuario: IUser;
+  };
   auth: authType;
 };
 //UNIDAD TYPE
@@ -193,24 +206,6 @@ export type supplierType = {
   _id?: string;
 };
 
-//ALMACEN
-export type depositType = {
-  name: string;
-  address: string;
-  sectors: {
-    name: string;
-    sectorId: string;
-    products: {
-      article: articleData;
-      amount: {
-        value: number;
-        saveCount: string;
-      };
-    }[];
-  }[];
-  _id?: string;
-};
-
 export type Action = {
   type: string;
   payload: any;
@@ -223,8 +218,7 @@ export type pmType = {
 
 //TIPOS MARTIN
 
-export interface IUser {
-  uuid: any;
+export type IUser = {
   nombre: string;
   username: string;
   email: string;
@@ -234,4 +228,4 @@ export interface IUser {
   imageUrl: string;
   esAdmin: boolean;
   _id: string;
-}
+};
