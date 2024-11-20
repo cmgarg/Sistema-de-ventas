@@ -14,13 +14,13 @@ import { IoAdd } from "react-icons/io5";
 import { BiExport } from "react-icons/bi";
 import { sendNotification } from "../../Main";
 import { useLocation } from "react-router-dom";
-
+import { MdAdd } from "react-icons/md";
 
 interface Cuenta {
   _id: string;
   date: string;
   time: string;
-  tipodegasto: string;
+  tipodegasto: { value: string; label: string };
   descripcion: string;
   pay: number;
   pagado: boolean;
@@ -43,7 +43,10 @@ const Cuentas: React.FC = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search); // Asegúrate de usar correctamente URLSearchParams
   const cuentaId = queryParams.get("idcuenta"); // Usamos "idcuenta" como nombre de parámetro en la URL
-  console.log(cuentaId,"este es el id de la cuenta de notificacionQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ")
+  console.log(
+    cuentaId,
+    "este es el id de la cuenta de notificacionQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ"
+  );
   //////
   const onChangeModal = (p: boolean) => {
     setActiveModalForm(p);
@@ -51,7 +54,7 @@ const Cuentas: React.FC = () => {
 
   const addAccountToPay = (e: {
     date: string;
-    tipodegasto: string;
+    tipodegasto: { value: string; label: string };
     descripcion: string;
     pay: number;
     pagado: boolean;
@@ -111,149 +114,132 @@ const Cuentas: React.FC = () => {
     return number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,");
   };
 
-
   return (
-    <div className="flex flex-col flex-1 mt-2">
-      <NavMain title="Cuentas" setLoginUser={""}>
-        <ButtonR
-          borderSize="border-b-[4px]"
-          textSize="text-lg"
-          onClick={onChangeModal}
-          bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
-          height="h-10"
-          width="w-10"
-        >
-          <BiExport size={30} className="text-white" />
-        </ButtonR>
-        <ButtonR
-          borderSize="border-b-[4px]"
-          textSize="text-lg"
-          onClick={onChangeModal}
-          bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
-          height="h-10"
-          width="w-10"
-        >
-          <IoAdd size={30} className="text-white" />
-        </ButtonR>
-      </NavMain>
-
-      <div className="flex flex-1 flex-row">
+    <div className="flex flex-col flex-1 overflow-auto">
+      <div className="absolute top-0 right-[339px] left-44 h-10 z-30 app-region-drag">
+        <NavMain title="Articulos" setLoginUser={""}>
+          <Export></Export>
+          <ButtonR
+            borderSize="border-x border-gray-600"
+            textSize="text-lg"
+            onClick={onChangeModal}
+            bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
+            height="h-8"
+            width="w-10"
+          >
+            <IoAdd size={30} className="text-white" />
+          </ButtonR>
+        </NavMain>
+      </div>
+      <div className="flex flex-1 flex-row h-full">
         {activeModalForm && (
           <AddAccountToPay
             onChangeModal={onChangeModal}
             addAccountToPay={addAccountToPay}
           />
         )}
-        <div className="flex flex-1 flex-col m-2">
-          <div className="flex flex-row space-x-2 mb-2">
-            <div className="flex h-[3rem] w-[11rem] text-white justify-center items-center border rounded-lg border-gray-600">
-              Mes
+        <div className="flex flex-1 flex-col m-2 space-y-2">
+          <div className="flex flex-row h-12 space-x-2">
+            <div className="flex h-full w-52 text-white justify-center items-center border rounded-lg border-gray-600 select-none cursor-pointer hover:brightness-125 bg-black bg-opacity-35 hover:border-yellow-900">
+              <p>Mes</p>
             </div>
             <div
-              className="flex-1 flex relative h-[3rem] text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
+              className="flex-1 flex relative h-full text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600 select-none cursor-pointer hover:brightness-125 bg-black bg-opacity-35 hover:border-yellow-900"
               onClick={() => cambiarFiltro("tipodegasto")}
             >
-              Tipo De Gasto
-              <div className="flex absolute right-3"></div>
+              <p>Tipo De Gasto</p>
             </div>
             <div
-              className="flex-1 flex relative h-[3rem] text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
+              className="flex-1 flex relative h-full text-white  justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600 select-none cursor-pointer hover:brightness-125 bg-black bg-opacity-35 hover:border-yellow-900"
               onClick={() => cambiarFiltro("descripcion")}
             >
-              Descripcion
-              <div className="flex absolute right-3"></div>
+              <p>Descripcion</p>
             </div>
             <div
               onClick={() => cambiarFiltro("fechafiltrada")}
-              className="flex-1 flex relative h-[3rem] text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
+              className="flex-1 flex relative h-full text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600 select-none cursor-pointer hover:brightness-125 bg-black bg-opacity-35 hover:border-yellow-900"
             >
-              Fecha y Hora
-              <div className="flex absolute right-3"></div>
+              <p> Fecha y Hora</p>
             </div>
             <div
               onClick={() => cambiarFiltro("monto")}
-              className="flex-1 flex relative h-[3rem] text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
+              className="flex-1 flex relative h-full text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600 select-none cursor-pointer hover:brightness-125 bg-black bg-opacity-35 hover:border-yellow-900"
             >
-              Monto
-              <div className="flex absolute right-3"></div>
+              <p>Monto</p>
             </div>
             <div
               onClick={() => cambiarFiltro("pagado")}
-              className="flex-1 flex relative h-[3rem] text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600"
+              className="flex-1 flex relative h-full text-white justify-center items-center hover:bg-slate-900 border rounded-lg border-gray-600 select-none cursor-pointer hover:brightness-125 bg-black bg-opacity-35 hover:border-yellow-900"
             >
-              Pagado
-              <div className="flex absolute right-3"></div>
+              <p>Pagado</p>
             </div>
           </div>
-          <div className=" w-full h-full">
+          <div className="w-full flex-1 mt-5 flex items-end">
             <ListCuenta
-            cuentas={accountToPay}
-            filtroActivo={filtroActivo}
-            orden={orden}
-            getAccountsToPay={getAccountsToPay}
-            idcuenta={cuentaId}
+              cuentas={accountToPay}
+              filtroActivo={filtroActivo}
+              orden={orden}
+              getAccountsToPay={getAccountsToPay}
+              idcuenta={cuentaId}
             />
           </div>
         </div>
-
-        <div className="flex h-[90vh] text-white justify-start flex-col mt-2 mr-3 rounded-lg">
-          <div className="flex h-[21rem] mb-3">
+        <div className="flex p-2 h-full text-white justify-between flex-col rounded-lg space-y-2">
+          <div className="flex flex-1">
             <Calendar
               diaSeleccionado={diaSeleccionado}
               setDiaSeleccionado={setDiaSeleccionado}
             />
           </div>
-          <div className="flex flex-col h-[58vh]">
-            <div className="pb-3">
-              <div className="flex border-gray-600 border mb-2 rounded-lg p-2 items-center justify-center">
-                <p className="pl-3">Vencimiento Mensual</p>
-              </div>
-              <div className="flex pb-10 border border-gray-600 rounded-lg h-[23.5vh] overflow-y-scroll">
-                <div className="w-full">
-                  {accountToPay
-                    .filter(
-                      (cuenta) =>
-                        cuenta.date === diaSeleccionado &&
-                        cuenta.tipodegasto === "Vencimiento Mensual"
-                    )
-                    .map((cuenta) => (
-                      <div
-                        className="p-2 border-b-1 border-gray-600"
-                        key={cuenta._id}
-                      >
-                        <div className="flex">
-                          <p className="flex-1 pl-1">{cuenta.descripcion}</p>
-                          <p className="flex-1 ">${formatNumber(cuenta.pay)}</p>
-                        </div>
+          <div className="flex-1 flex flex-col justify-center ">
+            <div className="flex border-gray-600 border rounded-t-lg items-center justify-center h-10">
+              <p className="">Vencimiento Mensual</p>
+            </div>
+            <div className="flex border border-gray-600 rounded-b-lg flex-1 overflow-y-scroll">
+              <div className="w-full">
+                {accountToPay
+                  .filter(
+                    (cuenta) =>
+                      cuenta.date === diaSeleccionado &&
+                      cuenta.tipodegasto.value === "vencimiento-mensual"
+                  )
+                  .map((cuenta) => (
+                    <div
+                      className="p-2 border-b-1 border-gray-600"
+                      key={cuenta._id}
+                    >
+                      <div className="flex">
+                        <p className="flex-1 pl-1">{cuenta.descripcion}</p>
+                        <p className="flex-1 ">${formatNumber(cuenta.pay)}</p>
                       </div>
-                    ))}
-                </div>
+                    </div>
+                  ))}
               </div>
             </div>
-            <div className="">
-              <div className="flex p-2 items-center mb-2 border border-gray-600 rounded-lg justify-center">
-                <p className="pl-3">Gastos Diario</p>
-              </div>
-              <div className="border border-gray-600 rounded-lg h-[23.5vh] overflow-y-scroll">
-                <div>
-                  {accountToPay
-                    .filter(
-                      (cuenta) =>
-                        cuenta.date === diaSeleccionado &&
-                        cuenta.tipodegasto === "Gasto Diario"
-                    )
-                    .map((cuenta) => (
-                      <div
-                        className="p-2 border-b-1 border-gray-600"
-                        key={cuenta._id}
-                      >
-                        <div className="flex">
-                          <p className="flex-1 pl-1">{cuenta.descripcion}</p>
-                          <p className="flex-1 ">${formatNumber(cuenta.pay)}</p>
-                        </div>
+          </div>
+          <div className="flex-1 h-32 flex flex-col">
+            <div className="flex items-center border border-gray-600 rounded-t-lg justify-center h-10">
+              <p className="">Gastos Diarios</p>
+            </div>
+            <div className="border border-gray-600 rounded-b-lg flex-1 overflow-y-scroll">
+              <div>
+                {accountToPay
+                  .filter(
+                    (cuenta) =>
+                      cuenta.date === diaSeleccionado &&
+                      cuenta.tipodegasto.value === "gasto-diario"
+                  )
+                  .map((cuenta) => (
+                    <div
+                      className="p-2 border-b-1 border-gray-600"
+                      key={cuenta._id}
+                    >
+                      <div className="flex">
+                        <p className="flex-1 pl-1">{cuenta.descripcion}</p>
+                        <p className="flex-1 ">${formatNumber(cuenta.pay)}</p>
                       </div>
-                    ))}
-                </div>
+                    </div>
+                  ))}
               </div>
             </div>
           </div>

@@ -85,7 +85,9 @@ const SelectM: React.FC<SelectProps> = ({
           <div>
             {(slice && value) || (
               <SelectValue placeholder={placeholder}>
-                <p>{selected.abrevUnit}</p>
+                <p>
+                  {selected.abrevUnit || selected.label || "Objeto pijiado"}
+                </p>
               </SelectValue>
             )}
           </div>

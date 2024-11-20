@@ -55,8 +55,12 @@ export default function InformacionCuentas({ cierre, idCuenta, cuentas }) {
 
   // Función para comparar fechas y horas
   const compararFechaYHora = (a, b) => {
-    const fechaA = new Date(`${a.fecha_edicion}T${a.fecha_edicionHora}`).getTime();
-    const fechaB = new Date(`${b.fecha_edicion}T${b.fecha_edicionHora}`).getTime();
+    const fechaA = new Date(
+      `${a.fecha_edicion}T${a.fecha_edicionHora}`
+    ).getTime();
+    const fechaB = new Date(
+      `${b.fecha_edicion}T${b.fecha_edicionHora}`
+    ).getTime();
     return fechaA - fechaB;
   };
 
@@ -66,7 +70,6 @@ export default function InformacionCuentas({ cierre, idCuenta, cuentas }) {
     const localDate = new Date(date.getTime() + userTimezoneOffset);
     return format(localDate, "dd/MM/yyyy", { locale: es });
   };
-  
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
@@ -128,10 +131,10 @@ export default function InformacionCuentas({ cierre, idCuenta, cuentas }) {
                             {registro.cuenta.descripcion}
                           </div>
                           <div className="w-full h-full text-center">
-                            {registro.cuenta.tipodegasto}
+                            {registro.cuenta.tipodegasto.value}
                           </div>
                           <div className="w-full h-full text-center">
-                          {formatDate(registro.cuenta.date)}
+                            {formatDate(registro.cuenta.date)}
                           </div>
                           <div className="w-full h-full text-center">
                             {registro.cuenta.notifiacion ? "Sí" : "No"}

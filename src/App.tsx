@@ -23,7 +23,7 @@ function App() {
     useState(false);
   const [loading, setLoading] = useState(true);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
-  const [noPago, setNoPago] = useState(false)
+  const [noPago, setNoPago] = useState(false);
   const dispatch = useDispatch();
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
@@ -36,22 +36,19 @@ function App() {
   );
   const [_estadoRedux, setestadoRedux] = useState("");
 
+  ///////////////////////////////////
 
+  // const socket = io("http://localhost:4500");
 
-    ///////////////////////////////////
+  // socket.emit("register_as_program_2");
 
-    const socket = io("http://localhost:4500");
+  // socket.on("receive_notification", (data) => {
+  //   console.log("Notificación recibida:", data);
 
-    socket.emit('register_as_program_2');
-    
-    socket.on('receive_notification', (data) => {
-      console.log('Notificación recibida:', data);
-  
-        // Enviar la notificación al backend para ser guardada
-    saveNotificationToDatabase(data);
-  
-    });
-    // Función para enviar la notificación al backend
+  //   // Enviar la notificación al backend para ser guardada
+  //   saveNotificationToDatabase(data);
+  // });
+  // Función para enviar la notificación al backend
   const saveNotificationToDatabase = async (notificationData: any) => {
     try {
       window.api.enviarEvento("save-notification", notificationData);
@@ -60,12 +57,8 @@ function App() {
       console.error("Error al enviar la notificación al backend:", error);
     }
   };
-  
-  
-  
-  
-    ////////////////////////////////////////////////
-  
+
+  ////////////////////////////////////////////////
 
   useEffect(() => {
     window.api.enviarEvento("verificar-admin-existente");
@@ -121,7 +114,6 @@ function App() {
           response
         );
       }
-      setLoading(false); // Marca que la carga ha terminado
     };
 
     window.api.recibirEvento(
@@ -179,37 +171,50 @@ function App() {
     return () => clearTimeout(timer);
   }, [showLoadingScreen]);
 
-
   useEffect(() => {
     // Define la función de actualización para el estado noPago
-    const actualizarEstadoNoPago = (estado: boolean | ((prevState: boolean) => boolean)) => {
+    const actualizarEstadoNoPago = (
+      estado: boolean | ((prevState: boolean) => boolean)
+    ) => {
       setNoPago(estado); // Actualiza el estado en tiempo real
     };
-  
+
     // Escucha el evento "actualizarEstadoNoPago" desde el backend
     window.api.recibirEvento("actualizarEstadoNoPago", actualizarEstadoNoPago);
-  
+
     // Limpia el listener cuando el componente se desmonta
     return () => {
-      window.api.removeListener("actualizarEstadoNoPago", actualizarEstadoNoPago);
+      window.api.removeListener(
+        "actualizarEstadoNoPago",
+        actualizarEstadoNoPago
+      );
     };
   }, []);
-  
-  
-
-  
 
   function renderContent() {
-    console.log(noPago,"KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
-    if (loading) {
+    console.log(
+      noPago,
+      "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
+    );
+    if (!loading) {
       return <div>Cargando... no se obtuvieron los permisos</div>; // Muestra un mensaje de carga mientras se obtienen los permisos
     }
     if (adminExists == false) {
       return <div>Cargando... el admin no existe</div>;
     } else if (bloqueoPrograma) {
-      return <Programabloqueado setBloqueoPrograma={setBloqueoPrograma} noPago={noPago}/>;
-    }else if (noPago) {
-      return <Programabloqueado setBloqueoPrograma={setBloqueoPrograma} noPago={noPago}/>;
+      return (
+        <Programabloqueado
+          setBloqueoPrograma={setBloqueoPrograma}
+          noPago={noPago}
+        />
+      );
+    } else if (noPago) {
+      return (
+        <Programabloqueado
+          setBloqueoPrograma={setBloqueoPrograma}
+          noPago={noPago}
+        />
+      );
     } else if (adminExists) {
       return isAuthenticated ? (
         <>

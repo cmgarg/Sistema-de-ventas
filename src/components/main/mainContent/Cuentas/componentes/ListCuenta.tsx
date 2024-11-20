@@ -10,7 +10,7 @@ import InformacionCuentas from "./InformacionCuentas";
 interface Cuenta {
   [x: string]: any;
   meses: number;
-  tipodegasto: string;
+  tipodegasto: { value: string; label: string };
   date: string;
   pay: number;
   descripcion: string;
@@ -125,10 +125,10 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
         const cuentasFiltradas = filtrarCuentasPorFecha(fecha);
         return (
           cuentasFiltradas.some(
-            (cuenta) => cuenta.tipodegasto === "Vencimiento Mensual"
+            (cuenta) => cuenta.tipodegasto.value === "vencimiento-mensual"
           ) &&
           cuentasFiltradas.some(
-            (cuenta) => cuenta.tipodegasto === "Gasto Diario"
+            (cuenta) => cuenta.tipodegasto.value === "gasto-diario"
           )
         );
       });
@@ -265,7 +265,8 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
       case "tipodegasto":
         const tipoOrden = orden === "asc" ? 1 : -1;
         return sortedCuentas.sort(
-          (a, b) => tipoOrden * a.tipodegasto.localeCompare(b.tipodegasto)
+          (a, b) =>
+            tipoOrden * a.tipodegasto.value.localeCompare(b.tipodegasto.value)
         );
       case "descripcion":
         return sortedCuentas.sort((a, b) => {
@@ -427,7 +428,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
   return (
     <div
       onWheel={inforamcionCuentas ? null : handleWheel}
-      className="flex flex-col h-[60.5rem]"
+      className="flex flex-col flex-1"
     >
       {editar && cuentaSeleccionada && (
         <EditarCuenta
@@ -494,7 +495,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
             }`}
           >
             <div
-              className="flex w-[11rem] text-white justify-center items-center flex-col border-r-1 border-gray-600 rounded-lg hover:bg-gray-900"
+              className="flex w-52 text-white justify-center items-center flex-col border-r-2 border-gray-600 rounded-lg hover:bg-gray-900"
               onClick={() => expandirDiv(`div${index + 1}`)}
             >
               <LuCalendarDays className="w-[8rem] h-[8rem]" color="white" />
@@ -502,17 +503,15 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
                 {getMes(addMonths(fechaActual, index))}
               </div>
               <div className="flex flex-col items-center justify-center">
-                <div className="text-green-600">
-                  
-                  {formatNumber(sumaCuentasPagadas(cuentasMes))}
+                <div className="text-green-600 font-bold">
+                  ${formatNumber(sumaCuentasPagadas(cuentasMes))}
                 </div>
                 <div className="text-red-600">
-                  
-                  {formatNumber(sumaCuentasNoPagadas(cuentasMes))}
+                  ${formatNumber(sumaCuentasNoPagadas(cuentasMes))}
                 </div>
 
                 <div>Total:</div>
-                <div>{formatNumber(totales[index])}</div>
+                <div>${formatNumber(totales[index])}</div>
               </div>
             </div>
             <div
@@ -539,7 +538,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
                     onContextMenu={(event) => manejarClicDerecho(cuenta, event)}
                   >
                     <div className="flex h-[3rem] w-full text-white items-center border-b-1 border-gray-600 pl-6">
-                      {cuenta.tipodegasto}
+                      {cuenta.tipodegasto.value}
                     </div>
                     <div className="flex h-[3rem] w-full text-white items-center border-b-1 border-gray-600 pl-6">
                       {cuenta.descripcion}

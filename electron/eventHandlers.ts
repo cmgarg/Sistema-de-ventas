@@ -368,21 +368,20 @@ export const loadEvents = () => {
           imageUrl: usuario.imageUrl,
           esAdmin: usuario.esAdmin,
           _id: usuario._id,
-          uuid: usuario.uuid
+          uuid: usuario.uuid,
         };
-  
+
         // Primera respuesta
         event.reply("datos-usuario-obtenidos", {
           success: true,
           data: userData,
         });
-  
+
         // Segunda respuesta
         event.reply("datos-usuario-obtenidoss", {
           success: true,
           data: userData,
         });
-  
       } else {
         event.reply("datos-usuario-obtenidos", {
           success: false,
@@ -396,7 +395,6 @@ export const loadEvents = () => {
       });
     }
   });
-  
 
   function isIUser(obj: unknown): obj is IUser {
     return (
@@ -835,10 +833,6 @@ ipcMain.on("save-notification", async (event, notificationData) => {
   }
 });
 
-
-
-
-
 // Obtener todas las notificaciones
 ipcMain.on("get-notifications", async (event) => {
   try {
@@ -941,7 +935,6 @@ ipcMain.on("clear-cache", (event) => {
       event.reply("cache-cleared", { success: false, error: error.message });
     });
 });
-
 /////////guarda la edicion de las cuentas para el hisrial
 // Evento para guardar historial de cuentas
 ipcMain.on("guardar-historial-cuenta", async (event, cuentaHistorial) => {
@@ -973,9 +966,5 @@ ipcMain.on("get-historial-cuenta", async (event, idCuenta) => {
     });
   }
 });
-
-
-
-
 
 ///////////////////////

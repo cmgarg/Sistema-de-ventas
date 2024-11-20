@@ -208,7 +208,7 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
           </div>
 
           <div
-            className="w-16 h-9 bg-cover bg-center cursor-pointer rounded-lg mr-2 "
+            className="w-9 h-9 bg-cover bg-center cursor-pointer rounded-lg mr-2 "
             style={{ backgroundImage: `url(${selectedImage})` }}
           />
         </div>
