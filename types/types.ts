@@ -1,4 +1,3 @@
-import { Key } from "react";
 
 //types ARTICULOS
 export type articleData = {
@@ -219,6 +218,7 @@ export type pmType = {
 //TIPOS MARTIN
 
 export type IUser = {
+  uuid: any;
   nombre: string;
   username: string;
   email: string;

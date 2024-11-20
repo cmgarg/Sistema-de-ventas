@@ -196,14 +196,14 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
           <div>Agregar Cuenta</div>
         </div>
         <div className="flex flex-1 flex-col bg-green-500">
-          <div className="flex w-full justify-between px-2 bg-black">
-            <div className="flex flex-col space-x-1 justify-center">
-              <label htmlFor="tipodegasto" className="text-md">
-                Tipo De Gasto
+          <div className="flex w-full justify-evenly space-x-2 px-2">
+            <div className="flex-1 flex flex-col justify-center">
+              <label htmlFor="tipodegasto" className="text-sm">
+                Tipo de gasto
               </label>
               <div className="flex flex-row flex-1">
                 <SelectM
-                  className="outline-none h-10 w-52 rounded-md bg-slate-900 border-slate-900 cursor-pointer"
+                  className="outline-none h-10 w-full rounded-md bg-[#707070ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] focus:bg-[#909090ff] border-gray-600 cursor-pointer"
                   value={accountData.tipodegasto.label}
                   onChangeSelection={(e) => {
                     setChangeData("tipodegasto", e);
@@ -225,7 +225,7 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
                     <input
                       type="number"
                       name="meses"
-                      className="bg-slate-900 rounded-md w-12 text-center outline-none border-slate-800"
+                      className="bg-[#707070ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] focus:bg-[#909090ff] rounded-md w-12 text-center outline-none border-slate-800"
                       value={accountData.meses}
                       min="1"
                       onChange={(e) => {
@@ -237,15 +237,15 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
               </div>
             </div>
 
-            <div className="flex flex-col w-60">
-              <label htmlFor="descripcion" className="text-md">
+            <div className="flex flex-1 flex-col w-60">
+              <label htmlFor="descripcion" className="text-sm">
                 Descripcion
               </label>
               <input
                 type="text"
                 maxLength={18}
                 name="descripcion"
-                className="outline-none h-10 pl-2 rounded-md bg-slate-900 border-slate-900 w-full"
+                className="outline-none h-10 pl-2 rounded-md bg-[#707070ff] focus:bg-[#909090ff] border shadow-[0_2px_5px_rgba(0,0,0,0.50)] border-slate-900 w-full"
                 value={accountData.descripcion}
                 onChange={(e) => {
                   setChangeData("descripcion", e.target.value);
@@ -255,7 +255,7 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
           </div>
 
           <div className="flex-1 flex flex-col">
-            <label htmlFor="date" className="text-xl p-2 pl-4">
+            <label htmlFor="date" className="text-sm p-2 pl-4">
               Dia De Vencimiento
             </label>
             <input
