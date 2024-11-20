@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
+import ButtonR from "../../../buttons/ButtonR";
 
 interface UsuarioModalProps {
   isOpen: boolean;
@@ -141,23 +142,20 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-      <div
-        className="flex bg-gray-700 rounded-3xl relative justify-start text-white border-gray-50 border flex-col p-10 max-w-lg w-full"
-        style={{ backgroundColor: "rgba(30, 41, 59, 0.9)" }}
-      >
-        <h2 className="text-white text-2xl m-4">Agregar Nuevo Usuario</h2>
-        <div className="flex flex-col p-3">
-          <label className="text-xl p-2">Nombre del usuario</label>
+      <div className="flex bg-[#2f2f2fff] rounded-3xl relative justify-start text-white border-gray-600 border flex-col max-w-lg w-full">
+        <h2 className="text-white text-2xl p-2">Agregar Nuevo Usuario</h2>
+        <div className="flex flex-1 flex-col px-2">
+          <label className="text-base pb-1">Nombre del usuario</label>
           <input
             type="text"
             name="nombre"
             placeholder="Usuario"
             value={usuario.nombre}
             onChange={handleInputChange}
-            className="bg-slate-700 rounded-md outline-none m-2 text-xl p-2"
+            className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff] `}
           />
 
-          <label className="text-xl p-2">Contraseña</label>
+          <label className="text-base py-1">Contraseña</label>
           <div className="relative flex items-center">
             <input
               type={showPassword ? "text" : "password"}
@@ -165,7 +163,7 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
               placeholder="********"
               value={usuario.password}
               onChange={handleInputChange}
-              className="bg-slate-700 rounded-md outline-none m-2 text-xl p-2 w-full pr-10"
+              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff] `}
             />
             <div
               onClick={toggleShowPassword}
@@ -179,86 +177,96 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Permiso de uso */}
-          <div className="mt-4">
-            <div className="text-lg mb-2 select-none">Permisos de uso:</div>
-            {Object.keys(usuario.permisos).map((key) => (
-              <label className="flex items-center space-x-2" key={key}>
-                <input
-                  type="checkbox"
-                  name={key}
-                  checked={
-                    usuario.permisos[key as keyof typeof usuario.permisos]
-                  }
-                  onChange={handleCheckboxChange}
-                  className="accent-blue-500 h-5 w-5"
-                />
-                <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
-              </label>
-            ))}
+          <div className="flex h-52 w-full justify-evenly">
+            <div className="flex flex-1 flex-col ">
+              <div className="flex flex-col text-base p-2 select-none">
+                Permisos de uso:
+              </div>
+              {Object.keys(usuario.permisos).map((key) => (
+                <label
+                  className="flex items-center space-x-3 space-y-3"
+                  key={key}
+                >
+                  <input
+                    type="checkbox"
+                    name={key}
+                    checked={
+                      usuario.permisos[key as keyof typeof usuario.permisos]
+                    }
+                    onChange={handleCheckboxChange}
+                    className="accent-blue-500 h-5 w-5"
+                  />
+                  <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex flex-1">
+              <div className="flex flex-col flex-1">
+                <div className="flex flex-col text-base p-2 select-none">
+                  Accesos:
+                </div>
+                {usuario.permisos.logistica && (
+                  <div className="">
+                    <p>• Ventas con selección de vendedor</p>
+                    <p>• Artículos</p>
+                    <p>• Stock</p>
+                    <p>• Clientes</p>
+                    <p>• Facturación</p>
+                  </div>
+                )}
+
+                {usuario.permisos.gerente && (
+                  <div className="">
+                    <p>• Ventas con selección de vendedor</p>
+                    <p>• Artículos</p>
+                    <p>• Stock</p>
+                    <p>• Clientes</p>
+                    <p>• Estadísticas</p>
+                  </div>
+                )}
+
+                {usuario.permisos.stock && (
+                  <div className="">
+                    <p>• Stock</p>
+                  </div>
+                )}
+
+                {usuario.permisos.ventas && (
+                  <div className="">
+                    <p>• Ventas</p>
+                    <p>• Artículos</p>
+                    <p>• Stock</p>
+                    <p>• Clientes</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-          {usuario.permisos.logistica && (
-            <div className="mt-5">
-              Accesos:
-              <p>• Ventas con selección de vendedor</p>
-              <p>• Artículos</p>
-              <p>• Stock</p>
-              <p>• Clientes</p>
-              <p>• Facturación</p>
-            </div>
-          )}
-
-          {usuario.permisos.gerente && (
-            <div className="mt-5">
-              Accesos:
-              <p>• Ventas con selección de vendedor</p>
-              <p>• Artículos</p>
-              <p>• Stock</p>
-              <p>• Clientes</p>
-              <p>• Estadísticas</p>
-            </div>
-          )}
-
-          {usuario.permisos.stock && (
-            <div className="mt-5">
-              Accesos:
-              <p>• Stock</p>
-            </div>
-          )}
-
-          {usuario.permisos.ventas && (
-            <div className="mt-5">
-              Accesos:
-              <p>• Ventas</p>
-              <p>• Artículos</p>
-              <p>• Stock</p>
-              <p>• Clientes</p>
-            </div>
-          )}
-          <div className="flex border border-gray-600 text-red-700 p-2 rounded-md mt-2">
+          <div className="flex border-t-1 border-gray-600 text-gray-300 p-2 ">
             Puede acceder a una configuración avanzada en la sección
             "Configuración avanzada" dentro de los permisos de usuarios.
           </div>
-
-          <div className="flex justify-around">
-            <button
+        </div>
+        <div className="flex flex-1  justify-end p-4">
+          <div className="flex flex-1"></div>
+          <div className="flex flex-1 justify-around">
+            <ButtonR
+              textSize="text-sm"
               onClick={Cerrar}
-              className="bg-red-800 hover:bg-red-700 text-white font-bold py-2 px-4 rounded m-3 mt-10 p-2 pr-4"
-            >
-              Cerrar
-            </button>
+              bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff] text-sm"
+              height="h-7"
+              width="w-24"
+              title="Cancelar"
+            ></ButtonR>
 
-            <button
+            <ButtonR
+              textSize="text-sm"
               onClick={handleSave}
-              disabled={isSaveDisabled}
-              className={`font-bold py-2 px-4 rounded m-3 mt-10 ${
-                isSaveDisabled
-                  ? "bg-gray-500"
-                  : "bg-blue-800 hover:bg-blue-700 text-white"
-              }`}
-            >
-              Guardar
-            </button>
+              bgColor="bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-500 text-[#fff8dcff] text-sm"
+              height="h-7"
+              width="w-32"
+              title="Guardar"
+            ></ButtonR>
           </div>
         </div>
       </div>

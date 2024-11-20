@@ -21,7 +21,7 @@ function App() {
   const [bloqueoPrograma, setBloqueoPrograma] = useState(false);
   const [estadoRecuperacionCuenta, setEstadoRecuperacionCuenta] =
     useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState();
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [noPago, setNoPago] = useState(false)
   const dispatch = useDispatch();
@@ -36,6 +36,9 @@ function App() {
   );
   const [_estadoRedux, setestadoRedux] = useState("");
 
+
+
+  console.log(loading,"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw")
 
 
     ///////////////////////////////////
@@ -93,7 +96,6 @@ function App() {
       window.api.enviarEvento("obtener-datos-usuario", userId); // Enviar evento para obtener los datos del usuario
     } else {
       dispatch(logout());
-      setLoading(false);
     }
   }, [dispatch]);
 
@@ -121,7 +123,7 @@ function App() {
           response
         );
       }
-      setLoading(false); // Marca que la carga ha terminado
+
     };
 
     window.api.recibirEvento(
@@ -201,7 +203,7 @@ function App() {
 
   function renderContent() {
     console.log(noPago,"KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
-    if (loading) {
+    if (!loading) {
       return <div>Cargando... no se obtuvieron los permisos</div>; // Muestra un mensaje de carga mientras se obtienen los permisos
     }
     if (adminExists == false) {

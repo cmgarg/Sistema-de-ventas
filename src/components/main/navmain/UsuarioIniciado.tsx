@@ -208,7 +208,7 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
           </div>
 
           <div
-            className="w-16 h-9 bg-cover bg-center cursor-pointer rounded-lg mr-2 "
+            className="w-9 h-9 bg-cover bg-center cursor-pointer rounded-lg mr-2 "
             style={{ backgroundImage: `url(${selectedImage})` }}
           />
         </div>
@@ -238,11 +238,11 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
 
         {changeImageVisible && (
           <div className="absolute right-0 w-48 bg-[#2f2f2fff]  border border-gray-600 shadow-lg rounded-lg py-4 z-30 image-menu-container">
-            <div className="flex flex-wrap justify-between px-2 py-2">
+            <div className="flex flex-wrap justify-between px-1 py-1">
               {images.map((image, index) => (
                 <div
                   key={index}
-                  className={`w-12 h-12 bg-cover bg-center rounded-full cursor-pointer m-1 ${
+                  className={`w-12 h-12 m-1 bg-cover bg-center rounded-full cursor-pointer ${
                     selectedImage === image ? "ring-2 ring-[#ffd700ff]" : ""
                   }`}
                   onClick={() => handleImageSelect(index)}

@@ -169,7 +169,7 @@ export default function Aside() {
               {location.pathname == "/configuracion" ? (
                 <IoSettingsSharp size={40} />
               ) : (
-                <IoSettingsOutline size={35}/>
+                <IoSettingsOutline size={40}/>
               )}
             </GoTo>
           </div>
