@@ -181,7 +181,6 @@ input[type="checkbox"]:checked::before {
   animation: blink 1s linear infinite;
 }
 
-
 .t-100 {
   position: absolute !important;
   z-index: 10000000 !important;

@@ -1137,7 +1137,7 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 export const guardarUsuarioAdmin = async (usuarioAdmin: { password: any }) => {
-  console.log(usuarioAdmin)
+  console.log(usuarioAdmin);
   try {
     const hashedPassword = await bcrypt.hash(usuarioAdmin.password, saltRounds);
     const usuarioConPasswordEncriptado = {
@@ -1169,7 +1169,7 @@ export const verificarAdminExistente = () => {
         resolve({
           existeAdmin: true,
           recuperacioncuenta: admin.recuperacioncuenta,
-          faltapago: admin.faltapago
+          faltapago: admin.faltapago,
         });
       } else {
         resolve({ existeAdmin: false });
@@ -1706,8 +1706,6 @@ export const actualizarUsuariosAdmin = async (camposActualizados: any) => {
   });
 };
 
-
-
 function getDatabasee() {
   throw new Error("Function not implemented.");
 }
@@ -1803,4 +1801,4 @@ const generateRandomArticles = async (count: number) => {
   }
 };
 // // // Inserta artículos en la base de datos
-generateRandomArticles(400);
+// generateRandomArticles(400);

@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { login } from '../../redux/estados/authSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import PasswordRecovery from './PasswordRecovery.js';
-import { RootState } from '../../redux/store.js';
+import React, { useEffect, useState } from "react";
+import { login } from "../../redux/estados/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import PasswordRecovery from "./PasswordRecovery.js";
+import { RootState } from "../../redux/store.js";
+import ButtonR from "../main/mainContent/buttons/ButtonR";
 
 type LoginProps = {
   setEstadoRecuperacionCuenta: (estado: boolean) => void;
   setShowLoadingScreen: (estado: boolean) => void;
 };
 
-const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta, setShowLoadingScreen }) => {
+const Login: React.FC<LoginProps> = ({
+  setEstadoRecuperacionCuenta,
+  setShowLoadingScreen,
+}) => {
   const [loginIncorrecto, setLoginIncorrecto] = useState<boolean>(false);
   const [credentials, setCredentials] = useState({
     username: "",
@@ -42,7 +46,6 @@ const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta, setShowLoadi
     setShowLoadingScreen(true);
     console.log("Enviando credenciales:", credentials);
     window.api.enviarEvento("iniciar-sesion", credentials);
-    
   };
 
   const handleKeyPress = (e: { key: string }) => {
@@ -70,8 +73,10 @@ const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta, setShowLoadi
       window.api.removeAllListeners("respuesta-iniciar-sesion");
     };
   }, [dispatch, setEstadoRecuperacionCuenta]);
-  const userType = useSelector((state: RootState) => state.estadoTipoDeUser.userType);
-  console.log(userType,"--este ees le estado reduxxxxxx")
+  const userType = useSelector(
+    (state: RootState) => state.estadoTipoDeUser.userType
+  );
+  console.log(userType, "--este ees le estado reduxxxxxx");
 
   // Función para manejar el efecto ripple
   const handleRippleEffect = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -108,63 +113,75 @@ const Login: React.FC<LoginProps> = ({ setEstadoRecuperacionCuenta, setShowLoadi
           : "bg-gradient-to-t from-[#262626] via-[#2f2f2fff] to-[#000000]"
       }`}
     >
-      <div className="flex flex-col items-center justify-center shadow-[0_2px_5px_rgba(0,0,0,0.50)] rounded-lg w-1/5 h-1/2 pt-5 bg-black bg-opacity-20">
-        <h1 className=" p-5 text-2xl">Punto De Venta CMG</h1>
-        <p>Iniciar Sección</p>
-
-        <div className=" flex flex-col p-5 w-full h-full">
-          <label htmlFor="username" className='text-xl'>Usuario</label>
-          <input
-            className="outline-none h-14 px-2 rounded-md bg-[#404040ff] m-3 p-1"
-            id="username"
-            placeholder="Usuario"
-            type="text"
-            name="username"
-            value={credentials.username}
-            onChange={handleChange}
-            onKeyUp={handleKeyPress}
-            required
-          />
-          <label htmlFor="password" className='text-xl'>Contraseña</label>
-          <input
-            className="outline-none h-14 px-2 rounded-md bg-[#404040ff] m-3 p-1"
-            type="password"
-            id="password"
-            placeholder="*********"
-            name="password"
-            value={credentials.password}
-            onChange={handleChange}
-            onKeyUp={handleKeyPress}
-            required
-          />
-          {loginIncorrecto && (
-            <>
-              <p className="text-red-700">
-                El usuario o la contraseña son incorrectas.
-              </p>
-              <div
-                className="text-blue-700 cursor-pointer hover:underline"
-                onClick={() =>
-                  setShowRecovery({
-                    show: true,
-                    username: credentials.username,
-                  })
-                }
-              >
-                ¿Olvidaste la contraseña?
+      <div className="flex flex-col shadow-[0_2px_5px_rgba(0,0,0,0.50)] rounded-lg w-80 h-72 bg-black bg-opacity-30">
+        <div className="w-full flex justify-center items-center rounded-t-lg">
+          <p className="text-normal font-bold">Iniciar sesion</p>
+        </div>
+        <div className="flex flex-col flex-1 w-full px-2 justify-evenly">
+          <div className="w-full flex flex-col">
+            <label htmlFor="username" className="text-sm">
+              Usuario
+            </label>
+            <input
+              className="outline-none h-10 px-2 rounded-md bg-[#404040ff]"
+              id="username"
+              placeholder="Usuario"
+              type="text"
+              name="username"
+              value={credentials.username}
+              onChange={handleChange}
+              onKeyUp={handleKeyPress}
+              required
+            />
+          </div>
+          <div className="w-full flex flex-col">
+            <label htmlFor="password" className="text-sm">
+              Contraseña
+            </label>
+            <input
+              className="outline-none h-10 pl-2 w-full rounded-md bg-[#404040ff]"
+              type="password"
+              id="password"
+              placeholder="*********"
+              name="password"
+              value={credentials.password}
+              onChange={handleChange}
+              onKeyUp={handleKeyPress}
+              required
+            />
+          </div>
+          <div className="w-full h-10 pt-2">
+            {loginIncorrecto && (
+              <div className="w-full h-full">
+                <div className="text-red-400 text-sm">
+                  <p>El usuario o la contraseña son incorrectas.</p>
+                </div>
+                <div
+                  className="text-blue-400 cursor-pointer hover:underline text-sm"
+                  onClick={() =>
+                    setShowRecovery({
+                      show: true,
+                      username: credentials.username,
+                    })
+                  }
+                >
+                  <p>¿Olvidaste la contraseña?</p>
+                </div>
               </div>
-            </>
-          )}
-          <button
-            className="relative overflow-hidden h-10 p-2 bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-500 justify-center hover:bg-cyan-800 outline-none rounded-lg mt-10"
-            type="button"
+            )}
+          </div>
+        </div>
+        <div className="w-full flex justify-end pr-2 pb-2">
+          <ButtonR
+            width="w-32"
+            height="h-8"
+            bgColor="bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-500"
+            title="Iniciar"
             onClick={(event) => {
               handleRippleEffect(event);
               handleSubmit();
             }}
-          >
-            Iniciar
-          </button>
+          ></ButtonR>
         </div>
       </div>
       {showRecovery.show && (

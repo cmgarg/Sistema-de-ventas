@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import CustomAlert from "./CustomAlert"; // Importa tu componente de alerta personalizado
 import ReactSwitch from "react-switch";
+import SelectM from "../../../Select/Select";
 
 interface AddAccountToPayProps {
   onChangeModal: (p: boolean) => void;
   addAccountToPay: (account: {
     date: string;
     dateTime: string;
-    tipodegasto: string;
+    tipodegasto: { value: string; label: string };
     descripcion: string;
     pay: number;
     pagado: boolean;
@@ -23,7 +24,7 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
   addAccountToPay,
 }) => {
   type accountObject = {
-    tipodegasto: string;
+    tipodegasto: { value: string; label: string };
     date: string;
     dateTime: string;
     pay: string; // Mantener como string para el estado interno
@@ -38,7 +39,7 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
   };
 
   const [accountData, setAccountData] = useState<accountObject>({
-    tipodegasto: "",
+    tipodegasto: { value: "", label: "" },
     date: "",
     dateTime: "",
     pay: "",
@@ -79,17 +80,22 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
     };
   }, [accountData]);
 
-
   function subirArticulo() {
     const now = new Date();
     const time = now.toTimeString().split(" ")[0];
-    const dateTime = new Date().toLocaleTimeString('es-AR', { hour12: false });
+    const dateTime = new Date().toLocaleTimeString("es-AR", { hour12: false });
     const dateDay = now.toISOString().split("T")[0];
     const date = now.toISOString().split("T")[0];
     const pagado2 = accountData.pagado ? date : "";
     const pagado3 = accountData.pagado ? time : "";
-    const newAccountData = { ...accountData, time, dateTime, dateDay, pagado2, pagado3 };
-    
+    const newAccountData = {
+      ...accountData,
+      time,
+      dateTime,
+      dateDay,
+      pagado2,
+      pagado3,
+    };
 
     const newAccount = {
       date: newAccountData.date,
@@ -105,13 +111,17 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
       senotifico: newAccountData.senotifico, // Aseguramos que senotifico se incluya
     };
 
-    if (accountData.tipodegasto === "Vencimiento Mensual") {
+    if (accountData.tipodegasto.value === "vencimiento-mensual") {
       for (let i = 0; i < accountData.meses; i++) {
         const accountWithDate = {
           ...newAccount,
           date: new Date(
-            new Date(accountData.date).setMonth(new Date(accountData.date).getMonth() + i)
-          ).toISOString().split("T")[0],
+            new Date(accountData.date).setMonth(
+              new Date(accountData.date).getMonth() + i
+            )
+          )
+            .toISOString()
+            .split("T")[0],
           dateTime: i === 0 ? dateTime : "", // Solo asignar `dateTime` en la primera cuenta
         };
         window.api.enviarEvento("save-accountToPay", accountWithDate);
@@ -123,7 +133,7 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
     }
     // Reiniciar los valores
     setAccountData({
-      tipodegasto: "",
+      tipodegasto: { value: "", label: "" },
       date: "",
       dateTime: "",
       pay: "",
@@ -135,11 +145,10 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
     });
     onChangeModal(false);
   }
-  
 
   function validateAndSubmit() {
     const { tipodegasto, date, pay, descripcion } = accountData;
-    if (!tipodegasto || !date || !pay || !descripcion) {
+    if (!tipodegasto.value || !date || !pay || !descripcion) {
       setAlertMessage(
         "Por favor, completa todos los campos antes de continuar."
       );
@@ -182,38 +191,41 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 w-full h-full">
       <div className="absolute top-0 right-0 bottom-0 left-0 bg-black opacity-60"></div>
-      <div className="flex flex-col w-1/4 h-2/2 bg-slate-950 space-y-5 rounded-3xl relative justify-start text-white border-slate-800 border overflow-hidden">
-        <div className="flex flex-1 flex-row h-8 mt-6 text-3xl items-center justify-center">
+      <div className="flex flex-col w-[600px] h-4/5 bg-slate-950 rounded-3xl relative justify-start text-white border-slate-800 border overflow-hidden">
+        <div className="flex flex-row h-8 text-xl items-center justify-center bg-red-500">
           <div>Agregar Cuenta</div>
         </div>
-        <div className="flex flex-1 flex-col">
-          <div className="flex flex-row space-x-1 items-center justify-center">
-            <div className="flex-1 flex flex-col">
-              <label htmlFor="tipodegasto" className="text-xl pl-4">
-                Tipo De Gasto
+        <div className="flex flex-1 flex-col bg-green-500">
+          <div className="flex w-full justify-evenly space-x-2 px-2">
+            <div className="flex-1 flex flex-col justify-center">
+              <label htmlFor="tipodegasto" className="text-sm">
+                Tipo de gasto
               </label>
               <div className="flex flex-row flex-1">
-                <select
-                  name="tipodegasto"
-                  className="outline-none h-14 w-full px-2 rounded-md bg-slate-900 border-slate-900 ml-3 mr-3"
-                  value={accountData.tipodegasto}
-                  onChange={(e) => {
-                    setChangeData("tipodegasto", e.target.value);
+                <SelectM
+                  className="outline-none h-10 w-full rounded-md bg-[#707070ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] focus:bg-[#909090ff] border-gray-600 cursor-pointer"
+                  value={accountData.tipodegasto.label}
+                  onChangeSelection={(e) => {
+                    setChangeData("tipodegasto", e);
                   }}
-                >
-                  <option value="">Selecciona una opción</option>
-                  <option value="Vencimiento Mensual">
-                    Vencimiento Mensual
-                  </option>
-                  <option value="Gasto Diario">Gasto Diario</option>
-                </select>
+                  options={[
+                    {
+                      value: "vencimiento-mensual",
+                      label: "Vencimiento Mensual",
+                    },
+                    { value: "gasto-diario", label: "Gasto Diario" },
+                  ]}
+                  todos={false}
+                  slice={3}
+                  placeholder="Selecciona una opcion"
+                ></SelectM>
 
-                {accountData.tipodegasto === "Vencimiento Mensual" ? (
+                {accountData.tipodegasto.value === "vencimiento-mensual" ? (
                   <div className="flex h-14 mr-3">
                     <input
                       type="number"
                       name="meses"
-                      className="bg-slate-900 rounded-md w-12 text-center outline-none border-slate-800"
+                      className="bg-[#707070ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] focus:bg-[#909090ff] rounded-md w-12 text-center outline-none border-slate-800"
                       value={accountData.meses}
                       min="1"
                       onChange={(e) => {
@@ -224,26 +236,26 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
                 ) : null}
               </div>
             </div>
-          </div>
 
-          <div className="flex flex-col">
-            <label htmlFor="descripcion" className="text-xl pl-4 p-2">
-              Descripcion
-            </label>
-            <input
-              type="text"
-              maxLength={18}
-              name="descripcion"
-              className="outline-none h-14 px-2 rounded-md bg-slate-900 border-slate-900 mr-3 ml-3"
-              value={accountData.descripcion}
-              onChange={(e) => {
-                setChangeData("descripcion", e.target.value);
-              }}
-            />
+            <div className="flex flex-1 flex-col w-60">
+              <label htmlFor="descripcion" className="text-sm">
+                Descripcion
+              </label>
+              <input
+                type="text"
+                maxLength={18}
+                name="descripcion"
+                className="outline-none h-10 pl-2 rounded-md bg-[#707070ff] focus:bg-[#909090ff] border shadow-[0_2px_5px_rgba(0,0,0,0.50)] border-slate-900 w-full"
+                value={accountData.descripcion}
+                onChange={(e) => {
+                  setChangeData("descripcion", e.target.value);
+                }}
+              />
+            </div>
           </div>
 
           <div className="flex-1 flex flex-col">
-            <label htmlFor="date" className="text-xl p-2 pl-4">
+            <label htmlFor="date" className="text-sm p-2 pl-4">
               Dia De Vencimiento
             </label>
             <input

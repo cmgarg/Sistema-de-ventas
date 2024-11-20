@@ -36,7 +36,7 @@ function Header() {
   }, []);
 
   return (
-    <div className=" bg-[#2f2f2fff] bg row-start-1 row-end-2 h-10 flex justify-between  items-center">
+    <div className="bg-[#2f2f2fff] bg row-start-1 row-end-2 h-10 flex justify-between items-center app-region-drag">
       <div className="justify-between items-center w-44 flex items">
         <div className="h-10 flex justify-start items-center ">
           <div className=" flex justify-center items-center w-5 h-5 ml-3 mr-3 ">
