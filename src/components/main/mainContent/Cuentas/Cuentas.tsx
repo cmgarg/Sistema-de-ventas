@@ -139,7 +139,7 @@ const Cuentas: React.FC = () => {
           />
         )}
         <div className="flex flex-1 flex-col m-2 space-y-2">
-          <div className="flex flex-row h-12 space-x-2">
+          <div className="flex flex-row h-12 space-x-2 ">
             <div className="flex h-full w-52 text-white justify-center items-center border rounded-lg border-gray-600 select-none cursor-pointer hover:brightness-125 bg-black bg-opacity-35 hover:border-yellow-900">
               <p>Mes</p>
             </div>
@@ -174,7 +174,7 @@ const Cuentas: React.FC = () => {
               <p>Pagado</p>
             </div>
           </div>
-          <div className="w-full flex-1 mt-5 flex items-end">
+          <div className="w-full flex-1 flex">
             <ListCuenta
               cuentas={accountToPay}
               filtroActivo={filtroActivo}
@@ -184,15 +184,15 @@ const Cuentas: React.FC = () => {
             />
           </div>
         </div>
-        <div className="flex p-2 h-full text-white justify-between flex-col rounded-lg space-y-2">
-          <div className="flex flex-1">
+        <div className="flex p-2 h-full text-white flex-col rounded-lg space-y-2">
+          <div className="flex">
             <Calendar
               diaSeleccionado={diaSeleccionado}
               setDiaSeleccionado={setDiaSeleccionado}
             />
           </div>
-          <div className="flex-1 flex flex-col justify-center ">
-            <div className="flex border-gray-600 border rounded-t-lg items-center justify-center h-10">
+          <div className="flex-1 flex flex-col">
+            <div className="flex border-gray-600 border rounded-t-lg justify-center items-center h-10">
               <p className="">Vencimiento Mensual</p>
             </div>
             <div className="flex border border-gray-600 rounded-b-lg flex-1 overflow-y-scroll">

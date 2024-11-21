@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import CustomAlert from "./CustomAlert"; // Importa tu componente de alerta personalizado
 import ReactSwitch from "react-switch";
 import SelectM from "../../../Select/Select";
+import ButtonR from "../../../buttons/ButtonR";
 
 interface AddAccountToPayProps {
   onChangeModal: (p: boolean) => void;
@@ -191,11 +192,8 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 w-full h-full">
       <div className="absolute top-0 right-0 bottom-0 left-0 bg-black opacity-60"></div>
-      <div className="flex flex-col w-[600px] h-4/5 bg-slate-950 rounded-3xl relative justify-start text-white border-slate-800 border overflow-hidden">
-        <div className="flex flex-row h-8 text-xl items-center justify-center bg-red-500">
-          <div>Agregar Cuenta</div>
-        </div>
-        <div className="flex flex-1 flex-col bg-green-500">
+      <div className="flex flex-col w-[600px] py-2 bg-[#2f2f2fff] rounded-md relative justify-start text-white border-slate-800 border overflow-hidden">
+        <div className="flex flex-1 flex-col space-y-2">
           <div className="flex w-full justify-evenly space-x-2 px-2">
             <div className="flex-1 flex flex-col justify-center">
               <label htmlFor="tipodegasto" className="text-sm">
@@ -245,7 +243,7 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
                 type="text"
                 maxLength={18}
                 name="descripcion"
-                className="outline-none h-10 pl-2 rounded-md bg-[#707070ff] focus:bg-[#909090ff] border shadow-[0_2px_5px_rgba(0,0,0,0.50)] border-slate-900 w-full"
+                className="outline-none h-10 pl-2 rounded-md bg-[#707070ff] focus:bg-[#909090ff] border shadow-[0_2px_5px_rgba(0,0,0,0.50)] border-gray-600 w-full"
                 value={accountData.descripcion}
                 onChange={(e) => {
                   setChangeData("descripcion", e.target.value);
@@ -253,98 +251,108 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
               />
             </div>
           </div>
+          <div className="flex pr-2">
+            <div className="flex flex-1 flex-col px-2">
+              <div className="flex-1 flex flex-col">
+                <div className="flex w-full">
+                  <label
+                    htmlFor="date"
+                    className="text-sm h-7 flex items-center"
+                  >
+                    Dia de vencimiento
+                  </label>
+                </div>
+                <input
+                  type="date"
+                  name="date"
+                  className="outline-none cursor-pointer h-10 px-2 w-full rounded-md bg-[#707070ff] focus:bg-[#909090ff] border shadow-[0_2px_5px_rgba(0,0,0,0.50)] fecha-input fecha-input:focus border-gray-600 text-sm"
+                  value={accountData.date}
+                  onChange={(e) => {
+                    setChangeData("date", e.target.value);
+                  }}
+                />
+              </div>
 
-          <div className="flex-1 flex flex-col">
-            <label htmlFor="date" className="text-sm p-2 pl-4">
-              Dia De Vencimiento
-            </label>
-            <input
-              type="date"
-              name="date"
-              className="outline-none h-14 px-2 rounded-md bg-slate-900 fecha-input fecha-input:focus border-slate-900 mr-3 ml-3  text-2xl"
-              value={accountData.date}
-              onChange={(e) => {
-                setChangeData("date", e.target.value);
-              }}
-            />
+              <div className="flex-1 flex flex-col items-center justify-center rounded-md border-slate-900 "></div>
+            </div>
+
+            <div className="flex flex-1 flex-col">
+              <label htmlFor="pay" className="text-sm h-7 flex items-center">
+                Monto
+              </label>
+              <input
+                type="text"
+                name="pay"
+                className="outline-none h-10 px-2 w-full rounded-md bg-[#707070ff] focus:bg-[#909090ff] border shadow-[0_2px_5px_rgba(0,0,0,0.50)] fecha-input fecha-input:focus border-gray-600 text-sm"
+                value={accountData.pay}
+                onChange={handlePayChange}
+                onBlur={handlePayBlur}
+              />
+            </div>
           </div>
+          <div className="flex">
+            <div className="flex space-y-3 flex-col flex-1 px-2 pt-2">
+              <div className="h-full flex-1 w-13 flex items-center space-x-2">
+                <label htmlFor="notifiacion" className="text-xs">
+                  Notificarme el dia de vencimiento
+                </label>
 
-          <div className="flex-1 flex items-center h-14 rounded-md bg-slate-900 border-slate-900 m-3">
-            <label htmlFor="notifiacion" className="text-xl p-2 pl-4">
-              Notificarme el dia de vencimiento
-            </label>
-            <ReactSwitch
-              id="notifiacion"
-              checked={accountData.notifiacion}
-              onChange={(checked) => {
-                setChangeData("notifiacion", checked);
-              }}
-              onColor="#86d3ff"
-              onHandleColor="#2693e6"
-              handleDiameter={30}
-              uncheckedIcon={false}
-              checkedIcon={false}
-              boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-              activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-              height={20}
-              width={48}
-              className="ml-10"
-            />
-          </div>
+                <input
+                  type="checkbox"
+                  name="pagado"
+                  className="h-4 w-4 checked:bg-green-500 rounded-full"
+                  checked={accountData.notifiacion}
+                  onChange={(e) => {
+                    setChangeData("notifiacion", e.target.checked);
+                  }}
+                />
+              </div>
+              <div className="flex flex-1 space-x-2 items-center">
+                <div className="text-xs ">Estado de cuenta :</div>
 
-          <div className="flex flex-col">
-            <label htmlFor="pay" className="text-xl p-2 pl-4">
-              Monto
-            </label>
-            <input
-              type="text"
-              name="pay"
-              className="outline-none h-14 px-2 rounded-md bg-slate-900 border-slate-900 mr-3 ml-3"
-              value={accountData.pay}
-              onChange={handlePayChange}
-              onBlur={handlePayBlur}
-            />
-          </div>
-
-          <div className="w-56 text-xl pl-4 mt-2">Estado de cuenta</div>
-
-          <div className="flex h-14 rounded-md bg-slate-900 items-center justify-around border-slate-900 mb-4 m-3 ">
-            <label
-              htmlFor="pagado"
-              className={`text-2xl p-2 pl-4 ${
-                estadoPagado && "text-green-500"
-              }`}
-            >
-              Pagado
-            </label>
-            <input
-              type="checkbox"
-              name="pagado"
-              className="h-6 w-6 checked:bg-green-500"
-              checked={accountData.pagado}
-              onChange={(e) => {
-                setChangeData("pagado", e.target.checked);
-                setEstadoPagado(e.target.checked);
-              }}
-            />
-          </div>
-
-          <div className="flex flex-1 w-full bg-slate-100">
-            <button
-              className="flex flex-1 p-2 bg-rose-700 justify-center hover:bg-rose-800 outline-none"
-              onClick={() => {
-                onChangeModal(false);
-              }}
-            >
-              Cancelar
-            </button>
-            <button
-              className="flex flex-1 h-10 p-2 bg-cyan-700 justify-center hover:bg-cyan-800 outline-none"
-              onClick={validateAndSubmit}
-            >
-              Agregar
-            </button>
-          </div>
+                <div className="flex justify-center space-x-1 rounded-md items-center border-slate-900">
+                  <input
+                    type="checkbox"
+                    name="pagado"
+                    className="h-4 w-4 checked:bg-green-500 rounded-full flex"
+                    checked={accountData.pagado}
+                    onChange={(e) => {
+                      setChangeData("pagado", e.target.checked);
+                      setEstadoPagado(e.target.checked);
+                    }}
+                  />
+                  <label
+                    htmlFor="pagado"
+                    className={`text-[10px] ${
+                      accountData.pagado && "text-green-500"
+                    }`}
+                  >
+                    Pagado
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div className="flex w-full text-md justify-end pr-2 space-x-2 flex-1 items-end">
+              <ButtonR
+                height="h-7"
+                width="w-24"
+                title="Cancelar"
+                bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff] text-sm"
+                textSize="text-sm"
+                onClick={() => {
+                  onChangeModal(false);
+                }}
+              ></ButtonR>
+              <ButtonR
+                height="h-7"
+                width="w-32"
+                title="Agregar"
+                bgColor="bg-gradient-to-l from-yellow-700 via-yellow-700 to-yellow-500 text-[#fff8dcff] text-sm"
+                textSize="text-sm"
+                onClick={validateAndSubmit}
+              ></ButtonR>
+            </div>
+          </div>{" "}
         </div>
       </div>
       {showAlert && (
