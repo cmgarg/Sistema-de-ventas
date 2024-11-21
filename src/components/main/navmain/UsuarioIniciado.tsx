@@ -129,6 +129,9 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
           imageUrl: "",
           esAdmin: false,
           _id: "",
+          uuid: undefined,
+          nombre: "",
+          username: ""
         },
       })
     ); // Ajusta {} según sea necesario
