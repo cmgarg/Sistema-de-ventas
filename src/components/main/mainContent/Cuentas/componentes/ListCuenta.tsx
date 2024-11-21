@@ -570,7 +570,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
                       </div>
                       <div
                         onClick={() => togglePagado(cuenta._id)}
-                        className="flex w-full items-center justify-center "
+                        className="flex w-full items-center justify-center"
                       >
                         <div className="">
                           <MdCheckCircleOutline
