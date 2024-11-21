@@ -2,7 +2,7 @@ import React, { useState, ReactNode, MouseEvent } from "react";
 import ReactDOM from "react-dom";
 
 interface TooltipProps {
-  content: string;
+  content: any;
   children: ReactNode;
 }
 

@@ -14,24 +14,32 @@ interface Usuario {
   _id: string;
   nombre: string;
   imageUrl: string;
-  password: string;  // Asegúrate de incluir 'password'
-  
+  password: string; // Asegúrate de incluir 'password'
 }
-
 
 interface Cargo {
   key: string;
   permisos: string[];
 }
 
-const Permisos: React.FC<PermisosProps> = ({ usuarios, usuarioSeleccionado, setUsuarios }) => {
+const Permisos: React.FC<PermisosProps> = ({
+  usuarios,
+  usuarioSeleccionado,
+  setUsuarios,
+}) => {
   const [cargoSelec, setCargoSelec] = useState<string>("");
   const [showWarningModal, setShowWarningModal] = useState<boolean>(false);
   const [selectedCargo, setSelectedCargo] = useState<string>("");
 
   const cargos: Cargo[] = [
-    { key: "gerente", permisos: ["Ventas", "Artículos", "Stock", "Clientes", "Estadísticas"] },
-    { key: "logistica", permisos: ["Ventas", "Artículos", "Stock", "Clientes"] },
+    {
+      key: "gerente",
+      permisos: ["Ventas", "Artículos", "Stock", "Clientes", "Estadísticas"],
+    },
+    {
+      key: "logistica",
+      permisos: ["Ventas", "Artículos", "Stock", "Clientes"],
+    },
     { key: "ventas", permisos: ["Ventas", "Artículos", "Stock", "Clientes"] },
     { key: "stock", permisos: ["Stock"] },
   ];
@@ -53,7 +61,11 @@ const Permisos: React.FC<PermisosProps> = ({ usuarios, usuarioSeleccionado, setU
   }, [usuarioSeleccionado, usuarios]);
 
   useEffect(() => {
-    const actualizarPermisos = (response: { exito: boolean; usuario: Usuario; mensaje: string }) => {
+    const actualizarPermisos = (response: {
+      exito: boolean;
+      usuario: Usuario;
+      mensaje: string;
+    }) => {
       if (response.exito) {
         setUsuarios((prevUsuarios) =>
           prevUsuarios.map((usuario) =>
@@ -61,14 +73,19 @@ const Permisos: React.FC<PermisosProps> = ({ usuarios, usuarioSeleccionado, setU
           )
         );
         setCargoSelec(
-          Object.keys(response.usuario.permisos).find((key) => response.usuario.permisos[key]) || ""
+          Object.keys(response.usuario.permisos).find(
+            (key) => response.usuario.permisos[key]
+          ) || ""
         );
       } else {
         console.error("Error al actualizar permisos:", response.mensaje);
       }
     };
 
-    window.api.recibirEvento("respuesta-actualizar-permisos-usuario", actualizarPermisos);
+    window.api.recibirEvento(
+      "respuesta-actualizar-permisos-usuario",
+      actualizarPermisos
+    );
 
     return () => {
       window.api.removeAllListeners("respuesta-actualizar-permisos-usuario");
@@ -91,7 +108,10 @@ const Permisos: React.FC<PermisosProps> = ({ usuarios, usuarioSeleccionado, setU
       [selectedCargo]: true,
     };
 
-    window.api.enviarEvento("actualizar-permisos-usuario", { userId: usuarioSeleccionado, nuevosPermisos: permisos });
+    window.api.enviarEvento("actualizar-permisos-usuario", {
+      userId: usuarioSeleccionado,
+      nuevosPermisos: permisos,
+    });
   };
 
   const cancelChange = () => {
@@ -101,6 +121,10 @@ const Permisos: React.FC<PermisosProps> = ({ usuarios, usuarioSeleccionado, setU
   const formatKey = (key: string) => {
     return key.charAt(0).toUpperCase() + key.slice(1);
   };
+  console.log(
+    usuarios,
+    "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
+  );
 
   return (
     <div className="flex flex-col flex-1">
@@ -111,12 +135,17 @@ const Permisos: React.FC<PermisosProps> = ({ usuarios, usuarioSeleccionado, setU
         <div className="p-4 text-lg">
           Configuración por defecto: solo se puede seleccionar una categoría.
         </div>
-        <div className="flex flex-wrap text-white justify-around p-5 border-b border-t border-gray-600 gap-4 ">
+        <div className="flex flex-wrap text-white justify-around p-5 border-b border-t border-gray-600 gap-4 relative ">
+          {usuarios.length === 0 ? (
+            <div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-30 flex items-center justify-center z-40"></div>
+          ) : null}
           {cargos.map((cargo) => (
             <div
               key={cargo.key}
               className={`bg-gradient-to-b from-gray-800 via-gray-800 to-gray-700 flex flex-col rounded-lg flex-grow w-full sm:w-1/5 min-w-[10rem] max-w-[15rem] h-60 shadow-[0_2px_5px_rgba(0,0,0,0.50)] ${
-                cargoSelec === cargo.key ? "bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-600" : ""
+                cargoSelec === cargo.key
+                  ? "bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-600"
+                  : ""
               }`}
               onClick={() => handleSelect(cargo.key)}
             >
@@ -140,10 +169,7 @@ const Permisos: React.FC<PermisosProps> = ({ usuarios, usuarioSeleccionado, setU
         </div>
       </div>
       {showWarningModal && (
-        <WarningModal
-          onConfirm={confirmChange}
-          onCancel={cancelChange}
-        />
+        <WarningModal onConfirm={confirmChange} onCancel={cancelChange} />
       )}
     </div>
   );

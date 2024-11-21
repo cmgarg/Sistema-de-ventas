@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import ButtonR from "../../../buttons/ButtonR";
+import { FaCircleQuestion } from "react-icons/fa6";
+import { MdQuestionMark } from "react-icons/md";
+import Tooltip from "../../../../../nav/aside/Tooltip";
 
 interface UsuarioModalProps {
   isOpen: boolean;
@@ -8,7 +11,6 @@ interface UsuarioModalProps {
 }
 
 interface Usuario {
-  _id?: string; // Añadido "?" porque se inicializa sin este valor
   nombre: string;
   imageUrl: string;
   password: string;
@@ -22,10 +24,9 @@ interface Usuario {
 
 const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
   const [usuario, setUsuario] = useState<Usuario>({
-    _id: "",
     nombre: "",
     password: "",
-    imageUrl: "/imagen-usuario/user-1.jpg",
+    imageUrl: "assets/imagen-usuario/user-1.jpg",
     permisos: {
       gerente: true,
       logistica: false,
@@ -35,6 +36,7 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [contraseñaincorrecta, setContraseñaIncorrecta] = useState(false)
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -64,12 +66,12 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
 
   const Cerrar = () => {
     onClose();
+    setContraseñaIncorrecta(false);
     setShowPassword(false);
     setUsuario({
-      _id: "",
       nombre: "",
       password: "",
-      imageUrl: "/imagen-usuario/user-1.jpg",
+      imageUrl: "assets/imagen-usuario/user-1.jpg",
       permisos: {
         gerente: true,
         logistica: false,
@@ -79,11 +81,23 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
     });
   };
 
+
+
+
+  const errorContraseña = () => {
+    setContraseñaIncorrecta(true); // Cambia el estado para mostrar el error
+  };
+  
   const handleSave = () => {
+    if (usuario.nombre.trim().length < 4 || usuario.password.length < 4) {
+      errorContraseña(); // Activa el error si la validación falla
+      return; // Detén la ejecución si no cumple con los requisitos
+    }
+  
+    // Si pasa la validación, guarda y cierra el modal
     console.log("Guardando datos del usuario:", usuario);
-    onClose(); // Cierra el modal después de guardar
-    // Envía los datos del formulario al backend
     window.api.enviarEvento("guardar-usuario-secundario", usuario);
+  
     setUsuario({
       nombre: "",
       password: "",
@@ -95,7 +109,11 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
         stock: false,
       },
     });
+  
+    setContraseñaIncorrecta(false); // Resetea el estado de error
+    onClose(); // Cierra el modal
   };
+  
 
   useEffect(() => {
     const handleResponse = (respuesta: {
@@ -139,13 +157,34 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
   }, [isSaveDisabled]);
 
   if (!isOpen) return null;
+  
 
   return (
     <div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
       <div className="flex bg-[#2f2f2fff] rounded-3xl relative justify-start text-white border-gray-600 border flex-col max-w-lg w-full">
-        <h2 className="text-white text-2xl p-2">Agregar Nuevo Usuario</h2>
+        <div className="flex items-center">
+          <h2 className="text-white text-2xl p-2">Agregar Nuevo Usuario</h2>
+          <div className="flex flex-1 w-6 h-6 items-center justify-end pr-10">
+            <Tooltip
+              content={
+                <>
+                  Para garantizar la preservación de la información generada,
+                  <br />
+                  los subusuarios no podrán eliminarse,
+                  <br />
+                  aunque será posible realizar modificaciones en ellos.
+                </>
+              }
+            >
+              <div className="bg-gray-600 rounded-full p-1 active:bg-gray-500 shadow-[0_2px_5px_rgba(0,0,0,0.50)]">
+                <MdQuestionMark size={25} color=" yellow" />
+              </div>
+            </Tooltip>
+          </div>
+        </div>
         <div className="flex flex-1 flex-col px-2">
           <label className="text-base pb-1">Nombre del usuario</label>
+          {contraseñaincorrecta? <div className="text-red-700 text-sm">El usuario y la contraseña deben tener al menos 4 caracteres.</div>:null}
           <input
             type="text"
             name="nombre"
@@ -156,6 +195,7 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
           />
 
           <label className="text-base py-1">Contraseña</label>
+          
           <div className="relative flex items-center">
             <input
               type={showPassword ? "text" : "password"}
@@ -207,36 +247,36 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({ isOpen, onClose }) => {
                 </div>
                 {usuario.permisos.logistica && (
                   <div className="">
-                    <p>• Ventas con selección de vendedor</p>
-                    <p>• Artículos</p>
-                    <p>• Stock</p>
-                    <p>• Clientes</p>
-                    <p>• Facturación</p>
+                    <p><span className="text-[#eab308]">•</span> Ventas con selección de vendedor</p>
+                    <p><span className="text-[#eab308]">•</span> Artículos</p>
+                    <p><span className="text-[#eab308]">•</span> Stock</p>
+                    <p><span className="text-[#eab308]">•</span> Clientes</p>
+                    <p><span className="text-[#eab308]">•</span> Facturación</p>
                   </div>
                 )}
 
                 {usuario.permisos.gerente && (
                   <div className="">
-                    <p>• Ventas con selección de vendedor</p>
-                    <p>• Artículos</p>
-                    <p>• Stock</p>
-                    <p>• Clientes</p>
-                    <p>• Estadísticas</p>
+                    <p><span className="text-[#eab308]">•</span> Ventas con selección de vendedor</p>
+                    <p><span className="text-[#eab308]">•</span> Artículos</p>
+                    <p><span className="text-[#eab308]">•</span> Stock</p>
+                    <p><span className="text-[#eab308]">•</span> Clientes</p>
+                    <p><span className="text-[#eab308]">•</span> Estadísticas</p>
                   </div>
                 )}
 
                 {usuario.permisos.stock && (
                   <div className="">
-                    <p>• Stock</p>
+                    <p><span className="text-[#eab308]">•</span> Stock</p>
                   </div>
                 )}
 
                 {usuario.permisos.ventas && (
                   <div className="">
-                    <p>• Ventas</p>
-                    <p>• Artículos</p>
-                    <p>• Stock</p>
-                    <p>• Clientes</p>
+                    <p><span className="text-[#eab308]">•</span> Ventas</p>
+                    <p><span className="text-[#eab308]">•</span> Artículos</p>
+                    <p><span className="text-[#eab308]">•</span> Stock</p>
+                    <p><span className="text-[#eab308]">•</span> Clientes</p>
                   </div>
                 )}
               </div>
