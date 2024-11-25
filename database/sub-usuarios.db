@@ -1,1 +1,3 @@
 {"nombre":"Martin","password":"$2b$10$wj01T2YiipQkeKtWnn/zwu6R8inaqkI.edSQL90zYLMPDnql4gYxe","imageUrl":"assets/imagen-usuario/user-1.jpg","permisos":{"gerente":true,"logistica":false,"ventas":false,"stock":false},"esusuario":true,"_id":"bJbPam9dxxXa4rF3"}
+{"nombre":"Martin","password":"$2b$10$wj01T2YiipQkeKtWnn/zwu6R8inaqkI.edSQL90zYLMPDnql4gYxe","imageUrl":"assets/imagen-usuario/user-2.jpg","permisos":{"gerente":true,"logistica":false,"ventas":false,"stock":false},"esusuario":true,"_id":"bJbPam9dxxXa4rF3"}
+{"nombre":"Martin","password":"$2b$10$wj01T2YiipQkeKtWnn/zwu6R8inaqkI.edSQL90zYLMPDnql4gYxe","imageUrl":"assets/imagen-usuario/user-3.jpg","permisos":{"gerente":true,"logistica":false,"ventas":false,"stock":false},"esusuario":true,"_id":"bJbPam9dxxXa4rF3"}
