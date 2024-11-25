@@ -95,10 +95,6 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({
         active: false,
         value: 0,
       },
-      quantityperunit: {
-        active: false,
-        value: 0,
-      },
       description: "",
     },
     batches: [],
@@ -116,6 +112,7 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({
       email: "",
     },
     taxes: [],
+    history: [],
   };
   const [isChange, setIsChange] = useState<boolean>(false);
   type Action =

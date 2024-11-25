@@ -1,3 +1,4 @@
+import { Key } from "react";
 
 //types ARTICULOS
 export type articleData = {
@@ -140,6 +141,12 @@ export type clientData = {
   email: string;
   birthdate: string;
   DNI: number;
+  CUIT_CUIL: string;
+  nationality: string;
+  clientType: string;
+  rubro: string;
+  payMethod: string;
+  conditionIVA: string;
   shopping: {
     articles: {
       name: string;

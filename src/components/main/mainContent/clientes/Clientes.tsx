@@ -12,6 +12,9 @@ import ButtonR from "../buttons/ButtonR";
 import { IoAdd, IoAddCircle } from "react-icons/io5";
 import { PiPrinter } from "react-icons/pi";
 import { BiExport } from "react-icons/bi";
+import ContextMenu from "../buttons/ContextMenu";
+import { TrashIcon } from "@radix-ui/react-icons";
+import { BsTrash } from "react-icons/bs";
 
 interface ClientesContentProps {
   searchIn?: string;
@@ -35,6 +38,12 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
       email: "",
       birthdate: "",
       DNI: 0,
+      clientType: "",
+      CUIT_CUIL: "",
+      nationality: "",
+      payMethod: "",
+      conditionIVA: "",
+      rubro: "",
       shopping: [],
     },
   });
@@ -59,6 +68,12 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
         email: "",
         birthdate: "",
         DNI: 0,
+        clientType: "",
+        CUIT_CUIL: "",
+        conditionIVA: "",
+        nationality: "",
+        payMethod: "",
+        rubro: "",
         shopping: [],
       },
     });
@@ -112,6 +127,7 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
           </ButtonR>
         </NavMain>
       </div>
+
       <div className="flex flex-row pb-5 row-start-2 row-end-7">
         <AsideMain isActive={false}></AsideMain>
         <div className="flex-1 p-5">

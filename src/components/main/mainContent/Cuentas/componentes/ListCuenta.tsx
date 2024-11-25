@@ -6,7 +6,9 @@ import Swal from "sweetalert2";
 import { MdCheckCircleOutline } from "react-icons/md";
 import { LuCalendarDays } from "react-icons/lu";
 import InformacionCuentas from "./InformacionCuentas";
-
+import { CiTrash } from "react-icons/ci";
+import { IoIosInformationCircleOutline } from "react-icons/io";
+import { MdEdit } from "react-icons/md";
 interface Cuenta {
   [x: string]: any;
   meses: number;
@@ -239,7 +241,17 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
       setMostrarOpciones(false);
     }
   };
-
+  const manejarClicDerecho = (
+    cuenta: Cuenta,
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    event.preventDefault();
+    setCuentaSeleccionada(cuenta);
+    setMostrarOpciones(true);
+    const offsetX = 0;
+    const offsetY = 0;
+    setPosicionMenu({ x: event.pageX + offsetX, y: event.pageY + offsetY });
+  };
   const handleWheel = (event: React.WheelEvent) => {
     setFechaActual((fechaAnterior) =>
       event.deltaY < 0
@@ -363,18 +375,6 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
     });
   };
 
-  const manejarClicDerecho = (
-    cuenta: Cuenta,
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
-    event.preventDefault();
-    setCuentaSeleccionada(cuenta);
-    setMostrarOpciones(true);
-    const offsetX = 0;
-    const offsetY = -40;
-    setPosicionMenu({ x: event.pageX + offsetX, y: event.pageY + offsetY });
-  };
-
   const cuentasPorFecha = [
     fechaActual,
     addMonths(fechaActual, 1),
@@ -448,40 +448,42 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
       {mostrarOpciones && cuentaSeleccionada && (
         <div
           ref={menuRef}
-          className="w-1/6 h-2/2 bg-gray-600 relative justify-start text-white border-gray-400 border flex flex-col z-50 overflow-hidden"
+          className="w-52  bg-gradient-to-tl  from-gray-700 via-gray-700 to-gray-600 p-2 font-semibold relative justify-start text-gray-200 border-gray-600 rounded-md border flex flex-col z-50 overflow-hidden text-sm"
           style={{
             position: "absolute",
             left: `${posicionMenu.x}px`,
             top: `${posicionMenu.y}px`,
-            backgroundColor: "rgba(30, 41, 59)",
           }}
         >
           <button
-            className="p-2 border-b-1 border-gray-600 hover:bg-gray-700"
+            className="p-2 hover:bg-gray-700 hover:border-yellow-500 border-l-4 border-transparent hover:text-yellow-500 text-start flex justify-between"
             onClick={() => {
               toggleInformacionCuentas();
               setMostrarOpciones(false);
             }}
           >
-            Informacion
+            <p>Informacion</p>
+            <IoIosInformationCircleOutline size={20} />
           </button>
           <button
-            className="p-2 border-b-1 border-gray-600 hover:bg-gray-700"
+            className="p-2 hover:bg-gray-700 hover:border-yellow-500 border-l-4 border-transparent hover:text-yellow-500 text-start flex justify-between"
             onClick={() => {
               setEditar(true);
               setMostrarOpciones(false);
             }}
           >
-            Editar Cuenta
+            <p>Editar Cuenta</p>
+            <MdEdit size={20} />
           </button>
           <button
-            className="p-2 border-b-1 border-gray-600 hover:bg-gray-700"
+            className="p-2 hover:bg-gray-700 hover:border-yellow-500 border-l-4 border-transparent hover:text-yellow-500 text-start flex justify-between"
             onClick={() => {
               deleteAccount(cuentaSeleccionada._id);
               setMostrarOpciones(false);
             }}
           >
-            Borrar Cuenta
+            <p>Borrar Cuenta</p>
+            <CiTrash size={20} />
           </button>
         </div>
       )}
@@ -538,7 +540,7 @@ const ListCuenta: React.FC<ListCuentaProps> = ({
                     onContextMenu={(event) => manejarClicDerecho(cuenta, event)}
                   >
                     <div className="flex h-[3rem] w-full text-white items-center border-b-1 border-gray-600 pl-6">
-                      {cuenta.tipodegasto.value}
+                      {cuenta.tipodegasto.label}
                     </div>
                     <div className="flex h-[3rem] w-full text-white items-center border-b-1 border-gray-600 pl-6">
                       {cuenta.descripcion}
