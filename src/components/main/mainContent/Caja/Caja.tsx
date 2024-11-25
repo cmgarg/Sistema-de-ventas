@@ -61,11 +61,11 @@ const Caja: React.FC<VentastProps> = (
   }
 
   return (
-    <div className="flex flex-col flex-1">
-      <div className="flex-2 pt-3">
+    <div className="flex flex-col flex-1 h-full">
+      <div className="absolute top-0 right-[339px] left-44 h-10 z-30 app-region-drag">
         <NavMain title="Caja" setLoginUser={""}>
           <input
-            className="text-2xl text-white bg-inherit border border-gray-600 rounded-lg p-1 fecha-input fecha-input:focus mr-10 text-center hover:bg-gray-600"
+            className="text-xs text-white bg-inherit border border-gray-600 rounded-lg app-region-no-drag p-1 fecha-input fecha-input:focus mr-10 text-center hover:bg-gray-600"
             type="date"
             value={fecha}
             onChange={handleFechaChange}
@@ -73,157 +73,159 @@ const Caja: React.FC<VentastProps> = (
           />
         </NavMain>
       </div>
-      <div className="flex flex-grow p-5 space-x-8 relative">
-        <div className="flex flex-1 flex-col border border-gray-600 rounded-lg">
-          <div className="flex flex-2 items-center border border-gray-600 justify-center h-16">
-            <div className="text-white text-2xl">Vendedor</div>
+      <div className="flex h-full w-full space-x-5 relative p-2">
+        <div className="flex flex-1 flex-col border border-gray-600 rounded-md bg-black bg-opacity-30">
+          <div className="flex border-b-1 border-gray-600 items-center justify-center h-11">
+            <p className="text-white">Vendedor</p>
           </div>
-          <div className="flex flex-col pt-2 h-[55rem] overflow-auto">
+          <div className="flex flex-1 overflow-auto">
             <VendedoresList fecha={fecha} />
           </div>
         </div>
-        <div className="flex flex-1 flex-col h-full space-y-10">
-          <div className="flex flex-1 flex-col h-1/2 space-y-3 rounded-lg border border-gray-600">
-            <div className="flex flex-2 items-center justify-center h-16 border-b-1 border-gray-600">
-              <div className="text-white text-2xl">Formas De Pago</div>
+        <div className="flex flex-1 flex-col space-y-3">
+          <div className="flex flex-1 flex-col rounded-lg border bg-black bg-opacity-30 border-gray-600">
+            <div className="flex items-center justify-center h-11 border-b-1 border-gray-600">
+              <div className="text-white">Formas De Pago</div>
             </div>
-            <div className="flex flex-1 flex-col items-center">
-              <div className="w-full space-y-6 flex flex-col">
-                <div className="flex flex-1 flex-row h-12 items-center  border-b-1 border-gray-600 pt-2 pb-2">
-                  <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                    <FaMoneyBillWave size={30} />
-                    <p className="pl-2">Efectivo</p>
-                  </div>
-                  <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                    $<p className="pl-2">1,200,300</p>
-                  </div>
+            <div className="flex flex-1 flex-col">
+              <div className="text-gray-400 w-full border-b border-gray-700 flex justify-around text-[10px]">
+                <p>Forma</p>
+                <p>Monto</p>
+              </div>
+              <div className="flex flex-row h-11 items-center justify-around  border-b-1 border-gray-600">
+                <div className="flex flex-1 flex-row items-center text-white pl-2">
+                  <FaMoneyBillWave size={30} />
+                  <p className="pl-2">Efectivo</p>
                 </div>
-                <div className="flex flex-1 flex-row h-12 items-center  border-b-1 border-gray-600 pb-2">
-                  <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                    <IoCard size={30} />
-                    <p className="pl-2">Tarjeta Débito</p>
-                  </div>
-                  <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                    $<p className="pl-2">1,200,300</p>
-                  </div>
+                <div className="flex flex-1 flex-row items-center text-white">
+                  $<p className="pl-2">1,200,300</p>
                 </div>
-                <div className="flex flex-1 flex-row h-12 items-center  border-b-1 border-gray-600 pb-2">
-                  <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                    <FaCreditCard size={30} />
-                    <p className="pl-2">Tarjeta Crédito</p>
-                  </div>
-                  <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                    $<p className="pl-2">1,200,300</p>
-                  </div>
+              </div>
+              <div className="flex flex-row h-11 items-center  border-b-1 border-gray-600">
+                <div className="flex flex-1 flex-row items-center text-white pl-2">
+                  <IoCard size={30} />
+                  <p className="pl-2">Tarjeta Débito</p>
                 </div>
-                <div className="flex flex-1 flex-row h-12 items-center  border-b-1 border-gray-600 pb-2">
-                  <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                    <FaMoneyCheckDollar size={30} />
-                    <p className="pl-2">Cheque</p>
-                  </div>
-                  <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                    $<p className="pl-2">1,200,300</p>
-                  </div>
+                <div className="flex flex-1 flex-row items-center text-white pl-2">
+                  $<p className="pl-2">1,200,300</p>
                 </div>
-                <div className="flex flex-1 flex-row h-12 items-center  border-b-1 border-gray-600 pb-2">
-                  <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                    <FaMoneyBillTransfer size={30} />
-                    <p className="pl-2">Transferencias</p>
-                  </div>
-                  <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                    $<p className="pl-2">1,200,300</p>
-                  </div>
+              </div>
+              <div className="flex flex-row h-11 items-center  border-b-1 border-gray-600 ">
+                <div className="flex flex-1 flex-row items-center text-white pl-2">
+                  <FaCreditCard size={30} />
+                  <p className="pl-2">Tarjeta Crédito</p>
                 </div>
-                <div className="flex flex-1 flex-row h-12 items-center  border-b-1 border-gray-600 pb-2">
-                  <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                    <BsQrCodeScan size={30} />
-                    <p className="pl-2">QR</p>
-                  </div>
-                  <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                    $<p className="pl-2">1,200,300</p>
-                  </div>
+                <div className="flex flex-1 flex-row items-center text-white pl-2">
+                  $<p className="pl-2">1,200,300</p>
+                </div>
+              </div>
+              <div className="flex flex-row h-11 items-center  border-b-1 border-gray-600">
+                <div className="flex flex-1 flex-row items-center text-white pl-2">
+                  <FaMoneyCheckDollar size={30} />
+                  <p className="pl-2">Cheque</p>
+                </div>
+                <div className="flex flex-1 flex-row items-center text-white pl-2">
+                  $<p className="pl-2">1,200,300</p>
+                </div>
+              </div>
+              <div className="flex flex-row h-11 items-center  border-b-1 border-gray-600">
+                <div className="flex flex-1 flex-row items-center text-white pl-2">
+                  <FaMoneyBillTransfer size={30} />
+                  <p className="pl-2">Transferencias</p>
+                </div>
+                <div className="flex flex-1 flex-row items-center text-white pl-2">
+                  $<p className="pl-2">1,200,300</p>
+                </div>
+              </div>
+              <div className="flex flex-row h-11 items-center  border-b-1 border-gray-600">
+                <div className="flex flex-1 flex-row items-center text-white pl-2">
+                  <BsQrCodeScan size={30} />
+                  <p className="pl-2">QR</p>
+                </div>
+                <div className="flex flex-1 flex-row items-center text-white pl-2">
+                  $<p className="pl-2">1,200,300</p>
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex flex-1 flex-col h-1/2 rounded-lg border border-gray-600 pb-2">
-            <div className="flex flex-2 items-center border-b border-gray-600 justify-center h-16">
-              <div className="text-white text-2xl">Cuentas</div>
+          <div className="flex flex-1 flex-col rounded-lg border border-gray-600 pb-2 bg-black bg-opacity-30">
+            <div className="flex items-center border-b border-gray-600 justify-center h-11">
+              <div className="text-white">Cuentas</div>
             </div>
-            <div className="flex h-[24.6rem] overflow-auto">
-              <div className="w-full space-y-2 flex-col ">
-                {cuentasP.map((cuenta) => {
-                  return (
-                    <div
-                      key={cuenta._id}
-                      className="flex flex-1 flex-row h-14 items-center p-2 border-b-2 border-gray-600"
-                    >
-                      <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                        • <p className="pl-2">{cuenta.descripcion}</p>
-                      </div>
-                      <div className="flex flex-1 flex-row items-center text-white text-lg pl-2">
-                        <p className="pl-2">
-                          ${" "}
-                          {Number(cuenta.pay).toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
+            <div className="flex flex-1 space-y-2 flex-col overflow-auto">
+              <div className="text-gray-400 w-full border-b border-gray-700 flex justify-around text-[10px]">
+                <p>Descripcion</p>
+                <p>Monto</p>
               </div>
+              {cuentasP.map((cuenta) => {
+                return (
+                  <div
+                    key={cuenta._id}
+                    className="flex flex-row h-11 items-center border-b border-gray-600 justify-evenly"
+                  >
+                    <div className="flex flex-row items-center text-white text-lg pl-2">
+                      <p className="pl-2">{cuenta.descripcion}</p>
+                    </div>
+                    <div className="flex flex-row items-center text-white text-lg pl-2">
+                      <p className="pl-2">
+                        ${" "}
+                        {Number(cuenta.pay).toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
-        <div className="flex flex-1 flex-col">
-          <div className="flex flex-1 flex-col rounded-lg border border-gray-600">
-            <div className="flex flex-2 border-b-1 border-gray-600 items-center justify-center h-16">
-              <div className="text-white text-2xl">Transacciones</div>
-            </div>
-            <div className="flex overflow-auto w-full h-[46rem]">
-              <SalesList
-                ventas={ventas}
-                fecha={fecha}
-                setTotalCantidad={setTotalCantidad}
-                setTotalCuentas={setTotalCuentas}
-                setCuentasP={setCuentasP}
-              />
-            </div>
-            <div className=" w-full flex flex-col border-t-1 border-gray-600 border-opacity-50">
-              <div className="flex-1 flex flex-row pr-4 items-end">
-                <div className="flex-1 flex text-green-600 justify-end">
-                  <div className="text-2xl p-1">
-                    $
-                    {Number(totalCantidad).toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </div>
+        <div className="flex flex-1 flex-col rounded-md border border-gray-600 bg-black bg-opacity-30">
+          <div className="flex border-b-1 border-gray-600 items-center justify-center h-11">
+            <p className="text-white">Transacciones</p>
+          </div>
+          <div className="flex overflow-auto w-full  flex-1">
+            <SalesList
+              ventas={ventas}
+              fecha={fecha}
+              setTotalCantidad={setTotalCantidad}
+              setTotalCuentas={setTotalCuentas}
+              setCuentasP={setCuentasP}
+            />
+          </div>
+          <div className=" w-full flex flex-col border-t-1 border-gray-600 border-opacity-50">
+            <div className="flex-1 flex flex-row pr-4 items-end">
+              <div className="flex-1 flex text-green-600 justify-end">
+                <div className="text-2xl p-1">
+                  $
+                  {Number(totalCantidad).toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </div>
               </div>
-              <div className="flex-1 flex flex-row pr-4 items-end ">
-                <div className="flex-1 flex text-red-600 justify-end">
-                  <div className="text-2xl p-1">
-                    $
-                    {Number(totalCuentas).toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </div>
+            </div>
+            <div className="flex-1 flex flex-row pr-4 items-end ">
+              <div className="flex-1 flex text-red-600 justify-end">
+                <div className="text-2xl p-1">
+                  $
+                  {Number(totalCuentas).toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </div>
               </div>
-              <div className="flex-1 flex flex-row border-t-1 border-gray-600 border-opacity-50">
-                <div className="flex-1 flex flex-row text-white items-center">
-                  <div className="flex text-2xl pl-5">Total Caja</div>
-                  <div className="flex-1 flex text-2xl justify-end p-4">
-                    ${" "}
-                    {Number(sumaTotal()).toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </div>
+            </div>
+            <div className="flex-1 flex flex-row border-t-1 border-gray-600 border-opacity-50">
+              <div className="flex-1 flex flex-row text-white items-center">
+                <div className="flex text-2xl pl-5">Total Caja</div>
+                <div className="flex-1 flex text-2xl justify-end p-4">
+                  ${" "}
+                  {Number(sumaTotal()).toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </div>
               </div>
             </div>

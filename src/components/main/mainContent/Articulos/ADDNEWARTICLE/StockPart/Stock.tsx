@@ -53,7 +53,7 @@ const Stock: React.FC<StockProps> = ({
   }, []);
 
   return (
-    <div className="flex-1 h-full">
+    <div className="flex-1 h-96">
       {/* CREAR UNIDADES EDITOR MEJOR DICHO*/}
       {unitForm && (
         <UnitsForm onUnitForm={onUnitForm} units={unitsArticleForm} />

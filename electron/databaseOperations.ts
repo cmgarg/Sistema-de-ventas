@@ -1343,7 +1343,7 @@ export const reiniciarRecuperacionCuenta = async (userId: any) => {
 };
 
 export const guardarUsuarioSecundario = async (usuario: { password: any }) => {
-  console.log(usuario,"estos son los datos que recibo")
+  console.log(usuario, "estos son los datos que recibo");
   const hashedPassword = await bcrypt.hash(usuario.password, saltRounds);
   const usuarioConPasswordEncriptado = {
     ...usuario,
@@ -1802,4 +1802,4 @@ const generateRandomArticles = async (count: number) => {
   }
 };
 // // // Inserta artículos en la base de datos
-// generateRandomArticles(400);
+//generateRandomArticles(400);

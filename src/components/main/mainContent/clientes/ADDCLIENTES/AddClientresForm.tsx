@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { clientData } from "../../../../../../types/types";
 import ButtonR from "../../buttons/ButtonR";
-import { IoAdd } from "react-icons/io5";
-import { FcCancel } from "react-icons/fc";
-import { GiCancel } from "react-icons/gi";
-import { MdCancel } from "react-icons/md";
-import { TiCancel } from "react-icons/ti";
 
 interface AddClientresFormProps {
   onChangeModal: (p: boolean) => void;
@@ -21,6 +16,12 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
     email: "",
     birthdate: "",
     DNI: 0,
+    clientType: "",
+    CUIT_CUIL: "",
+    nationality: "",
+    payMethod: "",
+    conditionIVA: "",
+    rubro: "",
     shopping: [],
   });
 
@@ -33,6 +34,12 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
       "email",
       "birthdate",
       "DNI",
+      "CUIT_CUIL",
+      "CLIENT_TYPE",
+      "NATIONALITY",
+      "PAY_METHOD",
+      "CONDITION_IVA",
+      "RUBRO",
     ];
     console.log(existingData.includes(data), "esto");
     if (existingData.includes(data)) {
@@ -55,6 +62,24 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
           break;
         case "DNI":
           setClienteData({ ...clienteData, DNI: value });
+          break;
+        case "CUIT_CUIL":
+          setClienteData({ ...clienteData, CUIT_CUIL: value });
+          break;
+        case "CLIENT_TYPE":
+          setClienteData({ ...clienteData, clientType: value });
+          break;
+        case "NATIONALITY":
+          setClienteData({ ...clienteData, nationality: value });
+          break;
+        case "PAY_METHOD":
+          setClienteData({ ...clienteData, payMethod: value });
+          break;
+        case "RUBRO":
+          setClienteData({ ...clienteData, rubro: value });
+          break;
+        case "CONDITION_IVA":
+          setClienteData({ ...clienteData, conditionIVA: value });
           break;
 
         default:
@@ -80,8 +105,13 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
       email: "",
       birthdate: "",
       DNI: 0,
+      clientType: "",
+      CUIT_CUIL: "",
+      nationality: "",
+      payMethod: "",
+      rubro: "",
+      conditionIVA: "",
       shopping: [],
-      _id: "",
     });
   }
   //ESTILOS INPUT
@@ -165,6 +195,70 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
               value={clienteData.DNI}
               onChange={(e) => {
                 setChangeData("DNI", e.target.value);
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex w-full space-x-2">
+          <div className="flex flex-1 flex-col">
+            <label htmlFor="telefono">CUIL/CUIT</label>
+            <input
+              type="text"
+              name="cuitcuil"
+              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff]`}
+              value={clienteData.CUIT_CUIL}
+              onChange={(e) => {
+                setChangeData("CUIT_CUIL", e.target.value);
+              }}
+            />
+          </div>
+          <div className="flex flex-1 flex-col">
+            <label htmlFor="dni">Condicion de IVA</label>
+            <input
+              type="text"
+              name="conditioniva"
+              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff] `}
+              value={clienteData.conditionIVA}
+              onChange={(e) => {
+                setChangeData("CONDITION_IVA", e.target.value);
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex w-full space-x-2">
+          <div className="flex flex-1 flex-col">
+            <label htmlFor="telefono">Rubro</label>
+            <input
+              type="text"
+              name="rubro"
+              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff]`}
+              value={clienteData.rubro}
+              onChange={(e) => {
+                setChangeData("rubro", e.target.value);
+              }}
+            />
+          </div>
+          <div className="flex flex-1 flex-col">
+            <label htmlFor="dni">Nacionalidad</label>
+            <input
+              type="text"
+              name="nationality"
+              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff] `}
+              value={clienteData.nationality}
+              onChange={(e) => {
+                setChangeData("DNI", e.target.value);
+              }}
+            />
+          </div>
+          <div className="flex flex-1 flex-col">
+            <label htmlFor="dni">Metodo de pago</label>
+            <input
+              type="text"
+              name="paymethod"
+              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff] `}
+              value={clienteData.payMethod}
+              onChange={(e) => {
+                setChangeData("PAY_METHOD", e.target.value);
               }}
             />
           </div>

@@ -14,6 +14,8 @@ import { articleData } from "../../../../../types/types";
 import { NumericFormat } from "react-number-format";
 import { TableVirtuoso, Virtuoso } from "react-virtuoso";
 import VirtualizedTable from "../../tablaMain/VirtualizedTable";
+import { MdEdit } from "react-icons/md";
+import { BiTrash } from "react-icons/bi";
 interface ArticleListProps {
   articles: articleData[];
   searchActived: {
@@ -103,25 +105,49 @@ const ArticleList: React.FC<ArticleListProps> = ({
             <div className=" absolute left-[20000px] rounded-t-lg   font-bold text-center flex"></div>
           )}
           renderRow={(item, index) => (
-            <Link
-              to={`/articulo/${item.code}`}
-              key={index}
-              className="text-center h-10 flex bg-gradient-to-l px-2 from-gray-800 via-gray-800 to-gray-700 hover:brightness-125"
-            >
-              <div className="flex flex-1 items-center">
-                {item.article.name}
-              </div>
-              <div className="flex flex-1 items-center">
-                {formatMony(item.article.costo)}
-              </div>
-              <div className="flex flex-1 items-center">
-                {formatMony(item.article.venta)}
-              </div>
-              <div className="flex flex-1 items-center">
-                {item.sales.length}
-              </div>
-              <div className="flex flex-1 items-center">{item.code}</div>
-            </Link>
+            <ContextMenu>
+              <ContextMenuTrigger>
+                <Link
+                  to={`/articulo/${item.code}`}
+                  key={index}
+                  className={`text-center h-10 flex bg-gradient-to-l px-2 from-gray-800 via-gray-800 to-gray-700 hover:brightness-125 ${
+                    articles.length === index - 1 ? "rounded-b-lg" : ""
+                  }`}
+                >
+                  <div className="flex flex-1 items-center">
+                    {item.article.name}
+                  </div>
+                  <div className="flex flex-1 items-center">
+                    {formatMony(item.article.costo)}
+                  </div>
+                  <div className="flex flex-1 items-center">
+                    {formatMony(item.article.venta)}
+                  </div>
+                  <div className="flex flex-1 items-center">
+                    {item.sales.length}
+                  </div>
+                  <div className="flex flex-1 items-center">{item.code}</div>
+                </Link>
+              </ContextMenuTrigger>
+              <ContextMenuContent className="bg-gradient-to-tl  from-gray-700 via-gray-700 to-gray-600 border-gray-600 text-gray-200 ">
+                <ContextMenuItem
+                  onClick={() => {
+                    editArticle(item);
+                  }}
+                >
+                  <p>Editar</p>
+                  <MdEdit size={17} />
+                </ContextMenuItem>
+                <ContextMenuItem
+                  onClick={() => {
+                    deleteArticle(item);
+                  }}
+                >
+                  <p>Borrar</p>
+                  <BiTrash size={17} />
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
           )}
         />
       </div>

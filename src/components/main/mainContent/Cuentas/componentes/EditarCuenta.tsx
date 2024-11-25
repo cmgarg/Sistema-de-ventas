@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import ReactSwitch from "react-switch";
-
+import ButtonR from "../../buttons/ButtonR";
+import SelectM from "../../Select/Select";
+import { motion } from "framer-motion";
 interface Cuenta {
-  meses: number; // asegúrate de que 'meses' sea siempre un número
-  tipodegasto: string;
+  meses: number | string; // asegúrate de que 'meses' sea siempre un número
+  tipodegasto: { value: string; label: string };
   date: string;
   time?: string; // Agrega la propiedad 'time' si es necesario
-  pay: number;
+  pay: string;
   descripcion: string;
   pagado: boolean;
   _id: string;
@@ -25,25 +27,13 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
   cuentaSeleccionada,
   getAccountsToPay,
 }) => {
-  const [accountData, setAccountData] = useState<Cuenta>(
-    cuentaSeleccionada || {
-      tipodegasto: "",
-      date: "",
-      time: "", // Agrega la propiedad 'time' si es necesario
-      pay: 0,
-      descripcion: "",
-      pagado: false,
-      meses: 1,
-      _id: "",
-      notifiacion: cuentaSeleccionada.notifiacion,
-    }
-  );
+  const [accountData, setAccountData] = useState<Cuenta>(cuentaSeleccionada);
 
   useEffect(() => {
     if (cuentaSeleccionada) {
       setAccountData(cuentaSeleccionada);
     }
-  }, [cuentaSeleccionada]);
+  }, []);
 
   function setChangeData<K extends keyof Cuenta>(key: K, value: Cuenta[K]) {
     setAccountData((prev) => ({
@@ -54,37 +44,40 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
 
   async function guardarHistorialCuenta(cuentaActualizada: Cuenta) {
     const fechaActual = new Date();
-  
+
     // Obtener la fecha en formato "YYYY-MM-DD"
-    const fecha_edicion = fechaActual.toLocaleDateString('es-AR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).split('/').reverse().join('-');
-  
+    const fecha_edicion = fechaActual
+      .toLocaleDateString("es-AR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      })
+      .split("/")
+      .reverse()
+      .join("-");
+
     // Obtener la hora exacta en formato "HH:MM:SS"
-    const fecha_edicionHora = fechaActual.toLocaleTimeString('es-AR', {
+    const fecha_edicionHora = fechaActual.toLocaleTimeString("es-AR", {
       hour12: false,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     });
-  
+
     // Crear el objeto historial con la fecha y la hora separadas
     const historial = {
       fecha_edicion, // Fecha de edición actual (solo la fecha)
       fecha_edicionHora, // Hora de edición actual (solo la hora)
       cuenta: { ...cuentaActualizada }, // Guardar toda la cuenta actualizada dentro del objeto 'cuenta'
     };
-  
+
     // Enviar el evento para guardar el historial
     window.api.enviarEvento("guardar-historial-cuenta", historial);
   }
-  
-  
+
   function validateAndSubmit() {
     const { tipodegasto, date, pay, descripcion } = accountData;
-    if (!tipodegasto || !date || pay <= 0 || !descripcion) {
+    if (!tipodegasto || !date || pay <= "" || !descripcion) {
       Swal.fire({
         title: "Error!",
         text: "Por favor, completa todos los campos antes de continuar.",
@@ -93,13 +86,13 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
       });
       return;
     }
-  
+
     if (cuentaSeleccionada) {
       // Aquí llamamos al evento save-accountToPay para actualizar la cuenta en la base de datos
       window.api.enviarEvento("save-accountToPayeditar", accountData);
-  
+
       onChangeModal(false);
-  
+
       // Mostrar mensaje de éxito
       Swal.fire({
         title: "¡Éxito!",
@@ -107,147 +100,122 @@ const EditarCuenta: React.FC<EditarCuentaProps> = ({
         icon: "success",
         confirmButtonText: "Ok",
       });
-  
+
       // Refrescar las cuentas después de actualizar
       getAccountsToPay();
     } else {
       console.error("No hay cuenta seleccionada para actualizar");
     }
-  
+
     // Guardar el historial de la cuenta editada
     guardarHistorialCuenta(accountData);
   }
-  
+  const handlePayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/,/g, "");
+    if (!isNaN(Number(value)) || value === "") {
+      setChangeData("pay", value);
+    }
+  };
+
+  const handlePayBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value.replace(/,/g, ""));
+    if (!isNaN(value)) {
+      setChangeData(
+        "pay",
+        value.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    }
+  };
+  useEffect(() => {
+    console.log(accountData);
+  }, []);
+
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 w-full h-full">
       <div className="absolute top-0 right-0 bottom-0 left-0 bg-black opacity-60"></div>
-      <div
-        className="w-1/4 h-2/2 bg-gray-600 space-y-5 rounded-3xl relative justify-start text-white border-gray-50 border"
-        style={{ backgroundColor: "rgba(30, 41, 59, 0.9)" }}
+      <motion.div
+        animate={{ opacity: 1, height: "auto" }} // Estado cuando está visible
+        transition={{ duration: 0.3 }}
+        layout
+        className="flex flex-col w-[500px] py-2 bg-[#2f2f2fff] rounded-md relative justify-start text-white border-slate-800 border overflow-hidden"
       >
-        <div className="flex-1 flex flex-row h-8 mt-6 text-white text-2xl items-center justify-center">
-          <div>Modificar Cuenta</div>
-        </div>
-        <div className="flex-1 flex w-full space-y-5 flex-col px-2 pb-2 items-center justify-center">
-          <div className="flex flex-row space-x-1 items-center justify-center">
-            <div className="flex-1 flex flex-col">
-              <label htmlFor="tipodegasto" className="text-white text-lg p-2">
-                Tipo De Gasto
-              </label>
-              <select
-                name="tipodegasto"
-                className="outline-none h-9 w-56 bg-slate-700 px-2 rounded-md"
-                value={accountData.tipodegasto}
-                onChange={(e) => {
-                  setChangeData("tipodegasto", e.target.value as string);
-                }}
+        <div className="flex flex-1 flex-col space-y-2 ">
+          <div className="flex w-full justify-evenly space-x-2 px-2">
+            <div className="flex flex-1 flex-col">
+              <label
+                htmlFor="descripcion"
+                className="text-sm h-7 flex items-center"
               >
-                <option value="">Selecciona una opción</option>
-                <option value="Vencimiento Mensual">Vencimiento Mensual</option>
-                <option value="Gasto Diario">Gasto Diario</option>
-              </select>
-              {accountData.tipodegasto === "Vencimiento Mensual" ? (
-                <div className="flex flex-1 pt-4 flex-col">
-                  <label htmlFor="meses" className="text-white text-lg p-2">
-                    Meses a Pagar
-                  </label>
-                  <input
-                    type="number"
-                    name="meses"
-                    className="outline-none h-9 w-56 px-2 rounded-md bg-slate-700"
-                    value={accountData.meses}
-                    min="1"
-                    onChange={(e) => {
-                      setChangeData("meses", Number(e.target.value));
-                    }}
-                  />
-                </div>
-              ) : null}
+                <p>Descripcion</p>
+              </label>
+              <input
+                type="text"
+                maxLength={18}
+                name="descripcion"
+                className="outline-none h-10 pl-2 rounded-md bg-[#707070ff] focus:bg-[#909090ff] border shadow-[0_2px_5px_rgba(0,0,0,0.50)] border-gray-600 w-full"
+                value={accountData.descripcion}
+                onChange={(e) => {
+                  setChangeData("descripcion", e.target.value);
+                }}
+              />
+            </div>
+            <div className="flex flex-1 flex-col">
+              <label htmlFor="pay" className="text-sm h-7 flex items-center">
+                Monto
+              </label>
+              <input
+                type="text"
+                name="pay"
+                className="outline-none h-10 px-2 w-full rounded-md bg-[#707070ff] focus:bg-[#909090ff] border shadow-[0_2px_5px_rgba(0,0,0,0.50)] fecha-input fecha-input:focus border-gray-600 text-sm"
+                value={accountData.pay}
+                onChange={handlePayChange}
+                onBlur={handlePayBlur}
+              />
             </div>
           </div>
-          <div className="flex-1 flex flex-col ">
-            <label htmlFor="date" className="text-white text-lg p-2">
-              Dia De Vencimiento
-            </label>
-            <input
-              type="date"
-              name="date"
-              className="outline-none h-9 w-56 px-2 rounded-md bg-slate-700 fecha-input fecha-input:focus"
-              value={accountData.date}
-              onChange={(e) => {
-                setChangeData("date", e.target.value as string);
-              }}
-            />
-          </div>
-          <div className="flex-1 flex items-center h-14 rounded-md bg-slate-900 border-slate-900 m-3">
-            <label htmlFor="notifiacion" className="text-xl p-2 pl-4">
-              Notificarme el dia de vencimiento
-            </label>
-            <ReactSwitch
-              id="notifiacion"
-              checked={accountData.notifiacion}
-              onChange={(checked) => {
-                setChangeData("notifiacion", checked);
-              }}
-              onColor="#86d3ff"
-              onHandleColor="#2693e6"
-              handleDiameter={30}
-              uncheckedIcon={false}
-              checkedIcon={false}
-              boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-              activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-              height={20}
-              width={48}
-              className="ml-10"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="pay" className="text-white text-lg p-2">
-              Monto
-            </label>
-            <input
-              type="number"
-              name="pay"
-              className="outline-none h-9 w-56 px-2 rounded-md bg-slate-700"
-              value={accountData.pay}
-              onChange={(e) => {
-                setChangeData("pay", Number(e.target.value));
-              }}
-            />
-          </div>
-          <div className=" flex flex-col">
-            <label htmlFor="descripcion" className="text-white text-lg p-2">
-              Descripcion
-            </label>
-            <input
-              type="text"
-              name="descripcion"
-              className="outline-none h-9 w-56 px-2 rounded-md bg-slate-700"
-              value={accountData.descripcion}
-              onChange={(e) => {
-                setChangeData("descripcion", e.target.value as string);
-              }}
-            />
-          </div>
-          <div className="flex flex-row space-x-10 p-8">
-            <button
-              className=" p-2 bg-blue-600 rounded-md"
-              onClick={validateAndSubmit}
-            >
-              Aceptar
-            </button>
-
-            <button
-              className=" p-2 bg-red-600 rounded-md"
-              onClick={() => {
-                onChangeModal(false);
-              }}
-            >
-              Cancelar
-            </button>
-          </div>
+          <div className="flex flex-1">
+            <div className="flex items-start justify-start flex-col flex-1 px-2 pt-2">
+              <div className=" w-13 flex items-center space-x-2">
+                <label htmlFor="notifiacion" className="text-xs">
+                  Notificarme el dia de vencimiento
+                </label>
+                <input
+                  type="checkbox"
+                  name="pagado"
+                  className="h-5 w-5 checked:bg-green-500 rounded-full"
+                  checked={accountData.notifiacion}
+                  onChange={(e) => {
+                    setChangeData("notifiacion", e.target.checked);
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex w-full text-md justify-end pr-2 space-x-2 flex-1 items-end">
+              <ButtonR
+                height="h-7"
+                width="w-24"
+                title="Cancelar"
+                bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff] text-sm"
+                textSize="text-sm"
+                onClick={() => {
+                  onChangeModal(false);
+                }}
+              ></ButtonR>
+              <ButtonR
+                height="h-7"
+                width="w-32"
+                title="Guardar"
+                bgColor="bg-gradient-to-l from-yellow-700 via-yellow-700 to-yellow-500 text-[#fff8dcff] text-sm"
+                textSize="text-sm"
+                onClick={validateAndSubmit}
+              ></ButtonR>
+            </div>
+          </div>{" "}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

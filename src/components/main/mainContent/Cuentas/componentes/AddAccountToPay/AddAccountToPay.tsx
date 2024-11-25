@@ -3,7 +3,7 @@ import CustomAlert from "./CustomAlert"; // Importa tu componente de alerta pers
 import ReactSwitch from "react-switch";
 import SelectM from "../../../Select/Select";
 import ButtonR from "../../../buttons/ButtonR";
-
+import { motion } from "framer-motion";
 interface AddAccountToPayProps {
   onChangeModal: (p: boolean) => void;
   addAccountToPay: (account: {
@@ -188,18 +188,35 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
       );
     }
   };
+  useEffect(() => {
+    console.log(accountData.meses);
+  }, [accountData.meses]);
 
   return (
     <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center z-50 w-full h-full">
       <div className="absolute top-0 right-0 bottom-0 left-0 bg-black opacity-60"></div>
-      <div className="flex flex-col w-[600px] py-2 bg-[#2f2f2fff] rounded-md relative justify-start text-white border-slate-800 border overflow-hidden">
-        <div className="flex flex-1 flex-col space-y-2">
+      <motion.div
+        animate={{ opacity: 1, height: "auto" }} // Estado cuando está visible
+        transition={{ duration: 0.3 }}
+        layout
+        className="flex flex-col w-[500px] py-2 bg-[#2f2f2fff] rounded-md relative justify-start text-white border-slate-800 border overflow-hidden"
+      >
+        <div className="flex flex-1 flex-col space-y-2 ">
           <div className="flex w-full justify-evenly space-x-2 px-2">
-            <div className="flex-1 flex flex-col justify-center">
+            <motion.div
+              animate={{ opacity: 1, height: "auto" }} // Estado cuando está visible
+              exit={{ opacity: 0, height: 0 }} // Estado al salir
+              transition={{ duration: 0.3 }}
+              className="flex-1 flex flex-col justify-center"
+            >
               <label htmlFor="tipodegasto" className="text-sm">
                 Tipo de gasto
               </label>
-              <div className="flex flex-row flex-1">
+              <motion.div
+                animate={{ opacity: 1, height: "auto" }} // Estado cuando está visible
+                transition={{ duration: 0.3 }}
+                className="flex flex-col flex-1 space-y-2 transition-all"
+              >
                 <SelectM
                   className="outline-none h-10 w-full rounded-md bg-[#707070ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] focus:bg-[#909090ff] border-gray-600 cursor-pointer"
                   value={accountData.tipodegasto.label}
@@ -219,21 +236,27 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
                 ></SelectM>
 
                 {accountData.tipodegasto.value === "vencimiento-mensual" ? (
-                  <div className="flex h-14 mr-3">
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }} // Estado inicial (oculto)
+                    animate={{ opacity: 1, height: "auto" }} // Estado cuando está visible
+                    exit={{ opacity: 0, height: 0 }} // Estado al salir
+                    transition={{ duration: 0.2 }} // Duración de la animación (0.3 segundos)
+                    className="flex h-9"
+                  >
                     <input
                       type="number"
                       name="meses"
-                      className="bg-[#707070ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] focus:bg-[#909090ff] rounded-md w-12 text-center outline-none border-slate-800"
+                      className="bg-[#707070ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] focus:bg-[#909090ff] rounded-md w-20 text-start pl-2 outline-none border-slate-800 "
                       value={accountData.meses}
                       min="1"
                       onChange={(e) => {
                         setChangeData("meses", e.target.value);
                       }}
                     />
-                  </div>
+                  </motion.div>
                 ) : null}
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
             <div className="flex flex-1 flex-col w-60">
               <label htmlFor="descripcion" className="text-sm">
@@ -290,31 +313,30 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
               />
             </div>
           </div>
-          <div className="flex">
-            <div className="flex space-y-3 flex-col flex-1 px-2 pt-2">
-              <div className="h-full flex-1 w-13 flex items-center space-x-2">
+          <div className="flex flex-1">
+            <div className="flex space-y-3 items-start justify-start flex-col flex-1 px-2 pt-2">
+              <div className=" w-13 flex items-center space-x-2">
                 <label htmlFor="notifiacion" className="text-xs">
                   Notificarme el dia de vencimiento
                 </label>
-
                 <input
                   type="checkbox"
                   name="pagado"
-                  className="h-4 w-4 checked:bg-green-500 rounded-full"
+                  className="h-5 w-5 checked:bg-green-500 rounded-full"
                   checked={accountData.notifiacion}
                   onChange={(e) => {
                     setChangeData("notifiacion", e.target.checked);
                   }}
                 />
               </div>
-              <div className="flex flex-1 space-x-2 items-center">
+              <div className="flex space-x-2 items-center">
                 <div className="text-xs ">Estado de cuenta :</div>
 
                 <div className="flex justify-center space-x-1 rounded-md items-center border-slate-900">
                   <input
                     type="checkbox"
                     name="pagado"
-                    className="h-4 w-4 checked:bg-green-500 rounded-full flex"
+                    className="h-5 w-5 checked:bg-green-500 rounded-full flex"
                     checked={accountData.pagado}
                     onChange={(e) => {
                       setChangeData("pagado", e.target.checked);
@@ -354,7 +376,7 @@ const AddAccountToPay: React.FC<AddAccountToPayProps> = ({
             </div>
           </div>{" "}
         </div>
-      </div>
+      </motion.div>
       {showAlert && (
         <CustomAlert
           title="Error!"
