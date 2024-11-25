@@ -131,7 +131,7 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
           _id: "",
           uuid: undefined,
           nombre: "",
-          username: ""
+          username: "",
         },
       })
     ); // Ajusta {} según sea necesario
@@ -146,9 +146,14 @@ const UsuarioIniciado: React.FC<UsuarioIniciadoProps> = ({ setLoginUser }) => {
     const userId = localStorage.getItem("userId");
     if (userId) {
       window.api.enviarEvento("obtener-datos-usuario", userId);
+    
     }
 
-    const handleDatosUsuarioObtenidos = (respuesta: any) => {
+    const handleDatosUsuarioObtenidos = (respuesta: any) => {  
+      console.log(
+        respuesta,
+        "333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333"
+      );
       if (respuesta) {
         if (respuesta.success) {
           setDatosUsuario(respuesta.data);

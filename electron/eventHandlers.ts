@@ -358,29 +358,10 @@ export const loadEvents = () => {
   ipcMain.on("obtener-datos-usuario", async (event, userId: string) => {
     try {
       const usuario: unknown = await getUser(userId);
-      if (isIUser(usuario)) {
-        const userData = {
-          username: usuario.username || usuario.nombre,
-          email: usuario.email,
-          ubicacion: usuario.ubicacion,
-          direccion: usuario.direccion,
-          codigopostal: usuario.codigopostal,
-          imageUrl: usuario.imageUrl,
-          esAdmin: usuario.esAdmin,
-          _id: usuario._id,
-          uuid: usuario.uuid,
-        };
-
-        // Primera respuesta
+      if (usuario) {
         event.reply("datos-usuario-obtenidos", {
           success: true,
-          data: userData,
-        });
-
-        // Segunda respuesta
-        event.reply("datos-usuario-obtenidoss", {
-          success: true,
-          data: userData,
+          data: usuario,
         });
       } else {
         event.reply("datos-usuario-obtenidos", {
@@ -395,22 +376,9 @@ export const loadEvents = () => {
       });
     }
   });
+  
 
-  function isIUser(obj: unknown): obj is IUser {
-    return (
-      typeof obj === "object" &&
-      obj !== null &&
-      "username" in obj &&
-      "email" in obj &&
-      "ubicacion" in obj &&
-      "direccion" in obj &&
-      "codigopostal" in obj &&
-      "imageUrl" in obj &&
-      "esAdmin" in obj &&
-      "_id" in obj
-    );
-  }
-
+  
   ipcMain.on("verificar-codigo-desbloqueo", async (event, codigoIngresado) => {
     try {
       const resultado = await verificarCodigoDesbloqueo(codigoIngresado);
