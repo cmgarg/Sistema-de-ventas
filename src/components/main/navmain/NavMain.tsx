@@ -17,7 +17,7 @@ const NavMain: React.FC<MainContentProps> = ({
     <div className="flex-1 text-white flex flex-row h-full items-center justify-center relative">
       <div className="absolute h-full flex items-center left-2">
         <div className=" flex justify-start items-center">
-          <p className="text-xl">{title}</p>
+          <p className="text-xl select-none">{title}</p>
         </div>
       </div>
       <div className="flex justify-center">

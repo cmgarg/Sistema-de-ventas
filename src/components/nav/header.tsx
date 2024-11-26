@@ -73,7 +73,7 @@ function Header() {
               </g>
             </svg>
           </div>
-          <div className=" text-white">Ventas CMG</div>
+          <div className=" text-white select-none">Ventas CMG</div>
         </div>
         <div className="w-[3px] h-7 bg-gray-600 relative z-50"></div>
       </div>

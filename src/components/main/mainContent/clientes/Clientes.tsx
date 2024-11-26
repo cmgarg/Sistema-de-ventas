@@ -15,6 +15,7 @@ import { BiExport } from "react-icons/bi";
 import ContextMenu from "../buttons/ContextMenu";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { BsTrash } from "react-icons/bs";
+import { generatePDF } from "../../PDFGenerator";
 
 interface ClientesContentProps {
   searchIn?: string;
@@ -91,6 +92,7 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
     console.log(object, "aca");
   }
 
+  ///////exportacion
   useEffect(() => {
     window.api.recibirEvento("response-get-clients", (res) => {
       setSearchActived({ ...searchActived, results: res });
@@ -127,6 +129,7 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
             bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
             height="h-8"
             width="w-10"
+            onClick={() => []}
           >
             <PiPrinter size={25} className="text-[#E0E0E0]" />
           </ButtonR>
