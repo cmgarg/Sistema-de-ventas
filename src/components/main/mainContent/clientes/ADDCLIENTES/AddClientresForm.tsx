@@ -99,7 +99,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
     window.api.enviarEvento("save-client", clienteData);
 
     setClienteData({
-      name: "",
+      name: "JOSE LACARA",
       address: "",
       phone: 0,
       email: "",
@@ -114,11 +114,36 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
       shopping: [],
     });
   }
+
+  const autoClientlacraputa = () => {
+    window.api.enviarEvento("save-client", {
+      name: "JOSE LACARA",
+      address: "Calle Falsa 123, Buenos Aires",
+      phone: 1145678910,
+      email: "jose.lacara@example.com",
+      birthdate: "1985-06-15",
+      DNI: 12345678,
+      clientType: "Frecuente",
+      CUIT_CUIL: "20-12345678-9",
+      nationality: "Argentina",
+      payMethod: "Tarjeta de Crédito",
+      rubro: "Comercio Minorista",
+      conditionIVA: "Responsable Inscripto",
+      shopping: [],
+    });
+  };
   //ESTILOS INPUT
   const estilosInput = "outline-none h-10 bg-slate-600 px-2 rounded-md ";
 
   return (
-    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center text-lg z-50 backdrop-brightness-50">
+    <div className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center text-lg z-50 bg-[rgb(0,0,0,0.5)]">
+      <div
+        className="abolute right-52 top-52 bg-red-500"
+        onClick={autoClientlacraputa}
+      >
+        {" "}
+        locasaasasa
+      </div>
       <div className="w-2/5 bg-[#2f2f2fff] p-2 space-y-5 rounded-md relative text-sm">
         <div className="flex space-x-2">
           <div className="flex-1 flex flex-col">
@@ -234,7 +259,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
               className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff]`}
               value={clienteData.rubro}
               onChange={(e) => {
-                setChangeData("rubro", e.target.value);
+                setChangeData("RUBRO", e.target.value);
               }}
             />
           </div>
@@ -246,7 +271,7 @@ const AddClientresForm: React.FC<AddClientresFormProps> = ({
               className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff] `}
               value={clienteData.nationality}
               onChange={(e) => {
-                setChangeData("DNI", e.target.value);
+                setChangeData("NATIONALITY", e.target.value);
               }}
             />
           </div>

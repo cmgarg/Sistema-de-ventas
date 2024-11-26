@@ -90,6 +90,16 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
     console.log(object, "aca");
   }
 
+  useEffect(() => {
+    window.api.recibirEvento("response-get-clients", (res) => {
+      setSearchActived({ ...searchActived, results: res });
+    });
+
+    return () => {
+      window.api.removeAllListeners("response-get-clients");
+    };
+  }, []);
+
   return (
     <div className="h-full w-full grid-cmg-program">
       <div className="absolute top-0 right-[339px] left-44 h-10 z-30 app-region-drag">
