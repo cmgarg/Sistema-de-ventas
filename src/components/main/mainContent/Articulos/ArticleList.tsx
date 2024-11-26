@@ -100,7 +100,7 @@ const ArticleList: React.FC<ArticleListProps> = ({
         </div>
         <VirtualizedTable
           className="rounded-b overflow-hidden flex-1"
-          data={articles}
+          data={searchActived.actived ? searchActived.results : articles}
           renderHeader={() => (
             <div className=" absolute left-[20000px] rounded-t-lg   font-bold text-center flex"></div>
           )}

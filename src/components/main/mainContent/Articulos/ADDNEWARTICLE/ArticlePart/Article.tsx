@@ -25,9 +25,9 @@ const Article: React.FC<ArticleProps> = ({
   const [addSubCategoryInput, setAddSubCategoryInput] = useState(false);
 
   const inputStyle =
-    "bg-[#707070ff] font-normal rounded-md focus:bg-[#909090ff] shadow-[0_2px_5px_rgba(0,0,0,0.50)] px-2 h-10 outline-none";
+    "bg-[#707070ff] focus:bg-[#909090ff] font-normal rounded-md  shadow-[0_2px_5px_rgba(0,0,0,0.50)] px-2 h-10 outline-none";
   return (
-    <div className="flex flex-1 flex-col pt-2">
+    <div className="flex flex-1 flex-col pt-2 bg-yellow-500">
       <div className="flex flex-col w-full space-y-5">
         <div className="flex flex-1 space-x-5 px-2">
           <div className="flex-1 flex flex-col">

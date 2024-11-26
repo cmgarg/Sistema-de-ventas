@@ -40,7 +40,7 @@ const ListClient: React.FC<listClientProps> = ({
 }) => {
   // HACEEEER QUE EL BUSCADOR FUNCIONE
   //ORDENAR LISTA
-  const [clientsInList, setClientsInList] = useState<any[]>([]);
+
   const [showToast, setshowToast] = useState<{
     icon: any;
     message: string;
@@ -130,14 +130,6 @@ const ListClient: React.FC<listClientProps> = ({
     });
   }, []);
 
-  useEffect(() => {
-    if (searchActived.actived) {
-      setClientsInList(searchActived.results);
-    }
-
-    console.log(clientsInList);
-  }, [searchActived, clients]);
-
   return (
     //PODER ORDENAR LAS LISTAS
     <div className="flex-1 h-full">
@@ -153,6 +145,9 @@ const ListClient: React.FC<listClientProps> = ({
         </div>
         <div className="flex flex-1">
           <p>Direccion</p>
+        </div>
+        <div className="flex justify-center flex-1">
+          <p>Compras</p>
         </div>
       </div>
       <VirtualizedTable
@@ -175,6 +170,9 @@ const ListClient: React.FC<listClientProps> = ({
                 <div className="flex flex-1 items-center">{item.DNI}</div>
                 <div className="flex flex-1 items-center">{item.email}</div>
                 <div className="flex flex-1 items-center">{item.address}</div>
+                <div className="flex flex-1 items-center justify-center">
+                  {item.shopping.length}
+                </div>
               </Link>
             </ContextMenuTrigger>
             <ContextMenuContent className="bg-gradient-to-tl  from-gray-700 via-gray-700 to-gray-600 border-gray-600 text-gray-200 ">

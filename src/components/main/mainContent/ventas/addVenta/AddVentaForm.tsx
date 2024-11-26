@@ -66,6 +66,7 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
       email: "",
       esAdmin: false,
       ubicacion: "",
+      uuid: "",
     },
     billData: { billType: "" },
     sold: 0,
@@ -150,6 +151,12 @@ const AddVentaForm: React.FC<AddVentaForm> = ({
     DNI: 0,
     birthdate: "",
     shopping: [],
+    clientType: "",
+    conditionIVA: "",
+    CUIT_CUIL: "",
+    nationality: "",
+    payMethod: "",
+    rubro: "",
   });
   const [showModalBuyer, setShowModalBuyer] = useState(false);
   const [showModalSeller, setShowModalSeller] = useState(false);

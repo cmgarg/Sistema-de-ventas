@@ -20,7 +20,7 @@ const Buscador = <T extends object>({
   function search(e: string) {
     const lowerCaseQuery = e.toLowerCase(); // Convierte la consulta a minúsculas para evitar diferencias por capitalización
 
-    const result = searchIn.filter((object) => {
+    const filteredResults = searchIn.filter((object) => {
       return Object.values(object).some((val) => {
         if (typeof val === "string") {
           return val.toLowerCase().includes(lowerCaseQuery); // Coincidencia parcial
@@ -36,8 +36,8 @@ const Buscador = <T extends object>({
       });
     });
 
-    setResult(result);
-    functionReturn(result, result.length > 0); // Actualiza el resultado y estado
+    setResult(filteredResults.length > 0 ? filteredResults : []); // Si no hay resultados, devuelve un array vacío
+    functionReturn(filteredResults, filteredResults.length > 0); // Actualiza el estado de búsqueda
   }
 
   // Manejo del input
@@ -55,7 +55,8 @@ const Buscador = <T extends object>({
       ) {
         if (inputValue === "") {
           setActivarBuscador(false);
-          functionReturn([], false);
+          setResult([]); // Limpia los resultados
+          functionReturn([], false); // Devuelve array vacío y estado falso
         }
       }
     }
@@ -66,16 +67,10 @@ const Buscador = <T extends object>({
     };
   }, [inputValue]);
 
-  // Actualiza el estado del resultado
-  useEffect(() => {
-    if (result.length > 0) {
-      functionReturn(result, true);
-    }
-  }, [result]);
-
   // Reinicia el buscador si cambian los datos de entrada
   useEffect(() => {
     setActivarBuscador(false);
+    setResult([]); // Limpia los resultados al cambiar los datos de entrada
     functionReturn([], false);
   }, [searchIn]);
 

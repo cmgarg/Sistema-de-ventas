@@ -62,7 +62,7 @@ const MenuClientsForm: React.FC<MenuClientsFormProps> = ({
                 {clients.map((framework) => (
                   <CommandItem
                     key={framework._id}
-                    value={framework.name}
+                    value={framework._id}
                     className={`${
                       optionSelected && framework._id === optionSelected._id
                         ? "bg-yellow-400"

@@ -38,7 +38,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     >
       {optionsMenu.map((option) => (
         <button
-          className="p-2 items-center hover:bg-gray-700 hover:border-yellow-500 border-l-4 border-transparent hover:text-yellow-500 text-start flex justify-between"
+          className="p-2 items-center hover:bg-gray-700 hover:text-yellow-500 hover:border-yellow-500 border-l-4 border-transparent  text-start flex justify-between"
           onClick={option.onClick}
         >
           <p>{option.label}</p>

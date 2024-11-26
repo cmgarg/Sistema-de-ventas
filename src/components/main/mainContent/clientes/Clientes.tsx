@@ -26,6 +26,7 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
   const clients = useSelector((state: storeType) => state.clientState);
 
   const [activeModalForm, setActiveModalForm] = useState(false);
+  const [clientsInList, setClientsInList] = useState<any[]>([]);
   const [clientToEdit, setClienteAeditar] = useState<{
     active: boolean;
     object: clientData;
@@ -99,7 +100,13 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
       window.api.removeAllListeners("response-get-clients");
     };
   }, []);
+  useEffect(() => {
+    if (searchActived.actived) {
+      setClientsInList(searchActived.results);
+    }
 
+    console.log(clientsInList);
+  }, [searchActived, clients]);
   return (
     <div className="h-full w-full grid-cmg-program">
       <div className="absolute top-0 right-[339px] left-44 h-10 z-30 app-region-drag">

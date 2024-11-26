@@ -62,7 +62,7 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
       barcode: "",
     },
   });
-
+  const [articlesInList, setArticlesInList] = useState<any[]>([]);
   const [resDeleteArticle, setResDeleteArticle] = useState<{
     delete: boolean;
     active: boolean;
@@ -106,7 +106,12 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
 
     console.log(categorys, "()()()()()()())(((())))");
     console.log(brands, "%&%&%&%&%&%&%&%&");
-  }, [articles, categorys, brands]);
+    if (searchActived.actived) {
+      setArticlesInList(searchActived.results);
+    } else {
+      setArticlesInList(articles);
+    }
+  }, [articles, categorys, brands, searchActived]);
 
   useEffect(() => {
     window.api.recibirEvento("response-delete-article", (e: boolean) => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import MenuClientsForm from "../MenusInputs/MenuClientsForm";
 import MenuArticlesForm from "../MenusInputs/MenuArticlesForm";
-import { articleData } from "../../../../../../types/types";
+import { articleData, unitType } from "../../../../../../types/types";
 import { NumericFormat } from "react-number-format";
 import { TrashIcon } from "@radix-ui/react-icons";
 
@@ -9,11 +9,11 @@ interface ListaProductos {
   deleteOfList: (i: any) => void;
   listProduct: {
     name: string;
-    code?: string;
-    total: string | number;
+    code: string;
+    total: number | string;
     amount: {
-      value: string | number;
-      unit: { label: string; pallet: boolean; bulk: boolean };
+      value: string;
+      unit: unitType;
     };
   }[];
   estilosInput: string;
