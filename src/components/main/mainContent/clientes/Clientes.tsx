@@ -15,6 +15,7 @@ import { BiExport } from "react-icons/bi";
 import ContextMenu from "../buttons/ContextMenu";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { BsTrash } from "react-icons/bs";
+import { generatePDF } from "../../PDFGenerator";
 
 interface ClientesContentProps {
   searchIn?: string;
@@ -90,6 +91,8 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
     console.log(object, "aca");
   }
 
+  ///////exportacion
+
   return (
     <div className="h-full w-full grid-cmg-program">
       <div className="absolute top-0 right-[339px] left-44 h-10 z-30 app-region-drag">
@@ -110,6 +113,7 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
             bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
             height="h-8"
             width="w-10"
+            onClick={() => []}
           >
             <PiPrinter size={25} className="text-[#E0E0E0]" />
           </ButtonR>

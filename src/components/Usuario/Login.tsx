@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import PasswordRecovery from "./PasswordRecovery.js";
 import { RootState } from "../../redux/store.js";
 import ButtonR from "../main/mainContent/buttons/ButtonR";
+import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 
 type LoginProps = {
   setEstadoRecuperacionCuenta: (estado: boolean) => void;
@@ -105,6 +106,12 @@ const Login: React.FC<LoginProps> = ({
     });
   };
 
+  /////contraseña se veo o no se vee
+  const [showPassword, setShowPassword] = useState(false);
+  const toggleShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   return (
     <div
       className={`flex flex-1 items-center justify-center text-[#fff8dcff]  ${
@@ -149,6 +156,16 @@ const Login: React.FC<LoginProps> = ({
               onKeyUp={handleKeyPress}
               required
             />
+            <div
+              onClick={toggleShowPassword}
+              className="absolute right-5 top-1/2 transform -translate-y-1/2 cursor-pointer"
+            >
+              {showPassword ? (
+                <BsEyeFill size={25} />
+              ) : (
+                <BsEyeSlashFill size={25} />
+              )}
+            </div>
           </div>
           <div className="w-full h-10 pt-2">
             {loginIncorrecto && (
