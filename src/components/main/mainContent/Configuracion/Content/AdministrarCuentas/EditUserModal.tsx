@@ -1,4 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
+import ButtonR from "../../../buttons/ButtonR";
 
 interface Permisos {
   gerente: boolean;
@@ -18,11 +19,16 @@ interface Usuario {
 interface EditUserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  user: Usuario | null;  // Usa 'Usuario' aquí
-  onSave: (user: Usuario) => void;  // Usa 'Usuario' aquí
+  user: Usuario | null; // Usa 'Usuario' aquí
+  onSave: (user: Usuario) => void; // Usa 'Usuario' aquí
 }
 
-const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, user, onSave }) => {
+const EditUserModal: React.FC<EditUserModalProps> = ({
+  isOpen,
+  onClose,
+  user,
+  onSave,
+}) => {
   const [usuario, setUsuario] = useState<Usuario>({
     _id: "",
     nombre: "",
@@ -33,7 +39,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, user, on
       ventas: false,
       stock: false,
     },
-    imageUrl: ""
+    imageUrl: "",
   });
 
   const [changePassword, setChangePassword] = useState(false);
@@ -74,17 +80,51 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, user, on
   const Cerrar = () => {
     onClose();
     setChangePassword(false);
+    setContraseñaIncorrecta(false);
+  };
+
+  const [contraseñaincorrecta, setContraseñaIncorrecta] = useState(false);
+
+  const errorContraseña = () => {
+    setContraseñaIncorrecta(true); // Cambia el estado para mostrar el error
   };
 
   const handleSave = () => {
-    const updatedUser = { ...usuario };
-    if (changePassword) {
-      updatedUser.password = newPassword;
+    // Validar los inputs del nombre y la nueva contraseña
+    if (usuario.nombre.trim().length < 4 || newPassword.trim().length < 4) {
+      setContraseñaIncorrecta(true); // Cambiar el estado para mostrar el error
+      return; // Detener la ejecución si no se cumple el requisito
     }
+
+    // Si pasa la validación, procede con la ejecución
+    const updatedUser = { ...usuario };
+    updatedUser.password = newPassword; // Usar la nueva contraseña
     window.api.enviarEvento("guardar-usuario-editado", updatedUser);
     onSave(updatedUser);
     onClose(); // Cierra el modal después de guardar
+
+    // Restablece el estado de error si el guardado es exitoso
+    setContraseñaIncorrecta(false);
   };
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (!isOpen) return;
+
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handleSave();
+      } else if (event.key === "Escape") {
+        Cerrar();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [isOpen, usuario, newPassword]);
 
   if (!isOpen || !user) return null;
 
@@ -92,120 +132,61 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, user, on
 
   return (
     <div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-      <div
-        className="flex bg-gray-700 rounded-3xl relative justify-start text-white border-gray-50 border flex-col p-10 max-w-lg w-full"
-        style={{ backgroundColor: "rgba(30, 41, 59, 0.9)" }}
-      >
-        <h2 className="text-white text-2xl m-4">Editar Usuario</h2>
+      <div className="flex bg-[#2f2f2fff] rounded-3xl relative justify-start text-white border-gray-600 border flex-col max-w-lg w-full">
         <div className="flex flex-col p-3">
-          <label className="text-xl p-2">Nombre del usuario</label>
+          <label className="text-base">Nombre del usuario</label>
+          <div className="h-5">
+            {contraseñaincorrecta && (
+              <div className="flex items-start text-red-500 text-sm">
+                El nombre y la nueva contraseña deben contener al menos 4
+                caracteres.
+              </div>
+            )}
+          </div>
+
           <input
             type="text"
             name="nombre"
             placeholder="Usuario"
             value={usuario.nombre}
             onChange={handleInputChange}
-            className="bg-slate-700 rounded-md outline-none m-2 text-xl p-2"
+            className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff] `}
           />
 
-          <label className="text-xl p-2">Contraseña</label>
-          {changePassword ? (
-            <div className="relative flex items-center">
-              <input
-                type="password"
-                name="newPassword"
-                placeholder="Nueva contraseña"
-                value={newPassword}
-                onChange={handlePasswordChange}
-                className="bg-slate-700 rounded-md outline-none m-2 text-xl p-2 w-full"
-              />
-            </div>
-          ) : (
-            <div className="flex items-center space-x-2 border border-gray-600 rounded-lg p-3">
-              <p className="m-2 text-xl text-red-700">
-                Solo se puede cambiar la contraseña, no se puede modificar. ¿Deseas cambiarla?
-              </p>
-              <input
-                type="checkbox"
-                checked={changePassword}
-                onChange={() => setChangePassword(!changePassword)}
-                className="accent-blue-500 h-10 w-10"
-              />
-            </div>
-          )}
-
-          {/* Permiso de uso */}
-          <div className="mt-4">
-            <div className="text-lg mb-2 select-none">Permisos de uso:</div>
-            {Object.keys(usuario.permisos).map((key) => (
-              <label className="flex items-center space-x-2" key={key}>
-                <input
-                  type="checkbox"
-                  name={key}
-                  checked={usuario.permisos[key as keyof Permisos]}
-                  onChange={handlePermisosChange}
-                  className="accent-blue-500 h-5 w-5"
-                />
-                <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
-              </label>
-            ))}
+          <label className="text-base py-1 pt-6">Nueva contraseña</label>
+          <div className="h-4"></div>
+          <div className="relative flex items-center">
+            <input
+              type="password"
+              name="newPassword"
+              placeholder="Nueva contraseña"
+              value={newPassword}
+              onChange={handlePasswordChange}
+              className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff] `}
+            />
           </div>
-          {usuario.permisos.logistica && (
-            <div className="mt-5">
-              Accesos:
-              <p>• Ventas con selección de vendedor</p>
-              <p>• Artículos</p>
-              <p>• Stock</p>
-              <p>• Clientes</p>
-              <p>• Facturación</p>
+
+          <div className="flex flex-1  justify-end pt-4">
+            <div className="flex flex-1"></div>
+            <div className="flex flex-1 justify-around">
+              <ButtonR
+                textSize="text-sm"
+                onClick={Cerrar}
+                bgColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff] text-sm"
+                height="h-7"
+                width="w-24"
+                title="Cancelar"
+              ></ButtonR>
+
+              <ButtonR
+                textSize="text-sm"
+                onClick={handleSave}
+                bgColor="bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-500 text-[#fff8dcff] text-sm"
+                height="h-7"
+                width="w-32"
+                title="Guardar"
+              ></ButtonR>
             </div>
-          )}
-
-          {usuario.permisos.gerente && (
-            <div className="mt-5">
-              Accesos:
-              <p>• Ventas con selección de vendedor</p>
-              <p>• Artículos</p>
-              <p>• Stock</p>
-              <p>• Clientes</p>
-              <p>• Estadísticas</p>
-            </div>
-          )}
-
-          {usuario.permisos.stock && (
-            <div className="mt-5">
-              Accesos:
-              <p>• Stock</p>
-            </div>
-          )}
-
-          {usuario.permisos.ventas && (
-            <div className="mt-5">
-              Accesos:
-              <p>• Ventas</p>
-              <p>• Artículos</p>
-              <p>• Stock</p>
-              <p>• Clientes</p>
-            </div>
-          )}
-
-          <div className="flex justify-around">
-            <button
-              onClick={Cerrar}
-              className="bg-red-800 hover:bg-red-700 text-white font-bold py-2 px-4 rounded m-3 mt-10 p-2 pr-4"
-            >
-              Cerrar
-            </button>
-
-            <button
-              onClick={handleSave}
-              disabled={isSaveDisabled}
-              className={`font-bold py-2 px-4 rounded m-3 mt-10 ${
-                isSaveDisabled ? "bg-gray-500" : "bg-blue-800 hover:bg-blue-700 text-white"
-              }`}
-            >
-              Guardar
-            </button>
           </div>
         </div>
       </div>

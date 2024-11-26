@@ -43,18 +43,15 @@ export default function Configuracion() {
   }, [user]);
 
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="flex">
-        <div className="flex-1 text-white "><div className="flex text-4xl pl-16 ">Configuracion</div></div>
-        <div className="flex-1" ><NavMain title="" children={undefined} setLoginUser={""}></NavMain></div>
-      </div>
-      <div className=" flex-1 flex">
-        <div className="flex w-1/4">
-          <div className="flex flex-1 p-10 rounded-lg">
+    <div className="flex flex-1 flex-col max-h-full "> 
+        <div className="absolute top-0 right-[339px] left-44 h-10 z-30 app-region-drag" ><NavMain title="Configuracion" children={undefined} setLoginUser={""}></NavMain></div>
+      <div className="flex flex-1 h-full  p-5 space-x-5">
+        <div className="flex w-56">
+          <div className="flex flex-1 rounded-lg">
             <MenuConfig estado={estado} setEstado={setEstado} />
           </div>
         </div>
-        <div className="flex flex-1 rounded-md pt-10 pr-10 pb-10 ">
+        <div className="flex flex-1 max-h-full rounded-md">
           {contenido()}
         </div>
       </div>

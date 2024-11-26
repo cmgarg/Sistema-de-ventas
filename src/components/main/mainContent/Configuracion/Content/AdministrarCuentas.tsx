@@ -202,9 +202,9 @@ export default function AdministrarCuentas() {
   }
 
   return (
-    <div className="flex flex-1 text-white rounded-lg shadow-[0_2px_5px_rgba(0,0,0,0.50)]  space-x-2 overflow-hidden bg-[#2f2f2fff]">
-      <div className="flex flex-col w-1/4 rounded-lg overflow-hidden">
-        <div className="h-12 flex justify-between pl-1 items-center  rounded-lg">
+    <div className="flex max-h-full text-white rounded-lg shadow-[0_2px_5px_rgba(0,0,0,0.50)]  bg-[#2f2f2fff] w-full ">
+      <div className="flex flex-col max-h-full rounded-lg">
+        <div className="h-12 flex justify-between pl-1 items-center rounded-lg">
           <div className="text-2xl select-none pl-1">Usuarios</div>
           <div className="flex items-center">
             <Tooltip content="Editar Usuario">
@@ -229,27 +229,30 @@ export default function AdministrarCuentas() {
             onClose={() => setShowModal(false)}
           />
         </div>
-        <div className="h-[53.6rem] overflow-auto">
+        <div className="flex flex-col w-64 overflow-auto max-h-full">
           {usuarios.map((usuario) => {
             const ref = React.createRef<HTMLDivElement>();
             return (
               <div
                 key={usuario._id}
                 onClick={() => handleMenuClick(usuario._id)}
-                className={`relative flex flex-1 w-full border-b-2 border-black p-3 justify-between items-center ${
+                className={`flex w-full h-16 border-b-2 border-black ${
                   usuarioSeleccionado === usuario._id
                     ? "  border-b-none border-b-gray-600 bg-gradient-to-bl from-yellow-800 via-yellow-700 to-yellow-500 transition rounded-l-lg duration-300 ease-in-out"
                     : "bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
                 }`}
               >
-                <div className="text-2xl">{usuario.nombre}</div>
+                <div className="flex flex-1 items-center w-10 p-1 text-lg relative ">
+                <p title={usuario.nombre}>{usuario.nombre.length > 15 ? `${usuario.nombre.slice(0, 15)}...` : usuario.nombre}</p>
+                </div>
+
                 <div
-                  className="relative rounded-full cursor-pointer menu-container shadow-lg shadow-black"
+                  className="flex items-center pr-1"
                   ref={ref}
-                  onClick={() => handleImageClick(ref)} // Evento de clic para mostrar el modal
+                  onClick={() => handleImageClick(ref)}
                 >
                   <div
-                    className="h-14 w-14 rounded-full bg-cover bg-center"
+                    className=" flex h-14 w-14 rounded-full bg-cover  bg-center shadow-lg shadow-black"
                     style={{ backgroundImage: `url(${usuario.imageUrl})` }}
                   ></div>
                 </div>

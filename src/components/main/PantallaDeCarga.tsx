@@ -38,7 +38,7 @@ export default function PantallaDeCarga() {
         </svg>
       </div>
 
-      <div className="animate-spin rounded-full h-[40rem] w-[40rem] border-t-4 border-b-4 border-blue-500 absolute"></div>
+      <div className="animate-spin rounded-full h-[30rem] w-[30rem] border-t-4 border-b-4 border-blue-500 absolute"></div>
     </div>
   );
 }

@@ -1,1 +1,2 @@
-{"nombre":"Martin","password":"$2b$10$wj01T2YiipQkeKtWnn/zwu6R8inaqkI.edSQL90zYLMPDnql4gYxe","imageUrl":"assets/imagen-usuario/user-3.jpg","permisos":{"gerente":true,"logistica":false,"ventas":false,"stock":false},"esusuario":true,"_id":"bJbPam9dxxXa4rF3"}
+{"nombre":"Martin2","password":"123321","imageUrl":"/assets/imagen-usuario/user-1.jpg","permisos":{"gerente":true,"logistica":false,"ventas":false,"stock":false},"esusuario":true,"_id":"LR2Q117F30JwjnSg"}
+{"nombre":"martin","password":"$2b$10$ldJsYWvybthNv7rKi2FMeO/G0t8m9gNx4IadjofVZ3bvmznkLg0.W","imageUrl":"assets/imagen-usuario/user-7.jpg","permisos":{"gerente":true,"logistica":false,"ventas":false,"stock":false},"esusuario":true,"_id":"iYABvCsiVx7PG10M"}

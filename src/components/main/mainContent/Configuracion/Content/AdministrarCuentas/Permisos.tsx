@@ -93,9 +93,13 @@ const Permisos: React.FC<PermisosProps> = ({
   }, [usuarioSeleccionado, setUsuarios]);
 
   const handleSelect = (cargo: string) => {
+    // Si el cargo ya está seleccionado, no hacer nada
+    if (cargo === cargoSelec) return;
+  
     setSelectedCargo(cargo);
     setShowWarningModal(true);
   };
+  
 
   const confirmChange = () => {
     setShowWarningModal(false);
@@ -135,21 +139,21 @@ const Permisos: React.FC<PermisosProps> = ({
         <div className="p-4 text-lg">
           Configuración por defecto: solo se puede seleccionar una categoría.
         </div>
-        <div className="flex flex-wrap text-white justify-around p-5 border-b border-t border-gray-600 gap-4 relative ">
+        <div className="flex text-white border-b border-t border-gray-600 relative p-2">
           {usuarios.length === 0 ? (
             <div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-30 flex items-center justify-center z-40"></div>
           ) : null}
           {cargos.map((cargo) => (
             <div
               key={cargo.key}
-              className={`bg-gradient-to-b from-gray-800 via-gray-800 to-gray-700 flex flex-col rounded-lg flex-grow w-full sm:w-1/5 min-w-[10rem] max-w-[15rem] h-60 shadow-[0_2px_5px_rgba(0,0,0,0.50)] ${
+              className={`bg-gradient-to-b w-1/4 m-1 from-gray-800 via-gray-800 to-gray-700 flex flex-col rounded-lg flex-grow h-60 shadow-[0_2px_5px_rgba(0,0,0,0.50)] ${
                 cargoSelec === cargo.key
                   ? "bg-gradient-to-l from-yellow-800 via-yellow-700 to-yellow-600"
                   : ""
               }`}
               onClick={() => handleSelect(cargo.key)}
             >
-              <div className="flex p-5 flex-col w-full">
+              <div className="flex p-2 flex-col">
                 <div className="flex border-b border-gray-600 text-lg w-full justify-between">
                   <div className="flex pb-2">{formatKey(cargo.key)}</div>
                   <div className="flex items-start">
