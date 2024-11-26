@@ -236,7 +236,8 @@ contextBridge.exposeInMainWorld("api", {
       "response-register-buy-client",
       "response-get-client-byId",
       "response-get-clients",
-      "response-delete-client",
+      "response-delete-clients",
+      "response-save-client",
       ///
       "response-get-sales",
       "article-foundById",

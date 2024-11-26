@@ -29,6 +29,12 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
       "email",
       "birthdate",
       "DNI",
+      "CUIT_CUIL",
+      "CLIENT_TYPE",
+      "NATIONALITY",
+      "PAY_METHOD",
+      "CONDITION_IVA",
+      "RUBRO",
     ];
     console.log(existingData.includes(data), "esto");
     if (existingData.includes(data)) {
@@ -41,7 +47,7 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
           setClienteData({ ...clientData, address: value });
           break;
         case "phone":
-          setClienteData({ ...clientData, phone: parseInt(value) });
+          setClienteData({ ...clientData, phone: value });
           break;
         case "email":
           setClienteData({ ...clientData, email: value });
@@ -51,6 +57,24 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
           break;
         case "DNI":
           setClienteData({ ...clientData, DNI: value });
+          break;
+        case "CUIT_CUIL":
+          setClienteData({ ...clientData, CUIT_CUIL: value });
+          break;
+        case "CLIENT_TYPE":
+          setClienteData({ ...clientData, clientType: value });
+          break;
+        case "NATIONALITY":
+          setClienteData({ ...clientData, nationality: value });
+          break;
+        case "PAY_METHOD":
+          setClienteData({ ...clientData, payMethod: value });
+          break;
+        case "RUBRO":
+          setClienteData({ ...clientData, rubro: value });
+          break;
+        case "CONDITION_IVA":
+          setClienteData({ ...clientData, conditionIVA: value });
           break;
 
         default:
@@ -65,6 +89,12 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
 
     dispatch(editClient(clientData));
   }
+
+  useEffect(() => {
+    window.api.recibirEvento("response-update-client", (res) => {
+      clienteAeditarOff();
+    });
+  }, []);
 
   //ESTILOS INPUT
   const estilosInput =
@@ -99,7 +129,6 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
             />
           </div>
         </div>
-
         <div className="flex w-full flex-1 space-x-2">
           <div className="flex-1">
             <label htmlFor="phone">Telefono</label>
@@ -151,6 +180,68 @@ const EditarClientes: React.FC<EditarClienteProps> = ({
               }}
               className={estilosInput}
             />
+          </div>
+          <div className="flex w-full space-x-2">
+            <div className="flex flex-1 flex-col">
+              <label htmlFor="telefono">CUIL/CUIT</label>
+              <input
+                type="text"
+                name="cuitcuil"
+                className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff]`}
+                value={clientData.CUIT_CUIL}
+                onChange={(e) => {
+                  setChangeData("CUIT_CUIL", e.target.value);
+                }}
+              />
+            </div>
+            <div className="flex flex-1 flex-col">
+              <label htmlFor="dni">Condicion de IVA</label>
+              <input
+                type="text"
+                name="conditioniva"
+                className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff] `}
+                value={clientData.conditionIVA}
+                onChange={(e) => {
+                  setChangeData("CONDITION_IVA", e.target.value);
+                }}
+              />
+            </div>
+            <div className="flex flex-1 flex-col">
+              <label htmlFor="telefono">Rubro</label>
+              <input
+                type="text"
+                name="rubro"
+                className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff]`}
+                value={clientData.rubro}
+                onChange={(e) => {
+                  setChangeData("RUBRO", e.target.value);
+                }}
+              />
+            </div>
+            <div className="flex flex-1 flex-col">
+              <label htmlFor="dni">Nacionalidad</label>
+              <input
+                type="text"
+                name="nationality"
+                className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff] `}
+                value={clientData.nationality}
+                onChange={(e) => {
+                  setChangeData("NATIONALITY", e.target.value);
+                }}
+              />
+            </div>
+            <div className="flex flex-1 flex-col">
+              <label htmlFor="dni">Metodo de pago</label>
+              <input
+                type="text"
+                name="paymethod"
+                className={`w-full bg-[#707070ff] text-white shadow-[0_2px_5px_rgba(0,0,0,0.50)] h-10 rounded-md outline-none pl-2 focus:bg-[#909090ff] `}
+                value={clientData.payMethod}
+                onChange={(e) => {
+                  setChangeData("PAY_METHOD", e.target.value);
+                }}
+              />
+            </div>
           </div>
         </div>
         <div className="flex flex-row space-x-5 w-full justify-end">

@@ -62,7 +62,10 @@ console.log("databaseOperations Se esta ejecutanado...");
 
 //funciones para manejar clientes y demas
 export const saveClient = async (data: object) => {
-  await db.clients.insertAsync(data);
+  return await db.clients
+    .insertAsync(data)
+    .then((res) => ({ action: true, dataSaved: res }))
+    .catch((err) => ({ action: false, dataSaved: err }));
 };
 
 export const registerBuyClient = async (sale: saleData) => {
@@ -83,13 +86,13 @@ export const getClientById = async (clientId: string): Promise<clientData> => {
   return client;
 };
 export const deleteClient = async (data: clientData) => {
-  await db.clients
+  return await db.clients
     .removeAsync({ _id: data._id }, {})
-    .then((data) => {
-      return { clientDelete: data };
+    .then((res) => {
+      return { action: true, dataDeleted: data.name };
     })
-    .catch((_err) => {
-      return false;
+    .catch((err) => {
+      return { action: false, dataDeleted: err };
     });
 };
 export const findClients = async () => {
@@ -103,20 +106,14 @@ export const findClients = async () => {
 };
 export function updateClient(clientId: string, updateData: any) {
   delete updateData._id;
-  return new Promise((resolve, reject) => {
-    db.clients.update(
-      { _id: clientId },
-      { $set: updateData },
-      { multi: false },
-      (err: any, docs: any) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(docs);
-        }
-      }
-    );
-  });
+  return db.clients
+    .updateAsync({ _id: clientId }, { $set: updateData }, { multi: false })
+    .then((data) => {
+      return { action: true, clientUpdate: updateData };
+    })
+    .catch((err) => {
+      return { action: false, clientUpdate: err };
+    });
 }
 ////////////////////////////////
 //FUNCIONES DE ARTICULOS ARKCHIVO ARTICULOS.JS

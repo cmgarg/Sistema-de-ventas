@@ -92,6 +92,15 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
   }
 
   ///////exportacion
+  useEffect(() => {
+    window.api.recibirEvento("response-get-clients", (res) => {
+      setSearchActived({ ...searchActived, results: res });
+    });
+
+    return () => {
+      window.api.removeAllListeners("response-get-clients");
+    };
+  }, []);
 
   return (
     <div className="h-full w-full grid-cmg-program">

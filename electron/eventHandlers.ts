@@ -83,6 +83,10 @@ export const loadEvents = () => {
   ipcMain.on("save-client", async (event, clientToSave) => {
     await saveClient(clientToSave);
     const clients = await findClients();
+    event.reply(
+      "response-save-client",
+      clients ? { save: true, clientToSave } : { save: false, clientToSave }
+    );
     event.reply("response-get-clients", clients);
   });
 
@@ -93,7 +97,7 @@ export const loadEvents = () => {
 
   ipcMain.on("delete-client", async (event, clienteAEliminar) => {
     const result = await deleteClient(clienteAEliminar);
-    event.reply("response-delete-client", result);
+    event.reply("response-delete-clients", result);
   });
 
   ipcMain.on("get-client-byId", async (event, clientId) => {
