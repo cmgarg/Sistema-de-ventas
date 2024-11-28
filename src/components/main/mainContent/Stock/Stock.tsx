@@ -13,6 +13,7 @@ import VirtualizedTable from "../../tablaMain/VirtualizedTable";
 import SelectArticle from "../ventas/MenusInputs/SelectArticle";
 import { articleData } from "../../../../../types/types";
 import RestockForm from "./forms/RestockForm";
+import Filters from "./Filters/Filters";
 
 // Define el tipo para los artículos basado en el tipo articleData que espera StockList
 
@@ -33,9 +34,19 @@ interface StockProps {
 }
 
 const Stock: React.FC<StockProps> = () => {
+  const [filtersActived, setFiltersActived] = useState<{
+    category: string;
+    brand: string;
+    subCategory: string;
+  }>({
+    category: "",
+    brand: "",
+    subCategory: "",
+  });
   const articles = useSelector(
     (state: { articleState: articleData[] }) => state.articleState
   );
+  const [articlesListShow, setArticlesListShow] = useState<articleData[]>([]);
   const [router, setRouter] = useState<string>("ARTICLES");
 
   const [filters, setFilters] = useState<Filters>({
@@ -63,14 +74,48 @@ const Stock: React.FC<StockProps> = () => {
     }
     setSearchActived(object);
   }
+  const checkFilters = () => {
+    const { brand, subCategory, category } = filtersActived;
+    const brandEmpty = brand.length === 0;
+    const categoryEmpty = category.length === 0;
+    const subCategoryEmpty = subCategory.length === 0;
+
+    return articles.filter((article) => {
+      const brandActive =
+        brandEmpty || brand.toLowerCase() === article.brand.value.toLowerCase();
+      const categoryActive =
+        categoryEmpty ||
+        category.toLowerCase() === article.category.value.toLowerCase();
+      const subCategoryActive =
+        subCategoryEmpty ||
+        subCategory.toLowerCase() === article.subCategory.value.toLowerCase();
+
+      return brandActive && categoryActive && subCategoryActive;
+    });
+  };
+
+  useEffect(() => {
+    const newArticleList = checkFilters();
+    console.log("TIENE QUE MOSTRART", newArticleList);
+    setArticlesListShow([...newArticleList]);
+  }, [filtersActived]);
+  useEffect(() => {
+    setArticlesListShow(articles);
+  }, []);
 
   return (
     <div className="h-full w-full">
       {reStock ? <RestockForm setReStock={setReStock} /> : null}
+      <button
+        onClick={() => setFiltersActived({ ...filtersActived })}
+        className="h-10 w-52"
+      >
+        prueba
+      </button>
       <div className="absolute top-0 right-[339px] left-44 h-10 z-30 app-region-drag  ">
         <NavMain title="Stock" setLoginUser={""}>
           <Export />
-          <Buscador searchIn={articles} functionReturn={getResults} />
+          <Buscador searchIn={articlesListShow} functionReturn={getResults} />
           <ButtonR
             bgColor="bg-yellow-700"
             textSize="text-sm"
@@ -86,10 +131,18 @@ const Stock: React.FC<StockProps> = () => {
         </NavMain>
       </div>
 
-      <div className="flex flex-col h-full overflow-auto space-y-5">
+      <div className="flex flex-col h-full overflow-auto">
+        <Filters
+          filtersActived={filtersActived}
+          setFiltersActived={setFiltersActived}
+        />
         <div className="flex flex-1">
           {router === "ARTICLES" ? (
-            <StockList searchActived={searchActived} filtersActived={filters} />
+            <StockList
+              searchActived={searchActived}
+              filtersActived={filters}
+              articlesListShow={articlesListShow}
+            />
           ) : null}
         </div>
       </div>

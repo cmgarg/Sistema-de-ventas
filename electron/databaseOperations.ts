@@ -1707,17 +1707,62 @@ export const actualizarUsuariosAdmin = async (camposActualizados: any) => {
 function getDatabasee() {
   throw new Error("Function not implemented.");
 }
+export const initializeFilters = async () => {
+  const categories = [
+    "Electrónica",
+    "Informática",
+    "Electrodomésticos",
+    "Fotografía",
+    "Accesorios",
+  ];
+  const subCategories = [
+    "Gadgets",
+    "Periféricos",
+    "Hogar",
+    "Oficina",
+    "Entretenimiento",
+  ];
+  const brands = [
+    "Samsung",
+    "Sony",
+    "LG",
+    "Apple",
+    "Microsoft",
+    "HP",
+    "Asus",
+    "Dell",
+    "Xiaomi",
+    "Lenovo",
+  ];
 
-// Generar datos de ejemplo para 400 artículos
-const generateRandomArticles = async (count: number) => {
-  const articles = [];
+  // Crear categorías
+  for (const category of categories) {
+    await addCategory(category);
+  }
+
+  // Crear subcategorías
+  for (const subCategory of subCategories) {
+    await addSubCategory(subCategory);
+  }
+
+  // Crear marcas
+  for (const brand of brands) {
+    await addBrand(brand);
+  }
+};
+
+// Función para generar artículos utilizando las marcas, categorías y subcategorías existentes
+export const generateRandomArticles = async (count: number) => {
+  // Obtener marcas, categorías y subcategorías de la base de datos
+  const { categorys, subCategorys, brands } = await getCategoryAndBrand();
 
   for (let i = 0; i < count; i++) {
-    const categoria = {
-      value: `Categoría ${i % 5}`,
-      label: `Categoría ${i % 5}`,
-    };
-    const marca = { value: `Marca ${i + 1}`, label: `Marca ${i + 1}` };
+    // Seleccionar aleatoriamente una categoría, subcategoría y marca
+    const categoria = categorys[Math.floor(Math.random() * categorys.length)];
+    const subCategoria =
+      subCategorys[Math.floor(Math.random() * subCategorys.length)];
+    const marca = brands[Math.floor(Math.random() * brands.length)];
+
     const profit = Math.floor(Math.random() * 101); // Genera un porcentaje entre 0 y 100
     const cost = Math.round(Math.random() * 100); // Genera un costo aleatorio entre 0 y 100
     const sale = cost + (cost * profit) / 100; // Calcula el precio de venta sumando el porcentaje de ganancia al costo
@@ -1749,7 +1794,7 @@ const generateRandomArticles = async (count: number) => {
 
     const article = {
       article: {
-        name: `Artículo ${i + 1}`,
+        name: `${categoria.label} - ${marca.label} Modelo ${i + 1}`,
         costo: cost,
         venta: sale,
         profit: profit,
@@ -1763,16 +1808,15 @@ const generateRandomArticles = async (count: number) => {
         pallet: { active: true, value: 50 },
         quantityperunit: { active: true, value: 20 },
         forBulk: { active: true, value: 10 },
-        description: `Descripción del artículo ${i + 1}`,
+        description: `Descripción del artículo ${categoria.label} de la marca ${
+          marca.label
+        } modelo ${i + 1}`,
       },
       brand: marca,
       code: generateCodeArticle(categoria.value, marca.value),
       barcode: `BARCODE${1000 + i}`,
       category: categoria,
-      subCategory: {
-        value: `Subcategoría ${i % 3}`,
-        label: `Subcategoría ${i % 3}`,
-      },
+      subCategory: subCategoria,
       dateToRegister: randomPastDate,
       supplier: { name: `Proveedor ${i % 10}`, contact: "contact@example.com" },
       sales: [],
@@ -1798,5 +1842,131 @@ const generateRandomArticles = async (count: number) => {
     await db.articles.insertAsync(article);
   }
 };
-// // // Inserta artículos en la base de datos
-//generateRandomArticles(400);
+
+//generar clientes
+
+type ClientData = {
+  name: string;
+  address: string;
+  phone: number;
+  email: string;
+  birthdate: string;
+  DNI: number;
+  CUIT_CUIL: string;
+  nationality: string;
+  clientType: string;
+  rubro: string;
+  payMethod: string;
+  conditionIVA: string;
+  shopping: [];
+};
+
+function generateClientDataArray(count: number): ClientData[] {
+  const firstNames = [
+    "María",
+    "Juan",
+    "Carlos",
+    "Ana",
+    "Lucía",
+    "Jorge",
+    "Sofía",
+    "Luis",
+    "Elena",
+    "Fernando",
+  ];
+  const lastNames = [
+    "Pérez",
+    "García",
+    "López",
+    "Martínez",
+    "Rodríguez",
+    "González",
+    "Sánchez",
+    "Ramírez",
+    "Torres",
+    "Vargas",
+  ];
+  const streets = [
+    "Av. Siempre Viva",
+    "Calle Falsa",
+    "Pasaje Libertad",
+    "Av. Los Olivos",
+    "Calle Sol",
+    "Ruta 40",
+  ];
+  const rubros = ["Comercio", "Industria", "Servicios", "Educación"];
+  const payMethods = [
+    "Tarjeta de Crédito",
+    "Efectivo",
+    "Transferencia Bancaria",
+  ];
+  const clientTypes = ["Regular", "Premium"];
+  const ivaConditions = ["Responsable Inscripto", "Monotributista", "Exento"];
+
+  // Lista de nacionalidades
+  const otherNationalities = [
+    "Paraguay",
+    "Bolivia",
+    "Chile",
+    "Uruguay",
+    "Brasil",
+    "China",
+  ];
+
+  const clients: ClientData[] = [];
+
+  for (let i = 0; i < count; i++) {
+    // Generar nombre y dirección aleatorios
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const street = streets[Math.floor(Math.random() * streets.length)];
+
+    // Asignar nacionalidad con distribución
+    let nationality: string;
+    const rand = Math.random();
+    if (rand < 0.8) {
+      // 80% de probabilidad de ser "Argentina"
+      nationality = "Argentina";
+    } else {
+      // 20% de probabilidad distribuida entre las otras nacionalidades
+      nationality =
+        otherNationalities[
+          Math.floor(Math.random() * otherNationalities.length)
+        ];
+    }
+
+    // Crear cliente
+    clients.push({
+      name: `${firstName} ${lastName}`,
+      address: `${street} ${Math.floor(Math.random() * 500) + 1}`,
+      phone: Math.floor(1000000000 + Math.random() * 900000000),
+      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
+      birthdate: `19${80 + Math.floor(Math.random() * 20)}-${String(
+        Math.floor(Math.random() * 12) + 1
+      ).padStart(2, "0")}-${String(Math.floor(Math.random() * 28) + 1).padStart(
+        2,
+        "0"
+      )}`,
+      DNI: Math.floor(10000000 + Math.random() * 80000000),
+      CUIT_CUIL: `20-${Math.floor(
+        10000000 + Math.random() * 80000000
+      )}-${Math.floor(Math.random() * 9)}`,
+      nationality: nationality, // Nacionalidad asignada
+      clientType: clientTypes[Math.floor(Math.random() * clientTypes.length)],
+      rubro: rubros[Math.floor(Math.random() * rubros.length)],
+      payMethod: payMethods[Math.floor(Math.random() * payMethods.length)],
+      conditionIVA:
+        ivaConditions[Math.floor(Math.random() * ivaConditions.length)],
+      shopping: [], // Array vacío
+    });
+  }
+
+  return clients;
+}
+
+// Uso de la función
+// const clientArray = generateClientDataArray(100);
+// clientArray.forEach((client) => saveClient(client));
+// // // // Inserta artículos en la base de datos
+//initializeFilters();
+// generateRandomArticles(400);
