@@ -8,6 +8,16 @@ import { useSelector } from "react-redux";
 import ListSaleArticles from "./ListSaleArticles";
 import VirtualizedTable from "../../tablaMain/VirtualizedTable";
 
+import {
+  ContextMenuItem,
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuTrigger,
+} from "../../../../../app/ui/context-menu";
+import { MdEdit } from "react-icons/md";
+import { BiPrinter, BiTrash } from "react-icons/bi";
+import { CreditCard, NotepadText } from "lucide-react";
+
 type ItemListProps = {
   sales: saleData[];
   searchActived: { actived: boolean; results: object[] };
@@ -49,7 +59,21 @@ const ItemList: React.FC<ItemListProps> = ({ sales, formatMony }) => {
           </div>
         )}
         renderRow={(item, index) => (
-          <ListSaleArticles formatMony={formatMony} sale={item} />
+          <ContextMenu>
+            <ContextMenuTrigger>
+              <ListSaleArticles formatMony={formatMony} sale={item} />
+            </ContextMenuTrigger>
+            <ContextMenuContent className="bg-gradient-to-tl  from-gray-700 via-gray-700 to-gray-600 border-gray-600 text-gray-200 ">
+              <ContextMenuItem onClick={() => {}}>
+                <p>Imprimir facturas</p>
+                <BiPrinter size={17} />
+              </ContextMenuItem>
+              <ContextMenuItem onClick={() => {}}>
+                <p>Nota de credito</p>
+                <NotepadText size={17} />
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
         )}
       />
     </div>
