@@ -13,6 +13,7 @@ import ButtonR from "../buttons/ButtonR";
 import { BiExport } from "react-icons/bi";
 import Biñeta from "../Biñeta/Biñieta";
 import { MdAdd } from "react-icons/md";
+import { generatePDF } from "../../GeneratePDFArticulo";
 
 interface ArticulosProps {}
 
@@ -124,6 +125,18 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
     });
   }, []);
 
+  console.log(articlesInList, "RRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+
+  ///////////////////////export
+  const exportarPDF = () => {
+    console.log(articlesInList, "Artículos para exportar");
+    if (articlesInList.length > 0) {
+      generatePDF("Lista de Artículos 2", articlesInList);
+    } else {
+      console.warn("No hay artículos disponibles para exportar.");
+    }
+  };
+
   return (
     <div className="h-full w-full grid-cmg-program">
       <div className="absolute top-0 right-[339px] left-44 h-10 z-30 app-region-drag">
@@ -132,7 +145,7 @@ const Articulos: React.FC<ArticulosProps> = ({}) => {
             searchIn={articles}
             functionReturn={resultFindArticles}
           ></Buscador>
-          <Export></Export>
+          <Export onClick={exportarPDF}></Export>
           <ButtonR
             borderSize="border-x border-gray-600"
             textSize="text-sm"

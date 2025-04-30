@@ -15,6 +15,7 @@ import { TfiPencilAlt } from "react-icons/tfi";
 import Biñeta from "../Biñeta/Biñieta.js";
 import ButtonR from "../buttons/ButtonR.js";
 import { MdAdd } from "react-icons/md";
+import { GeneradorFactura } from "../../GeneradorFactura.js";
 
 interface VentastProps {
   //PROPS
@@ -74,12 +75,16 @@ const Ventas: React.FC<VentastProps> = (
     console.log(estadoAgregarCuenta, "este es el estado del use efect");
   }, [estadoAgregarCuenta]);
 
+  ////////////////////////////////////////////////////////////////
+
+
+  
   return (
     <div className="h-full w-full grid-cmg-program">
       <div className="absolute top-0 right-[339px] left-44 h-10 z-30 app-region-drag">
         <NavMain title={`Ventas (${sales.length})`} setLoginUser={""}>
           <Export></Export>
-
+  
           <Buscador
             searchIn={sales}
             functionReturn={getResultsSales}

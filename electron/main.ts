@@ -38,9 +38,9 @@ function createWindow() {
 
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     const csp = isDev
-      ? "default-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:4500 ws://localhost:4500 ws://vps-4260176-x.dattaweb.com; style-src 'self' 'unsafe-inline';"
-      : "default-src 'self'; connect-src 'self' ws://vps-4260176-x.dattaweb.com;";
-
+      ? "default-src 'self' blob: data: 'unsafe-inline'; connect-src 'self' http://localhost:4500 ws://localhost:4500 ws://vps-4260176-x.dattaweb.com; style-src 'self' 'unsafe-inline';"
+      : "default-src 'self' blob: data:; connect-src 'self' ws://vps-4260176-x.dattaweb.com; style-src 'self';";
+  
     callback({
       responseHeaders: {
         ...details.responseHeaders,
@@ -48,6 +48,7 @@ function createWindow() {
       },
     });
   });
+  
   
 
 

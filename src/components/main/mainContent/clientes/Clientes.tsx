@@ -15,7 +15,9 @@ import { BiExport } from "react-icons/bi";
 import ContextMenu from "../buttons/ContextMenu";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { BsTrash } from "react-icons/bs";
-import { generatePDF } from "../../PDFGenerator";
+import { generatePDF } from "../../GeneratePDFArticulo";
+import { generateClientsPDF } from "../../GenerateClientsPDF";
+import Biñeta from "../Biñeta/Biñieta";
 
 interface ClientesContentProps {
   searchIn?: string;
@@ -105,34 +107,51 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
   useEffect(() => {
     if (searchActived.actived) {
       setClientsInList(searchActived.results);
+    }else{
+      setClientsInList(clients)
     }
 
     console.log(clientsInList);
   }, [searchActived, clients]);
+
+
+
+
+  
+  ///////////////////////export
+  const exportarPDF = () => {
+    console.log("Exportando PDF...");
+    console.log(clientsInList,"Clientes en la listaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:" );
+    if (clientsInList.length > 0) {
+      generateClientsPDF("Lista de Clientes", clientsInList);
+    } else {
+      console.warn("No hay clientes disponibles para exportar.");
+    }
+  };
+  
+
+
   return (
     <div className="h-full w-full grid-cmg-program">
       <div className="absolute top-0 right-[339px] left-44 h-10 z-30 app-region-drag">
         <NavMain title="Clientes" setLoginUser={""}>
+          <Biñeta title={"Buscador"}>
           <Buscador searchIn={clients} functionReturn={getResults}></Buscador>
+          </Biñeta>
+          <Biñeta title={"Exportar"}>
           <ButtonR
             borderSize="border-x border-gray-600"
             textSize="text-lg"
-            bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
+            bgIconColor="bg-gray-700 text-[#fff8dcff]"
             height="h-8"
             width="w-10"
+            onClick={ exportarPDF }
+            
           >
             <BiExport size={25} className="text-[#E0E0E0]" />
           </ButtonR>
-          <ButtonR
-            borderSize="border-x border-gray-600"
-            textSize="text-lg"
-            bgIconColor="bg-gradient-to-l from-gray-700 via-gray-700 to-gray-500 text-[#fff8dcff]"
-            height="h-8"
-            width="w-10"
-            onClick={() => []}
-          >
-            <PiPrinter size={25} className="text-[#E0E0E0]" />
-          </ButtonR>
+          </Biñeta>
+          
           <ButtonR
             borderSize="border-x border-gray-600"
             textSize="text-sm"
@@ -140,11 +159,12 @@ const ClientesContent: React.FC<ClientesContentProps> = ({ searchIn }) => {
             height="h-8"
             width="w-44"
             bgColor="bg-yellow-700"
-            title="Agregar client"
+            title="Agregar cliente"
             onClick={onChangeModal}
           >
             <IoAdd size={25} className="text-[#E0E0E0]" />
           </ButtonR>
+          
         </NavMain>
       </div>
 
